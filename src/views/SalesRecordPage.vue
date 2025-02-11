@@ -190,17 +190,82 @@
                   <div v-if="packageDetails" class="mt-4 p-4 border border-custom-orange rounded-md">
                     <h3 class="font-bold">รายละเอียดแพ็คเกจ</h3>
                     <p>
-                      <strong>ชื่อแพ็คเกจ:</strong> {{ packageDetails.name }}
+                      <strong>Package:</strong> {{ packageDetails.name }}
                     </p>
-                    <p><strong>ราคา:</strong> {{ packageDetails.price }} บาท</p>
+                    <p><strong>ราคา:</strong> {{ formatPrice(packageDetails.price) }}</p>
                     <p>
-                      <strong>รายละเอียด:</strong>
+                      <strong>Package Details for Purchase Summary:</strong>
                       {{ packageDetails.package_detail }}
                     </p>
                     <p>
                       <strong>อายุการใช้งาน:</strong>
-                      {{ packageDetails.total_days }} วัน
+                      {{ packageDetails.package_validity }} วัน
                     </p>
+                  </div>
+                </div>
+
+                <div class="space-y-4 overflow-y-auto flex-grow mt-4">
+                  <strong class="text-custom-orange text-lg">จำนวนที่แถม</strong>
+                  <div class="flex flex-wrap gap-4">
+                    <!-- Free Mad -->
+                    <div class="flex-1">
+                      <label for="freeMad" class="block font-bold text-gray-700">Main Dish</label>
+                      <input id="freeMad" v-model="saleRecord.free_mad" type="number" min="0" step="1"
+                        placeholder="กรอกจำนวน Main Dish"
+                        class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange" />
+                    </div>
+
+                    <!-- Free Dessert -->
+                    <div class="flex-1">
+                      <label for="freeDessert" class="block font-bold text-gray-700">Dessert</label>
+                      <input id="freeDessert" v-model="saleRecord.free_dessert" type="number" min="0" step="1"
+                        placeholder="กรอกจำนวน Dessert"
+                        class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange" />
+                    </div>
+
+                    <!-- Free Brittles -->
+                    <div class="flex-1">
+                      <label for="freeBrittles" class="block font-bold text-gray-700">Brittles</label>
+                      <input id="freeBrittles" v-model="saleRecord.free_brittles" type="number" min="0" step="1"
+                        placeholder="กรอกจำนวน Brittles"
+                        class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange" />
+                    </div>
+
+                    <!-- Free Energy Balls -->
+                    <div class="flex-1">
+                      <label for="freeEnergyBalls" class="block font-bold text-gray-700">Energy
+                        Balls</label>
+                      <input id="freeEnergyBalls" v-model="saleRecord.free_energy_balls" type="number" min="0" step="1"
+                        placeholder="กรอกจำนวน Energy Balls"
+                        class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange" />
+                    </div>
+                  </div>
+
+                  <div class="flex flex-wrap gap-4">
+                    <!-- Free Dressing -->
+                    <div class="flex-1">
+                      <label for="freeDressing" class="block font-bold text-gray-700">Free
+                        Dressing</label>
+                      <input id="freeDressing" v-model="saleRecord.free_dressing" type="number" min="0" step="1"
+                        placeholder="กรอกจำนวน Free Dressing"
+                        class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange" />
+                    </div>
+
+                    <!-- Free Yoghurt -->
+                    <div class="flex-1">
+                      <label for="freeYoghurt" class="block font-bold text-gray-700">Yoghurt</label>
+                      <input id="freeYoghurt" v-model="saleRecord.free_yoghurt" type="number" min="0" step="1"
+                        placeholder="กรอกจำนวน Yoghurt"
+                        class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange" />
+                    </div>
+
+                    <!-- Free Granola -->
+                    <div class="flex-1">
+                      <label for="freeGranola" class="block font-bold text-gray-700">Granola</label>
+                      <input id="freeGranola" v-model="saleRecord.free_granola" type="number" min="0" step="1"
+                        placeholder="กรอกจำนวน Granola"
+                        class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange" />
+                    </div>
                   </div>
                 </div>
               </div>
@@ -354,30 +419,30 @@
               </div>
 
               <div v-if="computedTotalDeliveryPrice > 0" class="flex-1">
-              <label class="block font-bold text-gray-700">รวมค่าจัดส่งทั้งหมด: {{
+                <label class="block font-bold text-gray-700">รวมค่าจัดส่งทั้งหมด: {{
                   formatPrice(computedTotalDeliveryPrice) }}</label>
-              <p class="text-gray-600">ค่าจัดส่งรวม In-house Riders: {{ formatPrice(computedTotalZonePrice) }}</p>
-              <p class="text-gray-600">ค่าจัดส่งรวม Outsource: {{
+                <p class="text-gray-600">ค่าจัดส่งรวม In-house Riders: {{ formatPrice(computedTotalZonePrice) }}</p>
+                <p class="text-gray-600">ค่าจัดส่งรวม Outsource: {{
                   formatPrice(computedZoneOutsourcePrice) }}</p>
-                  </div>
-              
-                  <div v-if="computedTotalPrice > 0" class="flex-1">
-              <label class="block font-bold text-custom-orange">มูลค่าขายรวม: {{
+              </div>
+
+              <div v-if="computedTotalPrice > 0" class="flex-1">
+                <label class="block font-bold text-custom-orange">มูลค่าขายรวม: {{
                   formatPrice(computedTotalPrice) }}</label>
 
-<div v-if="computedTotalPackagePrice > 0">
-<p class="text-gray-600">มูลค่าแพ็กเกจรวม: {{
-                  formatPrice(computedTotalPackagePrice) }}</p>
-                  </div>
-
-                  <div v-if="computedTotalAdditionalPrice > 0">
-<p class="text-gray-600">มูลค่าขาย: {{
-                  formatPrice(computedTotalAdditionalPrice) }}</p>
-                  </div>
-
-                  <p class="text-gray-600">รวมค่าจัดส่งทั้งหมด: {{ formatPrice(computedTotalDeliveryPrice) }}</p>
+                <div v-if="computedTotalPackagePrice > 0">
+                  <p class="text-gray-600">มูลค่าแพ็กเกจรวม: {{
+                    formatPrice(computedTotalPackagePrice) }}</p>
                 </div>
-              
+
+                <div v-if="computedTotalAdditionalPrice > 0">
+                  <p class="text-gray-600">มูลค่าขาย: {{
+                    formatPrice(computedTotalAdditionalPrice) }}</p>
+                </div>
+
+                <p class="text-gray-600">รวมค่าจัดส่งทั้งหมด: {{ formatPrice(computedTotalDeliveryPrice) }}</p>
+              </div>
+
 
               <div class="flex space-x-4">
                 <div class="flex-1">
@@ -408,8 +473,10 @@
               </div>
 
               <div class="mb-4">
-                <label for="note" class="block text-gray-700 font-bold">Note รายละเอียดโปรโมชันสำหรับส่งสรุปให้ลูกค้า (ถ้ามี)</label>
-                <textarea id="note" v-model="saleRecord.note" placeholder="กรอก Note รายละเอียดโปรโมชันสำหรับส่งสรุปให้ลูกค้า (ถ้ามี)" rows="3"
+                <label for="note" class="block text-gray-700 font-bold">Note รายละเอียดโปรโมชันสำหรับส่งสรุปให้ลูกค้า
+                  (ถ้ามี)</label>
+                <textarea id="note" v-model="saleRecord.note"
+                  placeholder="กรอก Note รายละเอียดโปรโมชันสำหรับส่งสรุปให้ลูกค้า (ถ้ามี)" rows="3"
                   class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange resize-y"></textarea>
               </div>
             </div>
@@ -900,10 +967,10 @@
             </div>
 
             <div>
-  <label for="editPackageType" class="block font-bold text-gray-700">Package Type</label>
-  <multiselect v-model="selectedSaleRecord.package_type_id" :options="filteredPackageTypes"
-    placeholder="เลือก Package Type" track-by="id" label="name" class="w-full" />
-</div>
+              <label for="editPackageType" class="block font-bold text-gray-700">Package Type</label>
+              <multiselect v-model="selectedSaleRecord.package_type_id" :options="filteredPackageTypes"
+                placeholder="เลือก Package Type" track-by="id" label="name" class="w-full" />
+            </div>
 
 
 
@@ -948,164 +1015,173 @@
             </div>
 
             <div v-if="computedEditTotalPackagePrice > 0">
-                <div class="flex-1">
-                  <label class="block font-bold text-gray-700">
-                    มูลค่าแพ็กเกจรวม: {{ formatPrice(computedEditTotalPackagePrice) }}
-                  </label>
-                  <p class="text-gray-600">ราคาแพ็กเกจ: {{ formatPrice(selectedSaleRecord.package_price) }}</p>
-                  <p class="text-gray-600">ส่วนลดเพิ่มเติม: {{ formatPrice(selectedSaleRecord.discount) }}</p>
-                  <p class="text-gray-600">มูลค่า Extra Charge: {{ formatPrice(computedEditExtraChargePackagePrice) }}</p>
-                </div>
+              <div class="flex-1">
+                <label class="block font-bold text-gray-700">
+                  มูลค่าแพ็กเกจรวม: {{ formatPrice(computedEditTotalPackagePrice) }}
+                </label>
+                <p class="text-gray-600">ราคาแพ็กเกจ: {{ formatPrice(selectedSaleRecord.package_price) }}</p>
+                <p class="text-gray-600">ส่วนลดเพิ่มเติม: {{ formatPrice(selectedSaleRecord.discount) }}</p>
+                <p class="text-gray-600">มูลค่า Extra Charge: {{ formatPrice(computedEditExtraChargePackagePrice) }}</p>
               </div>
+            </div>
 
             <div>
-                <label for="editReceiveFood" class="block font-bold text-gray-700">วิธีการรับอาหาร</label>
-                <multiselect v-model="selectedSaleRecord.receive_food_id" :options="receiveFoods"
-                  placeholder="เลือกวิธีการรับอาหาร" track-by="id" label="name" />
+              <label for="editReceiveFood" class="block font-bold text-gray-700">วิธีการรับอาหาร</label>
+              <multiselect v-model="selectedSaleRecord.receive_food_id" :options="receiveFoods"
+                placeholder="เลือกวิธีการรับอาหาร" track-by="id" label="name" />
+            </div>
+
+            <div class="flex space-x-4">
+              <div class="flex-1">
+                <label for="editZone1_delivery" class="block font-bold text-gray-700">In-house Riders (ที่อยู่
+                  1)</label>
+                <multiselect v-model="selectedSaleRecord.zone1_id" :options="zoneDeliveries"
+                  placeholder="เลือก In-house Riders (ที่อยู่ 1)" track-by="id" label="name" />
               </div>
 
-              <div class="flex space-x-4">
-                <div class="flex-1">
-                  <label for="editZone1_delivery" class="block font-bold text-gray-700">In-house Riders (ที่อยู่ 1)</label>
-                  <multiselect v-model="selectedSaleRecord.zone1_id" :options="zoneDeliveries"
-                    placeholder="เลือก In-house Riders (ที่อยู่ 1)" track-by="id" label="name" />
-                </div>
-
-                <div class="flex-1">
-                  <label for="editZone1_quantity" class="block font-bold text-gray-700">จำนวนครั้ง</label>
-                  <input v-model="selectedSaleRecord.zone1_quantity" id="zone1_quantity" type="number" step="1"
-                    placeholder="กรอกจำนวนครั้ง"
-                    class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange" />
-                </div>
+              <div class="flex-1">
+                <label for="editZone1_quantity" class="block font-bold text-gray-700">จำนวนครั้ง</label>
+                <input v-model="selectedSaleRecord.zone1_quantity" id="zone1_quantity" type="number" step="1"
+                  placeholder="กรอกจำนวนครั้ง"
+                  class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange" />
               </div>
-              <div v-if="computedEditZone1Price > 0" class="flex-1">
-                <label class="block font-bold text-gray-700">ค่าจัดส่งรวม (ที่อยู่ 1): {{
-                  formatPrice(computedEditZone1Price)
-                }}</label>
-                <p class="text-gray-600">ค่าจัดส่ง/ครั้ง: {{ formatPrice(getZonePrice(selectedSaleRecord.zone1_id.id)) }}</p>
-              </div>
+            </div>
+            <div v-if="computedEditZone1Price > 0" class="flex-1">
+              <label class="block font-bold text-gray-700">ค่าจัดส่งรวม (ที่อยู่ 1): {{
+                formatPrice(computedEditZone1Price)
+              }}</label>
+              <p class="text-gray-600">ค่าจัดส่ง/ครั้ง: {{ formatPrice(getZonePrice(selectedSaleRecord.zone1_id.id)) }}
+              </p>
+            </div>
 
-              <div class="flex space-x-4">
-                <div class="flex-1">
-                  <label for="editZone2_delivery" class="block font-bold text-gray-700">In-house Riders (ที่อยู่ 2)</label>
-                  <multiselect v-model="selectedSaleRecord.zone2_id" :options="zoneDeliveries"
-                    placeholder="เลือก In-house Riders (ที่อยู่ 2)" track-by="id" label="name" />
-                </div>
-
-                <div class="flex-1">
-                  <label for="editZone2_quantity" class="block font-bold text-gray-700">จำนวนครั้ง</label>
-                  <input v-model="selectedSaleRecord.zone2_quantity" id="zone2_quantity" type="number" step="1"
-                    placeholder="กรอกจำนวนครั้ง"
-                    class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange" />
-                </div>
-              </div>
-              <div v-if="computedEditZone2Price > 0" class="flex-2">
-                <label class="block font-bold text-gray-700">ค่าจัดส่งรวม (ที่อยู่ 2): {{
-                  formatPrice(computedEditZone2Price)
-                }}</label>
-                <p class="text-gray-600">ค่าจัดส่ง/ครั้ง: {{ formatPrice(getZonePrice(selectedSaleRecord.zone2_id.id)) }}</p>
+            <div class="flex space-x-4">
+              <div class="flex-1">
+                <label for="editZone2_delivery" class="block font-bold text-gray-700">In-house Riders (ที่อยู่
+                  2)</label>
+                <multiselect v-model="selectedSaleRecord.zone2_id" :options="zoneDeliveries"
+                  placeholder="เลือก In-house Riders (ที่อยู่ 2)" track-by="id" label="name" />
               </div>
 
-              <div class="flex space-x-4">
-                <div class="flex-1">
-                  <label for="editZone3_delivery" class="block font-bold text-gray-700">In-house Riders (ที่อยู่ 3)</label>
-                  <multiselect v-model="selectedSaleRecord.zone3_id" :options="zoneDeliveries"
-                    placeholder="เลือก In-house Riders (ที่อยู่ 3)" track-by="id" label="name" />
-                </div>
-
-                <div class="flex-1">
-                  <label for="editZone3_quantity" class="block font-bold text-gray-700">จำนวนครั้ง</label>
-                  <input v-model="selectedSaleRecord.zone3_quantity" id="zone3_quantity" type="number" step="1"
-                    placeholder="กรอกจำนวนครั้ง"
-                    class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange" />
-                </div>
+              <div class="flex-1">
+                <label for="editZone2_quantity" class="block font-bold text-gray-700">จำนวนครั้ง</label>
+                <input v-model="selectedSaleRecord.zone2_quantity" id="zone2_quantity" type="number" step="1"
+                  placeholder="กรอกจำนวนครั้ง"
+                  class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange" />
               </div>
-              <div v-if="computedEditZone3Price > 0" class="flex-1">
-                <label class="block font-bold text-gray-700">ค่าจัดส่งรวม (ที่อยู่ 3): {{
-                  formatPrice(computedEditZone3Price)
-                }}</label>
-                <p class="text-gray-600">ค่าจัดส่ง/ครั้ง: {{ formatPrice(getZonePrice(selectedSaleRecord.zone3_id.id)) }}</p>
-              </div>
+            </div>
+            <div v-if="computedEditZone2Price > 0" class="flex-2">
+              <label class="block font-bold text-gray-700">ค่าจัดส่งรวม (ที่อยู่ 2): {{
+                formatPrice(computedEditZone2Price)
+              }}</label>
+              <p class="text-gray-600">ค่าจัดส่ง/ครั้ง: {{ formatPrice(getZonePrice(selectedSaleRecord.zone2_id.id)) }}
+              </p>
+            </div>
 
-              <div class="flex space-x-4">
-                <div class="flex-1">
-                  <label for="editZone_outsource_delivery" class="block font-bold text-gray-700">Outsource Riders</label>
-                  <multiselect v-model="selectedSaleRecord.zone_outsource_id" :options="zoneDeliveries"
-                    placeholder="เลือก Outsource Riders" track-by="id" label="name" />
-                </div>
-
-                <div class="flex-1">
-                  <label for="editZone_outsource_quantity" class="block font-bold text-gray-700">จำนวนครั้ง</label>
-                  <input v-model="selectedSaleRecord.zone_outsource_quantity" id="zone_outsource_quantity" type="number" step="1"
-                    placeholder="กรอกจำนวนครั้ง"
-                    class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange" />
-                </div>
-              </div>
-              <div v-if="computedEditZoneOutsourcePrice > 0" class="flex-1">
-                <label class="block font-bold text-gray-700">ค่าจัดส่งรวม Outsource: {{
-                  formatPrice(computedEditZoneOutsourcePrice)
-                }}</label>
-                <p class="text-gray-600">ค่าจัดส่ง/ครั้ง: {{ formatPrice(getZonePrice(selectedSaleRecord.zone_outsource_id.id)) }}</p>
+            <div class="flex space-x-4">
+              <div class="flex-1">
+                <label for="editZone3_delivery" class="block font-bold text-gray-700">In-house Riders (ที่อยู่
+                  3)</label>
+                <multiselect v-model="selectedSaleRecord.zone3_id" :options="zoneDeliveries"
+                  placeholder="เลือก In-house Riders (ที่อยู่ 3)" track-by="id" label="name" />
               </div>
 
-              
-              <div v-if="computedEditTotalDeliveryPrice > 0" class="flex-1">
+              <div class="flex-1">
+                <label for="editZone3_quantity" class="block font-bold text-gray-700">จำนวนครั้ง</label>
+                <input v-model="selectedSaleRecord.zone3_quantity" id="zone3_quantity" type="number" step="1"
+                  placeholder="กรอกจำนวนครั้ง"
+                  class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange" />
+              </div>
+            </div>
+            <div v-if="computedEditZone3Price > 0" class="flex-1">
+              <label class="block font-bold text-gray-700">ค่าจัดส่งรวม (ที่อยู่ 3): {{
+                formatPrice(computedEditZone3Price)
+              }}</label>
+              <p class="text-gray-600">ค่าจัดส่ง/ครั้ง: {{ formatPrice(getZonePrice(selectedSaleRecord.zone3_id.id)) }}
+              </p>
+            </div>
+
+            <div class="flex space-x-4">
+              <div class="flex-1">
+                <label for="editZone_outsource_delivery" class="block font-bold text-gray-700">Outsource Riders</label>
+                <multiselect v-model="selectedSaleRecord.zone_outsource_id" :options="zoneDeliveries"
+                  placeholder="เลือก Outsource Riders" track-by="id" label="name" />
+              </div>
+
+              <div class="flex-1">
+                <label for="editZone_outsource_quantity" class="block font-bold text-gray-700">จำนวนครั้ง</label>
+                <input v-model="selectedSaleRecord.zone_outsource_quantity" id="zone_outsource_quantity" type="number"
+                  step="1" placeholder="กรอกจำนวนครั้ง"
+                  class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange" />
+              </div>
+            </div>
+            <div v-if="computedEditZoneOutsourcePrice > 0" class="flex-1">
+              <label class="block font-bold text-gray-700">ค่าจัดส่งรวม Outsource: {{
+                formatPrice(computedEditZoneOutsourcePrice)
+              }}</label>
+              <p class="text-gray-600">ค่าจัดส่ง/ครั้ง: {{
+                formatPrice(getZonePrice(selectedSaleRecord.zone_outsource_id.id)) }}</p>
+            </div>
+
+
+            <div v-if="computedEditTotalDeliveryPrice > 0" class="flex-1">
               <label class="block font-bold text-gray-700">รวมค่าจัดส่งทั้งหมด: {{
-                  formatPrice(computedEditTotalDeliveryPrice) }}</label>
+                formatPrice(computedEditTotalDeliveryPrice) }}</label>
               <p class="text-gray-600">ค่าจัดส่งรวม In-house Riders: {{ formatPrice(computedEditTotalZonePrice) }}</p>
               <p class="text-gray-600">ค่าจัดส่งรวม Outsource: {{
-                  formatPrice(computedEditZoneOutsourcePrice) }}</p>
-                  </div>
-              
-                  <div v-if="computedEditTotalPrice > 0" class="flex-1">
+                formatPrice(computedEditZoneOutsourcePrice) }}</p>
+            </div>
+
+            <div v-if="computedEditTotalPrice > 0" class="flex-1">
               <label class="block font-bold text-custom-orange">มูลค่าขายรวม: {{
-                  formatPrice(computedEditTotalPrice) }}</label>
+                formatPrice(computedEditTotalPrice) }}</label>
 
-<div>
-<p class="text-gray-600">มูลค่าแพ็กเกจรวม: {{
+              <div>
+                <p class="text-gray-600">มูลค่าแพ็กเกจรวม: {{
                   formatPrice(computedEditTotalPackagePrice) }}</p>
-                  </div>
-
-                  <p class="text-gray-600">รวมค่าจัดส่งทั้งหมด: {{ formatPrice(computedEditTotalDeliveryPrice) }}</p>
-                </div>
-
-              <div class="flex space-x-4">
-                <div class="flex-1">
-                  <label for="editSellerName" class="block font-bold text-gray-700">ผู้ขาย</label>
-                  <multiselect v-model="selectedSaleRecord.seller_name_id" :options="sellerNames" placeholder="เลือกผู้ขาย"
-                    track-by="id" label="name" />
-                </div>
-
-                <div class="flex-1">
-                  <label for="editStartDate" class="block font-bold text-gray-700">วันเริ่มแพ็คเกจ</label>
-                  <input v-model="selectedSaleRecord.start_date" id="startDate" type="date"
-                    class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange" />
-                </div>
               </div>
 
-              <div class="flex space-x-4">
-                <div class="flex-1">
-                  <label for="editDeliveryRound" class="block font-bold text-gray-700">รอบการจัดส่งอาหาร</label>
-                  <multiselect v-model="selectedSaleRecord.delivery_round_id" :options="deliveryRounds"
-                    placeholder="เลือกรอบการจัดส่งอาหาร" track-by="id" label="name" />
-                </div>
+              <p class="text-gray-600">รวมค่าจัดส่งทั้งหมด: {{ formatPrice(computedEditTotalDeliveryPrice) }}</p>
+            </div>
 
-                <div class="flex-1">
-                  <label for="editSelectFood" class="block font-bold text-gray-700">เลือกอาหารโดย</label>
-                  <multiselect v-model="selectedSaleRecord.select_food_id" :options="selectFoods" placeholder="เลือกอาหารโดย"
-                    track-by="id" label="name" />
-                </div>
+            <div class="flex space-x-4">
+              <div class="flex-1">
+                <label for="editSellerName" class="block font-bold text-gray-700">ผู้ขาย</label>
+                <multiselect v-model="selectedSaleRecord.seller_name_id" :options="sellerNames"
+                  placeholder="เลือกผู้ขาย" track-by="id" label="name" />
               </div>
 
-              <div class="mb-4">
-                <label for="editNote" class="block text-gray-700 font-bold">Note รายละเอียดโปรโมชันสำหรับส่งสรุปให้ลูกค้า (ถ้ามี)</label>
-                <textarea id="note" v-model="selectedSaleRecord.note" placeholder="กรอก Note รายละเอียดโปรโมชันสำหรับส่งสรุปให้ลูกค้า (ถ้ามี)" rows="3"
-                  class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange resize-y"></textarea>
+              <div class="flex-1">
+                <label for="editStartDate" class="block font-bold text-gray-700">วันเริ่มแพ็คเกจ</label>
+                <input v-model="selectedSaleRecord.start_date" id="startDate" type="date"
+                  class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange" />
+              </div>
+            </div>
+
+            <div class="flex space-x-4">
+              <div class="flex-1">
+                <label for="editDeliveryRound" class="block font-bold text-gray-700">รอบการจัดส่งอาหาร</label>
+                <multiselect v-model="selectedSaleRecord.delivery_round_id" :options="deliveryRounds"
+                  placeholder="เลือกรอบการจัดส่งอาหาร" track-by="id" label="name" />
               </div>
 
+              <div class="flex-1">
+                <label for="editSelectFood" class="block font-bold text-gray-700">เลือกอาหารโดย</label>
+                <multiselect v-model="selectedSaleRecord.select_food_id" :options="selectFoods"
+                  placeholder="เลือกอาหารโดย" track-by="id" label="name" />
+              </div>
+            </div>
+
+            <div class="mb-4">
+              <label for="editNote" class="block text-gray-700 font-bold">Note รายละเอียดโปรโมชันสำหรับส่งสรุปให้ลูกค้า
+                (ถ้ามี)</label>
+              <textarea id="note" v-model="selectedSaleRecord.note"
+                placeholder="กรอก Note รายละเอียดโปรโมชันสำหรับส่งสรุปให้ลูกค้า (ถ้ามี)" rows="3"
+                class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange resize-y"></textarea>
+            </div>
 
 
-              <!-- <div class="flex-1">
+
+            <!-- <div class="flex-1">
   <label for="editPaymentStatus" class="block font-bold text-gray-700">สถานะการชำระเงิน</label>
   <multiselect v-model="selectedSaleRecord.payment_status" :options="paymentStatusOptions"
     placeholder="เลือกสถานะการชำระเงิน" track-by="value" label="label" />
@@ -1135,15 +1211,16 @@
                 ยกเลิก
               </button>
               <button @click="saveChanges"
-              class="px-4 py-2 rounded bg-custom-orange text-white hover:bg-custom-orange-hover">
-              บันทึก
+                class="px-4 py-2 rounded bg-custom-orange text-white hover:bg-custom-orange-hover">
+                บันทึก
               </button>
             </div>
           </div>
         </div>
       </div>
 
-      <div v-if="isDeleteModalOpen" class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
+      <div v-if="isDeleteModalOpen"
+        class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
 
         <div
           class="absolute top-8 left-1/2 transform -translate-x-1/2 bg-yellow-500 text-white px-8 py-4 flex items-center space-x-4 rounded-lg shadow-lg transition-opacity duration-300 z-60"
@@ -1171,15 +1248,14 @@
               การดำเนินการนี้ไม่สามารถย้อนกลับได้
             </p>
           </div>
-         <div class="flex justify-end space-x-2 p-4 border-t">
-                        <button @click="closeDeleteModal" class="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400">
-                            ยกเลิก
-                        </button>
-                        <button @click="deleteConfirmed"
-                            class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
-                            ยืนยัน
-                        </button>
-                    </div>
+          <div class="flex justify-end space-x-2 p-4 border-t">
+            <button @click="closeDeleteModal" class="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400">
+              ยกเลิก
+            </button>
+            <button @click="deleteConfirmed" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
+              ยืนยัน
+            </button>
+          </div>
         </div>
       </div>
     </table>
@@ -1301,6 +1377,14 @@ export default {
         select_food_id: "",
         delivery_round_id: "",
         note: "",
+
+        free_mad: 0,
+        free_dessert: 0,
+        free_brittles: 0,
+        free_energy_balls: 0,
+        free_dressing: 0,
+        free_yoghurt: 0,
+        free_granola: 0,
       },
       customers: [],
       customerAddress: null,
@@ -1340,7 +1424,7 @@ export default {
       itemToDelete: null,
 
       moreOpenDropdownIndex: null,
-      
+
       selectedSaleRecord: {
         id: "",
         customer_id: "",
@@ -1468,77 +1552,77 @@ export default {
     },
 
     filteredDetailSaleRecord() {
-  if (!this.selectedSaleRecord || !this.selectedSaleRecord.customer) {
-    return { name: "", expiry_date: "" };
-  }
-  return {
-    seller_name_id: this.getSellerName(
-      this.selectedSaleRecord.seller_name_id
-    ),
-    name: this.selectedSaleRecord.customer?.name || "",
-    package_type: this.getPackageTypeName(
-      this.selectedSaleRecord.package_type_id
-    ),
-    // promotion_type: this.selectedSaleRecord.promotionType?.name || "",
-    promotion_type: this.getPromotionTypeName(this.selectedSaleRecord.promotion_type_id) || "",
-    program: this.getProgramName(this.selectedSaleRecord.program_id),
-    package: this.selectedSaleRecord.package?.name || "",
-    package_price: this.formatPrice(this.selectedSaleRecord.package?.price),
-    promotion_detail: this.selectedSaleRecord.package?.promotion_detail || "",
-    discount: this.formatPrice(this.selectedSaleRecord.discount),
-    extra_charge: this.formatPercent(this.selectedSaleRecord.extra_charge),
-    extra_charge_price: this.formatPrice(
-      this.selectedSaleRecord.extra_charge_price
-    ),
-    total_package_price: this.formatPrice(
-      this.selectedSaleRecord.total_package_price
-    ),
-    receive_food_id: this.getReceiveFoodName(
-      this.selectedSaleRecord.receive_food_id
-    ),
-    zone1_id: this.getZoneName(this.selectedSaleRecord.zone1_id),
-    total_zone1_price: this.formatPrice(
-      this.selectedSaleRecord.total_zone1_price
-    ),
-    zone2_id: this.getZoneName(this.selectedSaleRecord.zone2_id),
-    total_zone2_price: this.formatPrice(
-      this.selectedSaleRecord.total_zone2_price
-    ),
-    zone3_id: this.getZoneName(this.selectedSaleRecord.zone3_id),
-    total_zone3_price: this.formatPrice(
-      this.selectedSaleRecord.total_zone3_price
-    ),
-    zone_outsource_id: this.getZoneName(
-      this.selectedSaleRecord.zone_outsource_id
-    ),
-    total_zone_outsource_price: this.formatPrice(
-      this.selectedSaleRecord.total_zone_outsource_price
-    ),
-    total_delivery_zone_price: this.formatPrice(
-      this.selectedSaleRecord.total_delivery_zone_price
-    ),
-    total_delivery_price: this.formatPrice(
-      this.selectedSaleRecord.total_delivery_price
-    ),
-    total_price: this.formatPrice(this.selectedSaleRecord.total_price),
-    payment_status: this.getPaymentStatusText(
-      this.selectedSaleRecord.payment_status
-    ),
-    paid_date: this.formatDate(this.selectedSaleRecord.paid_date),
-    payment_type_id: this.getPaymentTypeName(
-      this.selectedSaleRecord.payment_type_id
-    ),
-    start_date: this.formatDate(this.selectedSaleRecord.start_date),
-    expiry_date: this.formatDate(this.selectedSaleRecord.expiry_date),
-    receive_date: this.formatDate(this.selectedSaleRecord.start_date),
-    note: this.selectedSaleRecord.note || "",
-    package_detail: this.selectedSaleRecord.package?.package_detail || "",
-    delivery_date: this.selectedSaleRecord.customer?.delivery_date || "",
-    select_food_id: this.getSelectFood(
-      this.selectedSaleRecord.select_food_id
-    ),
-  };
-},
+      if (!this.selectedSaleRecord || !this.selectedSaleRecord.customer) {
+        return { name: "", expiry_date: "" };
+      }
+      return {
+        seller_name_id: this.getSellerName(
+          this.selectedSaleRecord.seller_name_id
+        ),
+        name: this.selectedSaleRecord.customer?.name || "",
+        package_type: this.getPackageTypeName(
+          this.selectedSaleRecord.package_type_id
+        ),
+        // promotion_type: this.selectedSaleRecord.promotionType?.name || "",
+        promotion_type: this.getPromotionTypeName(this.selectedSaleRecord.promotion_type_id) || "",
+        program: this.getProgramName(this.selectedSaleRecord.program_id),
+        package: this.selectedSaleRecord.package?.name || "",
+        package_price: this.formatPrice(this.selectedSaleRecord.package?.price),
+        promotion_detail: this.selectedSaleRecord.package?.promotion_detail || "",
+        discount: this.formatPrice(this.selectedSaleRecord.discount),
+        extra_charge: this.formatPercent(this.selectedSaleRecord.extra_charge),
+        extra_charge_price: this.formatPrice(
+          this.selectedSaleRecord.extra_charge_price
+        ),
+        total_package_price: this.formatPrice(
+          this.selectedSaleRecord.total_package_price
+        ),
+        receive_food_id: this.getReceiveFoodName(
+          this.selectedSaleRecord.receive_food_id
+        ),
+        zone1_id: this.getZoneName(this.selectedSaleRecord.zone1_id),
+        total_zone1_price: this.formatPrice(
+          this.selectedSaleRecord.total_zone1_price
+        ),
+        zone2_id: this.getZoneName(this.selectedSaleRecord.zone2_id),
+        total_zone2_price: this.formatPrice(
+          this.selectedSaleRecord.total_zone2_price
+        ),
+        zone3_id: this.getZoneName(this.selectedSaleRecord.zone3_id),
+        total_zone3_price: this.formatPrice(
+          this.selectedSaleRecord.total_zone3_price
+        ),
+        zone_outsource_id: this.getZoneName(
+          this.selectedSaleRecord.zone_outsource_id
+        ),
+        total_zone_outsource_price: this.formatPrice(
+          this.selectedSaleRecord.total_zone_outsource_price
+        ),
+        total_delivery_zone_price: this.formatPrice(
+          this.selectedSaleRecord.total_delivery_zone_price
+        ),
+        total_delivery_price: this.formatPrice(
+          this.selectedSaleRecord.total_delivery_price
+        ),
+        total_price: this.formatPrice(this.selectedSaleRecord.total_price),
+        payment_status: this.getPaymentStatusText(
+          this.selectedSaleRecord.payment_status
+        ),
+        paid_date: this.formatDate(this.selectedSaleRecord.paid_date),
+        payment_type_id: this.getPaymentTypeName(
+          this.selectedSaleRecord.payment_type_id
+        ),
+        start_date: this.formatDate(this.selectedSaleRecord.start_date),
+        expiry_date: this.formatDate(this.selectedSaleRecord.expiry_date),
+        receive_date: this.formatDate(this.selectedSaleRecord.start_date),
+        note: this.selectedSaleRecord.note || "",
+        package_detail: this.selectedSaleRecord.package?.package_detail || "",
+        delivery_date: this.selectedSaleRecord.customer?.delivery_date || "",
+        select_food_id: this.getSelectFood(
+          this.selectedSaleRecord.select_food_id
+        ),
+      };
+    },
 
     zone1_info() {
       const zoneName = this.getZoneName(this.selectedSaleRecord.zone1_id);
@@ -1744,8 +1828,8 @@ export default {
       return 0;
     },
     computedTotalZonePrice() {
-    return this.computedZone1Price + this.computedZone2Price + this.computedZone3Price;
-  },
+      return this.computedZone1Price + this.computedZone2Price + this.computedZone3Price;
+    },
 
     computedZoneOutsourcePrice() {
       if (!this.saleRecord.zone_outsource_id) {
@@ -1761,15 +1845,15 @@ export default {
     },
 
     computedTotalDeliveryPrice() {
-    return this.computedTotalZonePrice + this.computedZoneOutsourcePrice;
-  },
+      return this.computedTotalZonePrice + this.computedZoneOutsourcePrice;
+    },
 
-  computedTotalPrice() {
-    return this.computedTotalPackagePrice + this.computedTotalAdditionalPrice + this.computedTotalDeliveryPrice;
-  },
+    computedTotalPrice() {
+      return this.computedTotalPackagePrice + this.computedTotalAdditionalPrice + this.computedTotalDeliveryPrice;
+    },
 
 
-  isEditConsignmentOrAdditional() {
+    isEditConsignmentOrAdditional() {
       const packageType = this.selectedSaleRecord.package_type_id?.name?.toLowerCase();
       return ["consignment", "additional sales"].includes(packageType);
     },
@@ -1833,8 +1917,8 @@ export default {
       return 0;
     },
     computedEditTotalZonePrice() {
-    return this.computedEditZone1Price + this.computedEditZone2Price + this.computedEditZone3Price;
-  },
+      return this.computedEditZone1Price + this.computedEditZone2Price + this.computedEditZone3Price;
+    },
     computedEditZoneOutsourcePrice() {
       if (!this.selectedSaleRecord.zone_outsource_id) {
         return 0;
@@ -1848,17 +1932,17 @@ export default {
       return 0;
     },
     computedEditTotalDeliveryPrice() {
-    return this.computedEditTotalZonePrice + this.computedEditZoneOutsourcePrice;
-  },
+      return this.computedEditTotalZonePrice + this.computedEditZoneOutsourcePrice;
+    },
 
-  computedEditTotalPrice() {
-    return this.computedEditTotalPackagePrice + this.computedEditTotalDeliveryPrice;
-  },
-//   filteredPackageTypes() {
-//   return this.packageTypes.filter(item => 
-//     item.name.toLowerCase() !== 'additional sales' && item.name.toLowerCase() !== 'consignment'
-//   );
-// },
+    computedEditTotalPrice() {
+      return this.computedEditTotalPackagePrice + this.computedEditTotalDeliveryPrice;
+    },
+    //   filteredPackageTypes() {
+    //   return this.packageTypes.filter(item => 
+    //     item.name.toLowerCase() !== 'additional sales' && item.name.toLowerCase() !== 'consignment'
+    //   );
+    // },
 
 
     ...mapGetters(["saleRecords"]),
@@ -2074,64 +2158,72 @@ export default {
       this.isAddModalOpen = true;
     },
     async addSaleRecord() {
-  if (!this.saleRecord.customer_id) {
-    this.showErrorToastNotification("กรุณากรอกข้อมูลให้ครบถ้วน!");
-    return;
-  }
+      if (!this.saleRecord.customer_id) {
+        this.showErrorToastNotification("กรุณากรอกข้อมูลให้ครบถ้วน!");
+        return;
+      }
 
-  try {
-    const response = await axios.post("http://127.0.0.1:3333/sale-records", {
-      customer_id: this.saleRecord.customer_id?.id || null,
-      promotion_type_id: this.saleRecord.promotion_type_id?.id || null,
-      program_id: this.saleRecord.program_id?.id || null,
-      package_id: this.saleRecord.package_id?.id || null,
-      package_type_id: this.saleRecord.package_type_id?.id || null,
-      seller_name_id: this.saleRecord.seller_name_id?.id || null,
-      delivery: this.saleRecord.delivery || "",
-      discount: this.saleRecord.discount || 0,
-      extra_charge: this.saleRecord.extra_charge || 0,
-      payment_status: this.saleRecord.payment_status || "unpaid",
-      paid_date: this.saleRecord.paid_date || null,
-      payment_type_id: this.saleRecord.payment_type_id?.id || null,
-      start_date: this.saleRecord.start_date || null,
-      zone1_id: this.saleRecord.zone1_id?.id || null,
-      zone1_quantity: this.saleRecord.zone1_quantity || 0,
+      try {
+        const response = await axios.post("http://127.0.0.1:3333/sale-records", {
+          customer_id: this.saleRecord.customer_id?.id || null,
+          promotion_type_id: this.saleRecord.promotion_type_id?.id || null,
+          program_id: this.saleRecord.program_id?.id || null,
+          package_id: this.saleRecord.package_id?.id || null,
+          package_type_id: this.saleRecord.package_type_id?.id || null,
+          seller_name_id: this.saleRecord.seller_name_id?.id || null,
+          delivery: this.saleRecord.delivery || "",
+          discount: this.saleRecord.discount || 0,
+          extra_charge: this.saleRecord.extra_charge || 0,
+          payment_status: this.saleRecord.payment_status || "unpaid",
+          paid_date: this.saleRecord.paid_date || null,
+          payment_type_id: this.saleRecord.payment_type_id?.id || null,
+          start_date: this.saleRecord.start_date || null,
+          zone1_id: this.saleRecord.zone1_id?.id || null,
+          zone1_quantity: this.saleRecord.zone1_quantity || 0,
 
-      zone2_id: this.saleRecord.zone2_id?.id || null,
-      zone2_quantity: this.saleRecord.zone2_quantity || 0,
+          zone2_id: this.saleRecord.zone2_id?.id || null,
+          zone2_quantity: this.saleRecord.zone2_quantity || 0,
 
-      zone3_id: this.saleRecord.zone3_id?.id || null,
-      zone3_quantity: this.saleRecord.zone3_quantity || 0,
+          zone3_id: this.saleRecord.zone3_id?.id || null,
+          zone3_quantity: this.saleRecord.zone3_quantity || 0,
 
-      zone_outsource_id: this.saleRecord.zone_outsource_id?.id || null,
-      zone_outsource_quantity: this.saleRecord.zone_outsource_quantity || 0,
+          zone_outsource_id: this.saleRecord.zone_outsource_id?.id || null,
+          zone_outsource_quantity: this.saleRecord.zone_outsource_quantity || 0,
 
-      additional_type_id: this.saleRecord.additional_type_id?.id || null,
-      add_detail: this.saleRecord.add_detail || null,
-      add_price: this.saleRecord.add_price || 0,
-      delivery_round_id: this.saleRecord.delivery_round_id?.id || null,
-      select_food_id: this.saleRecord.select_food_id?.id || null,
-      receive_food_id: this.saleRecord.receive_food_id?.id || null,
-      note: this.saleRecord.note || null,
-    });
+          additional_type_id: this.saleRecord.additional_type_id?.id || null,
+          add_detail: this.saleRecord.add_detail || null,
+          add_price: this.saleRecord.add_price || 0,
+          delivery_round_id: this.saleRecord.delivery_round_id?.id || null,
+          select_food_id: this.saleRecord.select_food_id?.id || null,
+          receive_food_id: this.saleRecord.receive_food_id?.id || null,
+          note: this.saleRecord.note || null,
 
-    this.saleRecords.push(response.data);
-    this.closeAddModal();
-    this.filterPrograms();
-    this.filterPackages();
-    await this.fetchSaleRecords();
-    this.showSuccessToastNotification("เพิ่มข้อมูลสำเร็จ!");
-  } catch (error) {
-    console.error("Error adding sale record:", error);
-    if (error.response && error.response.data) {
-      this.showErrorToastNotification(
-        error.response.data.message || "เกิดข้อผิดพลาดในการเพิ่มข้อมูล!"
-      );
-    } else {
-      this.showErrorToastNotification("เกิดข้อผิดพลาดในการเพิ่มข้อมูล!");
-    }
-  }
-},
+          free_mad: this.saleRecord.free_mad || 0,
+          free_dessert: this.saleRecord.free_dessert || 0,
+          free_brittles: this.saleRecord.free_brittles || 0,
+          free_energy_balls: this.saleRecord.free_energy_balls || 0,
+          free_dressing: this.saleRecord.free_dressing || 0,
+          free_yoghurt: this.saleRecord.free_yoghurt || 0,
+          free_granola: this.saleRecord.free_granola || 0,
+        });
+
+        this.saleRecords.push(response.data);
+        this.closeAddModal();
+        this.filterPrograms();
+        this.filterPackages();
+        await this.fetchSaleRecords();
+        this.showSuccessToastNotification("เพิ่มข้อมูลสำเร็จ!");
+      } catch (error) {
+        console.error("Error adding sale record:", error);
+        if (error.response && error.response.data) {
+          this.showErrorToastNotification(
+            error.response.data.message || "เกิดข้อผิดพลาดในการเพิ่มข้อมูล!"
+          );
+        } else {
+          this.showErrorToastNotification("เกิดข้อผิดพลาดในการเพิ่มข้อมูล!");
+        }
+      }
+    },
     closeAddModal() {
       this.isAddModalOpen = false;
       this.clearForm();
@@ -2180,6 +2272,14 @@ export default {
         select_food_id: "",
         delivery_round_id: "",
         note: "",
+
+        free_mad: 0,
+        free_dessert: 0,
+        free_brittles: 0,
+        free_energy_balls: 0,
+        free_dressing: 0,
+        free_yoghurt: 0,
+        free_granola: 0,
       };
       this.packageDetails = null;
       this.isShowingPackageDetails = false;
@@ -2190,103 +2290,103 @@ export default {
 
     openEditModal(saleRecord) {
       const formatDate = (date) => {
-  if (!date) return null;
-  const localDate = new Date(date);
-  return localDate.toLocaleDateString("en-CA"); // en-CA ใช้ฟอร์แมต YYYY-MM-DD
-};
+        if (!date) return null;
+        const localDate = new Date(date);
+        return localDate.toLocaleDateString("en-CA"); // en-CA ใช้ฟอร์แมต YYYY-MM-DD
+      };
 
 
-  this.selectedSaleRecord = {
-    ...saleRecord,
-    start_date: formatDate(saleRecord.start_date), // แปลงวันที่ก่อนนำไปใช้
-    customer_id: this.customers.find(c => c.id === saleRecord.customer_id) || null,
-    package_type_id: this.packageTypes.find(p => p.id === saleRecord.package_type_id) || null,
-    promotion_type_id: this.promotionTypes.find(p => p.id === saleRecord.promotion_type_id) || null,
-    program_id: this.programs.find(p => p.id === saleRecord.program_id) || null,
-    package_id: this.packages.find(p => p.id === saleRecord.package_id) || null,
-    receive_food_id: this.receiveFoods.find(r => r.id === saleRecord.receive_food_id) || null,
-    zone1_id: this.zoneDeliveries.find(z => z.id === saleRecord.zone1_id) || null,
-    zone2_id: this.zoneDeliveries.find(z => z.id === saleRecord.zone2_id) || null,
-    zone3_id: this.zoneDeliveries.find(z => z.id === saleRecord.zone3_id) || null,
-    zone_outsource_id: this.zoneDeliveries.find(z => z.id === saleRecord.zone_outsource_id) || null,
-    seller_name_id: this.zoneDeliveries.find(s => s.id === saleRecord.seller_name_id) || null,
-    delivery_round_id: this.deliveryRounds.find(d => d.id === saleRecord.delivery_round_id) || null,
-    select_food_id: this.selectFoods.find(s => s.id === saleRecord.select_food_id) || null,
-    paid_date: formatDate(saleRecord.paid_date),
-    payment_type_id: this.paymentTypes.find(p => p.id === saleRecord.payment_type_id) || null,
+      this.selectedSaleRecord = {
+        ...saleRecord,
+        start_date: formatDate(saleRecord.start_date), // แปลงวันที่ก่อนนำไปใช้
+        customer_id: this.customers.find(c => c.id === saleRecord.customer_id) || null,
+        package_type_id: this.packageTypes.find(p => p.id === saleRecord.package_type_id) || null,
+        promotion_type_id: this.promotionTypes.find(p => p.id === saleRecord.promotion_type_id) || null,
+        program_id: this.programs.find(p => p.id === saleRecord.program_id) || null,
+        package_id: this.packages.find(p => p.id === saleRecord.package_id) || null,
+        receive_food_id: this.receiveFoods.find(r => r.id === saleRecord.receive_food_id) || null,
+        zone1_id: this.zoneDeliveries.find(z => z.id === saleRecord.zone1_id) || null,
+        zone2_id: this.zoneDeliveries.find(z => z.id === saleRecord.zone2_id) || null,
+        zone3_id: this.zoneDeliveries.find(z => z.id === saleRecord.zone3_id) || null,
+        zone_outsource_id: this.zoneDeliveries.find(z => z.id === saleRecord.zone_outsource_id) || null,
+        seller_name_id: this.zoneDeliveries.find(s => s.id === saleRecord.seller_name_id) || null,
+        delivery_round_id: this.deliveryRounds.find(d => d.id === saleRecord.delivery_round_id) || null,
+        select_food_id: this.selectFoods.find(s => s.id === saleRecord.select_food_id) || null,
+        paid_date: formatDate(saleRecord.paid_date),
+        payment_type_id: this.paymentTypes.find(p => p.id === saleRecord.payment_type_id) || null,
 
-  };
+      };
 
-  this.isEditModalOpen = true;
-},
-async saveChanges() {
-  if (!this.selectedSaleRecord.customer_id) {
-    this.showErrorToastNotification("กรุณากรอกข้อมูลให้ครบถ้วน!");
-    return;
-  }
-
-  try {
-    const response = await axios.put(
-      `http://127.0.0.1:3333/sale-records/${this.selectedSaleRecord.id}`,
-      {
-        customer_id: this.selectedSaleRecord.customer_id?.id || null,
-        promotion_type_id: this.selectedSaleRecord.promotion_type_id?.id || null,
-        program_id: this.selectedSaleRecord.program_id?.id || null,
-        package_id: this.selectedSaleRecord.package_id?.id || null,
-        package_type_id: this.selectedSaleRecord.package_type_id?.id || null,
-        seller_name_id: this.selectedSaleRecord.seller_name_id?.id || null,
-        delivery: this.selectedSaleRecord.delivery || "",
-        discount: this.selectedSaleRecord.discount || 0,
-        extra_charge: this.selectedSaleRecord.extra_charge || 0,
-        // payment_status: this.selectedSaleRecord.payment_status || "unpaid",
-        // paid_date: this.selectedSaleRecord.paid_date || null,
-        // payment_type_id: this.selectedSaleRecord.payment_type_id?.id || null,
-        start_date: this.selectedSaleRecord.start_date || null,
-        zone1_id: this.selectedSaleRecord.zone1_id?.id || null,
-        zone1_quantity: this.selectedSaleRecord.zone1_quantity || 0,
-
-        zone2_id: this.selectedSaleRecord.zone2_id?.id || null,
-        zone2_quantity: this.selectedSaleRecord.zone2_quantity || 0,
-
-        zone3_id: this.selectedSaleRecord.zone3_id?.id || null,
-        zone3_quantity: this.selectedSaleRecord.zone3_quantity || 0,
-
-        zone_outsource_id: this.selectedSaleRecord.zone_outsource_id?.id || null,
-        zone_outsource_quantity: this.selectedSaleRecord.zone_outsource_quantity || 0,
-
-        additional_type_id: this.selectedSaleRecord.additional_type_id?.id || null,
-        add_detail: this.selectedSaleRecord.add_detail || null,
-        add_price: this.selectedSaleRecord.add_price || 0,
-        delivery_round_id: this.selectedSaleRecord.delivery_round_id?.id || null,
-        select_food_id: this.selectedSaleRecord.select_food_id?.id || null,
-        receive_food_id: this.selectedSaleRecord.receive_food_id?.id || null,
-        note: this.selectedSaleRecord.note || null,
-
+      this.isEditModalOpen = true;
+    },
+    async saveChanges() {
+      if (!this.selectedSaleRecord.customer_id) {
+        this.showErrorToastNotification("กรุณากรอกข้อมูลให้ครบถ้วน!");
+        return;
       }
-    );
 
-    const index = this.saleRecords.findIndex(
-      (saleRecord) => saleRecord.id === this.selectedSaleRecord.id
-    );
-    if (index !== -1) {
-      this.saleRecords[index] = response.data;
-    }
+      try {
+        const response = await axios.put(
+          `http://127.0.0.1:3333/sale-records/${this.selectedSaleRecord.id}`,
+          {
+            customer_id: this.selectedSaleRecord.customer_id?.id || null,
+            promotion_type_id: this.selectedSaleRecord.promotion_type_id?.id || null,
+            program_id: this.selectedSaleRecord.program_id?.id || null,
+            package_id: this.selectedSaleRecord.package_id?.id || null,
+            package_type_id: this.selectedSaleRecord.package_type_id?.id || null,
+            seller_name_id: this.selectedSaleRecord.seller_name_id?.id || null,
+            delivery: this.selectedSaleRecord.delivery || "",
+            discount: this.selectedSaleRecord.discount || 0,
+            extra_charge: this.selectedSaleRecord.extra_charge || 0,
+            // payment_status: this.selectedSaleRecord.payment_status || "unpaid",
+            // paid_date: this.selectedSaleRecord.paid_date || null,
+            // payment_type_id: this.selectedSaleRecord.payment_type_id?.id || null,
+            start_date: this.selectedSaleRecord.start_date || null,
+            zone1_id: this.selectedSaleRecord.zone1_id?.id || null,
+            zone1_quantity: this.selectedSaleRecord.zone1_quantity || 0,
 
-    this.showSuccessToastNotification("แก้ไขข้อมูลสำเร็จ!");
-    this.isEditModalOpen = false;
+            zone2_id: this.selectedSaleRecord.zone2_id?.id || null,
+            zone2_quantity: this.selectedSaleRecord.zone2_quantity || 0,
 
-    await this.fetchSaleRecords();
-    } catch (error) {
-    console.error("Error saving changes:", error);
-    if (error.response && error.response.data) {
-      this.showErrorToastNotification(
-        error.response.data.message || "เกิดข้อผิดพลาดในการบันทึกข้อมูล"
-      );
-    } else {
-      this.showErrorToastNotification("เกิดข้อผิดพลาดในการบันทึกข้อมูล");
-    }
-  }
-},
+            zone3_id: this.selectedSaleRecord.zone3_id?.id || null,
+            zone3_quantity: this.selectedSaleRecord.zone3_quantity || 0,
+
+            zone_outsource_id: this.selectedSaleRecord.zone_outsource_id?.id || null,
+            zone_outsource_quantity: this.selectedSaleRecord.zone_outsource_quantity || 0,
+
+            additional_type_id: this.selectedSaleRecord.additional_type_id?.id || null,
+            add_detail: this.selectedSaleRecord.add_detail || null,
+            add_price: this.selectedSaleRecord.add_price || 0,
+            delivery_round_id: this.selectedSaleRecord.delivery_round_id?.id || null,
+            select_food_id: this.selectedSaleRecord.select_food_id?.id || null,
+            receive_food_id: this.selectedSaleRecord.receive_food_id?.id || null,
+            note: this.selectedSaleRecord.note || null,
+
+          }
+        );
+
+        const index = this.saleRecords.findIndex(
+          (saleRecord) => saleRecord.id === this.selectedSaleRecord.id
+        );
+        if (index !== -1) {
+          this.saleRecords[index] = response.data;
+        }
+
+        this.showSuccessToastNotification("แก้ไขข้อมูลสำเร็จ!");
+        this.isEditModalOpen = false;
+
+        await this.fetchSaleRecords();
+      } catch (error) {
+        console.error("Error saving changes:", error);
+        if (error.response && error.response.data) {
+          this.showErrorToastNotification(
+            error.response.data.message || "เกิดข้อผิดพลาดในการบันทึกข้อมูล"
+          );
+        } else {
+          this.showErrorToastNotification("เกิดข้อผิดพลาดในการบันทึกข้อมูล");
+        }
+      }
+    },
     closeEditModal() {
       this.isEditModalOpen = false;
       this.selectedSaleRecord = {};
@@ -2767,30 +2867,30 @@ async saveChanges() {
     },
 
     calculateEditTotalPrice() {
-  if (!this.selectedSaleRecord.package_id) {
-    this.selectedSaleRecord.package_price = 0;
-    this.selectedSaleRecord.total_package_price = 0;
-    this.selectedSaleRecord.extra_charge_price = 0;
-    return;
-  }
+      if (!this.selectedSaleRecord.package_id) {
+        this.selectedSaleRecord.package_price = 0;
+        this.selectedSaleRecord.total_package_price = 0;
+        this.selectedSaleRecord.extra_charge_price = 0;
+        return;
+      }
 
-  const selectedPackage = this.packages.find(pkg => pkg.id === this.selectedSaleRecord.package_id?.id);
-  if (!selectedPackage) {
-    this.selectedSaleRecord.package_price = 0;
-    this.selectedSaleRecord.total_package_price = 0;
-    this.selectedSaleRecord.extra_charge_price = 0;
-    return;
-  }
+      const selectedPackage = this.packages.find(pkg => pkg.id === this.selectedSaleRecord.package_id?.id);
+      if (!selectedPackage) {
+        this.selectedSaleRecord.package_price = 0;
+        this.selectedSaleRecord.total_package_price = 0;
+        this.selectedSaleRecord.extra_charge_price = 0;
+        return;
+      }
 
-  const price = parseFloat(selectedPackage.price) || 0;
-  const extraChargePercent = parseFloat(this.selectedSaleRecord.extra_charge) || 0;
-  const discount = parseFloat(this.selectedSaleRecord.discount) || 0;
+      const price = parseFloat(selectedPackage.price) || 0;
+      const extraChargePercent = parseFloat(this.selectedSaleRecord.extra_charge) || 0;
+      const discount = parseFloat(this.selectedSaleRecord.discount) || 0;
 
-  const extraChargePrice = (price * extraChargePercent) / 100;
-  this.selectedSaleRecord.extra_charge_price = extraChargePrice;
-  this.selectedSaleRecord.package_price = price;
-  this.selectedSaleRecord.total_package_price = price + extraChargePrice - discount;
-},
+      const extraChargePrice = (price * extraChargePercent) / 100;
+      this.selectedSaleRecord.extra_charge_price = extraChargePrice;
+      this.selectedSaleRecord.package_price = price;
+      this.selectedSaleRecord.total_package_price = price + extraChargePrice - discount;
+    },
 
     calculateEditZone1Price() {
       if (!this.selectedSaleRecord.zone1_id) {
@@ -2837,57 +2937,57 @@ async saveChanges() {
       }
     },
 
-  //   clearEditNotAdditionalForm() {
-  //   this.selectedSaleRecord.add_detail = null;
-  //   this.selectedSaleRecord.additional_type_id = null;
-  //   this.selectedSaleRecord.add_price = 0;
-  // },
-  // clearEditAdditionalForm() {
-  //   this.selectedSaleRecord.promotion_type_id = null;
-  //   this.selectedSaleRecord.program_id = null;
-  //   this.selectedSaleRecord.package_id = null;
-  //   // this.selectedSaleRecord.package_price = 0;
-  // },
+    //   clearEditNotAdditionalForm() {
+    //   this.selectedSaleRecord.add_detail = null;
+    //   this.selectedSaleRecord.additional_type_id = null;
+    //   this.selectedSaleRecord.add_price = 0;
+    // },
+    // clearEditAdditionalForm() {
+    //   this.selectedSaleRecord.promotion_type_id = null;
+    //   this.selectedSaleRecord.program_id = null;
+    //   this.selectedSaleRecord.package_id = null;
+    //   // this.selectedSaleRecord.package_price = 0;
+    // },
 
-//   checkEditPackageType() {
-//   if (
-//     this.selectedSaleRecord.package_type_id &&
-//     (this.selectedSaleRecord.package_type_id.name.toLowerCase() === 'additional sales' ||
-//      this.selectedSaleRecord.package_type_id.name.toLowerCase() === 'consignment')
-//   ) {
-//     this.clearEditAdditionalForm(); 
-//   } else {
-//     this.clearEditNotAdditionalForm(); 
-//   }
-// },
+    //   checkEditPackageType() {
+    //   if (
+    //     this.selectedSaleRecord.package_type_id &&
+    //     (this.selectedSaleRecord.package_type_id.name.toLowerCase() === 'additional sales' ||
+    //      this.selectedSaleRecord.package_type_id.name.toLowerCase() === 'consignment')
+    //   ) {
+    //     this.clearEditAdditionalForm(); 
+    //   } else {
+    //     this.clearEditNotAdditionalForm(); 
+    //   }
+    // },
 
 
     clearNotAdditionalForm() {
-    this.saleRecord.add_detail = null;
-    this.saleRecord.additional_type_id = null;
-    this.saleRecord.add_price = 0;
-  },
-  clearAdditionalForm() {
-    this.saleRecord.promotion_type_id = null;
-    this.saleRecord.program_id = null;
-    this.saleRecord.package_id = null;
-  },
+      this.saleRecord.add_detail = null;
+      this.saleRecord.additional_type_id = null;
+      this.saleRecord.add_price = 0;
+    },
+    clearAdditionalForm() {
+      this.saleRecord.promotion_type_id = null;
+      this.saleRecord.program_id = null;
+      this.saleRecord.package_id = null;
+    },
 
-  checkPackageType() {
-  if (
-    this.saleRecord.package_type_id &&
-    (this.saleRecord.package_type_id.name.toLowerCase() === 'additional sales' ||
-     this.saleRecord.package_type_id.name.toLowerCase() === 'consignment')
-  ) {
-    this.clearAdditionalForm(); 
-  } else {
-    this.clearNotAdditionalForm(); 
-  }
-},
+    checkPackageType() {
+      if (
+        this.saleRecord.package_type_id &&
+        (this.saleRecord.package_type_id.name.toLowerCase() === 'additional sales' ||
+          this.saleRecord.package_type_id.name.toLowerCase() === 'consignment')
+      ) {
+        this.clearAdditionalForm();
+      } else {
+        this.clearNotAdditionalForm();
+      }
+    },
 
-    
-    
-    
+
+
+
     openConfirmPaymentModal(saleRecord) {
       this.selectedSaleRecord = saleRecord;
       this.selectedPaidDate = saleRecord.paid_date || "";
@@ -2899,57 +2999,57 @@ async saveChanges() {
       this.selectedPaidDate = "";
     },
     async confirmPayment() {
-  try {
-    const newStatus =
-      this.selectedSaleRecord.payment_status === "paid" ? "unpaid" : "paid";
+      try {
+        const newStatus =
+          this.selectedSaleRecord.payment_status === "paid" ? "unpaid" : "paid";
 
-    const paidDate = newStatus === "paid" ? this.selectedPaidDate : null;
-    const paymentTypeId =
-      newStatus === "paid" ? this.selectedSaleRecord.payment_type_id?.id : null;
+        const paidDate = newStatus === "paid" ? this.selectedPaidDate : null;
+        const paymentTypeId =
+          newStatus === "paid" ? this.selectedSaleRecord.payment_type_id?.id : null;
 
-    // ตรวจสอบกรณีที่ payment_status เป็น 'paid' และ payment_type_id หรือ selectedPaidDate เป็น null
-    if (
-      newStatus === "paid" &&
-      (!this.selectedPaidDate || !paymentTypeId)
-    ) {
-      this.showErrorToastNotification("กรุณาเลือกข้อมูลให้ครบ!");
-      return;
-    }
+        // ตรวจสอบกรณีที่ payment_status เป็น 'paid' และ payment_type_id หรือ selectedPaidDate เป็น null
+        if (
+          newStatus === "paid" &&
+          (!this.selectedPaidDate || !paymentTypeId)
+        ) {
+          this.showErrorToastNotification("กรุณาเลือกข้อมูลให้ครบ!");
+          return;
+        }
 
-    const payload = {
-      payment_status: newStatus,
-      paid_date: paidDate,
-      payment_type_id: paymentTypeId, // ถ้าเป็น 'unpaid' จะส่ง null
-    };
+        const payload = {
+          payment_status: newStatus,
+          paid_date: paidDate,
+          payment_type_id: paymentTypeId, // ถ้าเป็น 'unpaid' จะส่ง null
+        };
 
-    const response = await axios.put(
-      `http://127.0.0.1:3333/sale-records/${this.selectedSaleRecord.id}/payment-status`,
-      payload
-    );
-    await this.fetchSaleRecords();
+        const response = await axios.put(
+          `http://127.0.0.1:3333/sale-records/${this.selectedSaleRecord.id}/payment-status`,
+          payload
+        );
+        await this.fetchSaleRecords();
 
-    if (response.status === 200) {
-      const updatedRecord = response.data.data;
-      const index = this.saleRecords.findIndex(
-        (record) => record.id === updatedRecord.id
-      );
-      if (index !== -1) {
-        this.saleRecords[index] = updatedRecord; // อัปเดตข้อมูลในรายการ
+        if (response.status === 200) {
+          const updatedRecord = response.data.data;
+          const index = this.saleRecords.findIndex(
+            (record) => record.id === updatedRecord.id
+          );
+          if (index !== -1) {
+            this.saleRecords[index] = updatedRecord; // อัปเดตข้อมูลในรายการ
+          }
+          this.showSuccessToastNotification("อัปเดตสถานะสำเร็จ!");
+        } else {
+          throw new Error("Unexpected response status");
+        }
+      } catch (error) {
+        console.error("Error updating payment status:", error);
+        console.error(
+          "Error response data:",
+          error.response?.data || "No additional data"
+        );
+        this.showErrorToastNotification("เกิดข้อผิดพลาดในการอัปเดตสถานะ!");
       }
-      this.showSuccessToastNotification("อัปเดตสถานะสำเร็จ!");
-    } else {
-      throw new Error("Unexpected response status");
-    }
-  } catch (error) {
-    console.error("Error updating payment status:", error);
-    console.error(
-      "Error response data:",
-      error.response?.data || "No additional data"
-    );
-    this.showErrorToastNotification("เกิดข้อผิดพลาดในการอัปเดตสถานะ!");
-  }
-  this.closeConfirmPaymentModal();
-},
+      this.closeConfirmPaymentModal();
+    },
     showSuccessToastNotification(message) {
       this.toastSuccessMessage = message;
       this.showSuccessToast = true;

@@ -93,6 +93,38 @@
                     </li>
                 </ul>
             </nav>
+
+            <div v-if="isLoggedIn" class="flex items-center justify-between p-4 relative mt-auto">
+                <!-- Profile Picture and Username -->
+                <div class="flex items-center space-x-2">
+                    <div class="relative w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center text-white text-lg font-bold flex-shrink-0 cursor-pointer"
+                        @click="toggleDropdown">
+                        <img v-if="userProfileImage" :src="userProfileImage" alt="User Profile"
+                            class="w-full h-full rounded-full object-cover border-2 border-white">
+                        <span v-else class="uppercase">{{ username.charAt(0) }}</span>
+                    </div>
+
+                    <!-- Username and Profile Info when sidebar is expanded -->
+                    <div v-if="isExpanded" class="flex flex-col items-start">
+                        <strong class="text-white ml-2">{{ username }}</strong>
+                        <p class="text-white text-sm ml-2">View Profile</p>
+                    </div>
+                </div>
+
+                <!-- Logout Button (aligned to the right, like the menu button) -->
+                <div class="flex items-center justify-center">
+                    <div class="px-4 py-3 cursor-pointer hover:text-red-500 flex items-center" @click="logout">
+                        <span class="material-symbols-outlined text-2xl">
+                            logout
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+
+
+
+
         </aside>
 
         <!-- Main Content -->
@@ -174,6 +206,8 @@
 </template>
 
 <script>
+import api from '@/services/auth';
+
 export default {
     name: "MainLayout",
     data() {
@@ -182,6 +216,10 @@ export default {
             pageTitle: "", // ชื่อของหน้าปัจจุบัน
             pageIcon: "",
             isSubMenuOpen: false, // สถานะของเมนูย่อย
+            isLoggedIn: false,
+            username: '',
+            userProfileImage: '',
+            isDropdownOpen: false,
         };
     },
     methods: {
@@ -216,6 +254,28 @@ export default {
                     this.pageIcon = ""; // ไอคอนเริ่มต้น
             }
         },
+        checkLoginStatus() {
+            const token = localStorage.getItem('token');
+            if (token) {
+                this.isLoggedIn = true;
+                this.getUserProfile();
+            }
+        },
+        async getUserProfile() {
+            try {
+                const res = await api.getProfile(); // ใช้ฟังก์ชันจาก service
+                this.username = res.username; // ตั้งค่าชื่อผู้ใช้
+                this.email = res.email;
+            } catch (error) {
+                console.log('Error fetching profile:', error);
+            }
+        },
+        logout() {
+            localStorage.removeItem('token');
+            this.isLoggedIn = false;
+            this.username = '';
+            this.$router.push('/login'); // เปลี่ยนเส้นทางไปหน้า Login หลังจาก logout
+        }
     },
     watch: {
         $route(to) {
@@ -224,13 +284,18 @@ export default {
                 this.setPageIcon(to.name);
             }
         },
+        // '$route'() {
+        //     this.checkLoginStatus();
+        // }
     },
     created() {
         if (this.$route.name) {
             this.pageTitle = this.$route.name;
             this.setPageIcon(this.$route.name);
         }
+        this.checkLoginStatus();
     },
+
 };
 </script>
 

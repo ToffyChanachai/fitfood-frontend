@@ -81,6 +81,16 @@ const routes = [
   { path: '/',
     name: 'Home',
     component: Home,
+    beforeEnter: (to, from, next) => {
+      // ตรวจสอบว่าผู้ใช้ล็อกอินแล้วหรือยัง
+      if (!localStorage.getItem('token')) {
+        // ถ้ายังไม่ได้ล็อกอิน ให้เปลี่ยนเส้นทางไปหน้า login
+        next('/login');
+      } else {
+        // ถ้าล็อกอินแล้วให้ไปที่หน้า order
+        next();
+      }
+    },
     meta: { title: 'หน้าแรก - Absolute FitFood' }
   },
   { path: '/customers',
@@ -120,7 +130,6 @@ const routes = [
     name: 'test',
     component: Test,
     meta: { title: 'test - Absolute FitFood',
-      layout: 'SimpleLayout'
     }
   },
   { path: '/test2',

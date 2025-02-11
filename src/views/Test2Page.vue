@@ -122,7 +122,6 @@ export default {
       meal_types: [],
       selectedDate: this.getTodayDate(),  // กำหนดค่าเริ่มต้นเป็นวันที่ปัจจุบัน
       selectedMealType: "",
-      cart: [] // ตะกร้าที่จะเก็บข้อมูลเมนูที่เลือก
     };
   },
   computed: {
@@ -245,78 +244,33 @@ export default {
       return formattedDate;
     },
 
-    // orderMenu(menu) {
-    //   if (menu.quantity && menu.quantity > 0) {
-    //     // เรียก API เพื่อสร้างคำสั่งซื้อ
-    //     axios.post('http://127.0.0.1:3333/order-ph', {
-    //       menu_id: menu.menu_id,
-    //       quantity: menu.quantity,
-    //       date: this.selectedDate,  // ส่งวันที่ที่เลือกไปด้วย
-    //     })
-    //       .then((response) => {
-    //         console.log('Order Success:', response.data);
-    //         alert(`สั่งซื้อ ${menu.quantity} ชิ้น ${this.getMenuEnglishName(menu.menu_id)} สำหรับวันที่ ${this.selectedDate} เรียบร้อยแล้ว`);
-    //         menu.quantity = 0;  // รีเซ็ตจำนวนหลังจากสั่งซื้อ
-    //       })
-    //       .catch((error) => {
-    //         console.error('Order Error:', error);
-    //         alert('เกิดข้อผิดพลาดในการสั่งซื้อ');
-    //       });
-    //   } else {
-    //     alert('กรุณาระบุจำนวนที่ต้องการ');
-    //   }
-    // },
-
+    orderMenu(menu) {
+      if (menu.quantity && menu.quantity > 0) {
+        // เรียก API เพื่อสร้างคำสั่งซื้อ
+        axios.post('http://127.0.0.1:3333/order-ph', {
+          menu_id: menu.menu_id,
+          quantity: menu.quantity,
+          order_date: this.selectedDate,  // ส่งวันที่ที่เลือกไปด้วย
+        })
+          .then((response) => {
+            console.log('Order Success:', response.data);
+            alert(`สั่งซื้อ ${menu.quantity} ชิ้น ${this.getMenuEnglishName(menu.menu_id)} สำหรับวันที่ ${this.selectedDate} เรียบร้อยแล้ว`);
+            menu.quantity = 0;  // รีเซ็ตจำนวนหลังจากสั่งซื้อ
+          })
+          .catch((error) => {
+            console.error('Order Error:', error);
+            alert('เกิดข้อผิดพลาดในการสั่งซื้อ');
+          });
+      } else {
+        alert('กรุณาระบุจำนวนที่ต้องการ');
+      }
+    },
     adjustQuantity(menu, amount) {
       const newQuantity = menu.quantity + amount;
       if (newQuantity >= 0) {
         menu.quantity = newQuantity;
       }
-    },
-    addToCart(menu) {
-      // ถ้าจำนวนที่เลือกมากกว่า 0 ให้เพิ่มเมนูลงในตะกร้า
-      if (menu.quantity && menu.quantity > 0) {
-        const existingItem = this.cart.find(item => item.menu_id === menu.menu_id);
-        if (existingItem) {
-          // ถ้าเมนูนี้มีอยู่ในตะกร้าแล้ว เพิ่มจำนวนเข้าไป
-          existingItem.quantity += menu.quantity;
-        } else {
-          // ถ้าไม่มีเมนูนี้ในตะกร้า ให้เพิ่มเข้าไป
-          this.cart.push({ menu_id: menu.menu_id, quantity: menu.quantity });
-        }
-      } else {
-        alert('กรุณาระบุจำนวนที่ต้องการ');
-      }
-    },
-
-    async orderAllMenus() {
-      // ส่งข้อมูลของเมนูทั้งหมดในตะกร้าไปที่ API
-      if (this.cart.length > 0) {
-        try {
-          const orders = this.cart.map(item => ({
-            menu_id: item.menu_id,
-            quantity: item.quantity,
-            date: this.selectedDate,
-          }));
-
-          const response = await axios.post('http://127.0.0.1:3333/order-ph/bulk', { orders });
-
-          console.log('Order Success:', response.data);
-          alert('สั่งซื้อทั้งหมดเรียบร้อยแล้ว');
-
-          // รีเซ็ตตะกร้าและจำนวน
-          this.cart = [];
-          this.todayMenus.forEach(menu => {
-            menu.quantity = 0;
-          });
-        } catch (error) {
-          console.error('Order Error:', error);
-          alert('เกิดข้อผิดพลาดในการสั่งซื้อ');
-        }
-      } else {
-        alert('กรุณาเลือกเมนูที่จะสั่ง');
-      }
-    },
+    }
   },
   created() {
     this.fetchLookupData();
