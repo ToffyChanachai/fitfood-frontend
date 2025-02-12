@@ -38,6 +38,7 @@ import MealType from '@/views/menus/MealTypesPage.vue';
 import Menu from '@/views/menus/MenusPage.vue';
 
 import SetupMenuPH from '@/views/setupMenus/setupMenuPHPage.vue'
+import SetupMenuHHB from '@/views/setupMenus/setupMenuHHBPage.vue';
 
 const routes = [
 
@@ -120,10 +121,16 @@ const routes = [
     component: DailySale,
     meta: { title: 'ยอดขายประจำวัน - Absolute FitFood' }
   },
+
   { path: '/setup-menu-ph',
     name: 'Setup Menu Premium Health',
     component: SetupMenuPH,
     meta: { title: 'Setup Menu Premium Health - Absolute FitFood' }
+  },
+  { path: '/setup-menu-hhb',
+    name: 'Setup Menu Happy Healthy Box',
+    component: SetupMenuHHB,
+    meta: { title: 'Setup Menu Happy Healthy Box - Absolute FitFood' }
   },
 
   { path: '/test',

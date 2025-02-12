@@ -47,7 +47,7 @@
                     <li class="hover:bg-custom-orange-hover">
                         <router-link to="/setup-menu-ph" class="block py-2 px-4 flex items-center space-x-2">
                             <span class="material-symbols-outlined text-3xl">menu_book</span>
-                            <span v-if="isExpanded">Setup Menu Premium Health</span>
+                            <span v-if="isExpanded">Setup Menus</span>
                         </router-link>
                     </li>
 
@@ -197,6 +197,18 @@
                 </router-link>
             </div>
 
+            <div v-if="$route.path === '/setup-menu-ph' || $route.path === '/setup-menu-hhb'"
+                class="pt-16 p-4 flex items-left space-x-6 text-m font-bold">
+                <router-link to="/setup-menu-ph" class="hover:text-custom-orange"
+                    :class="{ 'text-custom-orange border-b-2 border-custom-orange': $route.path === '/setup-menu-ph' }">
+                    Premeium Health
+                </router-link>
+                <router-link to="/setup-menu-hhb" class="hover:text-custom-orange"
+                    :class="{ 'text-custom-orange border-b-2 border-custom-orange': $route.path === '/setup-menu-hhb' }">
+                    Happy Healthy Box
+                </router-link>
+            </div>
+
             <!-- Content of the page -->
             <div class="pt-16">
                 <router-view></router-view>
@@ -248,6 +260,7 @@ export default {
                     this.pageIcon = "calendar_month";
                     break;
                 case "Setup Menu Premium Health":
+                case "Setup Menu Happy Healthy Box":
                     this.pageIcon = "menu_book";
                     break;
                 default:
