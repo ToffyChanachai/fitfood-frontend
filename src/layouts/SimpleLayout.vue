@@ -1,14 +1,27 @@
 <template>
   <div>
-    <header class="flex justify-between items-center p-4 px-32 bg-white text-white shadow-lg">
-
-      <div class="flex justify-center items-center cursor-pointer" @click="goToTest2">
+    <header class="flex justify-between items-center p-4 px-32 bg-white text-white shadow-lg relative">
+      <div class="flex justify-center items-center cursor-pointer" @click="goToHome">
         <img src="@/assets/fitfood_logo.png" alt="Logo" class="w-12 h-12">
         <div class="leading-none ml-2">
           <p class="text-lg font-bold text-black">ABSOLUTE</p>
           <p class="text-lg font-bold text-custom-orange -mt-3">FITFOOD</p>
         </div>
       </div>
+
+      
+      <div v-if="$route.path === '/premium-health' || $route.path === '/happy-healthy-box'"
+                class="flex items-left space-x-6 text-black font-bold"> 
+                <router-link to="premium-health" class="hover:text-custom-orange"
+                    :class="{ 'text-custom-orange border-b-2 border-custom-orange': $route.path === '/' || $route.path === '/premium-health' }">
+                    Premium Health
+                </router-link>
+                
+                <router-link to="/happy-healthy-box" class="hover:text-custom-orange"
+                    :class="{ 'text-custom-orange border-b-2 border-custom-orange': $route.path === '/happy-healthy-box' }">
+                    Happy Healthy Box
+                </router-link>
+            </div>
 
       <div v-if="isLoggedIn" class="flex items-center space-x-4">
         <!-- คลิกที่ชื่อผู้ใช้เพื่อแสดง/ซ่อนเมนู -->
@@ -66,7 +79,7 @@
 
     </header>
 
-    <main class="flex-1 p-4 px-32 bg-gray-100 h-screen relative">
+    <main class="flex-1 p-4 px-32 relative">
       <router-view></router-view>
     </main>
 
@@ -114,8 +127,8 @@ export default {
       this.isMenuOpen = !this.isMenuOpen;
     },
 
-    goToTest2() {
-      this.$router.push('/test2'); // เปลี่ยนเส้นทางไปหน้า test2
+    goToHome() {
+      this.$router.push('/premium-health'); // เปลี่ยนเส้นทางไปหน้า test2
     },
     goToProfile() {
       this.$router.push('/profile'); // เปลี่ยนเส้นทางไปที่หน้าโปรไฟล์

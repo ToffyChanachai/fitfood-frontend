@@ -64,6 +64,24 @@
                         <!-- Content -->
                         <div class="p-6 space-y-4">
 
+                            <div>
+                                <label for="Image" class="block text-gray-700 font-bold">เลือกรูปภาพ</label>
+                                <div class="flex items-center space-x-4 w-full">
+                                    <!-- รูปภาพตัวอย่าง -->
+                                    <div v-if="previewImage || newMenu.image" class="flex-shrink-0">
+                                        <img :src="previewImage || `http://127.0.0.1:3333/images/${newMenu.image}`"
+                                            alt="Menu Image" class="max-w-48 max-h-48 object-contain rounded border">
+                                    </div>
+
+                                    <!-- Input อัปโหลดไฟล์ -->
+                                    <div class="w-full">
+                                        <input id="Image" type="file" @change="onFileChange"
+                                            class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange" />
+                                    </div>
+                                </div>
+
+                            </div>
+
                             <!-- รหัสเมนู -->
                             <div>
                                 <label for="menuCode" class="block font-bold text-gray-700">รหัสเมนู</label>
@@ -278,6 +296,12 @@
             <tbody>
                 <tr v-for="(menu, index) in filteredMenu" :key="index" class="customers-data bg-white relative">
                     <td class="px-4 py-2 align-top">{{ (currentPage - 1) * itemsPerPage + index + 1 }}</td>
+                    <!-- <td class="px-4 py-2 align-top text-center">
+                        <img v-if="menu.image" :src="`http://127.0.0.1:3333/images/${menu.image}`" alt="Menu Image"
+                            class="w-16 h-16 object-cover rounded">
+                        <span v-else>ไม่มีรูปภาพ</span>
+                    </td> -->
+
                     <td class="px-4 py-2 align-top font-bold text-custom-orange">{{ menu.name_english }}</td>
                     <td class="px-4 py-2 align-top font-bold">{{ menu.name_thai }}</td>
                     <td class="px-4 py-2 align-top">
@@ -340,6 +364,28 @@
                     </div>
 
                     <div class="p-6 space-y-4">
+
+                        <div class="mb-4">
+                            <label for="editImage" class="block text-gray-700 font-bold">เลือกรูปภาพ</label>
+                            <div v-if="selectedMenu.image || previewImage" class="mb-2 flex items-center space-x-4">
+                                <!-- ใช้ object-contain เพื่อให้รูปภาพพอดีกับขนาด -->
+                                <img :src="previewImage || `http://127.0.0.1:3333/images/${selectedMenu.image}`"
+                                    alt="Menu Image" class="max-w-48 max-h-48 object-contain rounded border">
+
+                                <input id="editImage" type="file" @change="onFileChange"
+                                    class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange" />
+                            </div>
+                            <!-- ถ้ายังไม่มีรูปภาพให้แสดง input -->
+                            <div v-else>
+                                <input id="editImage" type="file" @change="onFileChange"
+                                    class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange" />
+                            </div>
+                            <!-- แสดงชื่อไฟล์เก่าจากฐานข้อมูล -->
+                            <div v-if="selectedMenu.image" class="mt-2 text-sm text-gray-500">
+                                ชื่อไฟล์ปัจจุบัน: {{ selectedMenu.image }}
+                            </div>
+                        </div>
+
                         <div class="mb-4">
                             <label for="editMenuCode" class="block text-gray-700 font-bold">รหัสเมนู</label>
                             <input v-model="selectedMenu.menu_code" id="editMenuCode" type="text"
@@ -400,7 +446,7 @@
 
                     <div class="flex justify-end space-x-4 p-4 bg-white border-t rounded-b-md list-none">
                         <div class="flex space-x-2">
-                            <button @click="isEditModalOpen = false"
+                            <button @click="closeEditModal"
                                 class="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400 text-gray-700">
                                 ยกเลิก
                             </button>
@@ -537,7 +583,8 @@ export default {
                 cal: 0,
                 protein: 0,
                 fat: 0,
-                carb: 0
+                carb: 0,
+                image: '',
             },
             selectedMenu: {
                 id: '',
@@ -548,8 +595,12 @@ export default {
                 cal: 0,
                 protein: 0,
                 fat: 0,
-                carb: 0
+                carb: 0,
+                image: '',
+                imageFile: null,    
             },
+            previewImage: '',
+
             meal_types: [],
 
             toastSuccessMessage: "",
@@ -643,6 +694,16 @@ export default {
             this.searchQuery = '';
             this.search();
         },
+
+
+        onFileChange(event) {
+            const file = event.target.files[0];
+            if (file) {
+                this.selectedMenu.imageFile = file;  // กำหนดให้กับ imageFile
+                this.previewImage = URL.createObjectURL(file); // อัพเดต URL สำหรับแสดงตัวอย่าง
+            }
+        },
+
 
         goToPage(page) {
             if (page < 1 || page > this.totalPages) return;
@@ -762,15 +823,25 @@ export default {
                     return;
                 }
 
-                const response = await axios.put(`http://127.0.0.1:3333/menus/${this.selectedMenu.id}`, {
-                    menu_code: this.selectedMenu.menu_code,
-                    name_english: this.selectedMenu.name_english,
-                    name_thai: this.selectedMenu.name_thai,
-                    meal_type_id: this.selectedMenu.meal_type_id.id,
-                    cal: this.selectedMenu.cal,
-                    protein: this.selectedMenu.protein,
-                    fat: this.selectedMenu.fat,
-                    carb: this.selectedMenu.carb,
+                const formData = new FormData();
+                formData.append("menu_code", this.selectedMenu.menu_code);
+                formData.append("name_english", this.selectedMenu.name_english);
+                formData.append("name_thai", this.selectedMenu.name_thai);
+                formData.append("meal_type_id", this.selectedMenu.meal_type_id.id);
+                formData.append("cal", this.selectedMenu.cal);
+                formData.append("protein", this.selectedMenu.protein);
+                formData.append("fat", this.selectedMenu.fat);
+                formData.append("carb", this.selectedMenu.carb);
+
+                // ถ้ามีการเลือกไฟล์รูปภาพ
+                if (this.selectedMenu.imageFile) {
+                    formData.append("image", this.selectedMenu.imageFile);
+                }
+
+                const response = await axios.put(`http://127.0.0.1:3333/menus/${this.selectedMenu.id}`, formData, {
+                    headers: {
+                        "Content-Type": "multipart/form-data",
+                    },
                 });
 
                 const index = this.menus.findIndex(menu => menu.id === this.selectedMenu.id);
@@ -780,8 +851,10 @@ export default {
                         mealType: this.meal_types.find(mt => mt.id === response.data.meal_type_id) || {},
                     };
                 }
+
                 this.isEditModalOpen = false;
                 this.updatePage();
+                await this.fetchMenus();
                 this.showSuccessToastNotification("แก้ไขข้อมูลสำเร็จ!");
             } catch (error) {
                 this.showErrorToastNotification("เกิดข้อผิดพลาดในการแก้ไขข้อมูล!");
@@ -790,6 +863,7 @@ export default {
         closeEditModal() {
             this.isEditModalOpen = false;
             this.selectedMenu = {};
+            this.previewImage = null;
         },
 
         confirmDelete(itemId) {
@@ -831,36 +905,51 @@ export default {
                 cal: 0,
                 protein: 0,
                 fat: 0,
-                carb: 0
+                carb: 0,
+                image: '',
+                imageFile: null,
             };
+            this.previewImage = null;
         },
         async addMenu() {
             if (!this.newMenu.name_english || !this.newMenu.name_thai || !this.newMenu.meal_type_id) {
                 this.showErrorToastNotification("กรุณากรอกข้อมูลให้ครบ!");
                 return;
             }
-            try {
 
-                const response = await axios.post('http://127.0.0.1:3333/menus', {
-                    menu_code: this.newMenu.menu_code,
-                    name_english: this.newMenu.name_english,
-                    name_thai: this.newMenu.name_thai,
-                    meal_type_id: this.newMenu.meal_type_id.id,
-                    cal: this.newMenu.cal,
-                    protein: this.newMenu.protein,
-                    fat: this.newMenu.fat,
-                    carb: this.newMenu.carb,
+            try {
+                const formData = new FormData();
+                formData.append("menu_code", this.newMenu.menu_code);
+                formData.append("name_english", this.newMenu.name_english);
+                formData.append("name_thai", this.newMenu.name_thai);
+                formData.append("meal_type_id", this.newMenu.meal_type_id.id);
+                formData.append("cal", this.newMenu.cal);
+                formData.append("protein", this.newMenu.protein);
+                formData.append("fat", this.newMenu.fat);
+                formData.append("carb", this.newMenu.carb);
+
+                // ถ้ามีการเลือกไฟล์รูปภาพ
+                if (this.newMenu.imageFile) {
+                    formData.append("image", this.newMenu.imageFile);
+                }
+
+                const response = await axios.post('http://127.0.0.1:3333/menus', formData, {
+                    headers: {
+                        "Content-Type": "multipart/form-data",
+                    },
                 });
-                // console.log("Added menu:", response.data);
+
+                console.log("Added menu:", response.data);
 
                 if (response.data && response.data.mealType && response.data.mealType.menuType) {
                     this.menus.push(response.data);
                 }
+
                 this.closeAddModal();
                 this.updatePage();
                 this.showSuccessToastNotification("เพิ่มข้อมูลสำเร็จ!");
             } catch (error) {
-                //console.error("Error adding menu:", error);
+                console.error("Error adding menu:", error);
                 this.showErrorToastNotification("เกิดข้อผิดพลาดในการเพิ่มข้อมูล!");
             }
         },

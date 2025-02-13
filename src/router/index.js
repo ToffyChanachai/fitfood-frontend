@@ -40,6 +40,9 @@ import Menu from '@/views/menus/MenusPage.vue';
 import SetupMenuPH from '@/views/setupMenus/setupMenuPHPage.vue'
 import SetupMenuHHB from '@/views/setupMenus/setupMenuHHBPage.vue';
 
+import PH from '@/views/orders/OrderPHPage.vue';
+import HHB from '@/views/orders/OrderHHBPage.vue';
+
 const routes = [
 
   { path: '/login',
@@ -200,6 +203,23 @@ const routes = [
     name: 'ข้อมูลเมนู',
     component: Menu,
     meta: { title: 'ข้อมูลเมนู - Absolute FitFood' }
+  },
+
+  { path: '/premium-health',
+    name: 'premium health',
+    component: PH,
+    meta: { 
+      title: 'premium health - Absolute FitFood',
+      layout: 'SimpleLayout' 
+     }
+  },
+  { path: '/happy-healthy-box',
+    name: 'happy healthy box',
+    component: HHB,
+    meta: { 
+      title: 'happy healthy box - Absolute FitFood',
+      layout: 'SimpleLayout' 
+     }
   },
   
 ];

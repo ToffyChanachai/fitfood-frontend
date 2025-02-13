@@ -1,5 +1,5 @@
 <template>
-        <h1 class="mt-4 font-bold text-custom-orange text-2xl mb-4 text-center">Premium Health</h1>
+        <h1 class="mt-4 font-bold text-custom-orange text-2xl mb-4 text-center">Happy Healthy Box</h1>
 
   <div class="mt-4 flex">
     <div class="w-1/5">
@@ -168,7 +168,7 @@ export default {
     },
     async fetchMenusForSelectedDate() {
       try {
-        const response = await axios.get(`http://127.0.0.1:3333/setup-menu-ph/menus-by-day/${this.selectedDate}`);
+        const response = await axios.get(`http://127.0.0.1:3333/setup-menu-hhb/menus-by-day/${this.selectedDate}`);
         console.log('API Response:', response.data);
 
         // ตรวจสอบว่า menus มีข้อมูลหรือไม่
@@ -258,26 +258,34 @@ export default {
     },
 
     orderMenu(menu) {
-      if (menu.quantity && menu.quantity > 0) {
-        // เรียก API เพื่อสร้างคำสั่งซื้อ
-        axios.post('http://127.0.0.1:3333/order-ph', {
-          menu_id: menu.menu_id,
-          quantity: menu.quantity,
-          order_date: this.selectedDate,  // ส่งวันที่ที่เลือกไปด้วย
-        })
-          .then((response) => {
-            console.log('Order Success:', response.data);
-            alert(`สั่งซื้อ ${menu.quantity} ชิ้น ${this.getMenuEnglishName(menu.menu_id)} สำหรับวันที่ ${this.selectedDate} เรียบร้อยแล้ว`);
-            menu.quantity = 0;  // รีเซ็ตจำนวนหลังจากสั่งซื้อ
-          })
-          .catch((error) => {
-            console.error('Order Error:', error);
-            alert('เกิดข้อผิดพลาดในการสั่งซื้อ');
-          });
-      } else {
-        alert('กรุณาระบุจำนวนที่ต้องการ');
-      }
-    },
+  if (menu.quantity && menu.quantity > 0) {
+    // ดึง meal_type_id จาก menu
+    const mealTypeId = menu.meal_type_id;  // ดึง meal_type_id จาก menu ที่เลือก
+
+    // ส่งข้อมูลไปยัง backend
+    axios.post('http://127.0.0.1:3333/order-ph', {
+      menu_id: menu.menu_id,
+      quantity: menu.quantity,
+      order_date: this.selectedDate,
+      meal_type_id: mealTypeId,  // ส่ง meal_type_id ไปด้วย
+    })
+    .then((response) => {
+      console.log('Order Success:', response.data);
+
+      alert(
+        `สั่งซื้อ ${menu.quantity} ชิ้น ${this.getMenuEnglishName(menu.menu_id)} สำหรับวันที่ ${this.selectedDate}`
+      );
+
+      menu.quantity = 0;  // รีเซ็ตจำนวนหลังจากสั่งซื้อ
+    })
+    .catch((error) => {
+      console.error('Order Error:', error);
+      alert('เกิดข้อผิดพลาดในการสั่งซื้อ');
+    });
+  } else {
+    alert('กรุณาระบุจำนวนที่ต้องการ');
+  }
+},
     adjustQuantity(menu, amount) {
       const newQuantity = menu.quantity + amount;
       if (newQuantity >= 0) {
