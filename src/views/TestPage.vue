@@ -1,5 +1,28 @@
 <template>
   <div>
+    <div
+      class="fixed top-4 right-8 bg-green-500 text-white px-8 py-4 flex items-center space-x-4 rounded-lg shadow-lg transition-opacity duration-300 z-50"
+      :class="{
+        'opacity-100': showSuccessToast,
+        'opacity-0': !showSuccessToast,
+      }">
+      <span class="material-symbols-outlined text-white">check_circle</span>
+      <span>{{ toastSuccessMessage }}</span>
+      <button @click="showSuccessToast = false" class="text-white hover:text-gray-200 focus:outline-none">
+        <span class="material-symbols-outlined text-xl">close</span>
+      </button>
+    </div>
+
+    <div
+      class="fixed top-4 right-8 bg-red-500 text-white px-8 py-4 flex items-center space-x-4 rounded-lg shadow-lg transition-opacity duration-300 z-50"
+      :class="{ 'opacity-100': showFailToast, 'opacity-0': !showFailToast }">
+      <span class="material-symbols-outlined text-white">cancel</span>
+      <span>{{ toastFailMessage }}</span>
+      <button @click="showFailToast = false" class="text-white hover:text-gray-200 focus:outline-none">
+        <span class="material-symbols-outlined text-xl">close</span>
+      </button>
+    </div>
+
     <div class="flex items-center space-x-3 py-2">
       <!-- ปุ่มลูกศรย้อนกลับ -->
       <button @click="changeDate(-1)" class="flex items-center">
@@ -39,13 +62,34 @@
         <span class="text-m text-custom-orange font-bold"> {{ orders.length }} รายการ</span>
       </div>
 
+      <div class="mt-4 px-4 flex justify-end space-x-1">
+        <button
+          v-if="selectedOrders.some(order => order.status === 'pending') && !selectedOrders.some(order => order.status === 'confirm')"
+          @click="confirmMultipleOrders" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded mt-4"
+          :disabled="selectedOrders.length === 0">
+          ยืนยันการสั่งซื้อที่เลือก ({{ selectedOrders.length }})
+        </button>
 
+        <button
+          v-if="selectedOrders.some(order => order.status === 'confirm') && !selectedOrders.some(order => order.status === 'pending')"
+          @click="pendingMultipleOrders" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded mt-4"
+          :disabled="selectedOrders.length === 0">
+          ยกเลิกยืนยันการสั่งซื้อที่เลือก ({{ selectedOrders.length }})
+        </button>
+      </div>
     </div>
+
+
+
 
 
     <table class="min-w-full table-auto rounded-t-2xl overflow-hidden mt-4">
       <thead>
         <tr class="bg-custom-orange text-white">
+          <th class="px-4 py-2 text-left align-center">
+            <input type="checkbox" @change="toggleSelectAll" :checked="isAllSelected"
+              class="w-4 h-4 accent-black focus:ring-0" />
+          </th>
           <th v-for="(header, index) in headers" :key="index" :class="['px-4 py-2 text-left font-bold']"
             :style="{ width: headerWidths[index], cursor: 'pointer' }" @click="sortColumn(header)"
             class="items-center hover:text-gray-200">
@@ -60,19 +104,102 @@
       <tbody>
 
         <tr v-for="(order, index) in filteredOrders" :key="index" class="border-b border-b-gray-200 bg-white relative">
+          <td class="px-4 py-2 align-top pb-5">
+            <input type="checkbox" v-model="selectedOrders" :value="order"
+              class="w-4 h-4 accent-custom-orange focus:ring-0" />
+          </td>
           <td class="px-4 py-2 align-top pb-5">{{ (currentPage - 1) * itemsPerPage + index + 1 }}</td>
 
-          <td class="px-4 py-2 align-top font-bold border-l border-r text-custom-orange"
+          <td class="px-4 py-2 align-top font-bold border-l border-r text-custom-orange pb-5"
             v-if="shouldDisplayUserName(index, order.user_id)" :rowspan="getRowspan(order.user_id, index)">
             {{ getCustomerName(order.user_id) }}
           </td>
 
-          <td class="px-4 py-2 align-top pb-5 border-r" v-if="shouldDisplayOrderDate(index, order.order_date)"
-            :rowspan="getOrderDateRowspan(order.order_date, index)">
-            {{ formatDate(order.order_date) }}
+          <td class="px-4 py-2 align-top pb-5">{{ formatDate(order.order_date) }}</td>
+          <td class="px-4 py-2 align-top pb-5">{{ getMenuTypeName(order.menu_type_id) }}</td>
+
+          <td class="px-4 py-2 align-top pb-5">
+            <div>{{ getMenuEngName(order.menu_id) }}</div>
+            <div>({{ getMenuName(order.menu_id) }})</div>
           </td>
-          <td class="px-4 py-2 align-top font-bold text-custom-orange">{{ getMenuName(order.menu_id) }}</td>
+
           <td class="px-4 py-2 align-top pb-5">{{ order.quantity }}</td>
+
+          <td class="px-4 py-2 align-top font-bold pb-5">
+            <button @click="openConfirmSatatusModal(order)"
+              class="px-4 py-1 rounded-full font-bold focus:outline-none hover:text-gray-200"
+              :class="getStatusClass(order.status)">
+              {{ getStatusText(order.status) }}
+            </button>
+
+            <div v-if="isConfirmStatusModalOpen"
+              class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-10 z-50">
+
+              <div
+                class="absolute top-8 left-1/2 transform -translate-x-1/2 bg-yellow-500 text-white px-8 py-4 flex items-center space-x-4 rounded-lg transition-opacity duration-300 z-60"
+                :class="{
+                  'opacity-100': showErrorToast,
+                  'opacity-0': !showErrorToast,
+                }">
+
+                <span class="material-symbols-outlined text-white">error</span>
+                <span>{{ toastErrorMessage }}</span>
+                <button @click="showErrorToast = false" class="text-white hover:text-gray-200 focus:outline-none">
+                  <span class="material-symbols-outlined text-xl">close</span>
+                </button>
+              </div>
+
+              <div class="bg-white rounded-md w-1/3 max-w-lg">
+                <!-- Header -->
+                <div :class="{
+                  'bg-green-500':
+                    selectedOrder.status === 'pending',
+                  'bg-red-500': selectedOrder.status === 'confirm',
+                }" class="flex justify-between items-center text-white px-4 py-2 rounded-t-md">
+                  <span class="font-bold">
+                    {{
+                      selectedOrder.status === "paid"
+                        ? "เปลี่ยนสถานะเป็นยังไม่ได้ยืนยันการสั่งซื้อ"
+                        : "ยืนยันการสั่งซื้อ"
+                    }}
+                  </span>
+                  <button @click="closeConfirmStatusModal" class="text-white hover:text-gray-200">
+                    <span class="material-symbols-outlined">close</span>
+                  </button>
+                </div>
+
+                <!-- Content -->
+                <div class="p-6 space-y-4">
+                  <p class="text-gray-700">
+                    {{
+                      selectedOrder.status === "confirm"
+                        ? 'คุณต้องการเปลี่ยนสถานะเป็น "ยังไม่ได้ยืนยันการสั่งซื้อ" หรือไม่?'
+                        : "ยืนยันการสั่งซื้อ?"
+                    }}
+                  </p>
+
+                </div>
+
+                <!-- Footer -->
+                <div class="flex justify-end space-x-4 p-4 bg-white border-t rounded-b-md">
+                  <button @click="closeConfirmStatusModal"
+                    class="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400">
+                    ยกเลิก
+                  </button>
+                  <button @click="confirmStatus" :class="{
+                    'bg-green-500 hover:bg-green-600':
+                      selectedOrder.status === 'pending',
+                    'bg-red-500 hover:bg-red-600':
+                      selectedOrder.status === 'confirm',
+                  }" class="text-white px-4 py-2 rounded">
+                    ยืนยัน
+                  </button>
+                </div>
+              </div>
+            </div>
+          </td>
+
+
         </tr>
 
         <tr v-if="filteredOrders.length === 0">
@@ -160,38 +287,32 @@ import "flatpickr/dist/flatpickr.css";
 export default {
   data() {
     return {
-      headers: ['Transaction Date', `Customer's Name`, 'Package Type', 'Sales Category', ' '],
-      headerWidths: ['10%', '12%', '10%', '10%', '13%', '12%', '8%', '10%', '7%', '8%'],
+      headers: ['#', `Customer's Name`, 'วันที่สั่งซื้อ', 'Packge Type', 'รายการอาหาร', 'จำนวน', 'สถานะ'],
+      headerWidths: ['5%', '20%', '15%', '15%', '20%', '10%', '15%'],
       sortDirection: 'asc', // กำหนดทิศทางการเรียงลำดับ (asc หรือ desc)
       sortIcon: 'arrow_downward',
 
       orders: [],
 
-      filteredOrders: [],
+      // filteredOrders: [],
       selectedDate: "",
-      dailySales: [],
-      totalSales: 0,
-      totalSalesBeforeVAT: 0,
-      totalPackageBeforeVAT: 0,
-      totalDeliveryBeforeVAT: 0,
-      salesByPaymentType: [],
-
       customers: [],
-      packages: [],
       menus: [],
-      seller_names: [],
-      payment_types: [],
-      package_types: [],
-      selectedPackageTypeId: "",
-      additional_types: [],
+      menu_types: [],
 
-      isPaymentTableVisible: false,
+      selectedOrder: {
+        id: '',
+        menu_id: '',
+        quantity: 0,
+        order_date: '',
+        user_id: '',
+        menu_type_id: '',
+        status: '',
+      },
+      selectedOrders: [],
 
-      selectedSeller: "",  // สำหรับเก็บผู้ขายที่เลือก
-      // isSellerDropdownOpen: false,
-      salesBySellerAndPackageType: [],
-      sellers: [], // List of seller_name_id
-      groupedsalesBySellerAndPackageType: null,
+      isConfirmStatusModalOpen: false,
+      isAllSelected: false,
 
       currentPage: 1,
       itemsPerPage: 10,
@@ -199,90 +320,53 @@ export default {
       startDate: '', // วันที่เริ่มต้น
       endDate: '',
 
-      isDetailModalOpen: false,
-      selectedDailySaleDetail: {},
+      toastSuccessMessage: "",
+      showSuccessToast: false,
+      toastFailMessage: "",
+      showFailToast: false,
+      showErrorToast: false,
+      toastErrorMessage: "",
+
     };
   },
   // components: {
   //     Multiselect
   // },
   computed: {
-    totalPages() {
-      return Math.ceil(
-        this.dailySales.length / this.itemsPerPage
-      );
-    },
-    totalPagesArray() {
-      const maxVisiblePages = 5;
-      const halfVisible = Math.floor(maxVisiblePages / 2);
+    filteredOrders() {
+    // เรียกดูรายการทั้งหมด และคำนวณการแสดงผลในแต่ละหน้า
+    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+    const endIndex = this.currentPage * this.itemsPerPage;
+    return this.orders.slice(startIndex, endIndex);
+  },
 
-      let start = this.currentPage - halfVisible;
-      let end = this.currentPage + halfVisible;
+  totalPages() {
+    return Math.ceil(this.orders.length / this.itemsPerPage);
+  },
 
-      if (start < 1) {
-        start = 1;
-        end = Math.min(maxVisiblePages, this.totalPages);
-      }
+  totalPagesArray() {
+    const maxVisiblePages = 5;
+    const halfVisible = Math.floor(maxVisiblePages / 2);
 
-      if (end > this.totalPages) {
-        end = this.totalPages;
-        start = Math.max(1, this.totalPages - maxVisiblePages + 1);
-      }
+    let start = this.currentPage - halfVisible;
+    let end = this.currentPage + halfVisible;
 
-      return {
-        start,
-        end,
-        range: Array.from({ length: end - start + 1 }, (_, i) => start + i),
-      };
-    },
-    totalSalesSum() {
-      if (!this.groupedsalesBySellerAndPackageType) return 0;
-      return Object.values(this.groupedsalesBySellerAndPackageType)
-        .flat()
-        .reduce((sum, sale) => {
-          const totalSales = parseFloat(sale.total_sales) || 0; // แปลงเป็นตัวเลข หรือค่าเริ่มต้น 0
-          return sum + totalSales;
-        }, 0);
-    },
-    totalPreVatSum() {
-      if (!this.groupedsalesBySellerAndPackageType) return 0;
-      return Object.values(this.groupedsalesBySellerAndPackageType)
-        .flat()
-        .reduce((sum, sale) => {
-          const preVat = parseFloat(sale.pre_vat) || 0; // แปลงเป็นตัวเลข หรือค่าเริ่มต้น 0
-          return sum + preVat;
-        }, 0);
-    },
-    filteredSalesBySellerAddit() {
-      return Object.keys(this.salesBySellerAndPackageType).map(sellerId => {
-        const filteredSales = this.salesBySellerAndPackageType[sellerId].sales.filter(sale => {
-          const packageTypeName = this.getPackageTypeName(sale.package_type_id).toLowerCase();
-          return packageTypeName === 'additional sales' || packageTypeName === 'consignment';
-        });
+    if (start < 1) {
+      start = 1;
+      end = Math.min(maxVisiblePages, this.totalPages);
+    }
 
-        return {
-          sellerId,
-          sales: filteredSales,
-          totalSales: filteredSales.reduce((total, sale) => total + parseFloat(sale.total_sales), 0),
-          totalPreVat: filteredSales.reduce((total, sale) => total + parseFloat(sale.pre_vat), 0)
-        };
-      }).filter(group => group.sales.length > 0); // เอาเฉพาะผู้ขายที่มียอดขาย
-    },
-    filteredSalesBySeller() {
-      return Object.keys(this.salesBySellerAndPackageType).map(sellerId => {
-        const filteredSales = this.salesBySellerAndPackageType[sellerId].sales.filter(sale => {
-          const packageTypeName = this.getPackageTypeName(sale.package_type_id).toLowerCase();
-          return packageTypeName !== 'additional sales' && packageTypeName !== 'consignment';  // เพิ่มเงื่อนไขกรอง 'consignment' ด้วย
-        });
+    if (end > this.totalPages) {
+      end = this.totalPages;
+      start = Math.max(1, this.totalPages - maxVisiblePages + 1);
+    }
 
-        return {
-          sellerId,
-          sales: filteredSales,
-          totalSales: filteredSales.reduce((total, sale) => total + parseFloat(sale.total_sales), 0),
-          totalPreVat: filteredSales.reduce((total, sale) => total + parseFloat(sale.pre_vat), 0)
-        };
-      }).filter(group => group.sales.length > 0); // เอาเฉพาะผู้ขายที่มียอดขาย
-    },
+    return {
+      start,
+      end,
+      range: Array.from({ length: end - start + 1 }, (_, i) => start + i),
+    };
+  },
     formattedStartDate() {
       if (!this.startDate) return ""; // หากยังไม่ได้เลือกวันที่
       return new Intl.DateTimeFormat("en-UK", {
@@ -300,35 +384,14 @@ export default {
       }).format(new Date(this.endDate));
     },
 
-    filteredDetail() {
-      return {
-        paid_date: this.formatDate(this.selectedDailySaleDetail.paid_date),
-        customer_id: this.getCustomerName(this.selectedDailySaleDetail.customer_id),
-        package_type_id: this.getPackageTypeName(this.selectedDailySaleDetail.package_type_id),
-        package_id: this.getPackageName(this.selectedDailySaleDetail.package_id) || this.getAdditionalTypeName(this.selectedDailySaleDetail.additional_type_id),
-        promotion_type_id: this.getPromotionTypeName(this.selectedDailySaleDetail.promotion_type_id),
-        package_price: this.formatPrice(this.getPackagePrice(this.selectedDailySaleDetail.package_id)),
-        package_detail: this.getPromotionDetail(this.selectedDailySaleDetail.package_id) || this.selectedDailySaleDetail.add_detail,
-        discount: this.formatPrice(this.selectedDailySaleDetail.discount),
-        extra_charge: this.formatPercent(this.selectedDailySaleDetail.extra_charge),
-        extra_charge_price: this.formatPrice(this.selectedDailySaleDetail.extra_charge_price),
-        total_package_price: this.formatPrice(this.selectedDailySaleDetail.total_package_price),
-        total_delivery_price: this.formatPrice(this.selectedDailySaleDetail.total_delivery_price),
-        total_price: this.formatPrice(this.selectedDailySaleDetail.total_price),
-        payment_type_id: this.getPaymentTypeName(this.selectedDailySaleDetail.payment_type_id),
-        seller_name_id: this.getSellerName(this.selectedDailySaleDetail.seller_name_id),
-
-      };
-    },
-
 
   },
   methods: {
     goToPage(page) {
-      if (page < 1 || page > this.totalPages) return;
+    if (page >= 1 && page <= this.totalPages) {
       this.currentPage = page;
-      // this.updatePage();
-    },
+    }
+  },
     // updatePage() {
     //     const startIndex = (this.currentPage - 1) * this.itemsPerPage;
     //     const endIndex = startIndex + this.itemsPerPage;
@@ -423,12 +486,14 @@ export default {
 
     async fetchLookupData() {
       try {
-        const [customersRes, menuRes] = await Promise.all([
+        const [customersRes, menuRes, menuTypeRes] = await Promise.all([
           axios.get("http://127.0.0.1:3333/customers"),
           axios.get("http://127.0.0.1:3333/menus"),
+          axios.get("http://127.0.0.1:3333/menu-types"),
         ]);
         this.customers = customersRes.data;
         this.menus = menuRes.data;
+        this.menu_types = menuTypeRes.data;
 
       } catch (error) {
         console.error("Error fetching lookup data:", error);
@@ -442,6 +507,22 @@ export default {
     getMenuName(menuId) {
       const menu = this.menus.find((c) => c.id === menuId);
       return menu ? menu.name_thai : null;
+    },
+    getMenuEngName(menuId) {
+      const menu = this.menus.find((c) => c.id === menuId);
+      return menu ? menu.name_english : null;
+    },
+    getMenuTypeName(menuId) {
+      const menu = this.menu_types.find((c) => c.id === menuId);
+      return menu ? menu.name : null;
+    },
+    getStatusText(status) {
+      return status === "confirm" ? "ยืนยันการสั่งซื้อแล้ว" : "ยังไม่ได้ยืนยันการสั่งซื้อ";
+    },
+    getStatusClass(status) {
+      return status === "confirm"
+        ? "text-white bg-green-500"
+        : "text-white bg-red-500";
     },
 
     changeDate(offset) {
@@ -472,7 +553,6 @@ export default {
     shouldDisplayUserName(index, userId) {
       return index === 0 || this.orders[index - 1].user_id !== userId;
     },
-    // คำนวณ rowspan สำหรับ user ที่มี user_id เดียวกัน เริ่มต้นที่ index ปัจจุบัน
     getRowspan(userId, index) {
       let count = 0;
       for (let i = index; i < this.orders.length; i++) {
@@ -529,10 +609,153 @@ export default {
       return labels[key] || key;
     },
 
+    openConfirmSatatusModal(saleRecord) {
+      this.selectedOrder = saleRecord;
+      this.isConfirmStatusModalOpen = true;
+    },
+    closeConfirmStatusModal() {
+      this.isConfirmStatusModalOpen = false;
+      // this.selectedOrder = null;
+      this.selectedPaidDate = "";
+    },
+    async confirmStatus() {
+      try {
+        const newStatus =
+          this.selectedOrder.status === "confirm" ? "pending" : "confirm";
+
+        const payload = {
+          status: newStatus,
+        };
+
+        const response = await axios.put(
+          `http://127.0.0.1:3333/order/${this.selectedOrder.id}/status`,
+          payload
+        );
+        await this.fetchOrders();
+
+        if (response.status === 200) {
+          const updatedOrder = response.data.data;
+          const index = this.orders.findIndex(
+            (record) => record.id === updatedOrder.id
+          );
+          if (index !== -1) {
+            this.orders[index] = updatedOrder;
+          }
+          this.showSuccessToastNotification("อัปเดตสถานะสำเร็จ!");
+        } else {
+          throw new Error("Unexpected response status");
+        }
+      } catch (error) {
+        console.error("Error updating payment status:", error);
+        console.error(
+          "Error response data:",
+          error.response?.data || "No additional data"
+        );
+        this.showErrorToastNotification("เกิดข้อผิดพลาดในการอัปเดตสถานะ!");
+      }
+      this.closeConfirmStatusModal();
+    },
+
+    async confirmMultipleOrders() {
+      if (this.selectedOrders.length === 0) return;
+      const orderIds = this.selectedOrders.map(order => order.id);
+      console.log("Selected Orders:", this.selectedOrders);
+
+      try {
+        const response = await fetch("http://127.0.0.1:3333/order/update-status", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            order_ids: orderIds,
+            status: "confirm",
+          }),
+        });
+        await response.json();
+
+        if (response.ok) {
+          this.showSuccessToastNotification("อัปเดตสถานะสำเร็จ!");
+          this.selectedOrders = [];
+          await this.fetchOrders(this.startDate, this.endDate);
+        } else {
+          this.showErrorToastNotification("เกิดข้อผิดพลาดในการอัปเดตสถานะ!");
+        }
+      } catch (error) {
+        console.error("Error:", error);
+        this.showErrorToastNotification("เกิดข้อผิดพลาดในการเชื่อมต่อ!");
+      }
+    },
+    async pendingMultipleOrders() {
+      if (this.selectedOrders.length === 0) return;
+      const orderIds = this.selectedOrders.map(order => order.id);
+
+      try {
+        const response = await fetch("http://127.0.0.1:3333/order/update-status", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            order_ids: orderIds,
+            status: "pending",
+          }),
+        });
+        await response.json();
+
+        if (response.ok) {
+          this.showSuccessToastNotification("อัปเดตสถานะสำเร็จ!");
+          this.selectedOrders = [];
+          await this.fetchOrders(this.startDate, this.endDate);
+        } else {
+          this.showErrorToastNotification("เกิดข้อผิดพลาดในการอัปเดตสถานะ!");
+        }
+      } catch (error) {
+        console.error("Error:", error);
+        this.showErrorToastNotification("เกิดข้อผิดพลาดในการเชื่อมต่อ!");
+      }
+    },
+    selectOrder(order) {
+      if (!this.selectedOrders.includes(order)) {
+        this.selectedOrders.push(order);
+      } else {
+        this.selectedOrders = this.selectedOrders.filter(item => item.id !== order.id);
+      }
+    },
+    toggleSelectAll(event) {
+      if (event.target.checked) {
+        this.selectedOrders = [...this.filteredOrders];  // เลือกคำสั่งซื้อทั้งหมด
+      } else {
+        this.selectedOrders = [];  // ยกเลิกการเลือกทั้งหมด
+      }
+      this.isAllSelected = event.target.checked;
+    },
+
+
+    showSuccessToastNotification(message) {
+      this.toastSuccessMessage = message;
+      this.showSuccessToast = true;
+      setTimeout(() => {
+        this.showSuccessToast = false;
+      }, 3000);
+    },
+    showFailToastNotification(message) {
+      this.toastFailMessage = message;
+      this.showFailToast = true;
+      setTimeout(() => {
+        this.showFailToast = false;
+      }, 3000);
+    },
+    showErrorToastNotification(message) {
+      this.toastErrorMessage = message;
+      this.showErrorToast = true;
+      setTimeout(() => {
+        this.showErrorToast = false;
+      }, 3000);
+    },
+
+
+
 
   },
   created() {
-    this.filteredOrders = this.dailySales;
+    this.filteredOrders = this.orders;
     this.fetchLookupData();
     this.fetchOrders(this.selectedDate);
     // this.updatePage();
@@ -567,6 +790,12 @@ export default {
 
 
   },
+  watch: {
+    // คอยติดตามการเปลี่ยนแปลงของ selectedOrders
+    selectedOrders() {
+      this.isAllSelected = this.selectedOrders.length === this.filteredOrders.length;
+    },
+  }
   // beforeUnmount() {
   //     document.removeEventListener('click', this.handleClickOutside);
   // },

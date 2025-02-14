@@ -261,7 +261,7 @@ export default {
   if (menu.quantity && menu.quantity > 0) {
     const mealTypeId = menu.meal_type_id;  // ดึง meal_type_id จาก menu ที่เลือก
 
-    axios.post('http://127.0.0.1:3333/order-ph', {
+    axios.post('http://127.0.0.1:3333/order', {
       menu_id: menu.menu_id,
       quantity: menu.quantity,
       order_date: this.selectedDate,

@@ -3050,6 +3050,7 @@ export default {
       }
       this.closeConfirmPaymentModal();
     },
+    
     showSuccessToastNotification(message) {
       this.toastSuccessMessage = message;
       this.showSuccessToast = true;
