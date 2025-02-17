@@ -903,7 +903,7 @@ export default {
   computed: {
     filteredMealTypes() {
       return this.meal_types.filter(
-        (item) => item.menuType && item.menuType.name === "HHB"
+        (item) => item.menuType && item.menuType.id === 14
       );
     },
     // filteredMenus() {
@@ -1027,7 +1027,7 @@ export default {
   methods: {
     async fetchSetupMenus() {
       try {
-        const response = await fetch("http://127.0.0.1:3333/setup-menu-hhb");
+        const response = await fetch("http://127.0.0.1:3333/setup-menu-lc");
         const data = await response.json();
         for (const week in data) {
           if (Object.prototype.hasOwnProperty.call(data, week)) {
@@ -1054,7 +1054,7 @@ export default {
         const todayDate = this.getTodayDate(); // คำนวณวันที่ปัจจุบันในรูปแบบ yyyy-mm-dd
         console.log("Today:", todayDate);
         const response = await axios.get(
-          `http://127.0.0.1:3333/setup-menu-hhb/menus-by-day/${todayDate}`
+          `http://127.0.0.1:3333/setup-menu-lc/menus-by-day/${todayDate}`
         );
         console.log("API Response:", response.data);
         this.todayMenus = response.data.menus || [];
@@ -1081,7 +1081,7 @@ export default {
 
       try {
         const response = await axios.get(
-          `http://127.0.0.1:3333/setup-menu-hhb/menus-by-day/${this.selectedDate}`
+          `http://127.0.0.1:3333/setup-menu-lc/menus-by-day/${this.selectedDate}`
         );
         this.setUpMenusByDate = response.data.menus;
       } catch (error) {
@@ -1092,7 +1092,7 @@ export default {
     async fetchStartDate() {
       try {
         const response = await axios.get(
-          "http://127.0.0.1:3333/setup-menu-hhb/get-start-date"
+          "http://127.0.0.1:3333/setup-menu-lc/get-start-date"
         );
         this.initialStartDate = response.data.startDate; // เก็บค่าจาก API ลงใน initialStartDate
         this.startDate = this.initialStartDate; // ตั้งค่าเริ่มต้นของ startDate เป็นค่าที่ดึงมา
@@ -1109,7 +1109,7 @@ export default {
         }
 
         const response = await axios.post(
-          "http://127.0.0.1:3333/setup-menu-hhb/set-start-date",
+          "http://127.0.0.1:3333/setup-menu-lc/set-start-date",
           {
             startDate: this.startDate,
           }
@@ -1170,7 +1170,7 @@ export default {
         const mealType = this.meal_types.find(
           (item) => item.id === menu.meal_type_id
         );
-        return mealType && mealType.menuType.name === "HHB";
+        return mealType && mealType.menuType.id === 14;
       });
     },
     getMenuEnglishName(menuId) {
@@ -1305,7 +1305,7 @@ export default {
           return;
         }
 
-        await axios.post("http://127.0.0.1:3333/setup-menu-hhb", {
+        await axios.post("http://127.0.0.1:3333/setup-menu-lc", {
           day_of_week: this.day_of_week,
           menus: menus,
         });
@@ -1370,14 +1370,14 @@ export default {
         }
 
         await axios.put(
-          `http://127.0.0.1:3333/setup-menu-hhb/${this.selectedSetupMenu.id}`,
+          `http://127.0.0.1:3333/setup-menu-lc/${this.selectedSetupMenu.id}`,
           {
             day_of_week: this.selectedSetupMenu.day_of_week,
             menu_id: this.selectedSetupMenu.menu_id.id,
           }
         );
 
-        // const response = await axios.put(`http://127.0.0.1:3333/setup-menu-hhb/${this.selectedSetupMenu.id}`, {
+        // const response = await axios.put(`http://127.0.0.1:3333/setup-menu-lc/${this.selectedSetupMenu.id}`, {
         //   day_of_week: this.selectedSetupMenu.day_of_week,
         //   menu_id: this.selectedSetupMenu.menu_id.id,
         // });
@@ -1415,7 +1415,7 @@ export default {
     async deleteConfirmed() {
       try {
         await axios.delete(
-          `http://127.0.0.1:3333/setup-menu-hhb/${this.itemToDelete}`
+          `http://127.0.0.1:3333/setup-menu-lc/${this.itemToDelete}`
         );
         this.menus = this.menus.filter((item) => item.id !== this.itemToDelete);
         this.closeDeleteModal();

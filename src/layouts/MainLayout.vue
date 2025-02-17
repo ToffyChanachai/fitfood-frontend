@@ -21,45 +21,57 @@
             <nav class="flex-1 font-bold">
                 <ul>
                     <li class="hover:bg-custom-orange-hover">
-                        <router-link to="/" class="block py-2 px-4 flex items-center space-x-2">
+                        <router-link to="/master" class=" py-2 px-4 flex items-center space-x-2">
                             <span class="material-symbols-outlined text-3xl">home</span>
                             <span v-if="isExpanded">หน้าแรก</span>
                         </router-link>
                     </li>
                     <li class="hover:bg-custom-orange-hover">
-                        <router-link to="/customers" class="block py-2 px-4 flex items-center space-x-2">
+                        <router-link to="/customers" class=" py-2 px-4 flex items-center space-x-2">
                             <span class="material-symbols-outlined text-3xl">groups</span>
                             <span v-if="isExpanded">ข้อมูลลูกค้า</span>
                         </router-link>
                     </li>
                     <li class="hover:bg-custom-orange-hover">
-                        <router-link to="/sale-records" class="block py-2 px-4 flex items-center space-x-2">
+                        <router-link to="/sale-records" class=" py-2 px-4 flex items-center space-x-2">
                             <span class="material-symbols-outlined text-3xl">contact_page</span>
                             <span v-if="isExpanded">บันทึกการขาย</span>
                         </router-link>
                     </li>
                     <li class="hover:bg-custom-orange-hover">
-                        <router-link to="/daily-sale" class="block py-2 px-4 flex items-center space-x-2">
+                        <router-link to="/daily-sale" class=" py-2 px-4 flex items-center space-x-2">
                             <span class="material-symbols-outlined text-3xl">calendar_month</span>
                             <span v-if="isExpanded">ยอดขายประจำวัน</span>
                         </router-link>
                     </li>
                     <li class="hover:bg-custom-orange-hover">
-                        <router-link to="/setup-menu-ph" class="block py-2 px-4 flex items-center space-x-2">
+                        <router-link to="/setup-menu-ph" class=" py-2 px-4 flex items-center space-x-2">
                             <span class="material-symbols-outlined text-3xl">menu_book</span>
                             <span v-if="isExpanded">Setup Menus</span>
+                        </router-link>
+                    </li>
+                    <li class="hover:bg-custom-orange-hover">
+                        <router-link to="/result-orders" class=" py-2 px-4 flex items-center space-x-2">
+                            <span class="material-symbols-outlined text-3xl">receipt_long</span>
+                            <span v-if="isExpanded" class="text-sm">รายการอาหารประจำวันของลูกค้า</span>
+                        </router-link>
+                    </li>
+                    <li class="hover:bg-custom-orange-hover">
+                        <router-link to="/kitchen-orders" class=" py-2 px-4 flex items-center space-x-2">
+                            <span class="material-symbols-outlined text-3xl">stockpot</span>
+                            <span v-if="isExpanded">Kitchen Orders</span>
                         </router-link>
                     </li>
 
 
                     <li class="hover:bg-custom-orange-hover">
-                        <router-link to="/test" class="block py-2 px-4 flex items-center space-x-2">
+                        <router-link to="/test" class=" py-2 px-4 flex items-center space-x-2">
                             <span class="material-symbols-outlined text-3xl">fullscreen</span>
                             <span v-if="isExpanded">test</span>
                         </router-link>
                     </li>
                     <!-- <li class="hover:bg-custom-orange-hover">
-                        <router-link to="/test2" class="block py-2 px-4 flex items-center space-x-2">
+                        <router-link to="/test2" class=" py-2 px-4 flex items-center space-x-2">
                             <span class="material-symbols-outlined text-3xl">fullscreen</span>
                             <span v-if="isExpanded">test2</span>
                         </router-link>
@@ -67,25 +79,24 @@
 
 
                     <li v-if="isExpanded" class="relative">
-                        <button @click="toggleSubMenu"
-                            class="block py-2 px-4 flex items-center space-x-2 w-full text-left">
+                        <button @click="toggleSubMenu" class=" py-2 px-4 flex items-center space-x-2 w-full text-left">
                             <span class="material-symbols-outlined">folder</span>
                             <span>ข้อมูลทั้งหมด</span>
                             <span class="material-symbols-outlined text-3xl">expand_more</span>
                         </button>
                         <ul v-show="isSubMenuOpen" class="space-y-2 px-4 font-normal">
                             <li class="hover:bg-custom-orange-hover">
-                                <router-link to="/packages" class="block py-2 px-4 flex items-center space-x-2">
+                                <router-link to="/packages" class=" py-2 px-4 flex items-center space-x-2">
                                     <span v-if="isExpanded">ข้อมูลแพ็คเกจ</span>
                                 </router-link>
                             </li>
                             <li class="hover:bg-custom-orange-hover">
-                                <router-link to="/zone-deliveries" class="block py-2 px-4 flex items-center space-x-2">
+                                <router-link to="/zone-deliveries" class=" py-2 px-4 flex items-center space-x-2">
                                     <span v-if="isExpanded">ข้อมูลโซนการจัดส่ง</span>
                                 </router-link>
                             </li>
                             <li class="hover:bg-custom-orange-hover">
-                                <router-link to="/menus" class="block py-2 px-4 flex items-center space-x-2">
+                                <router-link to="/menus" class=" py-2 px-4 flex items-center space-x-2">
                                     <span v-if="isExpanded">ข้อมูลเมนู</span>
                                 </router-link>
                             </li>
@@ -197,7 +208,7 @@
                 </router-link>
             </div>
 
-            <div v-if="$route.path === '/setup-menu-ph' || $route.path === '/setup-menu-hhb'"
+            <div v-if="$route.path === '/setup-menu-ph' || $route.path === '/setup-menu-hhb' || $route.path === '/setup-menu-lc' || $route.path === '/setup-menu-fl' || $route.path === '/setup-menu-bpd' || $route.path === '/setup-menu-diabete' || $route.path === '/setup-menu-fat-disease'"
                 class="pt-16 p-4 flex items-left space-x-6 text-m font-bold">
                 <router-link to="/setup-menu-ph" class="hover:text-custom-orange"
                     :class="{ 'text-custom-orange border-b-2 border-custom-orange': $route.path === '/setup-menu-ph' }">
@@ -206,6 +217,26 @@
                 <router-link to="/setup-menu-hhb" class="hover:text-custom-orange"
                     :class="{ 'text-custom-orange border-b-2 border-custom-orange': $route.path === '/setup-menu-hhb' }">
                     Happy Healthy Box
+                </router-link>
+                <router-link to="/setup-menu-lc" class="hover:text-custom-orange"
+                    :class="{ 'text-custom-orange border-b-2 border-custom-orange': $route.path === '/setup-menu-lc' }">
+                    Low Carb
+                </router-link>
+                <router-link to="/setup-menu-fl" class="hover:text-custom-orange"
+                    :class="{ 'text-custom-orange border-b-2 border-custom-orange': $route.path === '/setup-menu-fl' }">
+                    Fat Loss
+                </router-link>
+                <router-link to="/setup-menu-bpd" class="hover:text-custom-orange"
+                    :class="{ 'text-custom-orange border-b-2 border-custom-orange': $route.path === '/setup-menu-bpd' }">
+                    โรคความดัน
+                </router-link>
+                <router-link to="/setup-menu-diabete" class="hover:text-custom-orange"
+                    :class="{ 'text-custom-orange border-b-2 border-custom-orange': $route.path === '/setup-menu-diabete' }">
+                    โรคเบาหวาน
+                </router-link>
+                <router-link to="/setup-menu-fat-disease" class="hover:text-custom-orange"
+                    :class="{ 'text-custom-orange border-b-2 border-custom-orange': $route.path === '/setup-menu-fat-disease' }">
+                    โรคไขมัน
                 </router-link>
             </div>
 
@@ -261,8 +292,20 @@ export default {
                     break;
                 case "Setup Menu Premium Health":
                 case "Setup Menu Happy Healthy Box":
+                case "Setup Menu Low Carb":
+                case "Setup Menu Fat Loss":
+                case "Setup Menu โรคความดัน":
+                case "Setup Menu โรคเบาหวาน":
+                case "Setup Menu โรคไขมัน":
                     this.pageIcon = "menu_book";
                     break;
+                case "รายการอาหารประจำวันของลูกค้า":
+                    this.pageIcon = "receipt_long";
+                    break;
+                    case "Kitchen Orders":
+                    this.pageIcon = "stockpot";
+                    break;
+
                 default:
                     this.pageIcon = ""; // ไอคอนเริ่มต้น
             }

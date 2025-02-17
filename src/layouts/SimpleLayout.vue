@@ -9,19 +9,30 @@
         </div>
       </div>
 
-      
-      <div v-if="$route.path === '/premium-health' || $route.path === '/happy-healthy-box'"
-                class="flex items-left space-x-6 text-black font-bold"> 
-                <router-link to="premium-health" class="hover:text-custom-orange"
-                    :class="{ 'text-custom-orange border-b-2 border-custom-orange': $route.path === '/' || $route.path === '/premium-health' }">
-                    Premium Health
-                </router-link>
-                
-                <router-link to="/happy-healthy-box" class="hover:text-custom-orange"
-                    :class="{ 'text-custom-orange border-b-2 border-custom-orange': $route.path === '/happy-healthy-box' }">
-                    Happy Healthy Box
-                </router-link>
-            </div>
+
+      <div v-if="['/premium-health', '/', '/happy-healthy-box', '/low-carb', '/fat-loss'].includes($route.path)"
+        class="flex items-left space-x-6 text-black font-bold">
+        <router-link to="/premium-health" class="hover:text-custom-orange"
+          :class="{ 'text-custom-orange border-b-2 border-custom-orange': $route.path === '/premium-health' || $route.path === '/' }">
+          Premium Health
+        </router-link>
+
+        <router-link to="/happy-healthy-box" class="hover:text-custom-orange"
+          :class="{ 'text-custom-orange border-b-2 border-custom-orange': $route.path === '/happy-healthy-box' }">
+          Happy Healthy Box
+        </router-link>
+
+        <router-link to="/low-carb" class="hover:text-custom-orange"
+          :class="{ 'text-custom-orange border-b-2 border-custom-orange': $route.path === '/low-carb' }">
+          Low Carb
+        </router-link>
+
+        <router-link to="/fat-loss" class="hover:text-custom-orange"
+          :class="{ 'text-custom-orange border-b-2 border-custom-orange': $route.path === '/fat-loss' }">
+          Fat Loss
+        </router-link>
+      </div>
+
 
       <div v-if="isLoggedIn" class="flex items-center space-x-4">
         <!-- คลิกที่ชื่อผู้ใช้เพื่อแสดง/ซ่อนเมนู -->
@@ -30,6 +41,8 @@
             @click="$router.push('/register-aff')">
             Register Aff
           </span>
+
+          <!-- <button @click="checkIfAdmin" class="text-black">Check if Admin</button> -->
 
           <span @click="toggleMenu" class="cursor-pointer flex items-center space-x-2">
             <span class="text-black">Welcome, <strong class="text-custom-orange">{{ username }}</strong></span>
@@ -44,24 +57,28 @@
             class="absolute right-0 top-full mt-1 bg-white text-black text-left shadow-lg rounded-md w-48 z-50 border">
             <ul class="list-none p-0 m-0">
               <li
-                class="px-4 py-3 cursor-pointer hover:bg-gray-100 hover:text-custom-orange hover:font-bold hover:rounded-t-md border-b flex items-center justify-between"
+                class="px-4 py-3 cursor-pointer hover:bg-gray-100 hover:text-custom-orange hover:font-bold border-b flex items-center justify-between"
                 @click="goToProfile">
-                <span class="material-symbols-outlined">
-                  person
-                </span>
+                <span class="material-symbols-outlined"> person </span>
                 <span>Profile</span>
+              </li>
+
+              <li v-if="role === 'admin'"
+                class="px-4 py-3 cursor-pointer hover:bg-gray-100 hover:text-custom-orange hover:font-bold border-b flex items-center justify-between"
+                @click="goToBackend">
+                <span class="material-symbols-outlined"> shield_person </span>
+                <span>Admin Page</span>
               </li>
 
               <li
                 class="px-4 py-3 cursor-pointer hover:bg-gray-100 hover:text-red-500 hover:font-bold hover:rounded-b-md border-b flex items-center justify-between"
                 @click="logout">
-                <span class="material-symbols-outlined">
-                  logout
-                </span>
+                <span class="material-symbols-outlined"> logout </span>
                 <span>Logout</span>
               </li>
             </ul>
           </div>
+
 
         </div>
       </div>
@@ -94,6 +111,7 @@ export default {
   data() {
     return {
       username: '',
+      role: '',
       isLoggedIn: false,
       isMenuOpen: false, // สถานะการแสดงเมนู
       isUserRegistered: false,
@@ -115,6 +133,7 @@ export default {
       try {
         const res = await api.getProfile(); // ใช้ฟังก์ชันจาก service
         this.username = res.username; // ตั้งค่าชื่อผู้ใช้
+        this.role = res.role;
       } catch (error) {
         console.log('Error fetching profile:', error);
       }
@@ -133,11 +152,22 @@ export default {
     goToProfile() {
       this.$router.push('/profile'); // เปลี่ยนเส้นทางไปที่หน้าโปรไฟล์
     },
+    goToBackend() {
+      this.$router.push('/master'); // เปลี่ยนเส้นทางไปที่หน้าโปรไฟล์
+    },
     logout() {
       localStorage.removeItem('token');
       this.isLoggedIn = false;
       this.username = '';
-      this.$router.push('/test2'); // เปลี่ยนเส้นทางไปหน้า Login หลังจาก logout
+      this.$router.push('/'); 
+    },
+
+    checkIfAdmin() {
+      if (this.role === 'admin') {
+        console.log("User is an admin.");
+      } else {
+        console.log("User is not an admin.");
+      }
     }
   },
   async mounted() {
@@ -156,9 +186,14 @@ export default {
     '$route'() {
       this.checkLoginStatus();
     }
-  }
+  },
+  computed: {
+    // ดึง userRole จาก Vuex store
+    userRole() {
+      return this.$store.getters.getUserRole;
+    }
+  },
 };
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>

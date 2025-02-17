@@ -626,7 +626,7 @@ export default {
       showErrorToast: false,
       toastErrorMessage: "",
 
-      startDate: "", // ตัวแปรสำหรับเก็บ startDate ที่ผู้ใช้เลือก
+      startDate: "",
       initialStartDate: "",
 
       isDateConfirmed: false,
@@ -847,6 +847,8 @@ export default {
             startDate: this.startDate,
           }
         );
+
+        this.initialStartDate = this.startDate;
 
         this.isDateConfirmed = true;
         this.successMessage = response.data.message;
@@ -1211,11 +1213,11 @@ export default {
     viewMode() {
       this.currentPage = 1;
     },
-    startDate() {
-      this.isDateConfirmed = false;
-      this.errorMessage = '';
-      this.successMessage = '';
-    }
+    startDate(newValue) {
+      if (newValue !== this.initialStartDate) {
+        this.isDateConfirmed = false;  // ถ้าค่าที่เลือกไม่เหมือนกับค่าเริ่มต้น ปุ่มยืนยันจะแสดง
+      }
+    },
   },
 };
 </script>

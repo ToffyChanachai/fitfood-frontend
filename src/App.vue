@@ -12,6 +12,7 @@ import MainLayout from './layouts/MainLayout.vue';
 import SimpleLayout from './layouts/SimpleLayout.vue';
 import BlankLayout from './layouts/BlankLayout.vue';
 
+
 export default {
   computed: {
     layoutComponent() {
@@ -21,7 +22,15 @@ export default {
       }
 
       return this.$route.meta.layout === 'SimpleLayout' ? SimpleLayout : MainLayout;
+    },
+
+    userRole() {
+      return this.$store.getters.getUserRole; // ดึงข้อมูล role จาก Vuex store
     }
+  },
+  created() {
+    // เรียกใช้ action fetchUserRole เมื่อคอมโพเนนต์ถูกสร้าง
+    this.$store.dispatch('fetchUserRole');
   }
 };
 </script>

@@ -76,8 +76,7 @@ export default {
   methods: {
     async login() {
       try {
-        await AuthService.login(this.identifier, this.password);
-
+        await AuthService.login(this.identifier, this.password, this.$store);
         if (this.rememberMe) {
           localStorage.setItem('rememberedIdentifier', this.identifier); // เก็บ email
           localStorage.setItem('rememberedPassword', this.password); // เก็บ password
@@ -88,7 +87,7 @@ export default {
           localStorage.removeItem('rememberMe'); // ลบสถานะ remember
         }
 
-        this.$router.push('/test2'); // ไปหน้าหลังล็อกอินสำเร็จ
+        this.$router.push('/'); // ไปหน้าหลังล็อกอินสำเร็จ
       } catch (err) {
         this.error = 'Login failed';
       }
