@@ -2,11 +2,11 @@
   <div>
     <header class="flex justify-between items-center p-4 px-32 bg-white text-white shadow-lg relative">
       <div class="flex justify-center items-center cursor-pointer" @click="goToHome">
-        <img src="@/assets/fitfood_logo.png" alt="Logo" class="w-12 h-12">
-        <div class="leading-none ml-2">
+        <img src="@/assets/logo_fitfood_full.png" alt="Logo" class="w-50 h-12">
+        <!-- <div class="leading-none ml-2">
           <p class="text-lg font-bold text-black">ABSOLUTE</p>
           <p class="text-lg font-bold text-custom-orange -mt-3">FITFOOD</p>
-        </div>
+        </div> -->
       </div>
 
 

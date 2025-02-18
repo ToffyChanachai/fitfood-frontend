@@ -87,7 +87,7 @@
 
 
 
-    <table ref="printTable" class="min-w-full table-auto rounded-t-2xl overflow-hidden mt-4">
+    <table ref="printTable" class="min-w-full table-auto rounded-2xl overflow-hidden mt-4">
       <thead>
         <tr class="bg-custom-orange text-white">
           <th v-for="(header, index) in headers" :key="index" :class="['px-4 py-2 text-left font-bold']"
@@ -115,7 +115,7 @@
 
           <td class="px-4 py-2 align-top pb-5">{{ formatDate(order.order_date) }}</td>
           <td class="px-4 py-2 align-top pb-5">{{ getMenuTypeName(order.menu_type_id) }}</td>
-
+          <td class="px-4 py-2 align-top pb-5">{{ getMealTypeName(getMealTypeID(order.menu_id)) }}</td>
           <td class="px-4 py-2 align-top pb-5">
             <div>{{ order.menu_eng_name }}</div>
             <div>({{ order.menu_name }})</div>
@@ -129,73 +129,7 @@
         </tr>
       </tbody>
 
-
-
-      <!-- <div v-if="isDetailModalOpen"
-              class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
-              <div class="bg-white rounded-md shadow-lg w-1/2 max-w-3xl h-auto max-h-[800px] flex flex-col">
-                  <div class="flex justify-between items-center bg-custom-orange text-white px-4 py-2 rounded-t-md">
-                      <span class="font-bold"><h2>รายละเอียดยอดขายประจำวัน</h2></span>
-                      <div class="flex space-x-2">
-                          <span @click="closeDetailModal"
-                              class="material-symbols-outlined cursor-pointer hover:text-gray-200">
-                              close
-                          </span>
-                      </div>
-                  </div>
-
-                  <div class="pb-2 pt-2">
-                      <div v-for="(value, key, index) in filteredDetail" :key="key"
-                          :class="index % 2 === 0 ? 'bg-white rounded-none' : 'bg-gray-100 rounded-none'"
-                          class="p-2 rounded-md">
-                          <p class="pl-3 pr-3"><strong class="mr-2">{{ formatLabel(key) }}:</strong> {{ value }}</p>
-                      </div>
-                  </div>
-              </div>
-          </div> -->
-
-
     </table>
-
-
-
-    <div class="rounded-b-2xl flex justify-center items-center space-x-2 bg-white px-2 py-1">
-      <button @click="goToPage(currentPage - 1)" :disabled="currentPage === 1"
-        class="px-3 py-2 rounded-md hover:bg-gray-100 text-custom-orange disabled:opacity-50">
-        <span class="material-symbols-outlined">chevron_left</span>
-      </button>
-
-      <div class="flex items-center space-x-1">
-        <button v-if="totalPagesArray.start > 1" @click="goToPage(1)"
-          class="px-3 py-2 rounded-md bg-white hover:bg-custom-orange hover:text-white">
-          1
-        </button>
-        <button v-if="totalPagesArray.start > 2" @click="goToPage(totalPagesArray.start - 1)"
-          class="px-3 py-2 rounded-md bg-white hover:bg-custom-orange hover:text-white">
-          ...
-        </button>
-
-        <button v-for="page in totalPagesArray.range" :key="page" @click="goToPage(page)"
-          :class="['px-3 py-2 rounded-md', { 'bg-custom-orange text-white': currentPage === page, 'bg-white': currentPage !== page }]"
-          class="cursor-pointer hover:bg-custom-orange hover:text-white">
-          {{ page }}
-        </button>
-
-        <button v-if="totalPagesArray.end < totalPages - 1" @click="goToPage(totalPagesArray.end + 1)"
-          class="px-3 py-2 rounded-md bg-white hover:bg-custom-orange hover:text-white">
-          ...
-        </button>
-        <button v-if="totalPagesArray.end < totalPages" @click="goToPage(totalPages)"
-          class="px-3 py-2 rounded-md bg-white hover:bg-custom-orange hover:text-white">
-          {{ totalPages }}
-        </button>
-      </div>
-
-      <button @click="goToPage(currentPage + 1)" :disabled="currentPage === totalPages"
-        class="px-3 py-2 rounded-md hover:bg-gray-100 text-custom-orange disabled:opacity-50">
-        <span class="material-symbols-outlined">chevron_right</span>
-      </button>
-    </div>
 
   </div>
 
@@ -211,8 +145,8 @@ import "flatpickr/dist/flatpickr.css";
 export default {
   data() {
     return {
-      headers: ['#', 'วันที่สั่งซื้อ', 'Packge Type', 'รายการอาหาร', 'จำนวน'],
-      headerWidths: ['5%', '15%', '15%', '20%', '10%'],
+      headers: ['#', 'วันที่สั่งซื้อ', 'Packge Type', 'ประเภทอาหาร', 'รายการอาหาร', 'จำนวน'],
+      headerWidths: ['5%', '15%', '15%', '20%', '30%', '10%'],
       sortDirection: 'asc', // กำหนดทิศทางการเรียงลำดับ (asc หรือ desc)
       sortIcon: 'arrow_downward',
 
@@ -223,6 +157,7 @@ export default {
       customers: [],
       menus: [],
       menu_types: [],
+      meal_types: [],
 
       selectedOrder: {
         id: '',
@@ -257,38 +192,38 @@ export default {
   //     Multiselect
   // },
   computed: {
-    // filteredOrders() {
-    //   // เรียกดูรายการทั้งหมด และคำนวณการแสดงผลในแต่ละหน้า
-    //   const startIndex = (this.currentPage - 1) * this.itemsPerPage;
-    //   const endIndex = this.currentPage * this.itemsPerPage;
-    //   return this.orders.slice(startIndex, endIndex);
+    filteredOrders() {
+      // เรียกดูรายการทั้งหมด และคำนวณการแสดงผลในแต่ละหน้า
+      const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+      const endIndex = this.currentPage * this.itemsPerPage;
+      return this.orders.slice(startIndex, endIndex);
+    },
+    // totalPages() {
+    //   return Math.ceil(this.orders.length / this.itemsPerPage);
     // },
-    totalPages() {
-      return Math.ceil(this.groupedOrders.length / this.itemsPerPage);
-    },
-    totalPagesArray() {
-      const maxVisiblePages = 5;
-      const halfVisible = Math.floor(maxVisiblePages / 2);
+    // totalPagesArray() {
+    //   const maxVisiblePages = 5;
+    //   const halfVisible = Math.floor(maxVisiblePages / 2);
 
-      let start = this.currentPage - halfVisible;
-      let end = this.currentPage + halfVisible;
+    //   let start = this.currentPage - halfVisible;
+    //   let end = this.currentPage + halfVisible;
 
-      if (start < 1) {
-        start = 1;
-        end = Math.min(maxVisiblePages, this.totalPages);
-      }
+    //   if (start < 1) {
+    //     start = 1;
+    //     end = Math.min(maxVisiblePages, this.totalPages);
+    //   }
 
-      if (end > this.totalPages) {
-        end = this.totalPages;
-        start = Math.max(1, this.totalPages - maxVisiblePages + 1);
-      }
+    //   if (end > this.totalPages) {
+    //     end = this.totalPages;
+    //     start = Math.max(1, this.totalPages - maxVisiblePages + 1);
+    //   }
 
-      return {
-        start,
-        end,
-        range: Array.from({ length: end - start + 1 }, (_, i) => start + i),
-      };
-    },
+    //   return {
+    //     start,
+    //     end,
+    //     range: Array.from({ length: end - start + 1 }, (_, i) => start + i),
+    //   };
+    // },
     formattedStartDate() {
       if (!this.startDate) return ""; // หากยังไม่ได้เลือกวันที่
       return new Intl.DateTimeFormat("en-UK", {
@@ -307,35 +242,41 @@ export default {
     },
 
     groupedOrders() {
-      const grouped = this.orders.reduce((acc, order) => {
-        const existingOrder = acc.find(item => item.menu_id === order.menu_id);
+      const groupedByDate = this.orders.reduce((acc, order) => {
+        if (!acc[order.order_date]) {
+          acc[order.order_date] = [];
+        }
+
+        const existingOrder = acc[order.order_date].find(item => item.menu_id === order.menu_id);
         if (existingOrder) {
-          // ถ้ามีเมนูนี้อยู่แล้ว รวม quantity
           existingOrder.quantity += order.quantity;
         } else {
-          // ถ้าไม่มีก็เพิ่มเมนูใหม่
-          acc.push({
+          acc[order.order_date].push({
             menu_id: order.menu_id,
             quantity: order.quantity,
-            menu_name: this.getMenuName(order.menu_id), // ชื่อเมนู
-            menu_eng_name: this.getMenuEngName(order.menu_id), // ชื่อเมนูภาษาอังกฤษ
-            order_date: order.order_date, // เพิ่ม order_date
-            menu_type_id: order.menu_type_id, // เพิ่ม menu_type_id
+            menu_name: this.getMenuName(order.menu_id),
+            menu_eng_name: this.getMenuEngName(order.menu_id),
+            order_date: order.order_date,
+            menu_type_id: order.menu_type_id,
           });
         }
+
         return acc;
-      }, []);
-      return grouped;
+      }, {});
+
+      // แปลง object เป็น array
+      return Object.keys(groupedByDate).flatMap(order_date => groupedByDate[order_date]);
     }
+
 
 
   },
   methods: {
-    goToPage(page) {
-      if (page >= 1 && page <= this.totalPages) {
-        this.currentPage = page;
-      }
-    },
+    // goToPage(page) {
+    //   if (page >= 1 && page <= this.totalPages) {
+    //     this.currentPage = page;
+    //   }
+    // },
     // updatePage() {
     //     const startIndex = (this.currentPage - 1) * this.itemsPerPage;
     //     const endIndex = startIndex + this.itemsPerPage;
@@ -430,15 +371,16 @@ export default {
 
     async fetchLookupData() {
       try {
-        const [customersRes, menuRes, menuTypeRes] = await Promise.all([
+        const [customersRes, menuRes, menuTypeRes, mealTypeRes] = await Promise.all([
           axios.get("http://127.0.0.1:3333/customers"),
           axios.get("http://127.0.0.1:3333/menus"),
           axios.get("http://127.0.0.1:3333/menu-types"),
+          axios.get("http://127.0.0.1:3333/meal-types"),
         ]);
         this.customers = customersRes.data;
         this.menus = menuRes.data;
         this.menu_types = menuTypeRes.data;
-
+        this.meal_types = mealTypeRes.data;
       } catch (error) {
         console.error("Error fetching lookup data:", error);
       }
@@ -458,6 +400,14 @@ export default {
     },
     getMenuTypeName(menuId) {
       const menu = this.menu_types.find((c) => c.id === menuId);
+      return menu ? menu.name : null;
+    },
+    getMealTypeID(menuId) {
+      const menu = this.menus.find((c) => c.id === menuId);
+      return menu ? menu.meal_type_id : null;
+    },
+    getMealTypeName(mealId) {
+      const menu = this.meal_types.find((c) => c.id === mealId);
       return menu ? menu.name : null;
     },
     getStatusText(status) {
@@ -688,63 +638,102 @@ export default {
   const tableElement = this.$refs.printTable; // ดึงตารางโดยใช้ ref
 
   if (tableElement) { // ตรวจสอบว่าตารางมีอยู่ใน DOM หรือไม่
-    // สร้างหน้าต่างพิมพ์โดยตรง
-    const printWindow = window.open('', '', 'height=500,width=800,location=no,menubar=no,toolbar=no,status=no,scrollbars=yes,resizable=yes');
+    // ทำการตั้งค่าสไตล์สำหรับการพิมพ์
+    const printStyle = `
+      <style>
+        @media print {
+          body { font-family: Arial, sans-serif; font-size: 12px; margin: 20px; }
+          .table { width: 100%; border-collapse: collapse; }
+          .table th, .table td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+          .header-container { display: flex; justify-content: space-between; align-items: flex-start; width: 100%; }
+          .logo { width: 180px; }
+        }
+      </style>
+    `;
 
-    // เขียนเนื้อหาลงในหน้าต่างพิมพ์
-    printWindow.document.write('<html><head><title>พิมพ์ข้อมูล</title>');
-    printWindow.document.write('<style>');
-    printWindow.document.write('@media print {');
-    printWindow.document.write('body { font-family: Arial, sans-serif; font-size: 12px; margin: 20px; }');
-    printWindow.document.write('.table { width: 100%; border-collapse: collapse; }');
-    printWindow.document.write('.table th, .table td { border: 1px solid #ddd; padding: 8px; text-align: left; }');
-    printWindow.document.write('.header-container { display: flex; justify-content: flex-end; align-items: center; gap: 10px; }');
-    printWindow.document.write('.logo { width: 50px; }');
-    printWindow.document.write('}</style>');
-    printWindow.document.write('</head><body>');
+    // สร้างเนื้อหาที่จะพิมพ์
+    let printContent = `
+      <div class="header-container">
+        <h2><span style="color: black;" class="left-align">Kitchen Orders Report</h2>
+        <img src="/logo_fitfood_full.png" class="logo" id="print-logo">
+      </div>
+    `;
 
-    // ใส่โลโก้และข้อมูล
-    printWindow.document.write('<div class="header-container">');
-    printWindow.document.write('<img src="/fitfood_logo.png" class="logo" id="print-logo">');
-    printWindow.document.write('<h2><span style="color: black;">ABSOLUTE</span><br><span style="color: #EF9122;">FITFOOD</span></h2>');
-    printWindow.document.write('</div>');
-
-    // สร้างกลุ่มข้อมูลตามวันที่
-    const groupedByDate = this.orders.reduce((result, order) => {
+    const groupedData = this.orders.reduce((result, order) => {
       const date = order.order_date;
-      const menuName = order.menu_eng_name;
-      if (!result[date]) {
-        result[date] = {};
+      const menuType = this.getMenuTypeName(order.menu_type_id);
+      const mealType = this.getMealTypeName(this.getMealTypeID(order.menu_id));
+      const menuId = order.menu_id;
+
+      // ดึงชื่อเมนูโดยใช้ getMenuEngName
+      const menuName = this.getMenuEngName(menuId);  // ใช้ฟังก์ชันเพื่อดึงชื่อเมนู
+
+      if (!result[menuType]) result[menuType] = {};
+      if (!result[menuType][date]) result[menuType][date] = {};
+      if (!result[menuType][date][mealType]) result[menuType][date][mealType] = {};
+      if (!result[menuType][date][mealType][menuName]) {
+        result[menuType][date][mealType][menuName] = 0;
       }
-      if (!result[date][menuName]) {
-        result[date][menuName] = 0;
-      }
-      result[date][menuName] += order.quantity; // คำนวณจำนวนเมนูในแต่ละวัน
+      result[menuType][date][mealType][menuName] += order.quantity;
+
       return result;
     }, {});
 
-    // ใส่ข้อมูลในตาราง
-    for (const date in groupedByDate) {
-      printWindow.document.write(`<h3>${this.formatDate(date)}</h3>`); // แสดงวันที่ (formatDate ใช้แปลงเป็นรูปแบบที่ต้องการ)
-      const menuItems = groupedByDate[date];
-      for (const menuName in menuItems) {
-        printWindow.document.write(`<p>${menuName}: ${menuItems[menuName]}</p>`); // แสดงชื่อเมนูและจำนวน
+    let isFirstPage = true;
+
+    for (const menuType in groupedData) {
+      if (isFirstPage) {
+        printContent += `<h2 style="text-align: center;">${menuType}</h2>`;
+        isFirstPage = false; // หลังจากหน้าแรกแล้วให้ไม่แสดงบนหน้าแรกอีก
+      } else {
+        printContent += `<h2 style="page-break-before: always; text-align: center;">${menuType}</h2>`;
+      }
+
+      for (const date in groupedData[menuType]) {
+        printContent += `<h3>${this.formatDate(date)}</h3>`; // แสดง วันที่
+
+        for (const mealType in groupedData[menuType][date]) {
+          printContent += `<h3 style="color: #EF9118; text-decoration: underline;">${mealType}</h3>`; // แสดง Meal Type และขีดเส้นใต้
+
+          const menuItems = groupedData[menuType][date][mealType];
+          for (const menuName in menuItems) {
+            printContent += `<p><strong>${menuItems[menuName]}</strong> - ${menuName}</p>`; // แสดงชื่อเมนูและจำนวน
+          }
+        }
+        printContent += `<br>`; // แสดงชื่อเมนูและจำนวน
       }
     }
 
-    printWindow.document.write('</body></html>');
+    // สร้าง HTML สำหรับการพิมพ์
+    const printWindowContent = `
+      <html>
+        <head>
+          ${printStyle}
+        </head>
+        <body>
+          ${printContent}
+        </body>
+      </html>
+    `;
 
+    // สร้างไฟล์ที่ต้องการพิมพ์และเรียกคำสั่งพิมพ์
+    const printWindow = window.open('', '', 'width=800,height=600');
+    printWindow.document.write(printWindowContent);
     printWindow.document.close();
 
-    // รอให้โหลดหน้าต่างเสร็จแล้วเรียกใช้คำสั่งพิมพ์
+    // รอให้โหลดเสร็จแล้วสั่งพิมพ์
     printWindow.onload = () => {
-      printWindow.print();  // เรียกหน้าต่างพิมพ์
-      printWindow.close();  // ปิดหน้าต่างหลังจากพิมพ์เสร็จ
+      printWindow.print();
+      printWindow.close();
     };
   } else {
     console.error("ไม่พบตารางที่ต้องการพิมพ์");
   }
 }
+
+
+
+
 
 
 
