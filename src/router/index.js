@@ -13,8 +13,11 @@ import RegisterAFF from "@/views/users/RegisterAFFPage.vue";
 
 import Home from "../views/HomePage.vue";
 
-import SalesRecord from "../views/SalesRecordPage.vue";
-import SalesRecordAddit from "../views/SalesRecrdAdditPage.vue";
+import SalesRecord from "@/views/sale-records/SalesRecordPage.vue";
+import SalesRecordAddit from "@/views/sale-records/SalesRecrdAdditPage.vue";
+
+import SalesRecordHHB from "@/views/sale-records/SalesRecordHHBPage.vue";
+import SalesRecordAdditHHB from "@/views/sale-records/SalesRecrdHHBAdditPage.vue";
 
 import DailySale from "../views/DailySalePage.vue";
 import Customers from "../views/customers/CustomersPage.vue";
@@ -28,6 +31,7 @@ import PromotionTypesPage from "@/views/packages/PromotionTypesPage.vue";
 import Program from "@/views/packages/ProgramsPage.vue";
 import Package from "@/views/packages/PakagesPage.vue";
 import PackageType from "@/views/packages/PackageTypesPage.vue";
+import AdditionalTypes from "@/views/packages/AdditionalTypesPage.vue";
 
 import ZoneDeliveryType from "@/views/zones/ZoneDeliveryTypePage.vue";
 import ZoneDelivery from "@/views/zones/ZoneDeliveryPage.vue";
@@ -129,6 +133,18 @@ const routes = [
     path: "/sale-records-additional",
     name: "บันทึกการขาย Additional",
     component: SalesRecordAddit,
+    meta: { title: "บันทึกการขาย - Absolute FitFood" },
+  },
+  {
+    path: "/sale-records-hhb",
+    name: "บันทึกการขาย HHB",
+    component: SalesRecordHHB,
+    meta: { title: "บันทึกการขาย - Absolute FitFood" },
+  },
+  {
+    path: "/sale-records-additional-hhb",
+    name: "บันทึกการขาย Additional HHB",
+    component: SalesRecordAdditHHB,
     meta: { title: "บันทึกการขาย - Absolute FitFood" },
   },
 
@@ -245,6 +261,13 @@ const routes = [
     component: PackageType,
     meta: { title: "ข้อมูลประเภทแพ็คเกจ - Absolute FitFood" },
   },
+  {
+    path: "/additional-types",
+    name: "ข้อมูล Sales Type (Additional Sales)",
+    component: AdditionalTypes,
+    meta: { title: "ข้อมูล Sales Type (Additional Sales) - Absolute FitFood" },
+  },
+
   {
     path: "/zone-delivery-types",
     name: "ข้อมูลประเภทโซนการจัดส่ง",

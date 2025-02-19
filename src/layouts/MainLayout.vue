@@ -149,19 +149,31 @@
             </header>
 
             <div v-if="$route.path === '/customers' || $route.path === '/customers-hhb'"
-                class="pt-16 p-4 flex items-left space-x-6 text-m font-bold">
+                class="mt-4 p-4 flex items-left space-x-6 text-m font-bold">
                 <router-link to="customers" class="hover:text-custom-orange"
                     :class="{ 'text-custom-orange border-b-2 border-custom-orange': $route.path === '/' || $route.path === '/customers' }">
-                    ข้อมูลลูกค้า AFF
+                    Absolute FitFood
                 </router-link>
                 <router-link to="/customers-hhb" class="hover:text-custom-orange"
                     :class="{ 'text-custom-orange border-b-2 border-custom-orange': $route.path === '/customers-hhb' }">
-                    ข้อมูลลูกค้า HHB
+                    Happy Healthy Box
                 </router-link>
             </div>
 
-            <div v-if="$route.path === '/packages' || $route.path === '/programs' || $route.path === '/promotion-types' || $route.path === '/package-types'"
-                class="pt-16 p-4 flex items-left space-x-6 text-m font-bold">
+            <div v-if="$route.path === '/sale-records' || $route.path === '/sale-records-hhb'"
+                class="mt-4 p-4 flex items-left space-x-6 text-m font-bold">
+                <router-link to="sale-records" class="hover:text-custom-orange"
+                    :class="{ 'text-custom-orange border-b-2 border-custom-orange': $route.path === '/' || $route.path === '/sale-records' }">
+                    Absolute FitFood
+                </router-link>
+                <router-link to="/sale-records-hhb" class="hover:text-custom-orange"
+                    :class="{ 'text-custom-orange border-b-2 border-custom-orange': $route.path === '/sale-records-hhb' }">
+                    Happy Healthy Box
+                </router-link>
+            </div>
+
+            <div v-if="$route.path === '/packages' || $route.path === '/programs' || $route.path === '/promotion-types' || $route.path === '/package-types' || $route.path === '/additional-types'"
+                class="mt-4 p-4 flex items-left space-x-6 text-m font-bold">
                 <router-link to="packages" class="hover:text-custom-orange"
                     :class="{ 'text-custom-orange border-b-2 border-custom-orange': $route.path === '/' || $route.path === '/packages' }">
                     ข้อมูลแพ็คเกจ
@@ -178,10 +190,14 @@
                     :class="{ 'text-custom-orange border-b-2 border-custom-orange': $route.path === '/package-types' }">
                     ข้อมูลประเภทแพ็คเกจ
                 </router-link>
+                <router-link to="/additional-types" class="hover:text-custom-orange"
+                    :class="{ 'text-custom-orange border-b-2 border-custom-orange': $route.path === '/additional-types' }">
+                    ข้อมูล Sales Type (Additional Sales)
+                </router-link>
             </div>
 
             <div v-if="$route.path === '/zone-deliveries' || $route.path === '/zone-delivery-types'"
-                class="pt-16 p-4 flex items-left space-x-6 text-m font-bold">
+                class="mt-4 p-4 flex items-left space-x-6 text-m font-bold">
                 <router-link to="/zone-deliveries" class="hover:text-custom-orange"
                     :class="{ 'text-custom-orange border-b-2 border-custom-orange': $route.path === '/' || $route.path === '/zone-deliveries' }">
                     ข้อมูลโซนการจัดส่ง
@@ -193,7 +209,7 @@
             </div>
 
             <div v-if="$route.path === '/menus' || $route.path === '/meal-types' || $route.path === '/menu-types'"
-                class="pt-16 p-4 flex items-left space-x-6 text-m font-bold">
+                class="mt-4 p-4 flex items-left space-x-6 text-m font-bold">
                 <router-link to="menus" class="hover:text-custom-orange"
                     :class="{ 'text-custom-orange border-b-2 border-custom-orange': $route.path === '/' || $route.path === '/menus' }">
                     ข้อมูลเมนู
@@ -209,7 +225,7 @@
             </div>
 
             <div v-if="$route.path === '/setup-menu-ph' || $route.path === '/setup-menu-hhb' || $route.path === '/setup-menu-lc' || $route.path === '/setup-menu-fl' || $route.path === '/setup-menu-bpd' || $route.path === '/setup-menu-diabete' || $route.path === '/setup-menu-fat-disease'"
-                class="pt-16 p-4 flex items-left space-x-6 text-m font-bold">
+                class="mt-4 p-4 flex items-left space-x-6 text-m font-bold">
                 <router-link to="/setup-menu-ph" class="hover:text-custom-orange"
                     :class="{ 'text-custom-orange border-b-2 border-custom-orange': $route.path === '/setup-menu-ph' }">
                     Premeium Health
@@ -241,7 +257,7 @@
             </div>
 
             <!-- Content of the page -->
-            <div class="pt-16">
+            <div class="mt-4">
                 <router-view></router-view>
             </div>
         </main>
@@ -284,12 +300,26 @@ export default {
                     this.pageIcon = "groups";
                     this.pageTitle = "ข้อมูลลูกค้า";
                     break;
+
                 case "บันทึกการขาย":
                     this.pageIcon = "contact_page";
                     break;
+                case "บันทึกการขาย Additional":
+                    this.pageIcon = "contact_page";
+                    this.pageTitle = "บันทึกการขาย";
+                    break;
+                case "บันทึกการขาย HHB":
+                    this.pageIcon = "contact_page";
+                    break;
+                case "บันทึกการขาย Additional HHB":
+                    this.pageIcon = "contact_page";
+                    this.pageTitle = "บันทึกการขาย";
+                    break;
+
                 case "ยอดขายประจำวัน":
                     this.pageIcon = "calendar_month";
                     break;
+
                 case "Setup Menu Premium Health":
                 case "Setup Menu Happy Healthy Box":
                 case "Setup Menu Low Carb":
@@ -302,7 +332,7 @@ export default {
                 case "รายการอาหารประจำวันของลูกค้า":
                     this.pageIcon = "receipt_long";
                     break;
-                    case "Kitchen Orders":
+                case "Kitchen Orders":
                     this.pageIcon = "stockpot";
                     break;
 
@@ -380,9 +410,5 @@ body {
     overflow-x: hidden;
     overflow-y: auto;
     height: 100%;
-}
-
-.pt-16 {
-    padding-top: 20px;
 }
 </style>

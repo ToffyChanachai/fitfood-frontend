@@ -1,10 +1,27 @@
 <template>
-    <div class="mt-[-20px]">
+      <div class="fixed top-4 right-8 bg-green-500 text-white px-8 py-4 flex items-center space-x-4 rounded-lg shadow-lg transition-opacity duration-300 z-50"
+            :class="{ 'opacity-100': showSuccessToast, 'opacity-0': !showSuccessToast }">
+            <span class="material-symbols-outlined text-white">check_circle</span>
+            <span>{{ toastSuccessMessage }}</span>
+            <button @click="showSuccessToast = false" class="text-white hover:text-gray-200 focus:outline-none">
+                <span class="material-symbols-outlined text-xl">close</span>
+            </button>
+        </div>
 
+        <div class="fixed top-4 right-8 bg-red-500 text-white px-8 py-4 flex items-center space-x-4 rounded-lg shadow-lg transition-opacity duration-300 z-50"
+            :class="{ 'opacity-100': showFailToast, 'opacity-0': !showFailToast }">
+            <span class="material-symbols-outlined text-white">cancel</span>
+            <span>{{ toastFailMessage }}</span>
+            <button @click="showFailToast = false" class="text-white hover:text-gray-200 focus:outline-none">
+                <span class="material-symbols-outlined text-xl">close</span>
+            </button>
+        </div>
+
+    <div class="mt-[-20px]">
         <div class="flex space-x-2 items-center relative">
             <div class="mt-4 px-4 flex items-center space-x-1 mr-auto ">
                 <!-- <span class="material-symbols-outlined text-2xl text-gray-700">person</span> -->
-                <span class="text-m text-gray-700">จำนวนประเภทโปรโมชันทั้งหมด: </span>
+                <span class="text-m text-gray-700">จำนวน Sales Type (Additional Sales) ทั้งหมด: </span>
                 <span class="text-m text-custom-orange font-bold"> {{ promotion_types.length }} รายการ</span>
             </div>
 
@@ -12,16 +29,27 @@
                 <button @click="openAddModal"
                     class="bg-custom-orange text-white px-2 py-2 rounded-md flex items-center space-x-1 hover:bg-custom-orange-hover">
                     <span class="material-symbols-outlined text-white text-xl leading-none">add</span>
-                    <span class="text-white text-base leading-none">เพิ่มข้อมูล</span>
+                    <span class="text-white text-base leading-none">เพิ่มประเภทแพ็คเกจ</span>
                 </button>
 
                 <div v-if="isAddModalOpen"
-                    class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div class="bg-white rounded-md shadow-lg w-1000">
+                class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
+
+                    <div class="absolute top-8 left-1/2 transform -translate-x-1/2 bg-yellow-500 text-white px-8 py-4 flex items-center space-x-4 rounded-lg shadow-lg transition-opacity duration-300 z-60"
+                        :class="{ 'opacity-100': showErrorToast, 'opacity-0': !showErrorToast }">
+                        <span class="material-symbols-outlined text-white">error</span>
+                        <span>{{ toastErrorMessage }}</span>
+                        <button @click="showErrorToast = false"
+                            class="text-white hover:text-gray-200 focus:outline-none">
+                            <span class="material-symbols-outlined text-xl">close</span>
+                        </button>
+                    </div>
+
+                    <div class="bg-white rounded-md shadow-lg w-1/2 max-w-3xl h-auto max-h-[800px] flex flex-col">
                         <div
                             class="flex justify-between items-center bg-custom-orange text-white px-4 py-2 rounded-t-md">
                             <div class="flex-1 flex items-left">
-                                <span class="text-xl font-bold">เพิ่มข้อมูลใหม่</span>
+                                <span class="text-xl font-bold">เพิ่ม Sales Type (Additional Sales)</span>
                             </div>
                             <div class="flex space-x-2">
                                 <span @click="closeAddModal"
@@ -30,22 +58,29 @@
                                 </span>
                             </div>
                         </div>
-                        <div class="bg-white rounded-lg p-6 w-[400px]">
-                            <form @submit.prevent="addPromotionType">
+
+                        <div class="p-6 space-y-4 overflow-y-auto flex-grow">
                                 <div class="mb-4">
-                                    <label for="name" class="block text-gray-700">ชื่อโปรโมชั่น</label>
+                                    <label for="name" class="block text-gray-700">ชื่อ Sales Type (Additional Sales)</label>
                                     <input type="text" id="name" v-model="newPromotionType.name"
                                         class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-custom-orange" />
                                 </div>
-                                <div class="flex justify-end space-x-2">
-                                    <button @click="closeAddModal"
-                                        class="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400">ยกเลิก</button>
-                                    <button type="submit"
-                                        class="bg-custom-orange text-white px-2 py-1 rounded hover:bg-custom-orange-hover flex items-center space-x-30">
-                                        <span class="material-symbols-outlined">save</span>บันทึก</button>
-                                </div>
-                            </form>
+
+                            
                         </div>
+                        <div class="flex justify-end space-x-4 p-4 bg-white border-t rounded-b-md list-none">
+                            <div class="flex space-x-2">
+                                <button @click="closeAddModal"
+                                    class="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400 text-gray-700">
+                                    ยกเลิก
+                                </button>
+                                <button @click="addPromotionType"
+                                    class="px-4 py-2 rounded bg-custom-orange text-white hover:bg-custom-orange-hover">
+                                    บันทึก
+                                </button>
+                            </div>
+                        </div>
+                        
                     </div>
                 </div>
             </div>
@@ -111,9 +146,9 @@
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="(promotion_type, index) in filteredPromotionType" :key="index"
+                <tr v-for="(promotion_type, index) in filteredPackageType" :key="index"
                     class="customers-data bg-white relative">
-                    <td class="px-4 py-2 align-top">{{ promotion_type.id }}</td>
+                    <td class="px-4 py-2 align-top pb-5">{{ (currentPage - 1) * itemsPerPage + index + 1 }}</td>
                     <td class="px-4 py-2 align-top font-bold text-custom-orange">{{ promotion_type.name }}</td>
                     <td class="px-4 py-2 align-top text-right">
                         <div class="flex justify-end space-x-2">
@@ -133,7 +168,7 @@
                     </td>
                 </tr>
 
-                <tr v-if="filteredPromotionType.length === 0">
+                <tr v-if="filteredPackageType.length === 0">
                     <td colspan="6" class="py-20 bg-white text-center text-gray-500 font-bold">
                         ไม่พบข้อมูลที่ค้นหา
                     </td>
@@ -141,10 +176,21 @@
             </tbody>
 
             <div v-if="isEditModalOpen"
-                class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-                <div class="bg-white rounded-md shadow-lg w-1000">
+            class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
+
+            <div class="absolute top-8 left-1/2 transform -translate-x-1/2 bg-yellow-500 text-white px-8 py-4 flex items-center space-x-4 rounded-lg shadow-lg transition-opacity duration-300 z-60"
+                        :class="{ 'opacity-100': showErrorToast, 'opacity-0': !showErrorToast }">
+                        <span class="material-symbols-outlined text-white">error</span>
+                        <span>{{ toastErrorMessage }}</span>
+                        <button @click="showErrorToast = false"
+                            class="text-white hover:text-gray-200 focus:outline-none">
+                            <span class="material-symbols-outlined text-xl">close</span>
+                        </button>
+                    </div>
+
+            <div class="bg-white rounded-md shadow-lg w-1000">
                     <div class="flex justify-between items-center bg-custom-orange text-white px-4 py-2 rounded-t-md">
-                        <span class="font-bold">แก้ไข Promotion Type</span>
+                        <span class="font-bold">แก้ไขประเภทแพ็คเกจ</span>
                         <div class="flex space-x-2">
                             <span @click="closeEditModal"
                                 class="material-symbols-outlined cursor-pointer hover:text-gray-200">
@@ -174,8 +220,19 @@
 
             <!-- Modal ยืนยันการลบ -->
             <div v-if="isDeleteModalOpen"
-                class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-                <div class="bg-white rounded-lg shadow-md w-1/3">
+            class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
+
+            <div class="absolute top-8 left-1/2 transform -translate-x-1/2 bg-yellow-500 text-white px-8 py-4 flex items-center space-x-4 rounded-lg shadow-lg transition-opacity duration-300 z-60"
+                        :class="{ 'opacity-100': showErrorToast, 'opacity-0': !showErrorToast }">
+                        <span class="material-symbols-outlined text-white">error</span>
+                        <span>{{ toastErrorMessage }}</span>
+                        <button @click="showErrorToast = false"
+                            class="text-white hover:text-gray-200 focus:outline-none">
+                            <span class="material-symbols-outlined text-xl">close</span>
+                        </button>
+                    </div>
+
+            <div class="bg-white rounded-lg shadow-md w-1/3">
                     <div class="flex justify-between items-center bg-red-500 text-white px-4 py-2 rounded-t">
                         <h2 class="text-lg font-bold">ยืนยันการลบ</h2>
                         <span @click="closeDeleteModal"
@@ -250,11 +307,11 @@ export default {
     name: "PromotionTypePage",
     data() {
         return {
-            headers: ['รหัส', 'ชื่อ', ""],
+            headers: ['#', 'ชื่อ', ""],
             headerWidths: ['10%', '85%', '5%'],
 
             searchQuery: "",
-            filteredPromotionType: [],
+            filteredPackageType: [],
 
             isSortDropdownOpen: false,
             sortDirection: {
@@ -277,6 +334,13 @@ export default {
 
             isDeleteModalOpen: false, // สถานะการแสดง Modal
             itemToDelete: null,
+
+            toastSuccessMessage: "",
+            showSuccessToast: false,
+            toastFailMessage: "",
+            showFailToast: false,
+            showErrorToast: false,
+            toastErrorMessage: "",
 
         };
     },
@@ -315,10 +379,10 @@ export default {
         },
     },
     methods: {
-        async fetchPromotionTypes() {
+        async fetchPackageTypes() {
             try {
-                const response = await axios.get('http://127.0.0.1:3333/promotion-types');
-                this.filteredPromotionType = response.data;
+                const response = await axios.get('http://127.0.0.1:3333/additional-types');
+                this.filteredPackageType = response.data;
                 console.log("Response data:", response.data);
                 this.promotion_types = response.data;
                 this.updatePage();
@@ -333,7 +397,7 @@ export default {
                 return matchesSearch;
             });
             this.currentPage = 1;
-            this.filteredPromotionType = filtered;
+            this.filteredPackageType = filtered;
             this.updatePage();
         },
         clearSearch() {
@@ -350,7 +414,7 @@ export default {
             const startIndex = (this.currentPage - 1) * this.itemsPerPage;
             const endIndex = startIndex + this.itemsPerPage;
 
-            this.filteredPromotionType = this.promotion_types.filter((promotion_type) => {
+            this.filteredPackageType = this.promotion_types.filter((promotion_type) => {
                 const matchesSearch = promotion_type.name.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
                     promotion_type.id.toString().includes(this.searchQuery);
                 return matchesSearch;
@@ -399,7 +463,7 @@ export default {
         },
         async saveChanges() {
             try {
-                await axios.put(`http://127.0.0.1:3333/promotion-types/${this.selectedPromotionType.id}`, {
+                await axios.put(`http://127.0.0.1:3333/additional-types/${this.selectedPromotionType.id}`, {
                     name: this.selectedPromotionType.name,
                 });
                 const index = this.promotion_types.findIndex(pt => pt.id === this.selectedPromotionType.id);
@@ -407,9 +471,10 @@ export default {
                     this.promotion_types[index] = { ...this.selectedPromotionType };
                     this.updatePage();
                 }
+                this.showSuccessToastNotification("แก้ไขข้อมูลสำเร็จ!");
                 this.isEditModalOpen = false;
             } catch (error) {
-                console.error("Error updating promotion type:", error);
+                this.showErrorToastNotification("เกิดข้อผิดพลาดในการแก้ไขข้อมูล!");
             }
         },
         closeEditModal() {
@@ -427,16 +492,16 @@ export default {
         },
         async deleteConfirmed() {
             try {
-                await axios.delete(`http://127.0.0.1:3333/promotion-types/${this.itemToDelete}`);
+                await axios.delete(`http://127.0.0.1:3333/additional-types/${this.itemToDelete}`);
                 this.promotion_types = this.promotion_types.filter(
                     (item) => item.id !== this.itemToDelete
                 );
                 this.closeDeleteModal();
                 this.updatePage();
-                // alert("ลบข้อมูลสำเร็จ");
-            } catch (error) {
+                this.showFailToastNotification("ลบข้อมูลสำเร็จ!");
+                        } catch (error) {
                 console.error("Error deleting item:", error);
-                alert("เกิดข้อผิดพลาดในการลบข้อมูล");
+                this.showErrorToastNotification("เกิดข้อผิดพลาดในการลบข้อมูล!");
             }
         },
 
@@ -449,29 +514,50 @@ export default {
         },
         async addPromotionType() {
             if (!this.newPromotionType.name.trim()) {
-                alert('กรุณากรอกชื่อโปรโมชั่น');
+                this.showErrorToastNotification("กรุณากรอกชื่อ!");
                 return;
             }
             try {
-                const response = await axios.post('http://127.0.0.1:3333/promotion-types', this.newPromotionType);
+                const response = await axios.post('http://127.0.0.1:3333/additional-types', this.newPromotionType);
                 this.promotion_types.push(response.data);
                 this.updatePage();
+                this.showSuccessToastNotification("เพิ่มข้อมูลสำเร็จ!");
                 this.closeAddModal();
             } catch (error) {
-                console.error('Error adding promotion type:', error);
-                alert('เกิดข้อผิดพลาดในการเพิ่มข้อมูล');
+                this.showErrorToastNotification("เกิดข้อผิดพลาดในการเพิ่มข้อมูล!");
             }
+        },
+        showSuccessToastNotification(message) {
+            this.toastSuccessMessage = message;
+            this.showSuccessToast = true;
+            setTimeout(() => {
+                this.showSuccessToast = false;
+            }, 3000);
+        },
+        showFailToastNotification(message) {
+            this.toastFailMessage = message;
+            this.showFailToast = true;
+            setTimeout(() => {
+                this.showFailToast = false;
+            }, 3000);
+        },
+        showErrorToastNotification(message) {
+            this.toastErrorMessage = message;
+            this.showErrorToast = true;
+            setTimeout(() => {
+                this.showErrorToast = false;
+            }, 3000);
         },
     },
     created() {
-        this.filteredPromotionType = this.promotion_types;
+        this.filteredPackageType = this.promotion_types;
         this.sortData('id');
-        this.fetchPromotionTypes();
+        this.fetchPackageTypes();
         this.updatePage();
     },
     mounted() {
         document.addEventListener('click', this.handleClickOutside);
-        this.fetchPromotionTypes();
+        this.fetchPackageTypes();
         this.updatePage();
     },
     beforeUnmount() {

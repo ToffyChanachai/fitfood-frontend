@@ -94,9 +94,9 @@
                 'consignment'
               ">
                 <div>
-                  <label for="additional_type" class="block font-bold text-gray-700">ประเภทรายการ</label>
+                  <label for="additional_type" class="block font-bold text-gray-700">Sales Type (Additional Sales)</label>
                   <multiselect v-model="saleRecord.additional_type_id" :options="additionalTypes"
-                    placeholder="เลือกประเภทรายการ" track-by="id" label="name" />
+                    placeholder="เลือก Sales Type (Additional Sales)" track-by="id" label="name" />
                 </div>
 
                 <div>
@@ -597,18 +597,18 @@
     </div>
 
     <div v-if="
-      $route.path === '/sale-records' ||
-      $route.path === '/sale-records-additional'
+      $route.path === '/sale-records-hhb' ||
+      $route.path === '/sale-records-hhb-additional'
     " class="p-4 flex items-left space-x-6 text-m font-bold">
       <router-link to="sale-records" class="hover:text-custom-orange" :class="{
         'text-custom-orange border-b-2 border-custom-orange':
-          $route.path === '/' || $route.path === '/sale-records',
+          $route.path === '/' || $route.path === '/sale-records-hhb',
       }">
         บันทึกการขาย 1st Timer, Package Renewal
       </router-link>
       <router-link to="sale-records-additional" class="hover:text-custom-orange" :class="{
         'text-custom-orange border-b-2 border-custom-orange':
-          $route.path === '/' || $route.path === '/sale-records-additional',
+          $route.path === '/' || $route.path === '/sale-records-hhb-additional',
       }">
         บันทึกการขาย Additional Sales
       </router-link>
@@ -2164,7 +2164,7 @@ export default {
       }
 
       try {
-        const response = await axios.post("http://127.0.0.1:3333/sale-records", {
+        const response = await axios.post("http://127.0.0.1:3333/sale-records-hhb", {
           customer_id: this.saleRecord.customer_id?.id || null,
           promotion_type_id: this.saleRecord.promotion_type_id?.id || null,
           program_id: this.saleRecord.program_id?.id || null,
@@ -2327,7 +2327,7 @@ export default {
 
       try {
         const response = await axios.put(
-          `http://127.0.0.1:3333/sale-records/${this.selectedSaleRecord.id}`,
+          `http://127.0.0.1:3333/sale-records-hhb/${this.selectedSaleRecord.id}`,
           {
             customer_id: this.selectedSaleRecord.customer_id?.id || null,
             promotion_type_id: this.selectedSaleRecord.promotion_type_id?.id || null,
@@ -2432,7 +2432,7 @@ export default {
           receiveFoodRes,
           selectFoodRes,
         ] = await Promise.all([
-          axios.get("http://127.0.0.1:3333/customers"),
+          axios.get("http://127.0.0.1:3333/customers-hhb"),
           axios.get("http://127.0.0.1:3333/promotion-types"),
           axios.get("http://127.0.0.1:3333/programs"),
           axios.get("http://127.0.0.1:3333/packages"),
@@ -2514,7 +2514,7 @@ export default {
 
     async fetchSaleRecords() {
       try {
-        const response = await axios.get("http://127.0.0.1:3333/sale-records");
+        const response = await axios.get("http://127.0.0.1:3333/sale-records-hhb");
         this.saleRecords = response.data;
         this.filteredSaleRecords = response.data;
         this.saleRecords.sort((a, b) => a.id - b.id);
@@ -2632,7 +2632,7 @@ export default {
     async deleteConfirmed() {
       try {
         await axios.delete(
-          `http://127.0.0.1:3333/sale-records/${this.itemToDelete}`
+          `http://127.0.0.1:3333/sale-records-hhb/${this.itemToDelete}`
         );
         this.saleRecords = this.saleRecords.filter(
           (item) => item.id !== this.itemToDelete
@@ -3023,7 +3023,7 @@ export default {
         };
 
         const response = await axios.put(
-          `http://127.0.0.1:3333/sale-records/${this.selectedSaleRecord.id}/payment-status`,
+          `http://127.0.0.1:3333/sale-records-hhb/${this.selectedSaleRecord.id}/payment-status`,
           payload
         );
         await this.fetchSaleRecords();

@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="mt-[-20px]">
         <div class="fixed top-4 right-8 bg-green-500 text-white px-8 py-4 flex items-center space-x-4 rounded-lg shadow-lg transition-opacity duration-300 z-50"
             :class="{ 'opacity-100': showSuccessToast, 'opacity-0': !showSuccessToast }">
             <span class="material-symbols-outlined text-white">check_circle</span>
