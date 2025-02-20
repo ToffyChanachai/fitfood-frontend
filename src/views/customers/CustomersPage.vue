@@ -88,8 +88,8 @@
             <tbody>
                 <template v-if="filteredCustomers.length > 0">
                     <tr v-for="(customer, index) in filteredCustomers" :key="index"
-                        class="customers-data bg-white relative">
-                        <td class="px-4 py-2 align-top pb-5">{{ (currentPage - 1) * itemsPerPage + index + 1 }}</td>
+                    class=" bg-white relative border-b border-b-gray-200">
+                    <td class="px-4 py-2 align-top pb-5">{{ (currentPage - 1) * itemsPerPage + index + 1 }}</td>
                         <td class="px-4 py-2 align-top font-bold text-custom-orange pb-5">{{ customer.name }}</td>
                         <td class="px-4 py-2 align-top pb-5">{{ customer.customer_id }}</td>
                         <td class="px-4 py-2 align-top pb-5">
@@ -700,9 +700,7 @@ export default {
             this.isEditModalOpen = false; // ปิด Modal
             this.selectedCustomer = {}; // รีเซ็ตข้อมูลลูกค้าที่เลือก
         },
-        onDelete(customer) {
-            alert(`ลบข้อมูล: ${customer.name}`);
-        },
+        
 
         confirmDelete(itemId) {
             this.itemToDelete = itemId;

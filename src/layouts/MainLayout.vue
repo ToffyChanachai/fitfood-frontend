@@ -100,6 +100,11 @@
                                     <span v-if="isExpanded">ข้อมูลเมนู</span>
                                 </router-link>
                             </li>
+                            <li class="hover:bg-custom-orange-hover">
+                                <router-link to="/users" class=" py-2 px-4 flex items-center space-x-2">
+                                    <span v-if="isExpanded">ข้อมูลผู้ใช้งาน</span>
+                                </router-link>
+                            </li>
                         </ul>
                     </li>
                 </ul>
@@ -160,14 +165,14 @@
                 </router-link>
             </div>
 
-            <div v-if="$route.path === '/sale-records' || $route.path === '/sale-records-hhb'"
+            <div v-if="$route.path === '/sale-records' || $route.path === '/sale-records-hhb' || $route.path === '/sale-records-additional' || $route.path === '/sale-records-additional-hhb'"
                 class="mt-4 p-4 flex items-left space-x-6 text-m font-bold">
                 <router-link to="sale-records" class="hover:text-custom-orange"
-                    :class="{ 'text-custom-orange border-b-2 border-custom-orange': $route.path === '/' || $route.path === '/sale-records' }">
+                    :class="{ 'text-custom-orange border-b-2 border-custom-orange': $route.path === '/' || $route.path === '/sale-records' || $route.path === '/sale-records-additional'  }">
                     Absolute FitFood
                 </router-link>
                 <router-link to="/sale-records-hhb" class="hover:text-custom-orange"
-                    :class="{ 'text-custom-orange border-b-2 border-custom-orange': $route.path === '/sale-records-hhb' }">
+                    :class="{ 'text-custom-orange border-b-2 border-custom-orange': $route.path === '/sale-records-hhb' || $route.path === '/sale-records-additional-hhb' }">
                     Happy Healthy Box
                 </router-link>
             </div>
@@ -176,19 +181,19 @@
                 class="mt-4 p-4 flex items-left space-x-6 text-m font-bold">
                 <router-link to="packages" class="hover:text-custom-orange"
                     :class="{ 'text-custom-orange border-b-2 border-custom-orange': $route.path === '/' || $route.path === '/packages' }">
-                    ข้อมูลแพ็คเกจ
+                    ข้อมูล Package
                 </router-link>
                 <router-link to="/programs" class="hover:text-custom-orange"
                     :class="{ 'text-custom-orange border-b-2 border-custom-orange': $route.path === '/programs' }">
-                    ข้อมูลโปรแกรม
+                    ข้อมูล Program
                 </router-link>
                 <router-link to="/promotion-types" class="hover:text-custom-orange"
                     :class="{ 'text-custom-orange border-b-2 border-custom-orange': $route.path === '/promotion-types' }">
-                    ข้อมูลประเภทโปรโมชัน
+                    ข้อมูล Promotion Types
                 </router-link>
                 <router-link to="/package-types" class="hover:text-custom-orange"
                     :class="{ 'text-custom-orange border-b-2 border-custom-orange': $route.path === '/package-types' }">
-                    ข้อมูลประเภทแพ็คเกจ
+                    ข้อมูล Package Types
                 </router-link>
                 <router-link to="/additional-types" class="hover:text-custom-orange"
                     :class="{ 'text-custom-orange border-b-2 border-custom-orange': $route.path === '/additional-types' }">

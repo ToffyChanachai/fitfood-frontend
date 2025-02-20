@@ -1,22 +1,23 @@
 <template>
-    <div>
-        <div class="fixed top-4 right-8 bg-green-500 text-white px-8 py-4 flex items-center space-x-4 rounded-lg shadow-lg transition-opacity duration-300 z-50"
-            :class="{ 'opacity-100': showSuccessToast, 'opacity-0': !showSuccessToast }">
-            <span class="material-symbols-outlined text-white">check_circle</span>
-            <span>{{ toastSuccessMessage }}</span>
-            <button @click="showSuccessToast = false" class="text-white hover:text-gray-200 focus:outline-none">
-                <span class="material-symbols-outlined text-xl">close</span>
-            </button>
-        </div>
+    <div class="fixed top-4 right-8 bg-green-500 text-white px-8 py-4 flex items-center space-x-4 rounded-lg shadow-lg transition-opacity duration-300 z-50"
+        :class="{ 'opacity-100': showSuccessToast, 'opacity-0': !showSuccessToast }">
+        <span class="material-symbols-outlined text-white">check_circle</span>
+        <span>{{ toastSuccessMessage }}</span>
+        <button @click="showSuccessToast = false" class="text-white hover:text-gray-200 focus:outline-none">
+            <span class="material-symbols-outlined text-xl">close</span>
+        </button>
+    </div>
 
-        <div class="fixed top-4 right-8 bg-red-500 text-white px-8 py-4 flex items-center space-x-4 rounded-lg shadow-lg transition-opacity duration-300 z-50"
-            :class="{ 'opacity-100': showFailToast, 'opacity-0': !showFailToast }">
-            <span class="material-symbols-outlined text-white">cancel</span>
-            <span>{{ toastFailMessage }}</span>
-            <button @click="showFailToast = false" class="text-white hover:text-gray-200 focus:outline-none">
-                <span class="material-symbols-outlined text-xl">close</span>
-            </button>
-        </div>
+    <div class="fixed top-4 right-8 bg-red-500 text-white px-8 py-4 flex items-center space-x-4 rounded-lg shadow-lg transition-opacity duration-300 z-50"
+        :class="{ 'opacity-100': showFailToast, 'opacity-0': !showFailToast }">
+        <span class="material-symbols-outlined text-white">cancel</span>
+        <span>{{ toastFailMessage }}</span>
+        <button @click="showFailToast = false" class="text-white hover:text-gray-200 focus:outline-none">
+            <span class="material-symbols-outlined text-xl">close</span>
+        </button>
+    </div>
+
+    <div class="mt-[-20px]">
 
         <div class="flex space-x-2 items-center relative">
             <div class="mt-4 px-4 flex items-center space-x-1 mr-auto ">
@@ -35,7 +36,7 @@
                 <button @click="openAddModal"
                     class="bg-custom-orange text-white px-2 py-2 rounded-md flex items-center space-x-1 hover:bg-custom-orange-hover">
                     <span class="material-symbols-outlined text-white text-xl leading-none">add</span>
-                    <span class="text-white text-base leading-none">เพิ่มเมนู</span>
+                    <span class="text-white text-base leading-none">เพิ่ม</span>
                 </button>
 
                 <div v-if="isAddModalOpen"
@@ -174,8 +175,8 @@
                     class="bg-custom-orange text-white px-2 py-2 rounded-md flex items-center space-x-1 hover:bg-custom-orange-hover">
                     <span class="material-symbols-outlined text-white text-xl leading-none">sort</span>
                     <span class="text-white text-base leading-none">จัดเรียง</span>
-                    <span
-                        class="material-symbols-outlined text-white text-xl leading-none items-right ml-auto">arrow_drop_down</span>
+                    <span :class="{ 'rotate-180': isSortDropdownOpen }"
+                        class="material-symbols-outlined text-white text-xl leading-none items-right ml-auto duration-300">arrow_drop_down</span>
                 </button>
 
                 <div v-if="isSortDropdownOpen"
@@ -218,8 +219,8 @@
                     class="bg-custom-orange text-white px-2 py-2 rounded-md flex items-center space-x-1 hover:bg-custom-orange-hover">
                     <span class="material-symbols-outlined text-white text-xl leading-none">filter_alt</span>
                     <span class="text-white text-base leading-none">ตัวกรอง</span>
-                    <span
-                        class="material-symbols-outlined text-white text-xl leading-none items-right ml-auto">arrow_drop_down</span>
+                    <span :class="{ 'rotate-180': isFilterDropdownOpen }"
+                        class="material-symbols-outlined text-white text-xl leading-none items-right ml-auto duration-300">arrow_drop_down</span>
                 </button>
 
                 <div v-if="isFilterDropdownOpen"
@@ -262,13 +263,8 @@
                         </div>
                     </div>
                 </div>
-
-
-
-
             </div>
 
-            <!-- Search Input -->
             <div class="flex w-[250px] relative">
                 <input type="text" v-model="searchQuery" placeholder="ค้นหา..."
                     class="border border-gray-300 rounded-l px-4 py-2 w-full" @keyup.enter="search" />
@@ -284,7 +280,7 @@
 
         </div>
 
-        <table class="min-w-full table-fixed border-collapse mt-4">
+        <table class="min-w-full table-auto rounded-t-2xl overflow-hidden mt-4">
             <thead>
                 <tr class="bg-custom-orange text-white">
                     <th v-for="(header, index) in headers" :key="index" :class="['px-4 py-2 text-left font-bold']"
@@ -294,17 +290,18 @@
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="(menu, index) in filteredMenu" :key="index" class="customers-data bg-white relative">
-                    <td class="px-4 py-2 align-top">{{ (currentPage - 1) * itemsPerPage + index + 1 }}</td>
+                <tr v-for="(menu, index) in filteredMenu" :key="index"
+                    class=" bg-white relative border-b border-b-gray-200">
+                    <td class="px-4 py-2 align-top pb-5">{{ (currentPage - 1) * itemsPerPage + index + 1 }}</td>
                     <!-- <td class="px-4 py-2 align-top text-center">
                         <img v-if="menu.image" :src="`http://127.0.0.1:3333/images/${menu.image}`" alt="Menu Image"
                             class="w-16 h-16 object-cover rounded">
                         <span v-else>ไม่มีรูปภาพ</span>
                     </td> -->
 
-                    <td class="px-4 py-2 align-top font-bold text-custom-orange">{{ menu.name_english }}</td>
-                    <td class="px-4 py-2 align-top font-bold">{{ menu.name_thai }}</td>
-                    <td class="px-4 py-2 align-top">
+                    <td class="px-4 py-2 align-top font-bold text-custom-orange pb-5">{{ menu.name_english }}</td>
+                    <td class="px-4 py-2 align-top font-bold pb-5">{{ menu.name_thai }}</td>
+                    <td class="px-4 py-2 align-top pb-5">
                         {{ getMealTypeName(menu.meal_type_id) }}
                         <span v-if="menu.mealType && menu.mealType.menuType">
                             ({{ menu.mealType.menuType.name }})
@@ -313,11 +310,11 @@
                             (ไม่มีข้อมูล)
                         </span>
                     </td>
-                    <td class="px-4 py-2 align-top">{{ menu.cal }}</td>
-                    <td class="px-4 py-2 align-top">{{ menu.protein }}</td>
-                    <td class="px-4 py-2 align-top">{{ menu.fat }}</td>
-                    <td class="px-4 py-2 align-top">{{ menu.carb }}</td>
-                    <td class="px-4 py-2 align-top text-right">
+                    <td class="px-4 py-2 align-top pb-5">{{ menu.cal }}</td>
+                    <td class="px-4 py-2 align-top pb-5">{{ menu.protein }}</td>
+                    <td class="px-4 py-2 align-top pb-5">{{ menu.fat }}</td>
+                    <td class="px-4 py-2 align-top pb-5">{{ menu.carb }}</td>
+                    <td class="px-4 py-2 align-top text-right pb-5">
                         <div class="flex justify-end space-x-2">
                             <button @click="openEditModal(menu)"
                                 class="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 flex items-center space-x-1">
@@ -336,8 +333,8 @@
                 </tr>
 
                 <tr v-if="filteredMenu.length === 0">
-                    <td colspan="10" class="py-20 bg-white text-center text-gray-500 font-bold">
-                        ไม่พบข้อมูลที่ค้นหา
+                    <td colspan="10" class="py-10 bg-white text-center text-gray-500 font-bold">
+                        ไม่พบข้อมูล
                     </td>
                 </tr>
             </tbody>
@@ -499,7 +496,7 @@
         </table>
 
 
-        <div class="pagination-controls flex justify-center items-center space-x-2 bg-white px-4 py-2">
+        <div class="rounded-b-2xl flex justify-center items-center space-x-2 bg-white px-2 py-1">
             <button @click="goToPage(currentPage - 1)" :disabled="currentPage === 1"
                 class="px-3 py-2 rounded-md hover:bg-gray-100 text-custom-orange disabled:opacity-50">
                 <span class="material-symbols-outlined">chevron_left</span>
@@ -555,8 +552,6 @@ export default {
             headerWidths: ['5%', '25%', '20%', '15%', '5%', '5%', '5%', '10%', '10%'],
 
             searchQuery: "",
-            filteredMenu: [],
-
             selectedMealType: [],
             isFilterDropdownOpen: false,
 
@@ -597,7 +592,7 @@ export default {
                 fat: 0,
                 carb: 0,
                 image: '',
-                imageFile: null,    
+                imageFile: null,
             },
             previewImage: '',
 
@@ -663,38 +658,39 @@ export default {
                 return groups;
             }, {});
         },
-        ...mapGetters(["menus"]),
-    },
-    methods: {
-        ...mapActions(["fetchMealTypes", "fetchMenus"]),
-        async fetchMenus() {
-            try {
-                const response = await axios.get('http://127.0.0.1:3333/menus');
-                this.filteredMenu = response.data;
-                console.log("Response data:", response.data);
-                this.menus = response.data;
-                this.menus.sort((a, b) => a.id - b.id);
-                this.updatePage();
-            } catch (error) {
-                console.error("Error fetching menu:", error);
-            }
-        },
-        search() {
+        filteredMenu() {
             const filtered = this.menus.filter((menu) => {
                 const matchesSearch = menu.name_english.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
                     menu.name_thai.toLowerCase().includes(this.searchQuery.toLowerCase());
                 const matchesPromotionType = this.selectedMealType.length === 0 || this.selectedMealType.includes(menu.meal_type_id);
                 return matchesSearch && matchesPromotionType;
             });
-            this.currentPage = 1;
-            this.filteredMenu = filtered;
-            this.updatePage();
-        },
-        clearSearch() {
-            this.searchQuery = '';
-            this.search();
+            const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+            const endIndex = startIndex + this.itemsPerPage;
+            return filtered.slice(startIndex, endIndex);
         },
 
+        ...mapGetters(["menus"]),
+    },
+    methods: {
+        ...mapActions(["fetchMealTypes", "fetchMenus"]),
+
+        async fetchMenus() {
+            try {
+                const response = await axios.get('http://127.0.0.1:3333/menus');
+                this.menus = response.data;
+                this.menus.sort((a, b) => a.id - b.id);
+            } catch (error) {
+                // console.error("Error fetching menu:", error);
+            }
+        },
+        search() {
+            this.currentPage = 1;
+        },
+        clearSearch() {
+            this.searchQuery = "";
+            this.currentPage = 1;
+        },
 
         onFileChange(event) {
             const file = event.target.files[0];
@@ -704,22 +700,9 @@ export default {
             }
         },
 
-
         goToPage(page) {
             if (page < 1 || page > this.totalPages) return;
             this.currentPage = page;
-            this.updatePage();
-        },
-        updatePage() {
-            const startIndex = (this.currentPage - 1) * this.itemsPerPage;
-            const endIndex = startIndex + this.itemsPerPage;
-
-            this.filteredMenu = this.menus.filter((menu) => {
-                const matchesSearch = menu.name_english.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-                    menu.name_thai.toLowerCase().includes(this.searchQuery.toLowerCase());
-                const matchesPromotionType = this.selectedMealType.length === 0 || this.selectedMealType.includes(menu.meal_type_id);
-                return matchesSearch && matchesPromotionType;
-            }).slice(startIndex, endIndex);
         },
 
         toggleSortDropdown() {
@@ -742,14 +725,12 @@ export default {
             });
 
             this.currentPage = 1;
-            this.updatePage();
         },
         clearSort() {
             this.sortColumn = 'id';
             this.sortDirection.id = 1;
             this.menus.sort((a, b) => a.id - b.id);
             this.currentPage = 1;
-            this.updatePage();
         },
 
         toggleFiltterDropdown() {
@@ -768,7 +749,6 @@ export default {
             }
             this.isFilterDropdownOpen = false;
             this.currentPage = 1;
-            this.updatePage();
         },
         toggleSelectMenuTypeAll(menuType) {
             if (this.selectAllMenuTypeState[menuType]) {
@@ -786,7 +766,6 @@ export default {
                 this.selectAllMenuTypeState[key] = false;
             });
             this.applyFilter();
-            this.updatePage();
         },
 
         handleClickOutside(event) {
@@ -833,7 +812,6 @@ export default {
                 formData.append("fat", this.selectedMenu.fat);
                 formData.append("carb", this.selectedMenu.carb);
 
-                // ถ้ามีการเลือกไฟล์รูปภาพ
                 if (this.selectedMenu.imageFile) {
                     formData.append("image", this.selectedMenu.imageFile);
                 }
@@ -853,7 +831,6 @@ export default {
                 }
 
                 this.isEditModalOpen = false;
-                this.updatePage();
                 await this.fetchMenus();
                 this.showSuccessToastNotification("แก้ไขข้อมูลสำเร็จ!");
             } catch (error) {
@@ -881,7 +858,7 @@ export default {
                     (item) => item.id !== this.itemToDelete
                 );
                 this.closeDeleteModal();
-                this.updatePage();
+                await this.fetchMenus();
                 this.showFailToastNotification("ลบข้อมูลสำเร็จ!");
             } catch (error) {
                 console.error("Error deleting item:", error);
@@ -938,15 +915,12 @@ export default {
                         "Content-Type": "multipart/form-data",
                     },
                 });
-
-                console.log("Added menu:", response.data);
-
                 if (response.data && response.data.mealType && response.data.mealType.menuType) {
                     this.menus.push(response.data);
                 }
 
                 this.closeAddModal();
-                this.updatePage();
+                await this.fetchMenus();
                 this.showSuccessToastNotification("เพิ่มข้อมูลสำเร็จ!");
             } catch (error) {
                 console.error("Error adding menu:", error);
@@ -992,17 +966,14 @@ export default {
 
     },
     created() {
-        this.filteredMenu = this.menus;
         this.sortData('id');
         this.fetchMenus();
         this.fetchMealTypes();
-        this.updatePage();
     },
     mounted() {
         document.addEventListener('click', this.handleClickOutside);
         this.fetchMenus();
         this.fetchMealTypes();
-        this.updatePage();
     },
     beforeUnmount() {
         document.removeEventListener('click', this.handleClickOutside);
@@ -1014,27 +985,6 @@ export default {
 
 
 <style>
-table {
-    width: 100%;
-    table-layout: fixed;
-    border: 1px solid #ddd;
-    border-top-left-radius: 15px;
-    border-top-right-radius: 15px;
-    border-bottom-left-radius: 0;
-    border-bottom-right-radius: 0;
-    overflow: hidden;
-}
-
-.customers-data td {
-    border-bottom: 1px solid #EAEAEA;
-    padding-bottom: 30px;
-}
-
-.pagination-controls {
-    border-bottom-left-radius: 15px;
-    border-bottom-right-radius: 15px;
-}
-
 .multiselect__option--highlight {
     background-color: #f3f4f6;
     color: #000000;

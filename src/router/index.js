@@ -8,6 +8,7 @@ import Login from "@/views/users/LoginPage.vue";
 import Register from "@/views/users/RegisterPage.vue";
 import Profile from "@/views/users/ProfilePage.vue";
 import RegisterAFF from "@/views/users/RegisterAFFPage.vue";
+import User from "@/views/UserPage.vue";
 
 // import ForgotPassword from '@/views/users/ForgotPasswordPage.vue';
 
@@ -83,6 +84,12 @@ const routes = [
       title: "สมัครสมาชิก AFF - Absolute FitFood",
       layout: "SimpleLayout",
     },
+  },
+  {
+    path: "/users",
+    name: "ข้อมูลผู้ใช้งาน",
+    component: User,
+    meta: { title: "ข้อมูลผู้ใช้งาน  - Absolute FitFood"},
   },
   // { path: '/forgot-password',
   //   name: 'forgot-password',

@@ -1,23 +1,23 @@
 <template>
-    <div>
-        <div class="fixed top-4 right-8 bg-green-500 text-white px-8 py-4 flex items-center space-x-4 rounded-lg shadow-lg transition-opacity duration-300 z-50"
-            :class="{ 'opacity-100': showSuccessToast, 'opacity-0': !showSuccessToast }">
-            <span class="material-symbols-outlined text-white">check_circle</span>
-            <span>{{ toastSuccessMessage }}</span>
-            <button @click="showSuccessToast = false" class="text-white hover:text-gray-200 focus:outline-none">
-                <span class="material-symbols-outlined text-xl">close</span>
-            </button>
-        </div>
+    <div class="fixed top-4 right-8 bg-green-500 text-white px-8 py-4 flex items-center space-x-4 rounded-lg shadow-lg transition-opacity duration-300 z-50"
+        :class="{ 'opacity-100': showSuccessToast, 'opacity-0': !showSuccessToast }">
+        <span class="material-symbols-outlined text-white">check_circle</span>
+        <span>{{ toastSuccessMessage }}</span>
+        <button @click="showSuccessToast = false" class="text-white hover:text-gray-200 focus:outline-none">
+            <span class="material-symbols-outlined text-xl">close</span>
+        </button>
+    </div>
 
-        <div class="fixed top-4 right-8 bg-red-500 text-white px-8 py-4 flex items-center space-x-4 rounded-lg shadow-lg transition-opacity duration-300 z-50"
-            :class="{ 'opacity-100': showFailToast, 'opacity-0': !showFailToast }">
-            <span class="material-symbols-outlined text-white">cancel</span>
-            <span>{{ toastFailMessage }}</span>
-            <button @click="showFailToast = false" class="text-white hover:text-gray-200 focus:outline-none">
-                <span class="material-symbols-outlined text-xl">close</span>
-            </button>
-        </div>
+    <div class="fixed top-4 right-8 bg-red-500 text-white px-8 py-4 flex items-center space-x-4 rounded-lg shadow-lg transition-opacity duration-300 z-50"
+        :class="{ 'opacity-100': showFailToast, 'opacity-0': !showFailToast }">
+        <span class="material-symbols-outlined text-white">cancel</span>
+        <span>{{ toastFailMessage }}</span>
+        <button @click="showFailToast = false" class="text-white hover:text-gray-200 focus:outline-none">
+            <span class="material-symbols-outlined text-xl">close</span>
+        </button>
+    </div>
 
+    <div class="mt-[-20px]">
         <div class="flex space-x-2 items-center relative">
             <div class="mt-4 px-4 flex items-center space-x-1 mr-auto ">
                 <!-- <span class="material-symbols-outlined text-2xl text-gray-700">person</span> -->
@@ -35,7 +35,7 @@
                 <button @click="openAddModal"
                     class="bg-custom-orange text-white px-2 py-2 rounded-md flex items-center space-x-1 hover:bg-custom-orange-hover">
                     <span class="material-symbols-outlined text-white text-xl leading-none">add</span>
-                    <span class="text-white text-base leading-none">เพิ่มประเภทเมนู</span>
+                    <span class="text-white text-base leading-none">เพิ่ม</span>
                 </button>
 
                 <div v-if="isAddModalOpen"
@@ -52,12 +52,12 @@
                         </button>
                     </div>
 
-                    <div class="bg-white rounded-md shadow-lg w-1/2 max-w-3xl h-auto max-h-[800px] flex flex-col">
+                    <div class="bg-white rounded-md shadow-lg w-1/2 max-w-3xl h-auto max-h-[500px] flex flex-col">
 
                         <!-- Header -->
                         <div
                             class="flex justify-between items-center bg-custom-orange text-white px-4 py-2 rounded-t-md">
-                            <h2 class="text-xl font-bold">เพิ่มประเภทเมนูเข้า</h2>
+                            <h2 class="text-xl font-bold">เพิ่มประเภทเมนู</h2>
                             <span @click="closeAddModal"
                                 class="material-symbols-outlined cursor-pointer hover:text-gray-200">close</span>
                         </div>
@@ -65,7 +65,7 @@
                         <!-- Content -->
                         <div class="p-6 space-y-4 ">
                             <div>
-                                <label for="meal_typeName" class="block font-bold text-gray-700">ชื่อประเภทเมนู</label>
+                                <label for="meal_typeName" class="block font-bold text-gray-700">ชื่อ</label>
                                 <input id="meal_typeName" v-model="newMealType.name" type="text"
                                     placeholder="กรอกชื่อประเภทเมนู"
                                     class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange" />
@@ -100,8 +100,8 @@
                     class="bg-custom-orange text-white px-2 py-2 rounded-md flex items-center space-x-1 hover:bg-custom-orange-hover">
                     <span class="material-symbols-outlined text-white text-xl leading-none">sort</span>
                     <span class="text-white text-base leading-none">จัดเรียง</span>
-                    <span
-                        class="material-symbols-outlined text-white text-xl leading-none items-right ml-auto">arrow_drop_down</span>
+                    <span :class="{ 'rotate-180': isSortDropdownOpen }"
+                        class="material-symbols-outlined text-white text-xl leading-none items-right ml-auto duration-300">arrow_drop_down</span>
                 </button>
 
                 <div v-if="isSortDropdownOpen"
@@ -134,8 +134,8 @@
                     class="bg-custom-orange text-white px-2 py-2 rounded-md flex items-center space-x-1 hover:bg-custom-orange-hover">
                     <span class="material-symbols-outlined text-white text-xl leading-none">filter_alt</span>
                     <span class="text-white text-base leading-none">ตัวกรอง</span>
-                    <span
-                        class="material-symbols-outlined text-white text-xl leading-none items-right ml-auto">arrow_drop_down</span>
+                    <span :class="{ 'rotate-180': isFilterDropdownOpen }"
+                        class="material-symbols-outlined text-white text-xl leading-none items-right ml-auto duration-300">arrow_drop_down</span>
                 </button>
 
                 <div v-if="isFilterDropdownOpen"
@@ -159,7 +159,7 @@
 
                         <div class="flex space-x-2">
                             <button @click="toggleFiltterDropdown"
-                                class="px-4 py-2 bg-gray-400 hover:bg-gray-600 text-white rounded-md">
+                                class="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400 text-gray-700">
                                 ยกเลิก
                             </button>
                             <button @click="applyFilter"
@@ -171,7 +171,6 @@
                 </div>
             </div>
 
-            <!-- Search Input -->
             <div class="flex w-[250px] relative">
                 <input type="text" v-model="searchQuery" placeholder="ค้นหา..."
                     class="border border-gray-300 rounded-l px-4 py-2 w-full" @keyup.enter="search" />
@@ -187,7 +186,7 @@
 
         </div>
 
-        <table class="min-w-full table-fixed border-collapse mt-4">
+        <table class="min-w-full table-auto rounded-t-2xl overflow-hidden mt-4">
             <thead>
                 <tr class="bg-custom-orange text-white">
                     <th v-for="(header, index) in headers" :key="index" :class="['px-4 py-2 text-left font-bold']"
@@ -198,11 +197,11 @@
             </thead>
             <tbody>
                 <tr v-for="(meal_type, index) in filteredMealType" :key="index"
-                    class="customers-data bg-white relative">
-                    <td class="px-4 py-2 align-top">{{ (currentPage - 1) * itemsPerPage + index + 1 }}</td>
-                    <td class="px-4 py-2 align-top font-bold text-custom-orange">{{ meal_type.name }}</td>
-                    <td class="px-4 py-2 align-top">{{ getMenuTypeName(meal_type.menu_type_id) }}</td>
-                    <td class="px-4 py-2 align-top text-right">
+                    class=" bg-white relative border-b border-b-gray-200">
+                    <td class="px-4 py-2 align-top pb-5">{{ (currentPage - 1) * itemsPerPage + index + 1 }}</td>
+                    <td class="px-4 py-2 align-top font-bold text-custom-orange pb-5">{{ meal_type.name }}</td>
+                    <td class="px-4 py-2 align-top pb-5">{{ getMenuTypeName(meal_type.menu_type_id) }}</td>
+                    <td class="px-4 py-2 align-top text-right pb-5">
                         <div class="flex justify-end space-x-2">
                             <button @click="openEditModal(meal_type)"
                                 class="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 flex items-center space-x-1">
@@ -221,14 +220,15 @@
                 </tr>
 
                 <tr v-if="filteredMealType.length === 0">
-                    <td colspan="6" class="py-20 bg-white text-center text-gray-500 font-bold">
-                        ไม่พบข้อมูลที่ค้นหา
+                    <td colspan="6" class="py-10 bg-white text-center text-gray-500 font-bold">
+                        ไม่พบข้อมูล
                     </td>
                 </tr>
             </tbody>
 
             <div v-if="isEditModalOpen"
                 class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
+
                 <div class="absolute top-8 left-1/2 transform -translate-x-1/2 bg-yellow-500 text-white px-8 py-4 flex items-center space-x-4 rounded-lg shadow-lg transition-opacity duration-300 z-60"
                     :class="{ 'opacity-100': showErrorToast, 'opacity-0': !showErrorToast }">
                     <span class="material-symbols-outlined text-white">error</span>
@@ -309,7 +309,7 @@
         </table>
 
 
-        <div class="pagination-controls flex justify-center items-center space-x-2 bg-white px-4 py-2">
+        <div class="rounded-b-2xl flex justify-center items-center space-x-2 bg-white px-2 py-1">
             <button @click="goToPage(currentPage - 1)" :disabled="currentPage === 1"
                 class="px-3 py-2 rounded-md hover:bg-gray-100 text-custom-orange disabled:opacity-50">
                 <span class="material-symbols-outlined">chevron_left</span>
@@ -364,7 +364,6 @@ export default {
             headerWidths: ['10%', '50%', '35%', '5%'],
 
             searchQuery: "",
-            filteredMealType: [],
 
             selectedMenuType: [],
             isFilterDropdownOpen: false,
@@ -443,6 +442,17 @@ export default {
                 range: Array.from({ length: end - start + 1 }, (_, i) => start + i),
             };
         },
+        filteredMealType() {
+            const filtered = this.meal_types.filter((meal_type) => {
+                const matchesSearch = meal_type.name.toLowerCase().includes(this.searchQuery.toLowerCase())
+                const matchesPromotionType = this.selectedMenuType.length === 0 || this.selectedMenuType.includes(meal_type.menu_type_id);
+                return matchesSearch && matchesPromotionType;
+            });
+            const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+            const endIndex = startIndex + this.itemsPerPage;
+            return filtered.slice(startIndex, endIndex);
+        },
+
         ...mapGetters(["menu_types"]),
     },
     methods: {
@@ -450,44 +460,23 @@ export default {
         async fetchMealTypes() {
             try {
                 const response = await axios.get('http://127.0.0.1:3333/meal-types');
-                this.filteredMealType = response.data;
-                console.log("Response data:", response.data);
                 this.meal_types = response.data;
                 this.meal_types.sort((a, b) => a.id - b.id);
-                this.updatePage();
             } catch (error) {
-                console.error("Error fetching meal_type:", error);
+                // console.error("Error fetching meal_type:", error);
             }
         },
         search() {
-            const filtered = this.meal_types.filter((meal_type) => {
-                const matchesSearch = meal_type.name.toLowerCase().includes(this.searchQuery.toLowerCase())
-                const matchesPromotionType = this.selectedMenuType.length === 0 || this.selectedMenuType.includes(meal_type.menu_type_id);
-                return matchesSearch && matchesPromotionType;
-            });
             this.currentPage = 1;
-            this.filteredMealType = filtered;
-            this.updatePage();
         },
         clearSearch() {
-            this.searchQuery = '';
-            this.search();
+            this.searchQuery = "";
+            this.currentPage = 1;
         },
 
         goToPage(page) {
             if (page < 1 || page > this.totalPages) return;
             this.currentPage = page;
-            this.updatePage();
-        },
-        updatePage() {
-            const startIndex = (this.currentPage - 1) * this.itemsPerPage;
-            const endIndex = startIndex + this.itemsPerPage;
-
-            this.filteredMealType = this.meal_types.filter((meal_type) => {
-                const matchesSearch = meal_type.name.toLowerCase().includes(this.searchQuery.toLowerCase())
-                const matchesPromotionType = this.selectedMenuType.length === 0 || this.selectedMenuType.includes(meal_type.menu_type_id);
-                return matchesSearch && matchesPromotionType;
-            }).slice(startIndex, endIndex);
         },
 
         toggleSortDropdown() {
@@ -510,14 +499,12 @@ export default {
             });
 
             this.currentPage = 1;
-            this.updatePage();
         },
         clearSort() {
             this.sortColumn = 'id';
             this.sortDirection.id = 1;
             this.meal_types.sort((a, b) => a.id - b.id);
             this.currentPage = 1;
-            this.updatePage();
         },
 
         toggleFiltterDropdown() {
@@ -532,12 +519,10 @@ export default {
                 this.filteredMealType = this.meal_types;
             }
             this.isFilterDropdownOpen = false;
-            this.updatePage();
         },
         clearFilter() {
             this.selectedMenuType = [];
             this.filteredMealType = this.meal_types;
-            this.updatePage();
         },
 
         handleClickOutside(event) {
@@ -574,16 +559,14 @@ export default {
                     name: this.selectedMealType.name,
                     menu_type_id: this.selectedMealType.menu_type_id.id,  // ส่งแค่ค่า id
                 });
-                // console.log("meal_type updated:", response.data);
                 const index = this.meal_types.findIndex(pro => pro.id === this.selectedMealType.id);
                 if (index !== -1) {
                     this.meal_types[index] = response.data;  // แทนที่ข้อมูลเดิมด้วยข้อมูลที่อัปเดตแล้ว
                 }
                 this.isEditModalOpen = false;
-                this.updatePage();
+                await this.fetchMealTypes();
                 this.showSuccessToastNotification("แก้ไขข้อมูลสำเร็จ!");
             } catch (error) {
-                //console.error('Error saving changes:', error);
                 this.showErrorToastNotification("เกิดข้อผิดพลาดในการแก้ไขข้อมูล!");
             }
         },
@@ -607,7 +590,7 @@ export default {
                     (item) => item.id !== this.itemToDelete
                 );
                 this.closeDeleteModal();
-                this.updatePage();
+                await this.fetchMealTypes();
                 this.showFailToastNotification("ลบข้อมูลสำเร็จ!");
             } catch (error) {
                 console.error("Error deleting item:", error);
@@ -638,14 +621,11 @@ export default {
                     name: this.newMealType.name,
                     menu_type_id: this.newMealType.menu_type_id.id,
                 });
-                // console.log("Added meal_type:", response.data);
-
                 this.meal_types.push(response.data);
                 this.closeAddModal();
-                this.updatePage();
+                await this.fetchMealTypes();
                 this.showSuccessToastNotification("เพิ่มข้อมูลสำเร็จ!");
             } catch (error) {
-                //console.error("Error adding meal_type:", error);
                 this.showErrorToastNotification("เกิดข้อผิดพลาดในการเพิ่มข้อมูล!");
             }
         },
@@ -655,9 +635,10 @@ export default {
                 const response = await axios.get('http://127.0.0.1:3333/menu-types');
                 this.menu_types = response.data;
             } catch (error) {
-                console.error("Error fetching promotion types:", error);
+                // console.error("Error fetching promotion types:", error);
             }
         },
+
         showSuccessToastNotification(message) {
             this.toastSuccessMessage = message;
             this.showSuccessToast = true;
@@ -682,17 +663,14 @@ export default {
 
     },
     created() {
-        this.filteredMealType = this.meal_types;
         this.sortData('id');
         this.fetchMealTypes();
         this.fetchMenuTypes();
-        this.updatePage();
     },
     mounted() {
         document.addEventListener('click', this.handleClickOutside);
         this.fetchMealTypes();
         this.fetchMenuTypes();
-        this.updatePage();
     },
     beforeUnmount() {
         document.removeEventListener('click', this.handleClickOutside);
@@ -704,24 +682,4 @@ export default {
 
 
 <style scoped>
-table {
-    width: 100%;
-    table-layout: fixed;
-    border: 1px solid #ddd;
-    border-top-left-radius: 15px;
-    border-top-right-radius: 15px;
-    border-bottom-left-radius: 0;
-    border-bottom-right-radius: 0;
-    overflow: hidden;
-}
-
-.customers-data td {
-    border-bottom: 1px solid #EAEAEA;
-    padding-bottom: 30px;
-}
-
-.pagination-controls {
-    border-bottom-left-radius: 15px;
-    border-bottom-right-radius: 15px;
-}
 </style>

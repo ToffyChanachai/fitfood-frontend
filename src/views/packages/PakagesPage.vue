@@ -21,7 +21,7 @@
         <div class="flex space-x-2 items-center relative">
             <div class="mt-4 px-4 flex items-center space-x-1 mr-auto ">
                 <!-- <span class="material-symbols-outlined text-2xl text-gray-700">person</span> -->
-                <span class="text-m text-gray-700">จำนวนแพ็คเกจทั้งหมด: </span>
+                <span class="text-m text-gray-700">จำนวน Package ทั้งหมด: </span>
                 <span class="text-m text-custom-orange font-bold"> {{ packages.length }} รายการ</span>
             </div>
 
@@ -45,7 +45,7 @@
                 <button @click="openAddModal"
                     class="bg-custom-orange text-white px-2 py-2 rounded-md flex items-center space-x-1 hover:bg-custom-orange-hover">
                     <span class="material-symbols-outlined text-white text-xl leading-none">add</span>
-                    <span class="text-white text-base leading-none">เพิ่มแพ็คเกจ</span>
+                    <span class="text-white text-base leading-none">เพิ่ม</span>
                 </button>
 
                 <div v-if="isAddModalOpen"
@@ -64,7 +64,7 @@
                     <div class="bg-white rounded-md shadow-lg w-1/2 max-w-3xl h-auto max-h-[800px] flex flex-col">
                         <div
                             class="flex justify-between items-center bg-custom-orange text-white px-4 py-2 rounded-t-md">
-                            <h2 class="text-xl font-bold">เพิ่มแพ็คเกจ</h2>
+                            <h2 class="font-bold">เพิ่ม Package</h2>
                             <span @click="closeAddModal"
                                 class="material-symbols-outlined cursor-pointer hover:text-gray-200">
                                 close
@@ -206,8 +206,7 @@
                                 <div class="flex flex-wrap gap-4">
                                     <!-- Free Dressing -->
                                     <div class="flex-1">
-                                        <label for="freeDressing" class="block font-bold text-gray-700">Free
-                                            Dressing</label>
+                                        <label for="freeDressing" class="block font-bold text-gray-700">Dressing</label>
                                         <input id="freeDressing" v-model="newPackage.free_dressing" type="number"
                                             min="0" step="1" placeholder="กรอกจำนวน Free Dressing"
                                             class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange" />
@@ -233,12 +232,10 @@
 
                         </div>
 
-
-                        <!-- Footer (with buttons) -->
                         <div class="flex justify-between space-x-4 p-4 bg-white border-t rounded-b-md list-none">
                             <li @click="clearAdd"
                                 class="px-4 py-2 cursor-pointer font-bold text-custom-orange text-left hover:underline">
-                                <span>รีเซ็คข้อมูล</span>
+                                <span>รีเซ็ตข้อมูล</span>
                             </li>
                             <div class="flex space-x-2">
                                 <button @click="closeAddModal"
@@ -259,9 +256,9 @@
                 <button @click="toggleSortDropdown"
                     class="bg-custom-orange text-white px-2 py-2 rounded-md flex items-center space-x-1 hover:bg-custom-orange-hover">
                     <span class="material-symbols-outlined text-white text-xl leading-none">sort</span>
-                    <span class="text-white text-base leading-none">Sort</span>
-                    <span
-                        class="material-symbols-outlined text-white text-xl leading-none items-right ml-auto">arrow_drop_down</span>
+                    <span class="text-white text-base leading-none">จัดเรียง</span>
+                    <span :class="{ 'rotate-180': isSortDropdownOpen }"
+                        class="material-symbols-outlined text-white text-xl leading-none items-right ml-auto duration-300">arrow_drop_down</span>
                 </button>
 
                 <div v-if="isSortDropdownOpen"
@@ -269,7 +266,7 @@
                     <ul class="list-none p-0 m-0">
                         <li @click="sortData('id')"
                             class="px-4 py-2 cursor-pointer hover:bg-gray-100 flex items-center justify-between">
-                            <span>จัดเรียงตามรหัส</span>
+                            <span>จัดเรียงตามลำดับ</span>
                             <span v-if="sortColumn === 'id'" class="material-symbols-outlined text-sm">
                                 {{ sortDirection['id'] === 1 ? 'arrow_upward' : 'arrow_downward' }}
                             </span>
@@ -283,7 +280,7 @@
                         </li>
                         <li @click="clearSort"
                             class="px-4 py-2 cursor-pointer font-bold text-custom-orange text-right border-t hover:underline">
-                            <span>Clear Sort</span>
+                            <span>รีเซ็ตจัดเรียง</span>
                         </li>
                     </ul>
                 </div>
@@ -293,15 +290,15 @@
                 <button @click="toggleFiltterDropdown"
                     class="bg-custom-orange text-white px-2 py-2 rounded-md flex items-center space-x-1 hover:bg-custom-orange-hover">
                     <span class="material-symbols-outlined text-white text-xl leading-none">filter_alt</span>
-                    <span class="text-white text-base leading-none">Filter</span>
-                    <span
-                        class="material-symbols-outlined text-white text-xl leading-none items-right ml-auto">arrow_drop_down</span>
+                    <span class="text-white text-base leading-none">ตัวกรอง</span>
+                    <span :class="{ 'rotate-180': isFilterDropdownOpen }"
+                        class="material-symbols-outlined text-white text-xl leading-none items-right ml-auto duration-300">arrow_drop_down</span>
                 </button>
 
                 <div v-if="isFilterDropdownOpen"
                     class="absolute right-0 top-full mt-1 bg-white text-black text-left shadow-lg rounded-md overflow-y-auto z-50 border border-gray-300">
                     <div class="p-4 w-[500px] list-none">
-                        <h3 class="font-bold mb-2">กรองโดยโปรแกรม</h3>
+                        <h3 class="font-bold mb-2">กรองโดย Program</h3>
                         <div v-for="(types, promotionType) in groupedPrograms" :key="promotionType" class="mb-4">
                             <div class="flex justify-between items-center">
                                 <h4 class="font-semibold mb-2 text-custom-orange">{{ promotionType }}</h4>
@@ -349,9 +346,8 @@
 
             </div>
 
-            <!-- Search Input -->
             <div class="flex w-[250px] relative">
-                <input type="text" v-model="searchQuery" placeholder="ค้นหาชื่อและรหัส..."
+                <input type="text" v-model="searchQuery" placeholder="ค้นหา..."
                     class="border border-gray-300 rounded-l px-4 py-2 w-full" @keyup.enter="search" />
                 <button v-if="searchQuery" @click="clearSearch"
                     class="material-symbols-outlined absolute right-[55px] top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700">
@@ -365,7 +361,7 @@
 
         </div>
 
-        <table class="min-w-full table-fixed border-collapse mt-4">
+        <table class="min-w-full table-auto rounded-t-2xl overflow-hidden mt-4">
             <thead>
                 <tr class="bg-custom-orange text-white">
                     <th v-for="(header, index) in headers" :key="index" :class="['px-4 py-2 text-left font-bold']"
@@ -375,20 +371,19 @@
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="(packaged, index) in filteredPackage" :key="index" class="customers-data bg-white relative">
-                    <td class="px-4 py-2 align-top">{{ (currentPage - 1) * itemsPerPage + index + 1 }}</td>
-                    <td class="px-4 py-2 align-top"> {{ packaged.program && packaged.program.promotionType ?
+                <tr v-for="(packaged, index) in filteredPackage" :key="index"
+                    class=" bg-white relative border-b border-b-gray-200">
+                    <td class="px-4 py-2 align-top pb-5">{{ (currentPage - 1) * itemsPerPage + index + 1 }}</td>
+                    <td class="px-4 py-2 align-top pb-5"> {{ packaged.program && packaged.program.promotionType ?
                         packaged.program.promotionType.name : 'N/A' }}</td>
-                    <td class="px-4 py-2 align-top">{{ getProgramName(packaged.program_id) }}</td>
-                    <td class="px-4 py-2 align-top font-bold text-custom-orange">{{ packaged.name }}
+                    <td class="px-4 py-2 align-top pb-5">{{ getProgramName(packaged.program_id) }}</td>
+                    <td class="px-4 py-2 align-top font-bold text-custom-orange pb-5">{{ packaged.name }}
                         <span v-if="packaged.start_date">( {{ formattedStartDate(packaged.start_date) }} )</span>
                     </td>
-                    <td class="px-4 py-2 align-top">{{ packaged.package_validity }} วัน</td>
-                    <td class="px-4 py-2 align-top">{{ packaged.total_days }} วัน</td>
-                    <td class="px-4 py-2 align-top">
-                        {{ parseFloat(packaged.price).toLocaleString('th-TH', { minimumFractionDigits: 2 }) }} บาท
-                    </td>
-                    <td class="px-4 py-2 align-top text-right">
+                    <td class="px-4 py-2 align-top pb-5">{{ packaged.package_validity }} วัน</td>
+                    <td class="px-4 py-2 align-top pb-5">{{ packaged.total_days }} วัน</td>
+                    <td class="px-4 py-2 align-top pb-5">{{ formatPrice(packaged.price) }} </td>
+                    <td class="px-4 py-2 align-top text-right pb-5">
                         <div class="flex justify-end space-x-2 list-none">
                             <li @click="onViewDetails(packaged)"
                                 class="px-2 py-1 cursor-pointer font-bold text-custom-orange text-left hover:underline">
@@ -410,17 +405,17 @@
                 </tr>
 
                 <tr v-if="filteredPackage.length === 0">
-                    <td colspan="6" class="py-20 bg-white text-center text-gray-500 font-bold">
-                        ไม่พบข้อมูลที่ค้นหา
+                    <td colspan="8" class="py-10 bg-white text-center text-gray-500 font-bold">
+                        ไม่พบข้อมูล
                     </td>
                 </tr>
             </tbody>
 
             <div v-if="isDetailModalOpen"
-            class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
+                class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
                 <div class="bg-white rounded-md shadow-lg w-1/2 max-w-3xl h-auto max-h-[800px] flex flex-col">
                     <div class="flex justify-between items-center bg-custom-orange text-white px-4 py-2 rounded-t-md">
-                        <span class="font-bold">รายละเอียดแพ็คเกจ</span>
+                        <span class="font-bold">รายละเอียด Package</span>
                         <div class="flex space-x-2">
                             <span @click="closeDetailModal"
                                 class="material-symbols-outlined cursor-pointer hover:text-gray-200">
@@ -451,7 +446,7 @@
 
                 <div class="bg-white rounded-md shadow-lg w-1/2 max-w-3xl h-auto max-h-[800px] flex flex-col">
                     <div class="flex justify-between items-center bg-custom-orange text-white px-4 py-2 rounded-t-md">
-                        <span class="font-bold">แก้ไขโปรแกรม</span>
+                        <span class="font-bold">แก้ไข Package</span>
                         <div class="flex space-x-2">
                             <span @click="closeEditModal"
                                 class="material-symbols-outlined cursor-pointer hover:text-gray-200">
@@ -594,8 +589,7 @@
                             <div class="flex flex-wrap gap-4">
                                 <!-- Free Dressing -->
                                 <div class="flex-1">
-                                    <label for="freeDressing" class="block font-bold text-gray-700">Free
-                                        Dressing</label>
+                                    <label for="freeDressing" class="block font-bold text-gray-700">Dressing</label>
                                     <input id="freeDressing" v-model="selectedPackage.free_dressing" type="number"
                                         min="0" step="1" placeholder="กรอกจำนวน Free Dressing"
                                         class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange" />
@@ -618,23 +612,17 @@
                                 </div>
                             </div>
                         </div>
-
-
-
-
-
                     </div>
 
-                    <!-- Footer (with buttons) -->
                     <div class="flex justify-end space-x-4 p-4 bg-white border-t rounded-b-md list-none">
                         <div class="flex space-x-2">
                             <button @click="isEditModalOpen = false"
-                                class="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400">
+                                class="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400 text-gray-700">
                                 ยกเลิก
                             </button>
                             <button @click="saveChanges"
-                                class="bg-custom-orange text-white px-2 py-1 rounded hover:bg-custom-orange-hover flex items-center space-x-30">
-                                <span class="material-symbols-outlined">save</span>บันทึก
+                                class="px-4 py-2 rounded bg-custom-orange text-white hover:bg-custom-orange-hover">
+                                บันทึก
                             </button>
                         </div>
                     </div>
@@ -664,7 +652,7 @@
                     <div class="p-4">
                         <p>คุณแน่ใจหรือไม่ว่าต้องการลบข้อมูลนี้? การดำเนินการนี้ไม่สามารถย้อนกลับได้</p>
                     </div>
-                    <div class="flex justify-end space-x-2 p-4">
+                    <div class="flex justify-end space-x-4 p-4 bg-white border-t rounded-b-md list-none">
                         <button @click="closeDeleteModal" class="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400">
                             ยกเลิก
                         </button>
@@ -680,7 +668,7 @@
         </table>
 
 
-        <div class="pagination-controls flex justify-center items-center space-x-2 bg-white px-4 py-2">
+        <div class="rounded-b-2xl flex justify-center items-center space-x-2 bg-white px-2 py-1">
             <button @click="goToPage(currentPage - 1)" :disabled="currentPage === 1"
                 class="px-3 py-2 rounded-md hover:bg-gray-100 text-custom-orange disabled:opacity-50">
                 <span class="material-symbols-outlined">chevron_left</span>
@@ -736,7 +724,6 @@ export default {
             headerWidths: ['5%', '10%', '10%', '15%', '10%', '10%', '10%', '15%', '15%'],
 
             searchQuery: "",
-            filteredPackage: [],
 
             selectedProgram: [],
             isFilterDropdownOpen: false,
@@ -855,6 +842,24 @@ export default {
                 range: Array.from({ length: end - start + 1 }, (_, i) => start + i),
             };
         },
+        filteredPackage() {
+            if (!this.packages || !Array.isArray(this.packages)) {
+                return [];
+            }
+            const filtered = this.packages.filter((packaged) => {
+                const matchesSearch = packaged.name.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+                    packaged.id.toString().includes(this.searchQuery);
+                const matchesProgram = this.selectedProgram.length === 0 || this.selectedProgram.includes(packaged.program_id);
+                const matchesMonthYear = this.selectedMonthYear
+                    ? new Date(packaged.start_date).toISOString().slice(0, 7) === this.selectedMonthYear
+                    : true;
+
+                return matchesSearch && matchesProgram && matchesMonthYear;
+            });
+            const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+            const endIndex = startIndex + this.itemsPerPage;
+            return filtered.slice(startIndex, endIndex);
+        },
 
         filteredDetail() {
             return {
@@ -865,8 +870,16 @@ export default {
                 total_days: this.selectedPackageDetail.total_days,
                 boxes_per_day: this.selectedPackageDetail.boxes_per_day,
                 total_boxes: this.selectedPackageDetail.total_boxes,
-                price: this.selectedPackageDetail.price,
-                promotion_detail: this.selectedPackageDetail.promotion_detail
+                price: this.formatPrice(this.selectedPackageDetail.price),
+                promotion_detail: this.selectedPackageDetail.promotion_detail,
+                free_mad: this.selectedPackageDetail.free_mad,
+                free_dessert: this.selectedPackageDetail.free_dessert,
+                free_brittles: this.selectedPackageDetail.free_brittles,
+                free_energy_balls: this.selectedPackageDetail.free_energy_balls,
+                free_dressing: this.selectedPackageDetail.free_dressing,
+                free_yoghurt: this.selectedPackageDetail.free_yoghurt,
+                free_granola: this.selectedPackageDetail.free_granola,
+
             };
         },
         filteredPrograms() {
@@ -903,74 +916,46 @@ export default {
     },
     methods: {
         ...mapActions(["fetchPackages", "fetchPrograms", "fetchPromotionTypes"]),
-
+        formatPrice(price) {
+            return "฿" + new Intl.NumberFormat("th-TH").format(price);
+        },
         formattedStartDate(date) {
             if (!date) return '';
             const newDate = new Date(date);
             const month = newDate.getMonth();
             const year = newDate.getFullYear();
 
-            const thaiMonths = [
-                'มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน',
-                'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'
+            const englishMonths = [
+                'January', 'February', 'March', 'April', 'May', 'June',
+                'July', 'August', 'September', 'October', 'November', 'December'
             ];
 
-            return `${thaiMonths[month]} ${year}`;
+            return `${englishMonths[month]} ${year}`;
         },
 
         async fetchPackages() {
             try {
                 const response = await axios.get('http://127.0.0.1:3333/packages');
-                this.filteredPackage = response.data;
-                //console.log("Response data:", response.data);
-
                 this.packages = response.data;
-                this.updatePage();
+                this.packages.sort((a, b) => a.id - b.id);
+
             } catch (error) {
                 console.error("Error fetching program:", error);
             }
         },
         search() {
-            const filtered = this.packages.filter((packaged) => {
-                const matchesSearch = packaged.name.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-                    packaged.id.toString().includes(this.searchQuery);
-                const matchesProgram = this.selectedProgram.length === 0 || this.selectedProgram.includes(packaged.program_id);
-                const matchesMonthYear = this.selectedMonthYear
-                    ? new Date(packaged.start_date).toISOString().slice(0, 7) === this.selectedMonthYear
-                    : true;
-
-                return matchesSearch && matchesProgram && matchesMonthYear;
-            });
             this.currentPage = 1;
-            this.filteredPackage = filtered;
-            this.updatePage();
         },
         clearSearch() {
-            this.searchQuery = '';
-            this.search();
+            this.searchQuery = "";
+            this.currentPage = 1;
         },
+
 
         goToPage(page) {
             if (page < 1 || page > this.totalPages) return;
             this.currentPage = page;
-            this.updatePage();
         },
-        updatePage() {
-            const startIndex = (this.currentPage - 1) * this.itemsPerPage;
-            const endIndex = startIndex + this.itemsPerPage;
-
-            this.filteredPackage = this.packages.filter((packaged) => {
-                const matchesSearch = packaged.name.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-                    packaged.id.toString().includes(this.searchQuery);
-                const matchesProgram = this.selectedProgram.length === 0 || this.selectedProgram.includes(packaged.program_id);
-                const matchesMonthYear = this.selectedMonthYear
-                    ? new Date(packaged.start_date).toISOString().slice(0, 7) === this.selectedMonthYear
-                    : true;
-
-                return matchesSearch && matchesProgram && matchesMonthYear;
-            }).slice(startIndex, endIndex);
-        },
-
 
         toggleSortDropdown() {
             this.isSortDropdownOpen = !this.isSortDropdownOpen;
@@ -992,14 +977,12 @@ export default {
             });
 
             this.currentPage = 1;
-            this.updatePage();
         },
         clearSort() {
             this.sortColumn = 'id';
             this.sortDirection.id = 1;
             this.packages.sort((a, b) => a.id - b.id);
             this.currentPage = 1;
-            this.updatePage();
         },
 
 
@@ -1028,7 +1011,6 @@ export default {
 
             this.isFilterDropdownOpen = false;
             this.currentPage = 1;
-            this.updatePage();
         },
         toggleSelectPromotionAll(promotionType) {
             if (this.selectAllProgramState[promotionType]) {
@@ -1048,7 +1030,6 @@ export default {
             Object.keys(this.selectAllProgramState).forEach(key => {
                 this.selectAllProgramState[key] = false;
             });
-            this.updatePage();
             this.applyFilter();
         },
 
@@ -1077,15 +1058,23 @@ export default {
 
         formatLabel(key) {
             const labels = {
-                name: 'ชื่อ',
-                program: 'ประเภทโปรแกรม',
-                package_detail: 'รายละเอียดแพ็คเกจ',
-                package_validity: 'จำนวน',
-                total_days: 'จำนวนวันหมดอายุ',
-                boxes_per_day: 'จำนวนกล่องต่อวัน',
-                total_boxes: 'จำนวนกล่อง',
+                name: 'Package',
+                program: 'Program',
+                package_detail: 'Package Details for Purchase Summary',
+                package_validity: 'Package Validity',
+                total_days: 'Total Days',
+                boxes_per_day: '# of Boxes/Day',
+                total_boxes: 'Total Boxes',
                 price: 'ราคา',
-                promotion_detail: 'รายละเอียดโปรโมชั่น',
+                promotion_detail: 'รายละเอียดโปรโมชัน',
+                free_mad: 'จำนวนกล่องที่แถม M or A or D',
+                free_dessert: 'จำนวนกล่องที่แถม Dessert',
+                free_brittles: 'จำนวนกล่องที่แถม Brittles',
+                free_energy_balls: 'จำนวนกล่องที่แถม Energy Balls',
+                free_dressing: 'จำนวนกล่องที่แถม Dressing',
+                free_yoghurt: 'จำนวนกล่องที่แถม Yoghurt',
+                free_granola: 'จำนวนกล่องที่แถม Granola',
+
             };
             return labels[key] || key;
         },
@@ -1130,7 +1119,6 @@ export default {
                     start_date: this.selectedPackage.start_date,
                 });
 
-                // console.log("Program updated:", response.data);
                 const index = this.packages.findIndex(packaged => packaged.id === this.selectedPackage.id);
                 if (index !== -1) {
                     this.packages[index] = {
@@ -1138,13 +1126,12 @@ export default {
                         promotionType: this.promotion_types.find(p => p.id === response.data.promotion_type_id) || {},
                     }
                 }
-                
+
                 this.showSuccessToastNotification("แก้ไขข้อมูลสำเร็จ!");
                 this.isEditModalOpen = false;
-                this.updatePage();
+                await this.fetchPackages();
             } catch (error) {
-                console.error('Error saving changes:', error);
-                alert('เกิดข้อผิดพลาดในการบันทึกข้อมูล');
+                this.showErrorToastNotification("เกิดข้อผิดพลาดในการแก้ไขข้อมูล!");
             }
         },
         closeEditModal() {
@@ -1167,10 +1154,10 @@ export default {
                     (item) => item.id !== this.itemToDelete
                 );
                 this.closeDeleteModal();
-                this.updatePage();
+                await this.fetchPackages();
+                this.showFailToastNotification("ลบข้อมูลสำเร็จ!");
             } catch (error) {
-                console.error("Error deleting item:", error);
-                alert("เกิดข้อผิดพลาดในการลบข้อมูล");
+                this.showErrorToastNotification("เกิดข้อผิดพลาดในการลบข้อมูล!");
             }
         },
 
@@ -1233,10 +1220,10 @@ export default {
                     this.packages.push(response.data);
                 }
 
-               
+
                 this.showSuccessToastNotification("เพิ่มข้อมูลสำเร็จ!");
                 this.closeAddModal();
-                this.updatePage();
+                await this.fetchPackages();
             } catch (error) {
                 console.error("Error adding program:", error);
                 this.showErrorToastNotification("เกิดข้อผิดพลาดในการเพิ่มข้อมูล!");
@@ -1287,19 +1274,16 @@ export default {
 
     },
     created() {
-        this.filteredPackage = this.programs;
         this.sortData('id');
         this.fetchPackages();
         this.fetchPrograms();
         this.fetchPromotionTypes();
-        this.updatePage();
     },
     mounted() {
         document.addEventListener('click', this.handleClickOutside);
         this.fetchPackages();
         this.fetchPrograms();
         this.fetchPromotionTypes();
-        this.updatePage();
 
         flatpickr("#startMonth", {
             dateFormat: "Y-m",
@@ -1317,25 +1301,4 @@ export default {
 </script>
 
 
-<style scoped>
-table {
-    width: 100%;
-    table-layout: fixed;
-    border: 1px solid #ddd;
-    border-top-left-radius: 15px;
-    border-top-right-radius: 15px;
-    border-bottom-left-radius: 0;
-    border-bottom-right-radius: 0;
-    overflow: hidden;
-}
-
-.customers-data td {
-    border-bottom: 1px solid #EAEAEA;
-    padding-bottom: 30px;
-}
-
-.pagination-controls {
-    border-bottom-left-radius: 15px;
-    border-bottom-right-radius: 15px;
-}
-</style>
+<style scoped></style>
