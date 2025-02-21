@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="mt-[-20px]">
         <div class="flex items-center space-x-3 py-2">
             <!-- ปุ่มลูกศรย้อนกลับ -->
             <button @click="changeDate(-1)" class="flex items-center">
@@ -170,7 +170,7 @@
 
         <div class="flex space-x-4">
 
-            <table class="min-w-[45%] table-auto rounded-2xl overflow-hidden mt-4">
+            <table class="w-full min-w-1/2 table-auto rounded-2xl overflow-hidden mt-4">
                 <thead>
                     <tr class="bg-purple-500 text-white">
                         <th class="px-4 py-2 text-left font-bold">ผู้ขาย</th>
@@ -215,7 +215,7 @@
             </table>
 
 
-            <table class="min-w-[45%] table-auto rounded-2xl overflow-hidden mt-4">
+            <table class="w-full min-w-1/2 table-auto rounded-2xl overflow-hidden mt-4">
                 <thead>
                     <tr class="bg-green-500 text-white">
                         <th class="px-4 py-2 text-left font-bold">วิธีการชำระเงิน</th>
@@ -263,9 +263,7 @@
                     </tr>
                 </template>
 
-                <!-- แสดงข้อมูลยอดขายตามที่กรองไว้ -->
                 <template v-for="(groupedSale, index) in filteredSalesBySeller" :key="index">
-                    <!-- แสดงข้อมูลยอดขาย -->
                     <tr v-for="(sale, index) in groupedSale.sales" :key="index"
                         class="border-b border-b-gray-200 bg-white relative">
                         <td v-if="index === 0" class="px-4 py-2 align-top font-bold pb-5">
@@ -277,7 +275,6 @@
                         <td class="px-4 py-2 align-top">{{ formatPrice(sale.pre_vat) }}</td>
                     </tr>
 
-                    <!-- แสดงยอดขายรวม -->
                     <tr v-if="groupedSale.sales.length > 0" class="bg-pink-100">
                         <td colspan="4" class="px-4 py-2 text-right">
                             <span class="font-bold mr-2">ยอดขายรวมทั้งหมด:</span>
@@ -288,12 +285,9 @@
                     </tr>
                 </template>
             </tbody>
-
-
-
         </table>
 
-        <table class="min-w-full table-auto rounded-t-2xl overflow-hidden mt-4">
+        <table class="min-w-full table-auto rounded-2xl overflow-hidden mt-4">
             <thead>
                 <tr class="bg-custom-orange text-white">
                     <th v-for="(header, index) in headers" :key="index" :class="['px-4 py-2 text-left font-bold']"
@@ -330,7 +324,7 @@
                 </tr>
 
                 <tr v-if="filteredDailySales.length === 0">
-                    <td colspan="10" class="py-10 bg-white text-center text-gray-500 font-bold">ไม่พบข้อมูลที่ค้นหา</td>
+                    <td colspan="10" class="py-10 bg-white text-center text-gray-500 font-bold">ไม่พบข้อมูล</td>
                 </tr>
             </tbody>
 
@@ -362,7 +356,7 @@
 
 
 
-        <div class="rounded-b-2xl flex justify-center items-center space-x-2 bg-white px-2 py-1">
+        <!-- <div class="rounded-b-2xl flex justify-center items-center space-x-2 bg-white px-2 py-1">
             <button @click="goToPage(currentPage - 1)" :disabled="currentPage === 1"
                 class="px-3 py-2 rounded-md hover:bg-gray-100 text-custom-orange disabled:opacity-50">
                 <span class="material-symbols-outlined">chevron_left</span>
@@ -398,11 +392,9 @@
                 class="px-3 py-2 rounded-md hover:bg-gray-100 text-custom-orange disabled:opacity-50">
                 <span class="material-symbols-outlined">chevron_right</span>
             </button>
-        </div>
+        </div> -->
 
     </div>
-
-
 </template>
 
 <script>
@@ -445,8 +437,8 @@ export default {
             sellers: [], // List of seller_name_id
             groupedsalesBySellerAndPackageType: null,
 
-            currentPage: 1,
-            itemsPerPage: 10,
+            // currentPage: 1,
+            // itemsPerPage: 10,
 
             startDate: '', // วันที่เริ่มต้น
             endDate: '',
@@ -459,34 +451,34 @@ export default {
     //     Multiselect
     // },
     computed: {
-        totalPages() {
-            return Math.ceil(
-                this.dailySales.length / this.itemsPerPage
-            );
-        },
-        totalPagesArray() {
-            const maxVisiblePages = 5;
-            const halfVisible = Math.floor(maxVisiblePages / 2);
+        // totalPages() {
+        //     return Math.ceil(
+        //         this.dailySales.length / this.itemsPerPage
+        //     );
+        // },
+        // totalPagesArray() {
+        //     const maxVisiblePages = 5;
+        //     const halfVisible = Math.floor(maxVisiblePages / 2);
 
-            let start = this.currentPage - halfVisible;
-            let end = this.currentPage + halfVisible;
+        //     let start = this.currentPage - halfVisible;
+        //     let end = this.currentPage + halfVisible;
 
-            if (start < 1) {
-                start = 1;
-                end = Math.min(maxVisiblePages, this.totalPages);
-            }
+        //     if (start < 1) {
+        //         start = 1;
+        //         end = Math.min(maxVisiblePages, this.totalPages);
+        //     }
 
-            if (end > this.totalPages) {
-                end = this.totalPages;
-                start = Math.max(1, this.totalPages - maxVisiblePages + 1);
-            }
+        //     if (end > this.totalPages) {
+        //         end = this.totalPages;
+        //         start = Math.max(1, this.totalPages - maxVisiblePages + 1);
+        //     }
 
-            return {
-                start,
-                end,
-                range: Array.from({ length: end - start + 1 }, (_, i) => start + i),
-            };
-        },
+        //     return {
+        //         start,
+        //         end,
+        //         range: Array.from({ length: end - start + 1 }, (_, i) => start + i),
+        //     };
+        // },
         // formattedDate() {
         //     if (this.startDate && this.endDate) {
         //         return `${this.formatDate(this.startDate)} ถึง ${this.formatDate(this.endDate)}`;
@@ -582,11 +574,11 @@ export default {
 
     },
     methods: {
-        goToPage(page) {
-            if (page < 1 || page > this.totalPages) return;
-            this.currentPage = page;
-            // this.updatePage();
-        },
+        // goToPage(page) {
+        //     if (page < 1 || page > this.totalPages) return;
+        //     this.currentPage = page;
+        //     // this.updatePage();
+        // },
         // updatePage() {
         //     const startIndex = (this.currentPage - 1) * this.itemsPerPage;
         //     const endIndex = startIndex + this.itemsPerPage;
@@ -662,7 +654,7 @@ export default {
 
         async fetchDailySales(startDate, endDate) {
             try {
-                const response = await axios.get('http://127.0.0.1:3333/sales/daily', {
+                const response = await axios.get('http://127.0.0.1:3333/sales-hhb/daily', {
                     params: { startDate, endDate },
                 });
 
@@ -726,7 +718,7 @@ export default {
         async fetchLookupData() {
             try {
                 const [customersRes, promotionTypesRes, programsRes, packagesRes, packageTypesRes, zoneDeliveryRes, sellerNamesRes, paymentTypeRes, AdditionalTypeRes] = await Promise.all([
-                    axios.get("http://127.0.0.1:3333/customers"),
+                    axios.get("http://127.0.0.1:3333/customers-hhb"),
                     axios.get("http://127.0.0.1:3333/promotion-types"),
                     axios.get("http://127.0.0.1:3333/programs"),
                     axios.get("http://127.0.0.1:3333/packages"),
@@ -750,10 +742,7 @@ export default {
                 this.seller_names = sellerNamesRes.data;
                 this.payment_types = paymentTypeRes.data.data;
                 this.additional_types = AdditionalTypeRes.data;
-                this.updatePage;
-                console.log('Fetched payment types:', paymentTypeRes.data);
-                console.log(this.paymentTypes);
-                // console.log('Fetched seller names:', this.seller_names);
+await this.fetchDailySales();
 
             } catch (error) {
                 console.error("Error fetching lookup data:", error);
@@ -862,7 +851,6 @@ export default {
         this.filteredDailySales = this.dailySales;
         this.fetchLookupData();
         this.fetchDailySales(this.selectedDate);
-        // this.updatePage();
     },
     mounted() {
         // document.addEventListener('click', this.handleClickOutside);
@@ -874,6 +862,7 @@ export default {
             flatpickr(this.$refs.startDatepicker, {
                 dateFormat: "Y-m-d", // รูปแบบวันที่
                 todayButton: true,
+                defaultDate: new Date(),
                 onChange: (selectedDates, dateStr) => {
                     this.startDate = dateStr; // กำหนดค่า startDate
                     this.fetchSalesData(); // เรียกฟังก์ชันเมื่อเลือกวันที่
@@ -884,6 +873,7 @@ export default {
             flatpickr(this.$refs.endDatepicker, {
                 dateFormat: "Y-m-d",
                 todayButton: true,
+                defaultDate: new Date(),
                 onChange: (selectedDates, dateStr) => {
                     this.endDate = dateStr; // กำหนดค่า endDate
                     this.fetchSalesData(); // เรียกฟังก์ชันเมื่อเลือกวันที่

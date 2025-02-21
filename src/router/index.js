@@ -20,7 +20,10 @@ import SalesRecordAddit from "@/views/sale-records/SalesRecrdAdditPage.vue";
 import SalesRecordHHB from "@/views/sale-records/SalesRecordHHBPage.vue";
 import SalesRecordAdditHHB from "@/views/sale-records/SalesRecrdHHBAdditPage.vue";
 
-import DailySale from "../views/DailySalePage.vue";
+import DailySale from "../views/daily-sales/DailySalePage.vue";
+import DailySaleHHB from "../views/daily-sales/DailySaleHHBPage.vue";
+
+
 import Customers from "../views/customers/CustomersPage.vue";
 import Test from "../views/TestPage.vue";
 import Test2 from "../views/Test2Page.vue";
@@ -160,6 +163,12 @@ const routes = [
     name: "ยอดขายประจำวัน",
     component: DailySale,
     meta: { title: "ยอดขายประจำวัน - Absolute FitFood" },
+  },
+  {
+    path: "/daily-sale-hhb",
+    name: "ยอดขายประจำวัน HHB",
+    component: DailySaleHHB,
+    meta: { title: "ยอดขายประจำวัน Happy Healthy Box - Absolute FitFood" },
   },
 
   {

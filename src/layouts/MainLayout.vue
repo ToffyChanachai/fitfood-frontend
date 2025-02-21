@@ -261,6 +261,18 @@
                 </router-link>
             </div>
 
+            <div v-if="$route.path === '/daily-sale' || $route.path === '/daily-sale-hhb'"
+                class="mt-4 p-4 flex items-left space-x-6 text-m font-bold">
+                <router-link to="daily-sale" class="hover:text-custom-orange"
+                    :class="{ 'text-custom-orange border-b-2 border-custom-orange': $route.path === '/' || $route.path === '/daily-sale' }">
+                    Absolute FitFood
+                </router-link>
+                <router-link to="/daily-sale-hhb" class="hover:text-custom-orange"
+                    :class="{ 'text-custom-orange border-b-2 border-custom-orange': $route.path === '/daily-sale-hhb' }">
+                    Happy Healthy Box
+                </router-link>
+            </div>
+
             <!-- Content of the page -->
             <div class="mt-4">
                 <router-view></router-view>
@@ -315,6 +327,7 @@ export default {
                     break;
                 case "บันทึกการขาย HHB":
                     this.pageIcon = "contact_page";
+                    this.pageTitle = "บันทึกการขาย";
                     break;
                 case "บันทึกการขาย Additional HHB":
                     this.pageIcon = "contact_page";
@@ -323,6 +336,10 @@ export default {
 
                 case "ยอดขายประจำวัน":
                     this.pageIcon = "calendar_month";
+                    break;
+                    case "ยอดขายประจำวัน HHB":
+                    this.pageIcon = "calendar_month";
+                    this.pageTitle = "ยอดขายประจำวัน";
                     break;
 
                 case "Setup Menu Premium Health":

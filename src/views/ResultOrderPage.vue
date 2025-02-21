@@ -57,31 +57,129 @@
 
     <div class="flex justify-end items-center space-x-2 relative">
       <div class="mt-4 px-4 flex items-center space-x-1 mr-auto ">
-        <span class="material-symbols-outlined text-2xl text-gray-700">calendar_month</span>
+        <span class="material-symbols-outlined text-2xl text-gray-700">receipt_long</span>
         <span class="text-m text-gray-700">จำนวนการยอดขายประจำวันทั้งหมด: </span>
-        <span class="text-m text-custom-orange font-bold"> {{ orders.length }} รายการ</span>
+        <span class="text-m text-custom-orange font-bold"> {{ filteredOrdersWithoutHappy.length }} รายการ</span>
       </div>
 
-      <div class="mt-4 px-4 flex justify-end space-x-1">
+      <div>
         <button
           v-if="selectedOrders.some(order => order.status === 'pending') && !selectedOrders.some(order => order.status === 'confirm')"
-          @click="confirmMultipleOrders" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded mt-4"
+          @click="confirmMultipleOrders"
+          class="bg-green-500 hover:bg-green-600 text-white px-2 py-2 rounded-md flex items-center space-x-1 "
           :disabled="selectedOrders.length === 0">
           ยืนยันการสั่งซื้อที่เลือก ({{ selectedOrders.length }})
         </button>
 
         <button
           v-if="selectedOrders.some(order => order.status === 'confirm') && !selectedOrders.some(order => order.status === 'pending')"
-          @click="pendingMultipleOrders" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded mt-4"
+          @click="pendingMultipleOrders"
+          class="bg-red-500 hover:bg-red-600 text-white px-2 py-2 rounded-md flex items-center space-x-1"
           :disabled="selectedOrders.length === 0">
           ยกเลิกยืนยันการสั่งซื้อที่เลือก ({{ selectedOrders.length }})
         </button>
       </div>
+
+      <button v-if="selectedOrder.length > 0" @click="clearFilter"
+        class="px-2 py-2 rounded-md flex items-center space-x-1 text-gray-400 hover:text-custom-orange">
+        <span class="material-symbols-outlined">close</span>
+        <span class="ml-2">รีเซ็ตตัวกรอง ({{ selectedOrder.length }})</span>
+      </button>
+
+      <div class="sort relative inline-block" ref="sortDropdown">
+        <button @click="toggleSortDropdown"
+          class="bg-custom-orange text-white px-2 py-2 rounded-md flex items-center space-x-1 hover:bg-custom-orange-hover">
+          <span class="material-symbols-outlined text-white text-xl leading-none">sort</span>
+          <span class="text-white text-base leading-none">จัดเรียง</span>
+          <span :class="{ 'rotate-180': isSortDropdownOpen }"
+            class="material-symbols-outlined text-white text-xl leading-none items-right ml-auto duration-300">arrow_drop_down</span>
+        </button>
+
+        <div v-if="isSortDropdownOpen"
+          class="absolute left-0 top-full mt-1 bg-white text-black text-left shadow-lg rounded-md w-48 z-50 border border-gray-300">
+          <ul class="list-none p-0 m-0">
+            <li @click="sortData('id')"
+              class="px-4 py-2 cursor-pointer hover:bg-gray-100 flex items-center justify-between">
+              <span>จัดเรียงตามลำดับ</span>
+              <span v-if="sortColumn === 'id'" class="material-symbols-outlined text-sm">
+                {{
+                  sortDirection["id"] === 1 ? "arrow_upward" : "arrow_downward"
+                }}
+              </span>
+            </li>
+            <li @click="sortData('user_id')"
+              class="px-4 py-2 cursor-pointer hover:bg-gray-100 flex items-center justify-between">
+              <span>จัดเรียงตามชื่อลูกค้า</span>
+              <span v-if="sortColumn === 'user_id'" class="material-symbols-outlined text-sm">
+                {{
+                  sortDirection["user_id"] === 1
+                    ? "arrow_upward"
+                    : "arrow_downward"
+                }}
+              </span>
+            </li>
+            <li @click="clearSort"
+              class="px-4 py-2 cursor-pointer font-bold text-custom-orange text-right border-t hover:underline">
+              <span>รีเซ็ตจัดเรียง</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="filter relative inline-block" ref="filterDropdown">
+        <button @click="toggleFiltterDropdown"
+          class="bg-custom-orange text-white px-2 py-2 rounded-md flex items-center space-x-1 hover:bg-custom-orange-hover">
+          <span class="material-symbols-outlined text-white text-xl leading-none">filter_alt</span>
+          <span class="text-white text-base leading-none">ตัวกรอง</span>
+          <span :class="{ 'rotate-180': isFilterDropdownOpen }"
+            class="material-symbols-outlined text-white text-xl leading-none items-right ml-auto duration-300">arrow_drop_down</span>
+        </button>
+
+        <div v-if="isFilterDropdownOpen"
+          class="absolute right-0 top-full mt-1 bg-white text-black text-left shadow-lg rounded-md overflow-y-auto z-50 border border-gray-300">
+          <div class="p-4 w-[500px] list-none">
+            <h3 class="font-bold mb-2">กรองโดย Package Type</h3>
+            <div class="grid grid-cols-3 gap-4">
+              <label v-for="type in menu_types" :key="type.id" class="flex items-center space-x-2">
+                <input type="checkbox" v-model="selectedOrder" :value="type.id"
+                  class="w-5 h-5 border-2 border-gray-400 rounded-full appearance-none checked:bg-custom-orange checked:border-transparent">
+                <span>{{ type.name }}</span>
+              </label>
+            </div>
+          </div>
+          <div class="flex justify-between space-x-4 p-4 bg-white border-t rounded-b-md list-none">
+            <li @click="clearFilter"
+              class="px-4 py-2 cursor-pointer font-bold text-custom-orange text-left hover:underline">
+              <span>รีเซ็ตตัวกรอง</span>
+            </li>
+
+            <div class="flex space-x-2">
+              <button @click="toggleFiltterDropdown"
+                class="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400 text-gray-700">
+                ยกเลิก
+              </button>
+              <button @click="applyFilter"
+                class="bg-custom-orange hover:bg-custom-orange-hover text-white px-4 py-2 rounded-md">
+                ใช้ตัวกรอง
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex w-[250px] relative">
+        <input type="text" v-model="searchQuery" placeholder="ค้นหา..."
+          class="border border-gray-300 rounded-l px-4 py-2 w-full" @keyup.enter="search" />
+        <button v-if="searchQuery" @click="clearSearch"
+          class="material-symbols-outlined absolute right-[55px] top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700">
+          close
+        </button>
+        <button @click="search"
+          class="bg-custom-orange material-symbols-outlined text-white text-xl px-4 py-2 rounded-r hover:bg-custom-orange-hover">
+          search
+        </button>
+      </div>
     </div>
-
-
-
-
 
     <table class="min-w-full table-auto rounded-t-2xl overflow-hidden mt-4">
       <thead>
@@ -102,7 +200,6 @@
 
       </thead>
       <tbody>
-
         <tr v-for="(order, index) in filteredOrders" :key="index" class="border-b border-b-gray-200 bg-white relative">
           <td class="px-4 py-2 align-top pb-5">
             <input type="checkbox" v-model="selectedOrders" :value="order"
@@ -115,6 +212,13 @@
             {{ getCustomerName(order.user_id) }}
           </td>
 
+          <!-- <td class="px-4 py-2 align-top font-bold border-l border-r text-custom-orange pb-5"
+        v-if="shouldDisplayOrderDate(index, order.order_date)"
+        :rowspan="getOrderDateRowspan(order.order_date, index)">
+      {{ formatDate(order.order_date) }}
+    </td> -->
+
+          <!-- <td class="px-4 py-2 align-top pb-5">{{ getCustomerName(order.user_id) }}</td> -->
           <td class="px-4 py-2 align-top pb-5">{{ formatDate(order.order_date) }}</td>
           <td class="px-4 py-2 align-top pb-5">{{ getMenuTypeName(order.menu_type_id) }}</td>
 
@@ -289,7 +393,7 @@ export default {
     return {
       headers: ['#', `Customer's Name`, 'วันที่สั่งซื้อ', 'Packge Type', 'รายการอาหาร', 'จำนวน', 'สถานะ'],
       headerWidths: ['5%', '20%', '15%', '15%', '20%', '10%', '15%'],
-      sortDirection: 'asc', // กำหนดทิศทางการเรียงลำดับ (asc หรือ desc)
+      // sortDateDirection: 'asc', // กำหนดทิศทางการเรียงลำดับ (asc หรือ desc)
       sortIcon: 'arrow_downward',
 
       orders: [],
@@ -300,15 +404,7 @@ export default {
       menus: [],
       menu_types: [],
 
-      selectedOrder: {
-        id: '',
-        menu_id: '',
-        quantity: 0,
-        order_date: '',
-        user_id: '',
-        menu_type_id: '',
-        status: '',
-      },
+      selectedOrder: [],
       selectedOrders: [],
 
       isConfirmStatusModalOpen: false,
@@ -327,46 +423,76 @@ export default {
       showErrorToast: false,
       toastErrorMessage: "",
 
+      isFilterDropdownOpen: false,
+      isSortDropdownOpen: false,
+      sortDirection: {
+        id: 1,
+        name: 1
+      },
+      sortColumn: '',
+
     };
   },
   // components: {
   //     Multiselect
   // },
   computed: {
+    filteredOrdersWithoutHappy() {
+      return this.orders.filter(order => {
+        const menuTypeName = this.getMenuTypeName(order.menu_type_id);
+        return !menuTypeName.startsWith("Happy");
+      });
+    },
+
     filteredOrders() {
-    // เรียกดูรายการทั้งหมด และคำนวณการแสดงผลในแต่ละหน้า
-    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
-    const endIndex = this.currentPage * this.itemsPerPage;
-    return this.orders.slice(startIndex, endIndex);
-  },
+      // const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+      // const endIndex = this.currentPage * this.itemsPerPage;
+      // return this.filteredOrdersWithoutHappy.slice(startIndex, endIndex);
 
-  totalPages() {
-    return Math.ceil(this.orders.length / this.itemsPerPage);
-  },
+      const filtered = this.filteredOrdersWithoutHappy.filter((order) => {
+        // const matchesSearch = this.getCustomerName(order.user_id).toLowerCase().includes(this.searchQuery.toLowerCase())
+        const matchesPromotionType = this.selectedOrder.length === 0 || this.selectedOrder.includes(order.menu_type_id);
+        return matchesPromotionType;
+      });
+      const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+      const endIndex = startIndex + this.itemsPerPage;
+      return filtered.slice(startIndex, endIndex);
+    },
 
-  totalPagesArray() {
-    const maxVisiblePages = 5;
-    const halfVisible = Math.floor(maxVisiblePages / 2);
+    totalPages() {
+      // return Math.ceil(this.orders.length / this.itemsPerPage);
+      return Math.ceil(
+        this.orders.filter((order) => {
+          // const matchesSearch = this.getCustomerName(order.user_id).toLowerCase().includes(this.searchQuery.toLowerCase())
+          const matchesPromotionType = this.selectedOrder.length === 0 || this.selectedOrder.includes(order.menu_type_id);
+          return matchesPromotionType;
+        }).length / this.itemsPerPage
+      );
+    },
 
-    let start = this.currentPage - halfVisible;
-    let end = this.currentPage + halfVisible;
+    totalPagesArray() {
+      const maxVisiblePages = 5;
+      const halfVisible = Math.floor(maxVisiblePages / 2);
 
-    if (start < 1) {
-      start = 1;
-      end = Math.min(maxVisiblePages, this.totalPages);
-    }
+      let start = this.currentPage - halfVisible;
+      let end = this.currentPage + halfVisible;
 
-    if (end > this.totalPages) {
-      end = this.totalPages;
-      start = Math.max(1, this.totalPages - maxVisiblePages + 1);
-    }
+      if (start < 1) {
+        start = 1;
+        end = Math.min(maxVisiblePages, this.totalPages);
+      }
 
-    return {
-      start,
-      end,
-      range: Array.from({ length: end - start + 1 }, (_, i) => start + i),
-    };
-  },
+      if (end > this.totalPages) {
+        end = this.totalPages;
+        start = Math.max(1, this.totalPages - maxVisiblePages + 1);
+      }
+
+      return {
+        start,
+        end,
+        range: Array.from({ length: end - start + 1 }, (_, i) => start + i),
+      };
+    },
     formattedStartDate() {
       if (!this.startDate) return ""; // หากยังไม่ได้เลือกวันที่
       return new Intl.DateTimeFormat("en-UK", {
@@ -388,10 +514,10 @@ export default {
   },
   methods: {
     goToPage(page) {
-    if (page >= 1 && page <= this.totalPages) {
-      this.currentPage = page;
-    }
-  },
+      if (page >= 1 && page <= this.totalPages) {
+        this.currentPage = page;
+      }
+    },
     // updatePage() {
     //     const startIndex = (this.currentPage - 1) * this.itemsPerPage;
     //     const endIndex = startIndex + this.itemsPerPage;
@@ -441,25 +567,25 @@ export default {
       }
     },
 
-    sortColumn(header) {
-      if (header === 'Transaction Date') {
-        // สลับทิศทางการเรียงลำดับเมื่อคลิก
-        this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+    // sortDateColumn(header) {
+    //   if (header === 'Transaction Date') {
+    //     // สลับทิศทางการเรียงลำดับเมื่อคลิก
+    //     this.sortDateDirection = this.sortDateDirection === 'asc' ? 'desc' : 'asc';
 
-        // กำหนดไอคอนให้เหมาะสมกับทิศทางการเรียงลำดับ
-        this.sortIcon = this.sortDirection === 'asc' ? 'arrow_downward' : 'arrow_upward';
+    //     // กำหนดไอคอนให้เหมาะสมกับทิศทางการเรียงลำดับ
+    //     this.sortIcon = this.sortDateDirection === 'asc' ? 'arrow_downward' : 'arrow_upward';
 
-        // เรียงลำดับข้อมูลตามวันที่ชำระเงิน
-        this.filteredOrders.sort((a, b) => {
-          const dateA = new Date(a.paid_date);
-          const dateB = new Date(b.paid_date);
+    //     // เรียงลำดับข้อมูลตามวันที่ชำระเงิน
+    //     this.filteredOrders.sort((a, b) => {
+    //       const dateA = new Date(a.paid_date);
+    //       const dateB = new Date(b.paid_date);
 
-          return this.sortDirection === 'asc'
-            ? dateA - dateB
-            : dateB - dateA;
-        });
-      }
-    },
+    //       return this.sortDateDirection === 'asc'
+    //         ? dateA - dateB
+    //         : dateB - dateA;
+    //     });
+    //   }
+    // },
 
     async fetchOrders(startDate, endDate) {
       try {
@@ -470,7 +596,8 @@ export default {
         this.orders = response.data.orders;
         this.filteredOrders = this.orders;
 
-        console.log('Data', this.orders);
+        // console.log('Data', this.orders);
+        // console.log('Data', this.filteredOrders);
 
         this.orders.sort((a, b) => {
           const dateA = new Date(a.order_date);
@@ -480,7 +607,7 @@ export default {
 
 
       } catch (error) {
-        console.error('Error fetching orders data:', error);
+        // console.error('Error fetching orders data:', error);
       }
     },
 
@@ -498,6 +625,14 @@ export default {
       } catch (error) {
         console.error("Error fetching lookup data:", error);
       }
+    },
+
+    search() {
+      this.currentPage = 1;
+    },
+    clearSearch() {
+      this.searchQuery = "";
+      this.currentPage = 1;
     },
 
     getCustomerName(customerId) {
@@ -551,12 +686,13 @@ export default {
     },
 
     shouldDisplayUserName(index, userId) {
-      return index === 0 || this.orders[index - 1].user_id !== userId;
+      return index === 0 || this.filteredOrders[index - 1].user_id !== userId;
     },
     getRowspan(userId, index) {
       let count = 0;
-      for (let i = index; i < this.orders.length; i++) {
-        if (this.orders[i].user_id === userId) {
+      // คำนวณจำนวนแถวที่มี user_id ซ้ำ
+      for (let i = index; i < this.filteredOrders.length; i++) {
+        if (this.filteredOrders[i].user_id === userId) {
           count++;
         } else {
           break;
@@ -564,13 +700,14 @@ export default {
       }
       return count;
     },
+
     shouldDisplayOrderDate(index, orderDate) {
-      return index === 0 || this.orders[index - 1].order_date !== orderDate;
+      return index === 0 || this.filteredOrders[index - 1].order_date !== orderDate;
     },
     getOrderDateRowspan(orderDate, index) {
       let count = 0;
-      for (let i = index; i < this.orders.length; i++) {
-        if (this.orders[i].order_date === orderDate) {
+      for (let i = index; i < this.filteredOrders.length; i++) {
+        if (this.filteredOrders[i].order_date === orderDate) {
           count++;
         } else {
           break;
@@ -727,6 +864,56 @@ export default {
       this.isAllSelected = event.target.checked;
     },
 
+    toggleFiltterDropdown() {
+      this.isFilterDropdownOpen = !this.isFilterDropdownOpen;
+    },
+    applyFilter() {
+      if (this.selectedOrder.length > 0) {
+        this.filteredOrders = this.menu_types.filter(packageType =>
+          this.selectedOrder.includes(packageType.menu_type_id)
+        );
+      } else {
+        this.filteredOrders = this.orders;
+      }
+      this.isFilterDropdownOpen = false;
+    },
+    clearFilter() {
+      this.selectedOrder = [];
+      this.filteredOrders = this.orders;
+    },
+
+    toggleSortDropdown() {
+      this.isSortDropdownOpen = !this.isSortDropdownOpen;
+    },
+    sortData(column) {
+      if (this.sortColumn === column) {
+        this.sortDirection[column] = -this.sortDirection[column];
+      } else {
+        this.sortColumn = column;
+        this.sortDirection[column] = 1;
+      }
+
+      this.orders.sort((a, b) => {
+        const aValue = a[column];
+        const bValue = b[column];
+        if (aValue < bValue) return -this.sortDirection[column];
+        if (aValue > bValue) return this.sortDirection[column];
+        return 0;
+      });
+
+      this.currentPage = 1;
+    },
+    clearSort() {
+      this.sortColumn = 'id';
+      this.sortDirection.id = 1;
+      this.orders.sort((a, b) => {
+        const dateA = new Date(a.order_date);
+        const dateB = new Date(b.order_date);
+        return dateA - dateB; // เรียงจากน้อยไปหามาก
+      });
+      this.currentPage = 1;
+    },
+
 
     showSuccessToastNotification(message) {
       this.toastSuccessMessage = message;
@@ -756,6 +943,7 @@ export default {
   },
   created() {
     this.filteredOrders = this.orders;
+    this.sortData('id');
     this.fetchLookupData();
     this.fetchOrders(this.selectedDate);
     // this.updatePage();

@@ -1,34 +1,34 @@
 <template>
-  <div>
-    <div
-      class="fixed top-4 right-8 bg-green-500 text-white px-8 py-4 flex items-center space-x-4 rounded-lg shadow-lg transition-opacity duration-300 z-50"
-      :class="{
-        'opacity-100': showSuccessToast,
-        'opacity-0': !showSuccessToast,
-      }">
-      <span class="material-symbols-outlined text-white">check_circle</span>
-      <span>{{ toastSuccessMessage }}</span>
-      <button @click="showSuccessToast = false" class="text-white hover:text-gray-200 focus:outline-none">
-        <span class="material-symbols-outlined text-xl">close</span>
-      </button>
-    </div>
+  <div
+    class="fixed top-4 right-8 bg-green-500 text-white px-8 py-4 flex items-center space-x-4 rounded-lg shadow-lg transition-opacity duration-300 z-50"
+    :class="{
+      'opacity-100': showSuccessToast,
+      'opacity-0': !showSuccessToast,
+    }">
+    <span class="material-symbols-outlined text-white">check_circle</span>
+    <span>{{ toastSuccessMessage }}</span>
+    <button @click="showSuccessToast = false" class="text-white hover:text-gray-200 focus:outline-none">
+      <span class="material-symbols-outlined text-xl">close</span>
+    </button>
+  </div>
 
-    <div
-      class="fixed top-4 right-8 bg-red-500 text-white px-8 py-4 flex items-center space-x-4 rounded-lg shadow-lg transition-opacity duration-300 z-50"
-      :class="{ 'opacity-100': showFailToast, 'opacity-0': !showFailToast }">
-      <span class="material-symbols-outlined text-white">cancel</span>
-      <span>{{ toastFailMessage }}</span>
-      <button @click="showFailToast = false" class="text-white hover:text-gray-200 focus:outline-none">
-        <span class="material-symbols-outlined text-xl">close</span>
-      </button>
-    </div>
+  <div
+    class="fixed top-4 right-8 bg-red-500 text-white px-8 py-4 flex items-center space-x-4 rounded-lg shadow-lg transition-opacity duration-300 z-50"
+    :class="{ 'opacity-100': showFailToast, 'opacity-0': !showFailToast }">
+    <span class="material-symbols-outlined text-white">cancel</span>
+    <span>{{ toastFailMessage }}</span>
+    <button @click="showFailToast = false" class="text-white hover:text-gray-200 focus:outline-none">
+      <span class="material-symbols-outlined text-xl">close</span>
+    </button>
+  </div>
 
+  <div class="mt-[-20px]">
     <div class="flex space-x-2 items-center relative">
       <div class="mt-4 px-4 flex items-center space-x-1 mr-auto">
         <span class="material-symbols-outlined text-2xl text-gray-700">contact_page</span>
         <span class="text-m text-gray-700">จำนวนการบันทึกการขายทั้งหมด: </span>
         <span class="text-m text-custom-orange font-bold">
-          {{ saleRecords.length }} รายการ</span>
+          {{ filteredSaleRecords1standRenew.length }} รายการ</span>
       </div>
 
       <button v-if="selectedPackageType.length > 0" @click="clearFilter"
@@ -46,11 +46,12 @@
         <button @click="openAddModal"
           class="bg-custom-orange text-white px-4 py-2 rounded flex items-center space-x-1 hover:bg-custom-orange-hover">
           <span class="material-symbols-outlined text-white text-xl leading-none">add</span>
-          <span class="text-white text-base leading-none">เพิ่มบันทึกการขาย</span>
+          <span class="text-white text-base leading-none">เพิ่ม</span>
         </button>
 
         <div v-if="isAddModalOpen"
           class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
+
           <div
             class="absolute top-8 left-1/2 transform -translate-x-1/2 bg-yellow-500 text-white px-8 py-4 flex items-center space-x-4 rounded-lg shadow-lg transition-opacity duration-300 z-60"
             :class="{
@@ -66,7 +67,7 @@
 
           <div class="bg-white rounded-md shadow-lg w-1/2 max-w-3xl h-auto max-h-[800px] flex flex-col">
             <div class="flex justify-between items-center bg-custom-orange text-white px-4 py-2 rounded-t-md">
-              <h2 class="text-xl font-bold">เพิ่มข้อมูล</h2>
+              <h2 class="text-xl font-bold">เพิ่มบันทึกการขาย</h2>
               <span @click="closeAddModal" class="material-symbols-outlined cursor-pointer hover:text-gray-200">
                 close
               </span>
@@ -94,9 +95,9 @@
                 'consignment'
               ">
                 <div>
-                  <label for="additional_type" class="block font-bold text-gray-700">Sales Type (Additional Sales)</label>
-                  <multiselect v-model="saleRecord.additional_type_id" :options="additionalTypes"
-                    placeholder="เลือก Sales Type (Additional Sales)" track-by="id" label="name" />
+                  <label for="additional_type" class="block font-bold text-gray-700">Sales Type</label>
+                  <multiselect v-model="saleRecord.additional_type_id" :options="filteredAdditionalTypes"
+                    placeholder="เลือก Sales Type" track-by="id" label="name" />
                 </div>
 
                 <div>
@@ -113,42 +114,17 @@
                       placeholder="กรอกมูลค่าขาย"
                       class="w-full pl-8 pr-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange" />
                   </div>
+                </div>
+
+                <div>
+                  <label for="other_promotion_detail"
+                    class="block text-gray-700 font-bold">รายละเอียดเพิ่มเติมที่ต้องได้รับอนุม้ติจาก Director</label>
+                  <textarea id="other_promotion_detail" v-model="saleRecord.other_promotion_detail"
+                    placeholder="กรอกรายละเอียดโปรโมชันเพิ่มเติม" rows="3"
+                    class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange resize-y"></textarea>
                 </div>
               </div>
 
-              <!-- <div v-if="
-                saleRecord.package_type_id &&
-                saleRecord.package_type_id.name.toLowerCase() ===
-                'consignment'
-              ">
-                <div>
-                  <label for="add_detail" class="block text-gray-700 font-bold">รายละเอียดการขาย</label>
-                  <textarea id="add_detail" v-model="saleRecord.add_detail" placeholder="กรอกรายละเอียดการขาย" rows="3"
-                    class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange resize-y"></textarea>
-                </div>
-
-                <div class="flex-1">
-                  <label for="add_price" class="block font-bold text-gray-700">มูลค่าขาย</label>
-                  <div class="relative">
-                    <span class="absolute inset-y-0 left-4 flex items-center text-gray-500">฿</span>
-                    <input v-model="saleRecord.add_price" id="add_price" type="number" step="1"
-                      placeholder="กรอกมูลค่าขาย"
-                      class="w-full pl-8 pr-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange" />
-                  </div>
-                </div>
-
-                <div class="flex-1">
-                  <label for="add_price" class="block font-bold text-gray-700">มูลค่าขาย</label>
-                  <div class="relative">
-                    <span class="absolute inset-y-0 left-4 flex items-center text-gray-500">฿</span>
-                    <input v-model="saleRecord.add_price" id="add_price" type="number" step="1"
-                      placeholder="กรอกมูลค่าขาย"
-                      class="w-full pl-8 pr-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange" />
-                  </div>
-                </div>
-              </div> -->
-
-              <!-- Hide Package, Program, and Promotion when Additional Sale is selected -->
               <div v-if="
                 !(
                   saleRecord.package_type_id?.name?.toLowerCase() ===
@@ -165,7 +141,7 @@
 
                 <div>
                   <label for="program" class="block font-bold text-gray-700">Program</label>
-                  <multiselect v-model="saleRecord.program_id" :options="programs" placeholder="เลือก Program"
+                  <multiselect v-model="saleRecord.program_id" :options="filteredPrograms" placeholder="เลือก Program"
                     track-by="id" label="name" :disabled="!saleRecord.promotion_type_id ||
                       !saleRecord.promotion_type_id.id
                       " />
@@ -198,10 +174,90 @@
                       {{ packageDetails.package_detail }}
                     </p>
                     <p>
-                      <strong>อายุการใช้งาน:</strong>
+                      <strong>Package Validity:</strong>
                       {{ packageDetails.package_validity }} วัน
                     </p>
+                    <p>
+                      <strong>Total Days:</strong>
+                      {{ packageDetails.total_days }} วัน
+                    </p>
+                    <p>
+                      <strong># of Boxes/Day:</strong>
+                      {{ packageDetails.boxes_per_day }} กล่อง
+                    </p>
+                    <p>
+                      <strong>Total Boxes:</strong>
+                      {{ packageDetails.total_boxes }} กล่อง
+                    </p>
+                    <p>
+                      <strong>รายละเอียดโปรโมชัน:</strong>
+                      {{ packageDetails.promotion_detail }}
+                    </p>
+
+
+                    <div class="flex flex-wrap">
+                      <div class="md:w-1/2 lg:w-1/4">
+
+                        <p>
+                          <strong>M or A or D:</strong>
+                          {{ packageDetails.free_mad }}
+                        </p>
+                      </div>
+                      <div class="md:w-1/2 lg:w-1/4">
+                        <p>
+                          <strong>Dessert:</strong>
+                          {{ packageDetails.free_dessert }}
+                        </p>
+                      </div>
+                      <div class="md:w-1/2 lg:w-1/4">
+
+                        <p>
+                          <strong>Brittles:</strong>
+                          {{ packageDetails.free_brittles }}
+                        </p>
+                      </div>
+                      <div class="md:w-1/2 lg:w-1/4">
+                        <p>
+                          <strong>Energy Balls:</strong>
+                          {{ packageDetails.free_energy_balls }}
+                        </p>
+                      </div>
+                      <div class="md:w-1/2 lg:w-1/4">
+                        <p>
+                          <strong>Dressing:</strong>
+                          {{ packageDetails.free_dressing }}
+                        </p>
+                      </div>
+                      <div class="md:w-1/2 lg:w-1/4">
+                        <p>
+                          <strong>Yoghurt:</strong>
+                          {{ packageDetails.free_yoghurt }}
+                        </p>
+                      </div>
+                      <div class="md:w-1/2 lg:w-1/4">
+                        <p>
+                          <strong>Granola:</strong>
+                          {{ packageDetails.free_granola }}
+                        </p>
+                      </div>
+                      <div class="md:w-1/2 lg:w-1/4">
+                        <p>
+                          <strong>เครดิตที่แถม (บาท):</strong>
+                          {{ packageDetails.free_credit }}
+                        </p>
+                      </div>
+                    </div>
+
+
                   </div>
+                </div>
+
+                <div>
+                  <label for="other_promotion_detail" class="block text-gray-700 font-bold">รายละเอียดโปรโมชันเพิ่มเติม
+                    (นอกเหนือจากโปรฯ รายเดือนที่ต้องได้รับอนุมัติ)</label>
+                  <textarea id="other_promotion_detail" v-model="saleRecord.other_promotion_detail"
+                    placeholder="กรอกรายละเอียดโปรโมชันเพิ่มเติม" rows="3"
+                    class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange resize-y"></textarea>
                 </div>
 
                 <div class="space-y-4 overflow-y-auto flex-grow mt-4">
@@ -264,6 +320,13 @@
                       <label for="freeGranola" class="block font-bold text-gray-700">Granola</label>
                       <input id="freeGranola" v-model="saleRecord.free_granola" type="number" min="0" step="1"
                         placeholder="กรอกจำนวน Granola"
+                        class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange" />
+                    </div>
+
+                    <div class="flex-1">
+                      <label for="freeCredit" class="block font-bold text-gray-700">เครดิตที่แถม (บาท)</label>
+                      <input id="freeCredit" v-model="saleRecord.free_credit" type="number" min="0" step="1"
+                        placeholder="กรอกเครดิตที่แถม (บาท)"
                         class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange" />
                     </div>
                   </div>
@@ -337,7 +400,7 @@
               <div class="flex space-x-4">
                 <div class="flex-1">
                   <label for="zone1_delivery" class="block font-bold text-gray-700">In-house Riders (ที่อยู่ 1)</label>
-                  <multiselect v-model="saleRecord.zone1_id" :options="zoneDeliveries"
+                  <multiselect v-model="saleRecord.zone1_id" :options="filteredInhouse"
                     placeholder="เลือก In-house Riders (ที่อยู่ 1)" track-by="id" label="name" />
                 </div>
 
@@ -358,7 +421,7 @@
               <div class="flex space-x-4">
                 <div class="flex-1">
                   <label for="zone2_delivery" class="block font-bold text-gray-700">In-house Riders (ที่อยู่ 2)</label>
-                  <multiselect v-model="saleRecord.zone2_id" :options="zoneDeliveries"
+                  <multiselect v-model="saleRecord.zone2_id" :options="filteredInhouse"
                     placeholder="เลือก In-house Riders (ที่อยู่ 2)" track-by="id" label="name" />
                 </div>
 
@@ -379,7 +442,7 @@
               <div class="flex space-x-4">
                 <div class="flex-1">
                   <label for="zone3_delivery" class="block font-bold text-gray-700">In-house Riders (ที่อยู่ 3)</label>
-                  <multiselect v-model="saleRecord.zone3_id" :options="zoneDeliveries"
+                  <multiselect v-model="saleRecord.zone3_id" :options="filteredInhouse"
                     placeholder="เลือก In-house Riders (ที่อยู่ 3)" track-by="id" label="name" />
                 </div>
 
@@ -400,7 +463,7 @@
               <div class="flex space-x-4">
                 <div class="flex-1">
                   <label for="zone_outsource_delivery" class="block font-bold text-gray-700">Outsource Riders</label>
-                  <multiselect v-model="saleRecord.zone_outsource_id" :options="zoneDeliveries"
+                  <multiselect v-model="saleRecord.zone_outsource_id" :options="filteredOutsource"
                     placeholder="เลือก Outsource Riders" track-by="id" label="name" />
                 </div>
 
@@ -415,7 +478,7 @@
                 <label class="block font-bold text-gray-700">ค่าจัดส่งรวม Outsource: {{
                   formatPrice(computedZoneOutsourcePrice) }}</label>
                 <p class="text-gray-600">ค่าจัดส่ง/ครั้ง: {{ formatPrice(getZonePrice(saleRecord.zone_outsource_id.id))
-                  }}</p>
+                }}</p>
               </div>
 
               <div v-if="computedTotalDeliveryPrice > 0" class="flex-1">
@@ -500,13 +563,53 @@
         </div>
       </div>
 
+      <div class="sort relative inline-block" ref="sortDropdown">
+        <button @click="toggleSortDropdown"
+          class="bg-custom-orange text-white px-2 py-2 rounded-md flex items-center space-x-1 hover:bg-custom-orange-hover">
+          <span class="material-symbols-outlined text-white text-xl leading-none">sort</span>
+          <span class="text-white text-base leading-none">จัดเรียง</span>
+          <span :class="{ 'rotate-180': isSortDropdownOpen }"
+            class="material-symbols-outlined text-white text-xl leading-none items-right ml-auto duration-300">arrow_drop_down</span>
+        </button>
+
+        <div v-if="isSortDropdownOpen"
+          class="absolute left-0 top-full mt-1 bg-white text-black text-left shadow-lg rounded-md w-48 z-50 border border-gray-300">
+          <ul class="list-none p-0 m-0">
+            <li @click="sortData('id')"
+              class="px-4 py-2 cursor-pointer hover:bg-gray-100 flex items-center justify-between">
+              <span>จัดเรียงตามลำดับ</span>
+              <span v-if="sortColumn === 'id'" class="material-symbols-outlined text-sm">
+                {{
+                  sortDirection["id"] === 1 ? "arrow_upward" : "arrow_downward"
+                }}
+              </span>
+            </li>
+            <li @click="sortData('name')"
+              class="px-4 py-2 cursor-pointer hover:bg-gray-100 flex items-center justify-between">
+              <span>จัดเรียงตามชื่อลูกค้า</span>
+              <span v-if="sortColumn === 'name'" class="material-symbols-outlined text-sm">
+                {{
+                  sortDirection["name"] === 1
+                    ? "arrow_upward"
+                    : "arrow_downward"
+                }}
+              </span>
+            </li>
+            <li @click="clearSort"
+              class="px-4 py-2 cursor-pointer font-bold text-custom-orange text-right border-t hover:underline">
+              <span>รีเซ็ตจัดเรียง</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+
       <div class="filter relative inline-block" ref="filterDropdown">
         <button @click="toggleFiltterDropdown"
           class="bg-custom-orange text-white px-2 py-2 rounded-md flex items-center space-x-1 hover:bg-custom-orange-hover">
           <span class="material-symbols-outlined text-white text-xl leading-none">filter_alt</span>
           <span class="text-white text-base leading-none">ตัวกรอง</span>
-          <span
-            class="material-symbols-outlined text-white text-xl leading-none items-right ml-auto">arrow_drop_down</span>
+          <span :class="{ 'rotate-180': isFilterDropdownOpen }"
+            class="material-symbols-outlined text-white text-xl leading-none items-right ml-auto duration-300">arrow_drop_down</span>
         </button>
 
         <div v-if="isFilterDropdownOpen"
@@ -541,49 +644,8 @@
         </div>
       </div>
 
-      <div class="sort relative inline-block" ref="sortDropdown">
-        <button @click="toggleSortDropdown"
-          class="bg-custom-orange text-white px-2 py-2 rounded-md flex items-center space-x-1 hover:bg-custom-orange-hover">
-          <span class="material-symbols-outlined text-white text-xl leading-none">sort</span>
-          <span class="text-white text-base leading-none">จัดเรียง</span>
-          <span
-            class="material-symbols-outlined text-white text-xl leading-none items-right ml-auto">arrow_drop_down</span>
-        </button>
-
-        <div v-if="isSortDropdownOpen"
-          class="absolute left-0 top-full mt-1 bg-white text-black text-left shadow-lg rounded-md w-48 z-50 border border-gray-300">
-          <ul class="list-none p-0 m-0">
-            <li @click="sortData('id')"
-              class="px-4 py-2 cursor-pointer hover:bg-gray-100 flex items-center justify-between">
-              <span>จัดเรียงตามลำดับ</span>
-              <span v-if="sortColumn === 'id'" class="material-symbols-outlined text-sm">
-                {{
-                  sortDirection["id"] === 1 ? "arrow_upward" : "arrow_downward"
-                }}
-              </span>
-            </li>
-            <li @click="sortData('name')"
-              class="px-4 py-2 cursor-pointer hover:bg-gray-100 flex items-center justify-between">
-              <span>จัดเรียงตามชื่อลูกค้า</span>
-              <span v-if="sortColumn === 'name'" class="material-symbols-outlined text-sm">
-                {{
-                  sortDirection["name"] === 1
-                    ? "arrow_upward"
-                    : "arrow_downward"
-                }}
-              </span>
-            </li>
-            <li @click="clearSort"
-              class="px-4 py-2 cursor-pointer font-bold text-custom-orange text-right border-t hover:underline">
-              <span>รีเซ็ตจัดเรียง</span>
-            </li>
-          </ul>
-        </div>
-      </div>
-
-      <!-- Search Input -->
       <div class="flex w-[250px] relative">
-        <input type="text" v-model="searchQuery" placeholder="ค้นหาชื่อลูกค้า.."
+        <input type="text" v-model="searchQuery" placeholder="ค้นหา..."
           class="border border-gray-300 rounded-l px-4 py-2 w-full" @keyup.enter="search" />
         <button v-if="searchQuery" @click="clearSearch"
           class="material-symbols-outlined absolute right-[55px] top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700">
@@ -594,21 +656,22 @@
           search
         </button>
       </div>
+
     </div>
 
     <div v-if="
       $route.path === '/sale-records-hhb' ||
-      $route.path === '/sale-records-hhb-additional'
+      $route.path === '/sale-records-additional-hhb'
     " class="p-4 flex items-left space-x-6 text-m font-bold">
-      <router-link to="sale-records" class="hover:text-custom-orange" :class="{
+      <router-link to="sale-records-hhb" class="hover:text-custom-orange" :class="{
         'text-custom-orange border-b-2 border-custom-orange':
           $route.path === '/' || $route.path === '/sale-records-hhb',
       }">
         บันทึกการขาย 1st Timer, Package Renewal
       </router-link>
-      <router-link to="sale-records-additional" class="hover:text-custom-orange" :class="{
+      <router-link to="sale-records-additional-hhb" class="hover:text-custom-orange" :class="{
         'text-custom-orange border-b-2 border-custom-orange':
-          $route.path === '/' || $route.path === '/sale-records-hhb-additional',
+          $route.path === '/' || $route.path === '/sale-records-additional-hhb',
       }">
         บันทึกการขาย Additional Sales
       </router-link>
@@ -625,7 +688,7 @@
       </thead>
       <tbody>
         <template v-if="filteredSaleRecords1standRenew.length > 0">
-          <tr v-for="(saleRecord, index) in filteredSaleRecords1standRenew" :key="index"
+          <tr v-for="(saleRecord, index) in filteredSaleRecords" :key="index"
             class=" bg-white relative border-b border-b-gray-200">
 
             <td class="px-4 py-2 align-top pb-5">{{ (currentPage - 1) * itemsPerPage + index + 1 }}</td>
@@ -796,14 +859,14 @@
         <template v-if="filteredSaleRecords1standRenew.length < 6 && filteredSaleRecords1standRenew.length > 0">
           <tr v-for="emptyIndex in (6 - filteredSaleRecords1standRenew.length)" :key="'empty-' + emptyIndex"
             class="bg-white">
-            <td colspan="8" class="py-20"></td>
+            <td colspan="9" class="py-16"></td>
           </tr>
         </template>
 
         <template v-if="filteredSaleRecords1standRenew.length === 0">
           <tr>
             <td colspan="9" class="py-10 bg-white text-center text-gray-500 font-bold">
-              ไม่พบข้อมูลที่ค้นหา
+              ไม่พบข้อมูล
             </td>
           </tr>
         </template>
@@ -833,7 +896,7 @@
               <p>
                 <template v-if="key === 'name'">
                   <strong>{{ formatResultLabel(key)
-                    }}<span>{{ value }}</span></strong>
+                  }} <span>{{ value }}</span></strong>
                 </template>
                 <template v-else>
                   <strong>{{ formatResultLabel(key) }}</strong> {{ value }}
@@ -844,6 +907,10 @@
             <p class="text-gray-500">
               <strong>📌 กรุณาชำระเงิน ของวันสรุปยอด
                 เพื่อให้ท่านได้รับอาหารตามวันที่กำหนดในรายการสรุปยอดนี้นะคะ</strong>
+            </p>
+            <p class="text-gray-500">
+              <strong>📌 เมนูปลากะพงและแซลมอน ชำระเพิ่ม 50 บาท/กล่อง  |  เมนูเป็ด ชำระเพิ่ม 30 บาท/กล่อง
+              </strong>
             </p>
           </div>
         </div>
@@ -975,21 +1042,201 @@
 
 
             <div>
-              <label for="editPromotionType" class="block font-bold text-gray-700">Promotion Type</label>
-              <multiselect v-model="selectedSaleRecord.promotion_type_id" :options="promotionTypes"
-                placeholder="เลือก Promotion Type" track-by="id" label="name" class="w-full" />
+                  <label for="promotion_type" class="block font-bold text-gray-700">Promotion Type</label>
+                  <multiselect v-model="selectedSaleRecord.promotion_type_id" :options="promotionTypes"
+                    placeholder="เลือก Promotion Type" track-by="id" label="name" />
+                </div>
+
+                <div>
+                  <label for="program" class="block font-bold text-gray-700">Program</label>
+                  <multiselect v-model="selectedSaleRecord.program_id" :options="filteredPrograms" placeholder="เลือก Program"
+                    track-by="id" label="name" :disabled="!selectedSaleRecord.promotion_type_id ||
+                      !selectedSaleRecord.promotion_type_id.id" />
+                </div>
+
+                <div>
+                  <label for="package" class="block font-bold text-gray-700">Package</label>
+                  <multiselect v-model="selectedSaleRecord.package_id" :options="packages" placeholder="เลือก Package"
+                    track-by="id" label="displayLabel" :disabled="!selectedSaleRecord.program_id || !selectedSaleRecord.program_id.id
+                      " />
+
+              <button v-if="selectedSaleRecord.package_id && selectedSaleRecord.package_id.id"
+                @click.prevent="togglePackageDetails(selectedSaleRecord.package_id)"
+                class="mt-2 cursor-pointer text-custom-orange text-left hover:underline">
+                {{
+                  isShowingPackageDetails
+                    ? "ปิดรายละเอียด"
+                    : "ดูรายละเอียดแพ็คเกจ"
+                }}
+              </button>
+
+              <div v-if="packageDetails" class="mt-4 p-4 border border-custom-orange rounded-md">
+                <h3 class="font-bold">รายละเอียดแพ็คเกจ</h3>
+                <p>
+                  <strong>Package:</strong> {{ packageDetails.name }}
+                </p>
+                <p><strong>ราคา:</strong> {{ formatPrice(packageDetails.price) }}</p>
+                <p>
+                  <strong>Package Details for Purchase Summary:</strong>
+                  {{ packageDetails.package_detail }}
+                </p>
+                <p>
+                  <strong>Package Validity:</strong>
+                  {{ packageDetails.package_validity }} วัน
+                </p>
+                <p>
+                  <strong>Total Days:</strong>
+                  {{ packageDetails.total_days }} วัน
+                </p>
+                <p>
+                  <strong># of Boxes/Day:</strong>
+                  {{ packageDetails.boxes_per_day }} กล่อง
+                </p>
+                <p>
+                  <strong>Total Boxes:</strong>
+                  {{ packageDetails.total_boxes }} กล่อง
+                </p>
+                <p>
+                  <strong>รายละเอียดโปรโมชัน:</strong>
+                  {{ packageDetails.promotion_detail }}
+                </p>
+
+
+                <div class="flex flex-wrap">
+                  <div class="md:w-1/2 lg:w-1/4">
+
+                    <p>
+                      <strong>M or A or D:</strong>
+                      {{ packageDetails.free_mad }}
+                    </p>
+                  </div>
+                  <div class="md:w-1/2 lg:w-1/4">
+                    <p>
+                      <strong>Dessert:</strong>
+                      {{ packageDetails.free_dessert }}
+                    </p>
+                  </div>
+                  <div class="md:w-1/2 lg:w-1/4">
+
+                    <p>
+                      <strong>Brittles:</strong>
+                      {{ packageDetails.free_brittles }}
+                    </p>
+                  </div>
+                  <div class="md:w-1/2 lg:w-1/4">
+                    <p>
+                      <strong>Energy Balls:</strong>
+                      {{ packageDetails.free_energy_balls }}
+                    </p>
+                  </div>
+                  <div class="md:w-1/2 lg:w-1/4">
+                    <p>
+                      <strong>Dressing:</strong>
+                      {{ packageDetails.free_dressing }}
+                    </p>
+                  </div>
+                  <div class="md:w-1/2 lg:w-1/4">
+                    <p>
+                      <strong>Yoghurt:</strong>
+                      {{ packageDetails.free_yoghurt }}
+                    </p>
+                  </div>
+                  <div class="md:w-1/2 lg:w-1/4">
+                    <p>
+                      <strong>Granola:</strong>
+                      {{ packageDetails.free_granola }}
+                    </p>
+                  </div>
+                  <div class="md:w-1/2 lg:w-1/4">
+                    <p>
+                      <strong>เครดิตที่แถม (บาท):</strong>
+                      {{ packageDetails.free_credit }}
+                    </p>
+                  </div>
+                </div>
+
+
+              </div>
             </div>
 
             <div>
-              <label for="editProgram" class="block font-bold text-gray-700">Package Type</label>
-              <multiselect v-model="selectedSaleRecord.program_id" :options="programs" placeholder="เลือก Programs"
-                track-by="id" label="name" class="w-full" />
+              <label for="other_promotion_detail" class="block text-gray-700 font-bold">รายละเอียดโปรโมชันเพิ่มเติม
+                (นอกเหนือจากโปรฯ รายเดือนที่ต้องได้รับอนุมัติ)</label>
+              <textarea id="other_promotion_detail" v-model="selectedSaleRecord.other_promotion_detail"
+                placeholder="กรอกรายละเอียดโปรโมชันเพิ่มเติม" rows="3"
+                class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange resize-y"></textarea>
             </div>
 
-            <div>
-              <label for="editPackage" class="block font-bold text-gray-700">Package</label>
-              <multiselect v-model="selectedSaleRecord.package_id" :options="packages" placeholder="เลือก Package"
-                track-by="id" label="name" class="w-full" />
+            <div class="space-y-4 overflow-y-auto flex-grow mt-4">
+              <strong class="text-custom-orange text-lg">จำนวนที่แถม</strong>
+              <div class="flex flex-wrap gap-4">
+                <!-- Free Mad -->
+                <div class="flex-1">
+                  <label for="freeMad" class="block font-bold text-gray-700">Main Dish</label>
+                  <input id="freeMad" v-model="selectedSaleRecord.free_mad" type="number" min="0" step="1"
+                    placeholder="กรอกจำนวน Main Dish"
+                    class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange" />
+                </div>
+
+                <!-- Free Dessert -->
+                <div class="flex-1">
+                  <label for="freeDessert" class="block font-bold text-gray-700">Dessert</label>
+                  <input id="freeDessert" v-model="selectedSaleRecord.free_dessert" type="number" min="0" step="1"
+                    placeholder="กรอกจำนวน Dessert"
+                    class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange" />
+                </div>
+
+                <!-- Free Brittles -->
+                <div class="flex-1">
+                  <label for="freeBrittles" class="block font-bold text-gray-700">Brittles</label>
+                  <input id="freeBrittles" v-model="selectedSaleRecord.free_brittles" type="number" min="0" step="1"
+                    placeholder="กรอกจำนวน Brittles"
+                    class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange" />
+                </div>
+
+                <!-- Free Energy Balls -->
+                <div class="flex-1">
+                  <label for="freeEnergyBalls" class="block font-bold text-gray-700">Energy
+                    Balls</label>
+                  <input id="freeEnergyBalls" v-model="selectedSaleRecord.free_energy_balls" type="number" min="0"
+                    step="1" placeholder="กรอกจำนวน Energy Balls"
+                    class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange" />
+                </div>
+              </div>
+
+              <div class="flex flex-wrap gap-4">
+                <!-- Free Dressing -->
+                <div class="flex-1">
+                  <label for="freeDressing" class="block font-bold text-gray-700">Free
+                    Dressing</label>
+                  <input id="freeDressing" v-model="selectedSaleRecord.free_dressing" type="number" min="0" step="1"
+                    placeholder="กรอกจำนวน Free Dressing"
+                    class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange" />
+                </div>
+
+                <!-- Free Yoghurt -->
+                <div class="flex-1">
+                  <label for="freeYoghurt" class="block font-bold text-gray-700">Yoghurt</label>
+                  <input id="freeYoghurt" v-model="selectedSaleRecord.free_yoghurt" type="number" min="0" step="1"
+                    placeholder="กรอกจำนวน Yoghurt"
+                    class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange" />
+                </div>
+
+                <!-- Free Granola -->
+                <div class="flex-1">
+                  <label for="freeGranola" class="block font-bold text-gray-700">Granola</label>
+                  <input id="freeGranola" v-model="selectedSaleRecord.free_granola" type="number" min="0" step="1"
+                    placeholder="กรอกจำนวน Granola"
+                    class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange" />
+                </div>
+
+                <div class="flex-1">
+                  <label for="freeCredit" class="block font-bold text-gray-700">เครดิตที่แถม (บาท)</label>
+                  <input id="freeCredit" v-model="selectedSaleRecord.free_credit" type="number" min="0" step="1"
+                    placeholder="กรอกเครดิตที่แถม (บาท)"
+                    class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange" />
+                </div>
+              </div>
             </div>
 
             <div class="flex space-x-4">
@@ -1035,7 +1282,7 @@
               <div class="flex-1">
                 <label for="editZone1_delivery" class="block font-bold text-gray-700">In-house Riders (ที่อยู่
                   1)</label>
-                <multiselect v-model="selectedSaleRecord.zone1_id" :options="zoneDeliveries"
+                <multiselect v-model="selectedSaleRecord.zone1_id" :options="filteredInhouse"
                   placeholder="เลือก In-house Riders (ที่อยู่ 1)" track-by="id" label="name" />
               </div>
 
@@ -1058,7 +1305,7 @@
               <div class="flex-1">
                 <label for="editZone2_delivery" class="block font-bold text-gray-700">In-house Riders (ที่อยู่
                   2)</label>
-                <multiselect v-model="selectedSaleRecord.zone2_id" :options="zoneDeliveries"
+                <multiselect v-model="selectedSaleRecord.zone2_id" :options="filteredInhouse"
                   placeholder="เลือก In-house Riders (ที่อยู่ 2)" track-by="id" label="name" />
               </div>
 
@@ -1081,7 +1328,7 @@
               <div class="flex-1">
                 <label for="editZone3_delivery" class="block font-bold text-gray-700">In-house Riders (ที่อยู่
                   3)</label>
-                <multiselect v-model="selectedSaleRecord.zone3_id" :options="zoneDeliveries"
+                <multiselect v-model="selectedSaleRecord.zone3_id" :options="filteredInhouse"
                   placeholder="เลือก In-house Riders (ที่อยู่ 3)" track-by="id" label="name" />
               </div>
 
@@ -1103,7 +1350,7 @@
             <div class="flex space-x-4">
               <div class="flex-1">
                 <label for="editZone_outsource_delivery" class="block font-bold text-gray-700">Outsource Riders</label>
-                <multiselect v-model="selectedSaleRecord.zone_outsource_id" :options="zoneDeliveries"
+                <multiselect v-model="selectedSaleRecord.zone_outsource_id" :options="filteredOutsource"
                   placeholder="เลือก Outsource Riders" track-by="id" label="name" />
               </div>
 
@@ -1178,36 +1425,13 @@
                 placeholder="กรอก Note รายละเอียดโปรโมชันสำหรับส่งสรุปให้ลูกค้า (ถ้ามี)" rows="3"
                 class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange resize-y"></textarea>
             </div>
-
-
-
-            <!-- <div class="flex-1">
-  <label for="editPaymentStatus" class="block font-bold text-gray-700">สถานะการชำระเงิน</label>
-  <multiselect v-model="selectedSaleRecord.payment_status" :options="paymentStatusOptions"
-    placeholder="เลือกสถานะการชำระเงิน" track-by="value" label="label" />
-</div>
-              <div class="flex space-x-4">
-              <div class="flex-1">
-                  <label for="editPaidDate" class="block font-bold text-gray-700">วันที่ชำระเงิน</label>
-                  <input v-model="selectedSaleRecord.paid_date" id="startDate" type="date"
-                    class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange" />
-                </div>
-
-                <div class="flex-1">
-                  <label for="editPaymentType" class="block font-bold text-gray-700">ประเภทการชำระเงิน</label>
-                  <multiselect v-model="selectedSaleRecord.payment_type_id" :options="paymentTypes"
-                    placeholder="เลือกรอบการจัดส่งอาหาร" track-by="id" label="name" />
-                </div>
-              </div> -->
-
           </div>
 
 
           <!-- Footer (with buttons) -->
           <div class="flex justify-end space-x-4 p-4 bg-white border-t rounded-b-md list-none">
             <div class="flex space-x-2">
-              <button @click="isEditModalOpen = false"
-                class="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400">
+              <button @click="closeEditModal" class="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400">
                 ยกเลิก
               </button>
               <button @click="saveChanges"
@@ -1259,6 +1483,7 @@
         </div>
       </div>
     </table>
+
 
     <div class="rounded-b-2xl flex justify-center items-center space-x-2 bg-white px-2 py-1">
       <button @click="goToPage(currentPage - 1)" :disabled="currentPage === 1"
@@ -1385,6 +1610,9 @@ export default {
         free_dressing: 0,
         free_yoghurt: 0,
         free_granola: 0,
+
+        free_credit: 0,
+        other_promotion_detail: "",
       },
       customers: [],
       customerAddress: null,
@@ -1470,6 +1698,17 @@ export default {
         select_food_id: "",
         delivery_round_id: "",
         note: "",
+
+        free_mad: 0,
+        free_dessert: 0,
+        free_brittles: 0,
+        free_energy_balls: 0,
+        free_dressing: 0,
+        free_yoghurt: 0,
+        free_granola: 0,
+
+        free_credit: 0,
+        other_promotion_detail: "",
       },
       isCopied: false,
 
@@ -1493,15 +1732,7 @@ export default {
   },
   computed: {
     totalPages() {
-      return Math.ceil(
-        this.filteredSaleRecords1standRenew.filter((saleRecord) => {
-          const matchesSearch = this.getCustomerName(
-            saleRecord.customer_id
-          ).toLowerCase().includes(this.searchQuery.toLowerCase());
-          const matchesPackageType = this.selectedPackageType.length === 0 || this.selectedPackageType.includes(saleRecord.package_type_id);
-          return matchesSearch && matchesPackageType;
-        }).length / this.itemsPerPage
-      );
+      return Math.ceil(this.filteredSaleRecords1standRenew.length / this.itemsPerPage);
     },
     totalPagesArray() {
       const maxVisiblePages = 5;
@@ -1527,17 +1758,17 @@ export default {
       };
     },
     filteredResultSaleRecord() {
-      if (!this.selectedSaleRecord || !this.selectedSaleRecord.customer) {
+      if (!this.selectedSaleRecord || !this.selectedSaleRecord.customer_id) {
         return { name: "", expiry_date: "" };
       }
       return {
-        name: this.selectedSaleRecord.customer.name,
+        name: this.getCustomerName(this.selectedSaleRecord.customer_id),
         package: this.selectedSaleRecord.package.package_detail,
         promotion_detail: this.selectedSaleRecord.package.promotion_detail,
         receive_food: this.totalReceiveFood,
         start_date: this.formatDate(this.selectedSaleRecord.start_date),
         sellect_by: this.getSelectFood(this.selectedSaleRecord.select_food_id),
-        delivery_date: this.selectedSaleRecord.customer.delivery_date,
+        // delivery_date: this.selectedSaleRecord.customer.delivery_date,
         delivery: this.getDeliveryRoundName(
           this.selectedSaleRecord.delivery_round_id
         ),
@@ -1552,14 +1783,14 @@ export default {
     },
 
     filteredDetailSaleRecord() {
-      if (!this.selectedSaleRecord || !this.selectedSaleRecord.customer) {
+      if (!this.selectedSaleRecord || !this.selectedSaleRecord.customer_id) {
         return { name: "", expiry_date: "" };
       }
       return {
         seller_name_id: this.getSellerName(
           this.selectedSaleRecord.seller_name_id
         ),
-        name: this.selectedSaleRecord.customer?.name || "",
+        name: this.getCustomerName(this.selectedSaleRecord.customer_id) || "",
         package_type: this.getPackageTypeName(
           this.selectedSaleRecord.package_type_id
         ),
@@ -1569,6 +1800,17 @@ export default {
         package: this.selectedSaleRecord.package?.name || "",
         package_price: this.formatPrice(this.selectedSaleRecord.package?.price),
         promotion_detail: this.selectedSaleRecord.package?.promotion_detail || "",
+        other_promotion_detail: this.selectedSaleRecord.other_promotion_detail || "",
+
+        free_mad: this.selectedSaleRecord.free_mad,
+        free_dessert: this.selectedSaleRecord.free_dessert,
+        free_brittles: this.selectedSaleRecord.free_brittles,
+        free_energy_balls: this.selectedSaleRecord.free_energy_balls,
+        free_dressing: this.selectedSaleRecord.free_dressing,
+        free_yoghurt: this.selectedSaleRecord.free_yoghurt,
+        free_granola: this.selectedSaleRecord.free_granola,
+        free_credit: this.selectedSaleRecord.free_credit,
+
         discount: this.formatPrice(this.selectedSaleRecord.discount),
         extra_charge: this.formatPercent(this.selectedSaleRecord.extra_charge),
         extra_charge_price: this.formatPrice(
@@ -1617,6 +1859,16 @@ export default {
         receive_date: this.formatDate(this.selectedSaleRecord.start_date),
         note: this.selectedSaleRecord.note || "",
         package_detail: this.selectedSaleRecord.package?.package_detail || "",
+
+        mad: this.selectedSaleRecord.mad,
+        dessert: this.selectedSaleRecord.dessert,
+        brittles: this.selectedSaleRecord.brittles,
+        energy_balls: this.selectedSaleRecord.energy_balls,
+        dressing: this.selectedSaleRecord.dressing,
+        yoghurt: this.selectedSaleRecord.yoghurt,
+        granola: this.selectedSaleRecord.granola,
+        credit: this.selectedSaleRecord.credit,
+
         delivery_date: this.selectedSaleRecord.customer?.delivery_date || "",
         select_food_id: this.getSelectFood(
           this.selectedSaleRecord.select_food_id
@@ -1654,32 +1906,32 @@ export default {
     totalReceiveFood() {
       let foods = [];
 
-      if (this.selectedSaleRecord.package.free_mad > 0) {
-        foods.push(`${this.selectedSaleRecord.package.free_mad} x Main Dish`);
+      if (this.selectedSaleRecord.mad > 0) {
+        foods.push(`${this.selectedSaleRecord.mad} x Main Dish`);
       }
-      if (this.selectedSaleRecord.package.free_dessert > 0) {
-        foods.push(`${this.selectedSaleRecord.package.free_dessert} x Dessert`);
+      if (this.selectedSaleRecord.dessert > 0) {
+        foods.push(`${this.selectedSaleRecord.dessert} x Dessert`);
       }
-      if (this.selectedSaleRecord.package.free_brittles > 0) {
+      if (this.selectedSaleRecord.brittles > 0) {
         foods.push(
-          `${this.selectedSaleRecord.package.free_brittles} x Brittles`
+          `${this.selectedSaleRecord.brittles} x Brittles`
         );
       }
-      if (this.selectedSaleRecord.package.free_energy_balls > 0) {
+      if (this.selectedSaleRecord.energy_balls > 0) {
         foods.push(
-          `${this.selectedSaleRecord.package.free_energy_balls} x Energy Balls`
+          `${this.selectedSaleRecord.energy_balls} x Energy Balls`
         );
       }
-      if (this.selectedSaleRecord.package.free_dressing > 0) {
+      if (this.selectedSaleRecord.dressing > 0) {
         foods.push(
-          `${this.selectedSaleRecord.package.free_dressing} x Dressing`
+          `${this.selectedSaleRecord.dressing} x Dressing`
         );
       }
-      if (this.selectedSaleRecord.package.free_yoghurt > 0) {
-        foods.push(`${this.selectedSaleRecord.package.free_yoghurt} x Yoghurt`);
+      if (this.selectedSaleRecord.yoghurt > 0) {
+        foods.push(`${this.selectedSaleRecord.yoghurt} x Yoghurt`);
       }
-      if (this.selectedSaleRecord.package.free_granola > 0) {
-        foods.push(`${this.selectedSaleRecord.package.free_granola} x Granola`);
+      if (this.selectedSaleRecord.granola > 0) {
+        foods.push(`${this.selectedSaleRecord.granola} x Granola`);
       }
       let foodText = foods.length > 0 ? foods.join(" + ") : "";
 
@@ -1755,6 +2007,7 @@ export default {
           const matchesPackageType = this.selectedPackageType.length === 0 || this.selectedPackageType.includes(saleRecord.package_type_id);
           return matchesSearch && matchesPackageType;
         });
+
     },
 
     filteredPackageTypes() {
@@ -1868,18 +2121,7 @@ export default {
       const extraCharge = this.computedEditExtraChargePackagePrice;
       return packagePrice + extraCharge - discount;
     },
-    // computedEditExtraChargeAdditionalPrice() {
-    //   const addPrice = Number(this.selectedSaleRecord.add_price) || 0;
-    //   const extraChargePercent = Number(this.selectedSaleRecord.extra_charge) || 0;
-    //   return (addPrice * extraChargePercent) / 100;
-    // },
-    // computedEditTotalAdditionalPrice() {
-    //   const addPrice = Number(this.selectedSaleRecord.add_price) || 0;
-    //   const discount = Number(this.selectedSaleRecord.discount) || 0;
-    //   const extraCharge = this.computedEditExtraChargeAdditionalPrice;
-    //   return addPrice + extraCharge - discount;
-    // },
-
+   
     computedEditZone1Price() {
       if (!this.selectedSaleRecord.zone1_id) {
         return 0; // ถ้าไม่มีการเลือก zone ให้ส่งค่ากลับเป็น 0
@@ -1938,12 +2180,18 @@ export default {
     computedEditTotalPrice() {
       return this.computedEditTotalPackagePrice + this.computedEditTotalDeliveryPrice;
     },
-    //   filteredPackageTypes() {
-    //   return this.packageTypes.filter(item => 
-    //     item.name.toLowerCase() !== 'additional sales' && item.name.toLowerCase() !== 'consignment'
-    //   );
-    // },
-
+    filteredAdditionalTypes() {
+      return this.additionalTypes.filter(type => !type.name.startsWith("AFF"));
+    },
+    filteredPrograms() {
+      return this.programs.filter(program => program.name.startsWith("Happy"));
+    },
+    filteredInhouse() {
+      return this.zoneDeliveries.filter(zoneDelivery => zoneDelivery.name.startsWith("AFF"));
+    },
+    filteredOutsource() {
+      return this.zoneDeliveries.filter(zoneDelivery => !zoneDelivery.name.startsWith("AFF"));
+    },
 
     ...mapGetters(["saleRecords"]),
   },
@@ -1955,7 +2203,6 @@ export default {
     ]),
 
     resetProgramAndPackage() {
-      // รีเซ็ตค่าของ program_id และ package_id เมื่อมีการเลือก promotion_type_id ใหม่หรือยกเลิก
       this.saleRecord.program_id = null;
       this.saleRecord.package_id = null;
     },
@@ -2018,15 +2265,8 @@ export default {
       const startIndex = (this.currentPage - 1) * this.itemsPerPage;
       const endIndex = startIndex + this.itemsPerPage;
 
-      this.filteredSaleRecords = this.filteredSaleRecords1standRenew
-        .filter((saleRecord) => {
-          const matchesSearch = this.getCustomerName(
-            saleRecord.customer_id
-          ).toLowerCase().includes(this.searchQuery.toLowerCase());
-          const matchesPackageType = this.selectedPackageType.length === 0 || this.selectedPackageType.includes(saleRecord.package_type_id);
-          return matchesSearch && matchesPackageType;
-        })
-        .slice(startIndex, endIndex);
+      // ใช้ข้อมูลที่กรองแล้วใน filteredSaleRecords1standRenew
+      this.filteredSaleRecords = this.filteredSaleRecords1standRenew.slice(startIndex, endIndex);
     },
 
     search() {
@@ -2039,7 +2279,7 @@ export default {
       });
 
       this.currentPage = 1;
-      this.filteredSaleRecords = filtered;
+      this.filteredSaleRecords1standRenew = filtered;
       this.updatePage();
     },
     clearSearch() {
@@ -2143,6 +2383,7 @@ export default {
       }
       this.saleRecord.program_id = [];
     },
+    
     filterPackages() {
       if (this.saleRecord.program_id && this.saleRecord.program_id.id) {
         this.packages = this.allPackages.filter(
@@ -2152,6 +2393,29 @@ export default {
         this.packages = this.allPackages; // ค่า default ที่คุณต้องการ
       }
       this.saleRecord.package_id = []; // รีเซ็ตค่า package_id
+    },
+
+    filterEditPrograms() {
+      if (
+        this.selectedSaleRecord.promotion_type_id &&
+        this.selectedSaleRecord.promotion_type_id.id
+      ) {
+        this.programs = this.allPrograms.filter(
+          (program) =>
+            program.promotion_type_id === this.selectedSaleRecord.promotion_type_id.id
+        );
+      } else {
+        this.programs = this.allPrograms; // หรือค่า default ที่คุณต้องการ
+      }
+    },
+    filterEditPackages() {
+      if (this.selectedSaleRecord.program_id && this.selectedSaleRecord.program_id.id) {
+        this.packages = this.allPackages.filter(
+          (pkg) => pkg.program_id === this.selectedSaleRecord.program_id.id
+        );
+      } else {
+        this.packages = this.allPackages; // ค่า default ที่คุณต้องการ
+      }
     },
 
     openAddModal() {
@@ -2171,7 +2435,6 @@ export default {
           package_id: this.saleRecord.package_id?.id || null,
           package_type_id: this.saleRecord.package_type_id?.id || null,
           seller_name_id: this.saleRecord.seller_name_id?.id || null,
-          delivery: this.saleRecord.delivery || "",
           discount: this.saleRecord.discount || 0,
           extra_charge: this.saleRecord.extra_charge || 0,
           payment_status: this.saleRecord.payment_status || "unpaid",
@@ -2205,6 +2468,9 @@ export default {
           free_dressing: this.saleRecord.free_dressing || 0,
           free_yoghurt: this.saleRecord.free_yoghurt || 0,
           free_granola: this.saleRecord.free_granola || 0,
+
+          free_credit: this.saleRecord.free_credit || 0,
+          other_promotion_detail: this.saleRecord.other_promotion_detail || null,
         });
 
         this.saleRecords.push(response.data);
@@ -2280,6 +2546,8 @@ export default {
         free_dressing: 0,
         free_yoghurt: 0,
         free_granola: 0,
+        free_credit: 0,
+        other_promotion_detail: "",
       };
       this.packageDetails = null;
       this.isShowingPackageDetails = false;
@@ -2309,14 +2577,14 @@ export default {
         zone2_id: this.zoneDeliveries.find(z => z.id === saleRecord.zone2_id) || null,
         zone3_id: this.zoneDeliveries.find(z => z.id === saleRecord.zone3_id) || null,
         zone_outsource_id: this.zoneDeliveries.find(z => z.id === saleRecord.zone_outsource_id) || null,
-        seller_name_id: this.zoneDeliveries.find(s => s.id === saleRecord.seller_name_id) || null,
+        seller_name_id: this.sellerNames.find(s => s.id === saleRecord.seller_name_id) || null,
         delivery_round_id: this.deliveryRounds.find(d => d.id === saleRecord.delivery_round_id) || null,
         select_food_id: this.selectFoods.find(s => s.id === saleRecord.select_food_id) || null,
         paid_date: formatDate(saleRecord.paid_date),
         payment_type_id: this.paymentTypes.find(p => p.id === saleRecord.payment_type_id) || null,
 
       };
-
+      this.moreOpenDropdownIndex = null;
       this.isEditModalOpen = true;
     },
     async saveChanges() {
@@ -2335,7 +2603,6 @@ export default {
             package_id: this.selectedSaleRecord.package_id?.id || null,
             package_type_id: this.selectedSaleRecord.package_type_id?.id || null,
             seller_name_id: this.selectedSaleRecord.seller_name_id?.id || null,
-            delivery: this.selectedSaleRecord.delivery || "",
             discount: this.selectedSaleRecord.discount || 0,
             extra_charge: this.selectedSaleRecord.extra_charge || 0,
             // payment_status: this.selectedSaleRecord.payment_status || "unpaid",
@@ -2362,6 +2629,17 @@ export default {
             receive_food_id: this.selectedSaleRecord.receive_food_id?.id || null,
             note: this.selectedSaleRecord.note || null,
 
+            free_mad: this.selectedSaleRecord.free_mad || 0,
+            free_dessert: this.selectedSaleRecord.free_dessert || 0,
+            free_brittles: this.selectedSaleRecord.free_brittles || 0,
+            free_energy_balls: this.selectedSaleRecord.free_energy_balls || 0,
+            free_dressing: this.selectedSaleRecord.free_dressing || 0,
+            free_yoghurt: this.selectedSaleRecord.free_yoghurt || 0,
+            free_granola: this.selectedSaleRecord.free_granola || 0,
+
+            free_credit: this.selectedSaleRecord.free_credit || 0,
+            other_promotion_detail: this.selectedSaleRecord.other_promotion_detail || null,
+
           }
         );
 
@@ -2371,10 +2649,10 @@ export default {
         if (index !== -1) {
           this.saleRecords[index] = response.data;
         }
-
+        this.filterEditPrograms();
+        this.filterEditPackages();
         this.showSuccessToastNotification("แก้ไขข้อมูลสำเร็จ!");
-        this.isEditModalOpen = false;
-
+        this.closeEditModal();
         await this.fetchSaleRecords();
       } catch (error) {
         console.error("Error saving changes:", error);
@@ -2389,6 +2667,8 @@ export default {
     },
     closeEditModal() {
       this.isEditModalOpen = false;
+      this.packageDetails = null;
+      this.isShowingPackageDetails = false;
       this.selectedSaleRecord = {};
     },
 
@@ -2624,6 +2904,7 @@ export default {
     confirmDelete(itemId) {
       this.itemToDelete = itemId;
       this.isDeleteModalOpen = true;
+      this.moreOpenDropdownIndex = null;
     },
     closeDeleteModal() {
       this.isDeleteModalOpen = false;
@@ -2666,6 +2947,16 @@ export default {
         package: "แพ็กเกจที่ซื้อ ",
         package_price: "ราคาแพ็กเกจ",
         promotion_detail: "รายละเอียดโปรโมชัน",
+        other_promotion_detail: "รายละเอียดโปรโมชันเพิ่มเติม(นอกเหนือจากโปรฯ รายเดือนที่ต้องได้รับอนุมัติ)",
+        free_mad: "จำนวนกล่องที่แถม M or A or D",
+        free_dessert: "จำนวนกล่องที่แถม Dessert",
+        free_brittles: "จำนวนกล่องที่แถม Brittles",
+        free_energy_balls: "จำนวนกล่องที่แถม Energy Balls",
+        free_dressing: "จำนวนกล่องที่แถม Dressing",
+        free_yoghurt: "จำนวนกล่องที่แถม Yoghurt",
+        free_granola: "จำนวนกล่องที่แถม Granola",
+        free_credit: "เครดิตที่แถม (บาท)",
+
         discount: "ส่วนลดเพิ่มเติมจากโปรฯ ประจำเดือน (ถ้ามี)",
         extra_charge: "Extra Charge (%)",
         extra_charge_price: "มูลค่า Extra Charge",
@@ -2693,6 +2984,15 @@ export default {
         expiry_date: "วันหมดอายุแพ็คเกจ",
         note: "Note รายละเอียดโปรโมชันสำหรับส่งสรุปให้ลูกค้า (ถ้ามี)",
         package_detail: "ข้อมูลแพ็กเกจ(สำหรับสรุปให้ลูกค้า)",
+        mad: "M or A or D",
+        dessert: "Dessert",
+        brittles: "Brittles",
+        energy_balls: "Energy Balls",
+        dressing: "Dressing",
+        yoghurt: "Yoghurt",
+        granola: "Granola",
+        credit: "Cash Credit ที่ได้รับ",
+
         delivery_date: "วันที่ต้องการรับอาหาร",
         select_food_id: "วิธีการเลือกอาหาร",
       };
@@ -2779,6 +3079,14 @@ export default {
       ) {
         this.isSortDropdownOpen = false;
       }
+
+      if (
+        this.$refs.filterDropdown &&
+        !this.$refs.filterDropdown.contains(event.target)
+      ) {
+        this.isFilterDropdownOpen = false;
+      }
+
       if (
         !event.target.closest(".dropdown-menu") &&
         !event.target.closest("button")
@@ -2793,7 +3101,16 @@ export default {
       if (event.target.closest(".more")) {
         this.isSortDropdownOpen = false;
       }
+
+      if (
+        this.$refs.filterDropdown &&
+        !this.$refs.filterDropdown.contains(event.target) &&
+        !event.target.closest(".filter")
+      ) {
+        this.isFilterDropdownOpen = false;
+      }
     },
+
 
     calculateTotalPrice() {
       if (!this.saleRecord.package_id) {
@@ -2937,31 +3254,6 @@ export default {
       }
     },
 
-    //   clearEditNotAdditionalForm() {
-    //   this.selectedSaleRecord.add_detail = null;
-    //   this.selectedSaleRecord.additional_type_id = null;
-    //   this.selectedSaleRecord.add_price = 0;
-    // },
-    // clearEditAdditionalForm() {
-    //   this.selectedSaleRecord.promotion_type_id = null;
-    //   this.selectedSaleRecord.program_id = null;
-    //   this.selectedSaleRecord.package_id = null;
-    //   // this.selectedSaleRecord.package_price = 0;
-    // },
-
-    //   checkEditPackageType() {
-    //   if (
-    //     this.selectedSaleRecord.package_type_id &&
-    //     (this.selectedSaleRecord.package_type_id.name.toLowerCase() === 'additional sales' ||
-    //      this.selectedSaleRecord.package_type_id.name.toLowerCase() === 'consignment')
-    //   ) {
-    //     this.clearEditAdditionalForm(); 
-    //   } else {
-    //     this.clearEditNotAdditionalForm(); 
-    //   }
-    // },
-
-
     clearNotAdditionalForm() {
       this.saleRecord.add_detail = null;
       this.saleRecord.additional_type_id = null;
@@ -2986,12 +3278,11 @@ export default {
     },
 
 
-
-
     openConfirmPaymentModal(saleRecord) {
       this.selectedSaleRecord = saleRecord;
       this.selectedPaidDate = saleRecord.paid_date || "";
       this.isConfirmPaymentModalOpen = true;
+      this.moreOpenDropdownIndex = null;
     },
     closeConfirmPaymentModal() {
       this.isConfirmPaymentModalOpen = false;
@@ -3050,7 +3341,7 @@ export default {
       }
       this.closeConfirmPaymentModal();
     },
-    
+
     showSuccessToastNotification(message) {
       this.toastSuccessMessage = message;
       this.showSuccessToast = true;
@@ -3080,8 +3371,14 @@ export default {
     "saleRecord.promotion_type_id": function () {
       this.filterPrograms();
     },
+    "selectedSaleRecord.promotion_type_id": function () {
+      this.filterEditPrograms();
+    },
     "saleRecord.program_id": function () {
       this.filterPackages();
+    },
+    "selectedSaleRecord.program_id": function () {
+      this.filterEditPackages();
     },
     "saleRecord.package_id"() {
       this.calculateTotalPrice();
@@ -3156,7 +3453,12 @@ export default {
       this.calculateEditZoneOutsourcePrice();
     },
     'selectedSaleRecord.package_type_id': 'checkEditPackageType',
-
+    searchQuery() {
+      this.updatePage();
+    },
+    currentPage() {
+      this.updatePage();
+    },
   },
   created() {
     this.filteredSaleRecords = this.saleRecords;
