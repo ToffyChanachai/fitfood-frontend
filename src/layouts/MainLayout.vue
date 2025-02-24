@@ -62,6 +62,12 @@
                             <span v-if="isExpanded">Kitchen Orders</span>
                         </router-link>
                     </li>
+                    <li class="hover:bg-custom-orange-hover">
+                        <router-link to="/remaining-packages" class=" py-2 px-4 flex items-center space-x-2">
+                            <span class="material-symbols-outlined text-3xl">deployed_code_history</span>
+                            <span v-if="isExpanded">แพ็คเกจคงเหลือของลูกค้า</span>
+                        </router-link>
+                    </li>
 
 
                     <li class="hover:bg-custom-orange-hover">
@@ -168,7 +174,7 @@
             <div v-if="$route.path === '/sale-records' || $route.path === '/sale-records-hhb' || $route.path === '/sale-records-additional' || $route.path === '/sale-records-additional-hhb'"
                 class="mt-4 p-4 flex items-left space-x-6 text-m font-bold">
                 <router-link to="sale-records" class="hover:text-custom-orange"
-                    :class="{ 'text-custom-orange border-b-2 border-custom-orange': $route.path === '/' || $route.path === '/sale-records' || $route.path === '/sale-records-additional'  }">
+                    :class="{ 'text-custom-orange border-b-2 border-custom-orange': $route.path === '/' || $route.path === '/sale-records' || $route.path === '/sale-records-additional' }">
                     Absolute FitFood
                 </router-link>
                 <router-link to="/sale-records-hhb" class="hover:text-custom-orange"
@@ -273,6 +279,18 @@
                 </router-link>
             </div>
 
+            <div v-if="$route.path === '/result-orders' || $route.path === '/result-orders-hhb'"
+                class="mt-4 p-4 flex items-left space-x-6 text-m font-bold">
+                <router-link to="result-orders" class="hover:text-custom-orange"
+                    :class="{ 'text-custom-orange border-b-2 border-custom-orange': $route.path === '/' || $route.path === '/result-orders' }">
+                    Absolute FitFood
+                </router-link>
+                <router-link to="/result-orders-hhb" class="hover:text-custom-orange"
+                    :class="{ 'text-custom-orange border-b-2 border-custom-orange': $route.path === '/result-orders-hhb' }">
+                    Happy Healthy Box
+                </router-link>
+            </div>
+
             <!-- Content of the page -->
             <div class="mt-4">
                 <router-view></router-view>
@@ -337,7 +355,7 @@ export default {
                 case "ยอดขายประจำวัน":
                     this.pageIcon = "calendar_month";
                     break;
-                    case "ยอดขายประจำวัน HHB":
+                case "ยอดขายประจำวัน HHB":
                     this.pageIcon = "calendar_month";
                     this.pageTitle = "ยอดขายประจำวัน";
                     break;
@@ -351,12 +369,26 @@ export default {
                 case "Setup Menu โรคไขมัน":
                     this.pageIcon = "menu_book";
                     break;
+
                 case "รายการอาหารประจำวันของลูกค้า":
                     this.pageIcon = "receipt_long";
                     break;
+                case "รายการอาหารประจำวันของลูกค้า HHB":
+                    this.pageIcon = "receipt_long";
+                    this.pageTitle = "รายการอาหารประจำวันของลูกค้า";
+                    break;
+
                 case "Kitchen Orders":
                     this.pageIcon = "stockpot";
                     break;
+                case "แพ็คเกจคงเหลือของลูกค้า":
+                    this.pageIcon = "deployed_code_history";
+                    break;
+                case "ประวัติการสั่งซื้อ":
+                    this.pageIcon = "history";
+                    break;
+
+
 
                 default:
                     this.pageIcon = ""; // ไอคอนเริ่มต้น

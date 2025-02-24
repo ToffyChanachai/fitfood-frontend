@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="mt-[-20px]">
     <div
       class="fixed top-4 right-8 bg-green-500 text-white px-8 py-4 flex items-center space-x-4 rounded-lg shadow-lg transition-opacity duration-300 z-50"
       :class="{
@@ -58,7 +58,7 @@
     <div class="flex justify-end items-center space-x-2 relative">
       <div class="mt-4 px-4 flex items-center space-x-1 mr-auto ">
         <span class="material-symbols-outlined text-2xl text-gray-700">receipt_long</span>
-        <span class="text-m text-gray-700">จำนวนการยอดขายประจำวันทั้งหมด: </span>
+        <span class="text-m text-gray-700">จำนวนรายการอาหารประจำวันของลูกค้าทั้งหมด: </span>
         <span class="text-m text-custom-orange font-bold"> {{ filteredOrdersWithoutHappy.length }} รายการ</span>
       </div>
 
@@ -96,7 +96,7 @@
         </button>
 
         <div v-if="isSortDropdownOpen"
-          class="absolute left-0 top-full mt-1 bg-white text-black text-left shadow-lg rounded-md w-48 z-50 border border-gray-300">
+          class="absolute left-0 top-full mt-1 bg-white text-black text-left shadow-lg rounded-md w-52 z-50 border border-gray-300">
           <ul class="list-none p-0 m-0">
             <li @click="sortData('id')"
               class="px-4 py-2 cursor-pointer hover:bg-gray-100 flex items-center justify-between">
@@ -118,6 +118,17 @@
                 }}
               </span>
             </li>
+            <li @click="sortData('order_date')"
+              class="px-4 py-2 cursor-pointer hover:bg-gray-100 flex items-center justify-between">
+              <span>จัดเรียงตามวันที่สั่งซื้อ</span>
+              <span v-if="sortColumn === 'order_date'" class="material-symbols-outlined text-sm">
+                {{
+                  sortDirection["order_date"] === 1
+                    ? "arrow_upward"
+                    : "arrow_downward"
+                }}
+              </span>
+            </li>
             <li @click="clearSort"
               class="px-4 py-2 cursor-pointer font-bold text-custom-orange text-right border-t hover:underline">
               <span>รีเซ็ตจัดเรียง</span>
@@ -126,7 +137,7 @@
         </div>
       </div>
 
-      <div class="filter relative inline-block" ref="filterDropdown">
+      <!-- <div class="filter relative inline-block" ref="filterDropdown">
         <button @click="toggleFiltterDropdown"
           class="bg-custom-orange text-white px-2 py-2 rounded-md flex items-center space-x-1 hover:bg-custom-orange-hover">
           <span class="material-symbols-outlined text-white text-xl leading-none">filter_alt</span>
@@ -140,7 +151,7 @@
           <div class="p-4 w-[500px] list-none">
             <h3 class="font-bold mb-2">กรองโดย Package Type</h3>
             <div class="grid grid-cols-3 gap-4">
-              <label v-for="type in menu_types" :key="type.id" class="flex items-center space-x-2">
+              <label v-for="type in filteredMenuTypes" :key="type.id" class="flex items-center space-x-2">
                 <input type="checkbox" v-model="selectedOrder" :value="type.id"
                   class="w-5 h-5 border-2 border-gray-400 rounded-full appearance-none checked:bg-custom-orange checked:border-transparent">
                 <span>{{ type.name }}</span>
@@ -165,7 +176,7 @@
             </div>
           </div>
         </div>
-      </div>
+      </div> -->
 
       <div class="flex w-[250px] relative">
         <input type="text" v-model="searchQuery" placeholder="ค้นหา..."
@@ -189,13 +200,10 @@
               class="w-4 h-4 accent-black focus:ring-0" />
           </th>
           <th v-for="(header, index) in headers" :key="index" :class="['px-4 py-2 text-left font-bold']"
-            :style="{ width: headerWidths[index], cursor: 'pointer' }" @click="sortColumn(header)"
-            class="items-center hover:text-gray-200">
-            <span>{{ header }}</span>
-            <span v-if="header === 'Transaction Date'" class="ml-2 items-center">
-              <span class="material-symbols-outlined text-sm">{{ sortIcon }}</span>
-            </span>
+            :style="{ width: headerWidths[index], cursor: 'default', pointerEvents: 'none' }">
+            {{ header }}
           </th>
+
         </tr>
 
       </thead>
@@ -397,6 +405,8 @@ export default {
       sortIcon: 'arrow_downward',
 
       orders: [],
+      searchQuery: "",
+
 
       // filteredOrders: [],
       selectedDate: "",
@@ -437,35 +447,35 @@ export default {
   //     Multiselect
   // },
   computed: {
+    filteredMenuTypes() {
+      return this.menu_types.filter(type => type.name.startsWith('Happy'));
+    },
+
     filteredOrdersWithoutHappy() {
       return this.orders.filter(order => {
-        const menuTypeName = this.getMenuTypeName(order.menu_type_id);
-        return !menuTypeName.startsWith("Happy");
+        const menuTypeName = this.getMenuTypeName(order.menu_type_id) || ''; // ป้องกัน undefined
+        return menuTypeName.startsWith("Happy");
       });
     },
 
     filteredOrders() {
-      // const startIndex = (this.currentPage - 1) * this.itemsPerPage;
-      // const endIndex = this.currentPage * this.itemsPerPage;
-      // return this.filteredOrdersWithoutHappy.slice(startIndex, endIndex);
-
-      const filtered = this.filteredOrdersWithoutHappy.filter((order) => {
-        // const matchesSearch = this.getCustomerName(order.user_id).toLowerCase().includes(this.searchQuery.toLowerCase())
-        const matchesPromotionType = this.selectedOrder.length === 0 || this.selectedOrder.includes(order.menu_type_id);
-        return matchesPromotionType;
-      });
-      const startIndex = (this.currentPage - 1) * this.itemsPerPage;
-      const endIndex = startIndex + this.itemsPerPage;
-      return filtered.slice(startIndex, endIndex);
+      const searchQuery = this.searchQuery ? this.searchQuery.toLowerCase() : ''; // ป้องกัน undefined
+      return this.filteredOrdersWithoutHappy.filter(order => {
+        const customerName = this.getCustomerName(order.user_id) || ''; // ป้องกัน undefined
+        const matchesSearch = searchQuery === '' || customerName.toLowerCase().includes(searchQuery);
+        const matchesPromotionType = !Array.isArray(this.selectedOrder) || this.selectedOrder.length === 0 || this.selectedOrder.includes(order.menu_type_id);
+        return matchesSearch && matchesPromotionType;
+      }).slice((this.currentPage - 1) * this.itemsPerPage, this.currentPage * this.itemsPerPage);
     },
 
     totalPages() {
-      // return Math.ceil(this.orders.length / this.itemsPerPage);
+      const searchQuery = this.searchQuery ? this.searchQuery.toLowerCase() : ''; // ป้องกัน undefined
       return Math.ceil(
-        this.orders.filter((order) => {
-          // const matchesSearch = this.getCustomerName(order.user_id).toLowerCase().includes(this.searchQuery.toLowerCase())
-          const matchesPromotionType = this.selectedOrder.length === 0 || this.selectedOrder.includes(order.menu_type_id);
-          return matchesPromotionType;
+        this.filteredOrdersWithoutHappy.filter(order => {
+          const customerName = this.getCustomerName(order.user_id) || ''; // ป้องกัน undefined
+          const matchesSearch = searchQuery === '' || customerName.toLowerCase().includes(searchQuery);
+          const matchesPromotionType = !Array.isArray(this.selectedOrder) || this.selectedOrder.length === 0 || this.selectedOrder.includes(order.menu_type_id);
+          return matchesSearch && matchesPromotionType;
         }).length / this.itemsPerPage
       );
     },
@@ -913,6 +923,44 @@ export default {
       });
       this.currentPage = 1;
     },
+    handleClickOutside(event) {
+      if (
+        this.$refs.sortDropdown &&
+        !this.$refs.sortDropdown.contains(event.target)
+      ) {
+        this.isSortDropdownOpen = false;
+      }
+
+      if (
+        this.$refs.filterDropdown &&
+        !this.$refs.filterDropdown.contains(event.target)
+      ) {
+        this.isFilterDropdownOpen = false;
+      }
+
+      if (
+        !event.target.closest(".dropdown-menu") &&
+        !event.target.closest("button")
+      ) {
+        this.moreOpenDropdownIndex = null;
+      }
+
+      if (event.target.closest(".sort")) {
+        this.moreOpenDropdownIndex = null;
+      }
+
+      if (event.target.closest(".more")) {
+        this.isSortDropdownOpen = false;
+      }
+
+      if (
+        this.$refs.filterDropdown &&
+        !this.$refs.filterDropdown.contains(event.target) &&
+        !event.target.closest(".filter")
+      ) {
+        this.isFilterDropdownOpen = false;
+      }
+    },
 
 
     showSuccessToastNotification(message) {
@@ -949,7 +997,7 @@ export default {
     // this.updatePage();
   },
   mounted() {
-    // document.addEventListener('click', this.handleClickOutside);
+    document.addEventListener('click', this.handleClickOutside);
     this.fetchLookupData();
     this.fetchOrders(this.selectedDate);
     this.setToday();
@@ -983,10 +1031,10 @@ export default {
     selectedOrders() {
       this.isAllSelected = this.selectedOrders.length === this.filteredOrders.length;
     },
-  }
-  // beforeUnmount() {
-  //     document.removeEventListener('click', this.handleClickOutside);
-  // },
+  },
+  beforeUnmount() {
+    document.removeEventListener('click', this.handleClickOutside);
+  },
 };
 </script>
 

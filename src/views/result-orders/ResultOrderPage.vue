@@ -54,23 +54,36 @@
 
     </div>
 
+
     <div class="flex justify-end items-center space-x-2 relative">
       <div class="mt-4 px-4 flex items-center space-x-1 mr-auto ">
-        <span class="material-symbols-outlined text-2xl text-gray-700">stockpot</span>
-        <span class="text-m text-gray-700">จำนวนรายการ Kitchen Orders: </span>
+        <span class="material-symbols-outlined text-2xl text-gray-700">receipt_long</span>
+        <span class="text-m text-gray-700">จำนวนรายการอาหารประจำวันของลูกค้าทั้งหมด: </span>
         <span class="text-m text-custom-orange font-bold"> {{ filteredOrdersWithoutHappy.length }} รายการ</span>
+      </div>
+
+      <div>
+        <button
+          v-if="selectedOrders.some(order => order.status === 'pending') && !selectedOrders.some(order => order.status === 'confirm')"
+          @click="confirmMultipleOrders"
+          class="bg-green-500 hover:bg-green-600 text-white px-2 py-2 rounded-md flex items-center space-x-1 "
+          :disabled="selectedOrders.length === 0">
+          ยืนยันการสั่งซื้อที่เลือก ({{ selectedOrders.length }})
+        </button>
+
+        <button
+          v-if="selectedOrders.some(order => order.status === 'confirm') && !selectedOrders.some(order => order.status === 'pending')"
+          @click="pendingMultipleOrders"
+          class="bg-red-500 hover:bg-red-600 text-white px-2 py-2 rounded-md flex items-center space-x-1"
+          :disabled="selectedOrders.length === 0">
+          ยกเลิกยืนยันการสั่งซื้อที่เลือก ({{ selectedOrders.length }})
+        </button>
       </div>
 
       <button v-if="selectedOrder.length > 0" @click="clearFilter"
         class="px-2 py-2 rounded-md flex items-center space-x-1 text-gray-400 hover:text-custom-orange">
         <span class="material-symbols-outlined">close</span>
         <span class="ml-2">รีเซ็ตตัวกรอง ({{ selectedOrder.length }})</span>
-      </button>
-
-      <button @click="handlePrint"
-        class="bg-custom-orange text-white px-2 py-2 rounded-md flex items-center space-x-1 hover:bg-custom-orange-hover">
-        <span class="material-symbols-outlined text-white text-xl leading-none">print</span>
-        <span class="text-white text-base leading-none">Print</span>
       </button>
 
       <div class="sort relative inline-block" ref="sortDropdown">
@@ -91,6 +104,17 @@
               <span v-if="sortColumn === 'id'" class="material-symbols-outlined text-sm">
                 {{
                   sortDirection["id"] === 1 ? "arrow_upward" : "arrow_downward"
+                }}
+              </span>
+            </li>
+            <li @click="sortData('user_id')"
+              class="px-4 py-2 cursor-pointer hover:bg-gray-100 flex items-center justify-between">
+              <span>จัดเรียงตามชื่อลูกค้า</span>
+              <span v-if="sortColumn === 'user_id'" class="material-symbols-outlined text-sm">
+                {{
+                  sortDirection["user_id"] === 1
+                    ? "arrow_upward"
+                    : "arrow_downward"
                 }}
               </span>
             </li>
@@ -168,40 +192,125 @@
       </div>
     </div>
 
-    <table ref="printTable" class="min-w-full table-auto rounded-2xl overflow-hidden mt-4">
+    <table class="min-w-full table-auto rounded-t-2xl overflow-hidden mt-4">
       <thead>
         <tr class="bg-custom-orange text-white">
-          <th v-for="(header, index) in headers" :key="index" :class="['px-4 py-2 text-left font-bold']"
-            :style="{ width: headerWidths[index], cursor: 'pointer' }">
-            <span>{{ header }}</span>
-            <span v-if="header === 'Transaction Date'" class="ml-2 items-center">
-              <span class="material-symbols-outlined text-sm">{{ sortIcon }}</span>
-            </span>
+          <th class="px-4 py-2 text-left align-center">
+            <input type="checkbox" @change="toggleSelectAll" :checked="isAllSelected"
+              class="w-4 h-4 accent-black focus:ring-0" />
           </th>
-        </tr>
+          <th v-for="(header, index) in headers" :key="index" :class="['px-4 py-2 text-left font-bold']"
+            :style="{ width: headerWidths[index], cursor: 'default', pointerEvents: 'none' }">
+            {{ header }}
+          </th>
+                </tr>
 
       </thead>
-
       <tbody>
         <tr v-for="(order, index) in filteredOrders" :key="index" class="border-b border-b-gray-200 bg-white relative">
-          <td class="px-4 py-2 align-top pb-5">{{ index + 1 }}</td>
+          <td class="px-4 py-2 align-top pb-5">
+            <input type="checkbox" v-model="selectedOrders" :value="order"
+              class="w-4 h-4 accent-custom-orange focus:ring-0" />
+          </td>
+          <td class="px-4 py-2 align-top pb-5">{{ (currentPage - 1) * itemsPerPage + index + 1 }}</td>
+
+          <td class="px-4 py-2 align-top font-bold border-l border-r text-custom-orange pb-5"
+            v-if="shouldDisplayUserName(index, order.user_id)" :rowspan="getRowspan(order.user_id, index)">
+            {{ getCustomerName(order.user_id) }}
+          </td>
 
           <!-- <td class="px-4 py-2 align-top font-bold border-l border-r text-custom-orange pb-5"
-    v-if="shouldDisplayOrderDate(index, order.order_date)" 
-    :rowspan="getOrderDateRowspan(order.order_date, index)">
-  {{ formatDate(order.order_date) }}
-</td> -->
+        v-if="shouldDisplayOrderDate(index, order.order_date)"
+        :rowspan="getOrderDateRowspan(order.order_date, index)">
+      {{ formatDate(order.order_date) }}
+    </td> -->
 
-
+          <!-- <td class="px-4 py-2 align-top pb-5">{{ getCustomerName(order.user_id) }}</td> -->
           <td class="px-4 py-2 align-top pb-5">{{ formatDate(order.order_date) }}</td>
           <td class="px-4 py-2 align-top pb-5">{{ getMenuTypeName(order.menu_type_id) }}</td>
-          <td class="px-4 py-2 align-top pb-5">{{ getMealTypeName(getMealTypeID(order.menu_id)) }}</td>
-          <td class="px-4 py-2 align-top font-bold pb-5">
-            <div>{{ order.menu_eng_name }}</div>
-            <div>({{ order.menu_name }})</div>
+
+          <td class="px-4 py-2 align-top pb-5">
+            <div>{{ getMenuEngName(order.menu_id) }}</div>
+            <div>({{ getMenuName(order.menu_id) }})</div>
           </td>
 
           <td class="px-4 py-2 align-top pb-5">{{ order.quantity }}</td>
+
+          <td class="px-4 py-2 align-top font-bold pb-5">
+            <button @click="openConfirmSatatusModal(order)"
+              class="px-4 py-1 rounded-full font-bold focus:outline-none hover:text-gray-200"
+              :class="getStatusClass(order.status)">
+              {{ getStatusText(order.status) }}
+            </button>
+
+            <div v-if="isConfirmStatusModalOpen"
+              class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-10 z-50">
+
+              <div
+                class="absolute top-8 left-1/2 transform -translate-x-1/2 bg-yellow-500 text-white px-8 py-4 flex items-center space-x-4 rounded-lg transition-opacity duration-300 z-60"
+                :class="{
+                  'opacity-100': showErrorToast,
+                  'opacity-0': !showErrorToast,
+                }">
+
+                <span class="material-symbols-outlined text-white">error</span>
+                <span>{{ toastErrorMessage }}</span>
+                <button @click="showErrorToast = false" class="text-white hover:text-gray-200 focus:outline-none">
+                  <span class="material-symbols-outlined text-xl">close</span>
+                </button>
+              </div>
+
+              <div class="bg-white rounded-md w-1/3 max-w-lg">
+                <!-- Header -->
+                <div :class="{
+                  'bg-green-500':
+                    selectedOrder.status === 'pending',
+                  'bg-red-500': selectedOrder.status === 'confirm',
+                }" class="flex justify-between items-center text-white px-4 py-2 rounded-t-md">
+                  <span class="font-bold">
+                    {{
+                      selectedOrder.status === "paid"
+                        ? "เปลี่ยนสถานะเป็นยังไม่ได้ยืนยันการสั่งซื้อ"
+                        : "ยืนยันการสั่งซื้อ"
+                    }}
+                  </span>
+                  <button @click="closeConfirmStatusModal" class="text-white hover:text-gray-200">
+                    <span class="material-symbols-outlined">close</span>
+                  </button>
+                </div>
+
+                <!-- Content -->
+                <div class="p-6 space-y-4">
+                  <p class="text-gray-700">
+                    {{
+                      selectedOrder.status === "confirm"
+                        ? 'คุณต้องการเปลี่ยนสถานะเป็น "ยังไม่ได้ยืนยันการสั่งซื้อ" หรือไม่?'
+                        : "ยืนยันการสั่งซื้อ?"
+                    }}
+                  </p>
+
+                </div>
+
+                <!-- Footer -->
+                <div class="flex justify-end space-x-4 p-4 bg-white border-t rounded-b-md">
+                  <button @click="closeConfirmStatusModal"
+                    class="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400">
+                    ยกเลิก
+                  </button>
+                  <button @click="confirmStatus" :class="{
+                    'bg-green-500 hover:bg-green-600':
+                      selectedOrder.status === 'pending',
+                    'bg-red-500 hover:bg-red-600':
+                      selectedOrder.status === 'confirm',
+                  }" class="text-white px-4 py-2 rounded">
+                    ยืนยัน
+                  </button>
+                </div>
+              </div>
+            </div>
+          </td>
+
+
         </tr>
 
         <tr v-if="filteredOrders.length === 0">
@@ -209,42 +318,71 @@
         </tr>
       </tbody>
 
+      <!-- <div v-if="isDetailModalOpen"
+              class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
+              <div class="bg-white rounded-md shadow-lg w-1/2 max-w-3xl h-auto max-h-[800px] flex flex-col">
+                  <div class="flex justify-between items-center bg-custom-orange text-white px-4 py-2 rounded-t-md">
+                      <span class="font-bold"><h2>รายละเอียดยอดขายประจำวัน</h2></span>
+                      <div class="flex space-x-2">
+                          <span @click="closeDetailModal"
+                              class="material-symbols-outlined cursor-pointer hover:text-gray-200">
+                              close
+                          </span>
+                      </div>
+                  </div>
+
+                  <div class="pb-2 pt-2">
+                      <div v-for="(value, key, index) in filteredDetail" :key="key"
+                          :class="index % 2 === 0 ? 'bg-white rounded-none' : 'bg-gray-100 rounded-none'"
+                          class="p-2 rounded-md">
+                          <p class="pl-3 pr-3"><strong class="mr-2">{{ formatLabel(key) }}:</strong> {{ value }}</p>
+                      </div>
+                  </div>
+              </div>
+          </div> -->
+
+
     </table>
 
-    <div ref="componentRef" class="hidden-print p-4 relative">
-      <div class="relative flex justify-between items-center p-4">
-        <div class="flex flex-col">
-          <strong class="text-xl">Kitchen Orders Report</strong>
-          <span class="text-sm">Date : {{ formattedDate }}</span>
-        </div>
 
 
-        <div class="flex items-center space-x-4">
-          <img src="@/assets/logo_fitfood_full.png" alt="Logo" class="w-48 h-18" />
-        </div>
+    <div class="rounded-b-2xl flex justify-center items-center space-x-2 bg-white px-2 py-1">
+      <button @click="goToPage(currentPage - 1)" :disabled="currentPage === 1"
+        class="px-3 py-2 rounded-md hover:bg-gray-100 text-custom-orange disabled:opacity-50">
+        <span class="material-symbols-outlined">chevron_left</span>
+      </button>
+
+      <div class="flex items-center space-x-1">
+        <button v-if="totalPagesArray.start > 1" @click="goToPage(1)"
+          class="px-3 py-2 rounded-md bg-white hover:bg-custom-orange hover:text-white">
+          1
+        </button>
+        <button v-if="totalPagesArray.start > 2" @click="goToPage(totalPagesArray.start - 1)"
+          class="px-3 py-2 rounded-md bg-white hover:bg-custom-orange hover:text-white">
+          ...
+        </button>
+
+        <button v-for="page in totalPagesArray.range" :key="page" @click="goToPage(page)"
+          :class="['px-3 py-2 rounded-md', { 'bg-custom-orange text-white': currentPage === page, 'bg-white': currentPage !== page }]"
+          class="cursor-pointer hover:bg-custom-orange hover:text-white">
+          {{ page }}
+        </button>
+
+        <button v-if="totalPagesArray.end < totalPages - 1" @click="goToPage(totalPagesArray.end + 1)"
+          class="px-3 py-2 rounded-md bg-white hover:bg-custom-orange hover:text-white">
+          ...
+        </button>
+        <button v-if="totalPagesArray.end < totalPages" @click="goToPage(totalPages)"
+          class="px-3 py-2 rounded-md bg-white hover:bg-custom-orange hover:text-white">
+          {{ totalPages }}
+        </button>
       </div>
 
-
-
-      <div v-for="(orders, index) in groupedOrdersPrint" :key="index" class="mb-4 mt-2 p-4">
-        <span class="font-bold text-lg text-center w-full block">{{ orders.menu_type }}</span>
-        <div v-for="(order, idx) in orders.items" :key="idx">
-          <h2 class="font-bold text-lg mt-4">{{ formatDate(order.order_date) }}</h2>
-          <div v-for="(meal, index) in order.items" :key="index">
-            <div class="mt-2">
-              <span class="font-semibold text-custom-orange underline">{{ meal.meal_type }}</span>
-              <ul class="ml-4">
-                <li v-for="(item, itemIndex) in meal.items" :key="itemIndex">
-                  <strong>{{ item.quantity }}</strong> x {{ item.menu_eng_name }}
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </div>
+      <button @click="goToPage(currentPage + 1)" :disabled="currentPage === totalPages"
+        class="px-3 py-2 rounded-md hover:bg-gray-100 text-custom-orange disabled:opacity-50">
+        <span class="material-symbols-outlined">chevron_right</span>
+      </button>
     </div>
-
-
 
   </div>
 
@@ -255,51 +393,34 @@
 import axios from 'axios';
 import flatpickr from "flatpickr";
 import "flatpickr/dist/flatpickr.css";
-import { useVueToPrint } from "vue-to-print";
-import { ref } from "vue";
+//import Multiselect from 'vue-multiselect';
 
 export default {
-  setup() {
-    const componentRef = ref();
-    const { handlePrint } = useVueToPrint({
-      content: componentRef,
-      documentTitle: "Kitchen Orders Report",
-    });
-
-    return { componentRef, handlePrint };
-  },
   data() {
     return {
-      headers: ['#', 'วันที่สั่งซื้อ', 'Packge Type', 'ประเภทอาหาร', 'รายการอาหาร', 'จำนวน'],
-      headerWidths: ['5%', '10%', '15%', '20%', '35%', '10%'],
+      headers: ['#', `Customer's Name`, 'วันที่สั่งซื้อ', 'Packge Type', 'รายการอาหาร', 'จำนวน', 'สถานะ'],
+      headerWidths: ['5%', '20%', '15%', '15%', '20%', '10%', '15%'],
+      // sortDateDirection: 'asc', // กำหนดทิศทางการเรียงลำดับ (asc หรือ desc)
+      sortIcon: 'arrow_downward',
 
       orders: [],
       searchQuery: "",
+
 
       // filteredOrders: [],
       selectedDate: "",
       customers: [],
       menus: [],
       menu_types: [],
-      meal_types: [],
 
-      // selectedOrder: {
-      //   id: '',
-      //   menu_id: '',
-      //   quantity: 0,
-      //   order_date: '',
-      //   user_id: '',
-      //   menu_type_id: '',
-      //   status: '',
-      // },
-      selectedOrders: [],
       selectedOrder: [],
+      selectedOrders: [],
 
       isConfirmStatusModalOpen: false,
       isAllSelected: false,
 
       currentPage: 1,
-      itemsPerPage: 5,
+      itemsPerPage: 10,
 
       startDate: '', // วันที่เริ่มต้น
       endDate: '',
@@ -321,30 +442,65 @@ export default {
 
     };
   },
+  // components: {
+  //     Multiselect
+  // },
   computed: {
     filteredMenuTypes() {
       return this.menu_types.filter(type => !type.name.startsWith('Happy'));
     },
-
     filteredOrdersWithoutHappy() {
-      return this.groupedOrders.filter(order => {
-        const menuTypeName = this.getMenuTypeName(order.menu_type_id) || ''; // ป้องกัน undefined
-        return !menuTypeName.startsWith("Happy");
-      });
-    },
-    
+    return this.orders.filter(order => {
+      const menuTypeName = this.getMenuTypeName(order.menu_type_id) || ''; // ป้องกัน undefined
+      return !menuTypeName.startsWith("Happy");
+    });
+  },
 
-    filteredOrders() {
-      const searchQuery = this.searchQuery ? this.searchQuery.toLowerCase() : ''; // ป้องกัน undefined
-      return this.filteredOrdersWithoutHappy.filter(order => {
-        const menuEngName = this.getMenuEngName(order.menu_id) || '';
-        const menuThaiName = this.getMenuName(order.menu_id) || '';
-        const matchesSearch = searchQuery === '' || menuEngName.toLowerCase().includes(searchQuery) || menuThaiName.toLowerCase().includes(searchQuery);
+  filteredOrders() {
+    const searchQuery = this.searchQuery ? this.searchQuery.toLowerCase() : ''; // ป้องกัน undefined
+    return this.filteredOrdersWithoutHappy.filter(order => {
+      const customerName = this.getCustomerName(order.user_id) || ''; // ป้องกัน undefined
+      const matchesSearch = searchQuery === '' || customerName.toLowerCase().includes(searchQuery);
+      const matchesPromotionType = !Array.isArray(this.selectedOrder) || this.selectedOrder.length === 0 || this.selectedOrder.includes(order.menu_type_id);
+      return matchesSearch && matchesPromotionType;
+    }).slice((this.currentPage - 1) * this.itemsPerPage, this.currentPage * this.itemsPerPage);
+  },
+
+  totalPages() {
+    const searchQuery = this.searchQuery ? this.searchQuery.toLowerCase() : ''; // ป้องกัน undefined
+    return Math.ceil(
+      this.filteredOrdersWithoutHappy.filter(order => {
+        const customerName = this.getCustomerName(order.user_id) || ''; // ป้องกัน undefined
+        const matchesSearch = searchQuery === '' || customerName.toLowerCase().includes(searchQuery);
         const matchesPromotionType = !Array.isArray(this.selectedOrder) || this.selectedOrder.length === 0 || this.selectedOrder.includes(order.menu_type_id);
         return matchesSearch && matchesPromotionType;
-      })
-    },
+      }).length / this.itemsPerPage
+    );
+  },
 
+    totalPagesArray() {
+      const maxVisiblePages = 5;
+      const halfVisible = Math.floor(maxVisiblePages / 2);
+
+      let start = this.currentPage - halfVisible;
+      let end = this.currentPage + halfVisible;
+
+      if (start < 1) {
+        start = 1;
+        end = Math.min(maxVisiblePages, this.totalPages);
+      }
+
+      if (end > this.totalPages) {
+        end = this.totalPages;
+        start = Math.max(1, this.totalPages - maxVisiblePages + 1);
+      }
+
+      return {
+        start,
+        end,
+        range: Array.from({ length: end - start + 1 }, (_, i) => start + i),
+      };
+    },
     formattedStartDate() {
       if (!this.startDate) return ""; // หากยังไม่ได้เลือกวันที่
       return new Intl.DateTimeFormat("en-UK", {
@@ -362,113 +518,26 @@ export default {
       }).format(new Date(this.endDate));
     },
 
-    formattedDate() {
-      return new Date().toLocaleDateString("en-UK", {
-        year: "numeric",
-        month: "numeric",
-        day: "numeric"
-      });
-    },
-
-    groupedOrders() {
-      const groupedByDate = this.orders.reduce((acc, order) => {
-        if (!acc[order.order_date]) {
-          acc[order.order_date] = [];
-        }
-
-        const existingOrder = acc[order.order_date].find(item => item.menu_id === order.menu_id);
-        if (existingOrder) {
-          existingOrder.quantity += order.quantity;
-        } else {
-          acc[order.order_date].push({
-            menu_id: order.menu_id,
-            quantity: order.quantity,
-            menu_name: this.getMenuName(order.menu_id),
-            menu_eng_name: this.getMenuEngName(order.menu_id),
-            order_date: order.order_date,
-            menu_type_id: order.menu_type_id,
-          });
-        }
-
-        return acc;
-      }, {});
-
-      // แปลง object เป็น array
-      return Object.keys(groupedByDate).flatMap(order_date => groupedByDate[order_date]);
-    },
-
-    groupedOrdersPrint() {
-      const groupedByMenuTypeAndDate = this.filteredOrders.reduce((acc, order) => {
-        const menuType = this.getMenuTypeName(order.menu_type_id);
-        const mealType = this.getMealTypeName(this.getMealTypeID(order.menu_id));
-
-        if (!acc[menuType]) {
-          acc[menuType] = [];
-        }
-
-        const existingDate = acc[menuType].find(item => item.order_date === order.order_date);
-
-        if (existingDate) {
-          const existingMealType = existingDate.items.find(item => item.meal_type === mealType);
-
-          if (existingMealType) {
-            const existingMenu = existingMealType.items.find(item => item.menu_name === this.getMenuName(order.menu_id));
-            if (existingMenu) {
-              existingMenu.quantity += order.quantity; // รวม quantity
-            } else {
-              existingMealType.items.push({
-                menu_name: this.getMenuName(order.menu_id),
-                menu_eng_name: this.getMenuEngName(order.menu_id),
-                quantity: order.quantity,
-                meal_type: mealType,
-              });
-            }
-          } else {
-            existingDate.items.push({
-              meal_type: mealType,
-              items: [{
-                menu_name: this.getMenuName(order.menu_id),
-                menu_eng_name: this.getMenuEngName(order.menu_id),
-                quantity: order.quantity,
-                meal_type: mealType,
-              }]
-            });
-          }
-        } else {
-          acc[menuType].push({
-            menu_type: menuType,
-            order_date: order.order_date,
-            items: [{
-              meal_type: mealType,
-              items: [{
-                menu_name: this.getMenuName(order.menu_id),
-                menu_eng_name: this.getMenuEngName(order.menu_id),
-                quantity: order.quantity,
-                meal_type: mealType,
-              }]
-            }]
-          });
-        }
-
-        return acc;
-      }, {});
-
-      return Object.keys(groupedByMenuTypeAndDate).map(menuType => {
-        return {
-          menu_type: menuType,
-          items: groupedByMenuTypeAndDate[menuType].map(item => ({
-            order_date: item.order_date,
-            items: item.items.map(subItem => ({
-              meal_type: subItem.meal_type,
-              items: subItem.items
-            }))
-          }))
-        };
-      });
-    },
 
   },
   methods: {
+    goToPage(page) {
+      if (page >= 1 && page <= this.totalPages) {
+        this.currentPage = page;
+      }
+    },
+    // updatePage() {
+    //     const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+    //     const endIndex = startIndex + this.itemsPerPage;
+
+    //     this.filteredPackage = this.packages.filter((packaged) => {
+    //         const matchesSearch = packaged.name.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+    //             packaged.id.toString().includes(this.searchQuery);
+    //         const matchesProgram = this.selectedProgram.length === 0 || this.selectedProgram.includes(packaged.program_id);
+    //         return matchesSearch && matchesProgram;
+    //     }).slice(startIndex, endIndex);
+    // },
+
     formatDate(dateString) {
       if (!dateString) return ""; // หากยังไม่ได้เลือกวันที่
 
@@ -506,20 +575,20 @@ export default {
       }
     },
 
-    // sortColumn(header) {
+    // sortDateColumn(header) {
     //   if (header === 'Transaction Date') {
     //     // สลับทิศทางการเรียงลำดับเมื่อคลิก
-    //     this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+    //     this.sortDateDirection = this.sortDateDirection === 'asc' ? 'desc' : 'asc';
 
     //     // กำหนดไอคอนให้เหมาะสมกับทิศทางการเรียงลำดับ
-    //     this.sortIcon = this.sortDirection === 'asc' ? 'arrow_downward' : 'arrow_upward';
+    //     this.sortIcon = this.sortDateDirection === 'asc' ? 'arrow_downward' : 'arrow_upward';
 
     //     // เรียงลำดับข้อมูลตามวันที่ชำระเงิน
     //     this.filteredOrders.sort((a, b) => {
     //       const dateA = new Date(a.paid_date);
     //       const dateB = new Date(b.paid_date);
 
-    //       return this.sortDirection === 'asc'
+    //       return this.sortDateDirection === 'asc'
     //         ? dateA - dateB
     //         : dateB - dateA;
     //     });
@@ -535,6 +604,9 @@ export default {
         this.orders = response.data.orders;
         this.filteredOrders = this.orders;
 
+        // console.log('Data', this.orders);
+        // console.log('Data', this.filteredOrders);
+
         this.orders.sort((a, b) => {
           const dateA = new Date(a.order_date);
           const dateB = new Date(b.order_date);
@@ -543,22 +615,21 @@ export default {
 
 
       } catch (error) {
-        console.error('Error fetching orders data:', error);
+        // console.error('Error fetching orders data:', error);
       }
     },
 
     async fetchLookupData() {
       try {
-        const [customersRes, menuRes, menuTypeRes, mealTypeRes] = await Promise.all([
+        const [customersRes, menuRes, menuTypeRes] = await Promise.all([
           axios.get("http://127.0.0.1:3333/customers"),
           axios.get("http://127.0.0.1:3333/menus"),
           axios.get("http://127.0.0.1:3333/menu-types"),
-          axios.get("http://127.0.0.1:3333/meal-types"),
         ]);
         this.customers = customersRes.data;
         this.menus = menuRes.data;
         this.menu_types = menuTypeRes.data;
-        this.meal_types = mealTypeRes.data;
+
       } catch (error) {
         console.error("Error fetching lookup data:", error);
       }
@@ -586,14 +657,6 @@ export default {
     },
     getMenuTypeName(menuId) {
       const menu = this.menu_types.find((c) => c.id === menuId);
-      return menu ? menu.name : null;
-    },
-    getMealTypeID(menuId) {
-      const menu = this.menus.find((c) => c.id === menuId);
-      return menu ? menu.meal_type_id : null;
-    },
-    getMealTypeName(mealId) {
-      const menu = this.meal_types.find((c) => c.id === mealId);
       return menu ? menu.name : null;
     },
     getStatusText(status) {
@@ -630,16 +693,29 @@ export default {
       }
     },
 
-    shouldDisplayOrderDate(index, orderDate) {
-      // แสดงวันที่ในแถวแรกของแต่ละกลุ่ม order_date ที่ซ้ำกัน
-      return index === 0 || this.orders[index - 1].order_date !== orderDate;
+    shouldDisplayUserName(index, userId) {
+      return index === 0 || this.filteredOrders[index - 1].user_id !== userId;
+    },
+    getRowspan(userId, index) {
+      let count = 0;
+      // คำนวณจำนวนแถวที่มี user_id ซ้ำ
+      for (let i = index; i < this.filteredOrders.length; i++) {
+        if (this.filteredOrders[i].user_id === userId) {
+          count++;
+        } else {
+          break;
+        }
+      }
+      return count;
     },
 
+    shouldDisplayOrderDate(index, orderDate) {
+      return index === 0 || this.filteredOrders[index - 1].order_date !== orderDate;
+    },
     getOrderDateRowspan(orderDate, index) {
-      // คำนวณจำนวนแถวที่มีวันที่เดียวกัน
       let count = 0;
-      for (let i = index; i < this.orders.length; i++) {
-        if (this.orders[i].order_date === orderDate) {
+      for (let i = index; i < this.filteredOrders.length; i++) {
+        if (this.filteredOrders[i].order_date === orderDate) {
           count++;
         } else {
           break;
@@ -676,6 +752,124 @@ export default {
         seller_name_id: 'Sales Rep',
       };
       return labels[key] || key;
+    },
+
+    openConfirmSatatusModal(saleRecord) {
+      this.selectedOrder = saleRecord;
+      this.isConfirmStatusModalOpen = true;
+    },
+    closeConfirmStatusModal() {
+      this.isConfirmStatusModalOpen = false;
+      // this.selectedOrder = null;
+      this.selectedPaidDate = "";
+    },
+    async confirmStatus() {
+      try {
+        const newStatus =
+          this.selectedOrder.status === "confirm" ? "pending" : "confirm";
+
+        const payload = {
+          status: newStatus,
+        };
+
+        const response = await axios.put(
+          `http://127.0.0.1:3333/order/${this.selectedOrder.id}/status`,
+          payload
+        );
+        await this.fetchOrders();
+
+        if (response.status === 200) {
+          const updatedOrder = response.data.data;
+          const index = this.orders.findIndex(
+            (record) => record.id === updatedOrder.id
+          );
+          if (index !== -1) {
+            this.orders[index] = updatedOrder;
+          }
+          this.showSuccessToastNotification("อัปเดตสถานะสำเร็จ!");
+        } else {
+          throw new Error("Unexpected response status");
+        }
+      } catch (error) {
+        console.error("Error updating payment status:", error);
+        console.error(
+          "Error response data:",
+          error.response?.data || "No additional data"
+        );
+        this.showErrorToastNotification("เกิดข้อผิดพลาดในการอัปเดตสถานะ!");
+      }
+      this.closeConfirmStatusModal();
+    },
+
+    async confirmMultipleOrders() {
+      if (this.selectedOrders.length === 0) return;
+      const orderIds = this.selectedOrders.map(order => order.id);
+      console.log("Selected Orders:", this.selectedOrders);
+
+      try {
+        const response = await fetch("http://127.0.0.1:3333/order/update-status", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            order_ids: orderIds,
+            status: "confirm",
+          }),
+        });
+        await response.json();
+
+        if (response.ok) {
+          this.showSuccessToastNotification("อัปเดตสถานะสำเร็จ!");
+          this.selectedOrders = [];
+          await this.fetchOrders(this.startDate, this.endDate);
+        } else {
+          this.showErrorToastNotification("เกิดข้อผิดพลาดในการอัปเดตสถานะ!");
+        }
+      } catch (error) {
+        console.error("Error:", error);
+        this.showErrorToastNotification("เกิดข้อผิดพลาดในการเชื่อมต่อ!");
+      }
+    },
+    async pendingMultipleOrders() {
+      if (this.selectedOrders.length === 0) return;
+      const orderIds = this.selectedOrders.map(order => order.id);
+
+      try {
+        const response = await fetch("http://127.0.0.1:3333/order/update-status", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            order_ids: orderIds,
+            status: "pending",
+          }),
+        });
+        await response.json();
+
+        if (response.ok) {
+          this.showSuccessToastNotification("อัปเดตสถานะสำเร็จ!");
+          this.selectedOrders = [];
+          await this.fetchOrders(this.startDate, this.endDate);
+        } else {
+          this.showErrorToastNotification("เกิดข้อผิดพลาดในการอัปเดตสถานะ!");
+        }
+      } catch (error) {
+        console.error("Error:", error);
+        this.showErrorToastNotification("เกิดข้อผิดพลาดในการเชื่อมต่อ!");
+      }
+    },
+    selectOrder(order) {
+      if (!this.selectedOrders.includes(order)) {
+        this.selectedOrders.push(order);
+      } else {
+        this.selectedOrders = this.selectedOrders.filter(item => item.id !== order.id);
+      }
+    },
+    toggleSelectAll(event) {
+      if (event.target.checked) {
+        this.selectedOrders = [...this.filteredOrders];  // เลือกคำสั่งซื้อทั้งหมด
+      } else {
+        this.selectedOrders = [];  // ยกเลิกการเลือกทั้งหมด
+      }
+      this.isAllSelected = event.target.checked;
     },
 
     toggleFiltterDropdown() {
@@ -728,123 +922,44 @@ export default {
       this.currentPage = 1;
     },
 
-    // openConfirmSatatusModal(saleRecord) {
-    //   this.selectedOrder = saleRecord;
-    //   this.isConfirmStatusModalOpen = true;
-    // },
-    // closeConfirmStatusModal() {
-    //   this.isConfirmStatusModalOpen = false;
-    //   // this.selectedOrder = null;
-    //   this.selectedPaidDate = "";
-    // },
-    // async confirmStatus() {
-    //   try {
-    //     const newStatus =
-    //       this.selectedOrder.status === "confirm" ? "pending" : "confirm";
+    handleClickOutside(event) {
+      if (
+        this.$refs.sortDropdown &&
+        !this.$refs.sortDropdown.contains(event.target)
+      ) {
+        this.isSortDropdownOpen = false;
+      }
 
-    //     const payload = {
-    //       status: newStatus,
-    //     };
+      if (
+        this.$refs.filterDropdown &&
+        !this.$refs.filterDropdown.contains(event.target)
+      ) {
+        this.isFilterDropdownOpen = false;
+      }
 
-    //     const response = await axios.put(
-    //       `http://127.0.0.1:3333/order/${this.selectedOrder.id}/status`,
-    //       payload
-    //     );
-    //     await this.fetchOrders();
+      if (
+        !event.target.closest(".dropdown-menu") &&
+        !event.target.closest("button")
+      ) {
+        this.moreOpenDropdownIndex = null;
+      }
 
-    //     if (response.status === 200) {
-    //       const updatedOrder = response.data.data;
-    //       const index = this.orders.findIndex(
-    //         (record) => record.id === updatedOrder.id
-    //       );
-    //       if (index !== -1) {
-    //         this.orders[index] = updatedOrder;
-    //       }
-    //       this.showSuccessToastNotification("อัปเดตสถานะสำเร็จ!");
-    //     } else {
-    //       throw new Error("Unexpected response status");
-    //     }
-    //   } catch (error) {
-    //     console.error("Error updating payment status:", error);
-    //     console.error(
-    //       "Error response data:",
-    //       error.response?.data || "No additional data"
-    //     );
-    //     this.showErrorToastNotification("เกิดข้อผิดพลาดในการอัปเดตสถานะ!");
-    //   }
-    //   this.closeConfirmStatusModal();
-    // },
+      if (event.target.closest(".sort")) {
+        this.moreOpenDropdownIndex = null;
+      }
 
-    // async confirmMultipleOrders() {
-    //   if (this.selectedOrders.length === 0) return;
-    //   const orderIds = this.selectedOrders.map(order => order.id);
-    //   console.log("Selected Orders:", this.selectedOrders);
+      if (event.target.closest(".more")) {
+        this.isSortDropdownOpen = false;
+      }
 
-    //   try {
-    //     const response = await fetch("http://127.0.0.1:3333/order/update-status", {
-    //       method: "POST",
-    //       headers: { "Content-Type": "application/json" },
-    //       body: JSON.stringify({
-    //         order_ids: orderIds,
-    //         status: "confirm",
-    //       }),
-    //     });
-    //     await response.json();
-
-    //     if (response.ok) {
-    //       this.showSuccessToastNotification("อัปเดตสถานะสำเร็จ!");
-    //       this.selectedOrders = [];
-    //       await this.fetchOrders(this.startDate, this.endDate);
-    //     } else {
-    //       this.showErrorToastNotification("เกิดข้อผิดพลาดในการอัปเดตสถานะ!");
-    //     }
-    //   } catch (error) {
-    //     console.error("Error:", error);
-    //     this.showErrorToastNotification("เกิดข้อผิดพลาดในการเชื่อมต่อ!");
-    //   }
-    // },
-    // async pendingMultipleOrders() {
-    //   if (this.selectedOrders.length === 0) return;
-    //   const orderIds = this.selectedOrders.map(order => order.id);
-
-    //   try {
-    //     const response = await fetch("http://127.0.0.1:3333/order/update-status", {
-    //       method: "POST",
-    //       headers: { "Content-Type": "application/json" },
-    //       body: JSON.stringify({
-    //         order_ids: orderIds,
-    //         status: "pending",
-    //       }),
-    //     });
-    //     await response.json();
-
-    //     if (response.ok) {
-    //       this.showSuccessToastNotification("อัปเดตสถานะสำเร็จ!");
-    //       this.selectedOrders = [];
-    //       await this.fetchOrders(this.startDate, this.endDate);
-    //     } else {
-    //       this.showErrorToastNotification("เกิดข้อผิดพลาดในการอัปเดตสถานะ!");
-    //     }
-    //   } catch (error) {
-    //     console.error("Error:", error);
-    //     this.showErrorToastNotification("เกิดข้อผิดพลาดในการเชื่อมต่อ!");
-    //   }
-    // },
-    // selectOrder(order) {
-    //   if (!this.selectedOrders.includes(order)) {
-    //     this.selectedOrders.push(order);
-    //   } else {
-    //     this.selectedOrders = this.selectedOrders.filter(item => item.id !== order.id);
-    //   }
-    // },
-    // toggleSelectAll(event) {
-    //   if (event.target.checked) {
-    //     this.selectedOrders = [...this.filteredOrders];  // เลือกคำสั่งซื้อทั้งหมด
-    //   } else {
-    //     this.selectedOrders = [];  // ยกเลิกการเลือกทั้งหมด
-    //   }
-    //   this.isAllSelected = event.target.checked;
-    // },
+      if (
+        this.$refs.filterDropdown &&
+        !this.$refs.filterDropdown.contains(event.target) &&
+        !event.target.closest(".filter")
+      ) {
+        this.isFilterDropdownOpen = false;
+      }
+    },
 
 
     showSuccessToastNotification(message) {
@@ -870,15 +985,18 @@ export default {
     },
 
 
+
+
   },
   created() {
     this.filteredOrders = this.orders;
+    this.sortData('id');
     this.fetchLookupData();
     this.fetchOrders(this.selectedDate);
     // this.updatePage();
   },
   mounted() {
-    // document.addEventListener('click', this.handleClickOutside);
+    document.addEventListener('click', this.handleClickOutside);
     this.fetchLookupData();
     this.fetchOrders(this.selectedDate);
     this.setToday();
@@ -907,55 +1025,22 @@ export default {
 
 
   },
+    beforeUnmount() {
+      document.removeEventListener('click', this.handleClickOutside);
+  },
+
   watch: {
     // คอยติดตามการเปลี่ยนแปลงของ selectedOrders
     selectedOrders() {
       this.isAllSelected = this.selectedOrders.length === this.filteredOrders.length;
     },
   }
-  // beforeUnmount() {
-  //     document.removeEventListener('click', this.handleClickOutside);
-  // },
 };
 </script>
 
-<style>
+<style scoped>
 .dropdown-up {
   bottom: 100%;
   margin-bottom: 4px;
-}
-
-
-@media screen {
-  .hidden-print {
-    display: none;
-  }
-}
-
-@media print {
-  .hidden-print {
-    display: block;
-  }
-
-  .page-section {
-    page-break-inside: avoid;
-  }
-
-  .page-break {
-    page-break-after: always;
-  }
-
-  /* เพิ่ม padding สำหรับ content-section เมื่อพิมพ์ */
-  .content-section {
-    padding: 20px !important;
-    /* ใช้ !important เพื่อให้สไตล์นี้มีความสำคัญสูงสุด */
-  }
-}
-
-@media print {
-  @page {
-    margin-top: 10mm;
-    margin-bottom: 10mm;
-  }
 }
 </style>

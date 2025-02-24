@@ -52,8 +52,13 @@ import SetupMenuBPD from "@/views/setupMenus/setupMenuBPDPage.vue";
 import SetupMenuFatDisease from "@/views/setupMenus/setupMenuFatDiseasePage.vue";
 import SetupMenuDiabete from "@/views/setupMenus/setupMenuDiabetePage.vue";
 
-import ResultOrder from "@/views/ResultOrderPage.vue";
+import ResultOrder from "@/views/result-orders/ResultOrderPage.vue";
+import ResultOrderHHB from "@/views/result-orders/ResultOrderHHBPage.vue";
 import KitchenOrder from "@/views/KitchenOrderPage.vue";
+
+import RemainingPackage from "@/views/RemainingPackagePage.vue";
+import OrderHistory from "@/views/OrderHistoryPage.vue";
+
 
 import PH from "@/views/orders/OrderPHPage.vue";
 import HHB from "@/views/orders/OrderHHBPage.vue";
@@ -222,6 +227,26 @@ const routes = [
     name: "รายการอาหารประจำวันของลูกค้า",
     component: ResultOrder,
     meta: { title: "รายการอาหารประจำวันของลูกค้า - Absolute FitFood" },
+  },
+  {
+    path: "/result-orders-hhb",
+    name: "รายการอาหารประจำวันของลูกค้า HHB",
+    component: ResultOrderHHB,
+    meta: { title: "รายการอาหารประจำวันของลูกค้า - Absolute FitFood" },
+  },
+
+
+  {
+    path: "/remaining-packages",
+    name: "แพ็คเกจคงเหลือของลูกค้า",
+    component: RemainingPackage,
+    meta: { title: "แพ็คเกจคงเหลือของลูกค้า - Absolute FitFood" },
+  },
+  {
+    path: "/order-history/:customerId",
+    name: "ประวัติการสั่งซื้อ",
+    component: OrderHistory,
+    meta: { title: "ประวัติการสั่งซื้อ - Absolute FitFood" },
   },
 
   {
