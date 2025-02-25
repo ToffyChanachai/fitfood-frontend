@@ -1,14 +1,14 @@
 <template>
     <div class="flex items-center justify-center inset-0">
-        <div class="flex flex-col items-center">
+        <div class="flex flex-col items-center ">
 
             <div
                 class="bg-gray-100 bg-opacity-50 backdrop-blur-md w-full h-auto max-h-[750px] p-8 rounded-lg shadow-lg border flex flex-col mt-4">
-
                 <h2 class="text-2xl font-bold text-center mb-6 text-gray-700">ลงทะเบียนข้อมูลลูกค้า</h2>
 
-                <p v-if="error" class="text-red-500 text-center mb-4 font-bold">{{ error }}</p>
-                <p v-if="success" class="text-green-500 text-center mb-4 font-bold">{{ success }}</p>
+                <!-- Error and Success Messages -->
+                <p v-if="error" class="text-red-500 text-center mb-4">{{ error }}</p>
+                <p v-if="success" class="text-green-500 text-center mb-4">{{ success }}</p>
 
                 <div class="p-6 space-y-4 overflow-y-auto flex-grow">
 
@@ -42,21 +42,6 @@
                             class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange" />
                     </div>
 
-                    <!-- Gender (Radio) -->
-                    <div>
-                        <label class="block  font-medium text-gray-700">Gender</label>
-                        <div class="flex space-x-4 text-gray-700">
-                            <label>
-                                <input type="radio" v-model="gender" value="female" class="focus:ring-custom-orange" />
-                                ผู้หญิง / Female
-                            </label>
-                            <label>
-                                <input type="radio" v-model="gender" value="male" class="focus:ring-custom-orange" />
-                                ผู้ชาย / Male
-                            </label>
-                        </div>
-                    </div>
-
                     <div class="flex space-x-4">
                         <div class="w-1/2">
                             <label for="tel" class="block  font-medium text-gray-700">Phone Number</label>
@@ -72,36 +57,34 @@
                     </div>
 
                     <div>
-                        <label class="block  font-medium text-gray-700">คุณแพ้อาหารชนิดใดหรือไม่?</label>
-                        <div class="flex space-x-4 text-gray-700">
-                            <label>
-                                <input type="radio" v-model="food_allergies" value="ไม่ No"
-                                    class="focus:ring-custom-orange" />
-                                ไม่ / No
+                        <label class="block font-medium text-gray-700">ผู้รับอาหาร?</label>
+                        <div class="flex space-x-4">
+                            <label class="text-gray-700">
+                                <input type="checkbox" v-model="recipient" value="ตัวคุณเอง"
+                                    class="focus:ring-custom-orange custom-checkbox" />
+                                ตัวคุณเอง
                             </label>
-                            <label>
-                                <input type="radio" v-model="food_allergies" value="ใช่ Yes, "
-                                    class="focus:ring-custom-orange" />
-                                ใช่ / Yes
+                            <label class="text-gray-700">
+                                <input type="checkbox" v-model="recipient" value="มีผู้อื่นรับแทน"
+                                    class="focus:ring-custom-orange custom-checkbox" />
+                                มีผู้อื่นรับแทน (โปรดระบุชื่อ พร้อมเบอร์โทรติดต่อในบรรทัดด้านล่าง)
                             </label>
-
                         </div>
                     </div>
 
-                    <div v-if="food_allergies === 'ใช่ Yes, '">
-                        <label for="food_allergies_detail"
-                            class="block  font-medium text-gray-700">โปรดระบุประเภทอาหารที่คุณมีอาการแพ้ในบรรทัดด้านล่าง</label>
-                        <textarea id="food_allergies_detail" v-model="food_allergies_detail"
-                            placeholder="Enter details here"
-                            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange"
-                            rows="4"></textarea>
-                    </div>
+                    <label for="recipient_detail" class="block  font-medium text-gray-700">โปรดระบุชื่อ
+                        พร้อมเบอร์โทรติดต่อ</label>
+                    <textarea id="recipient_detail" v-model="recipient_detail" placeholder="Enter details here"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange"
+                        rows="4"></textarea>
 
                     <div>
-                        <label for="delivery_date"
-                            class="block  font-medium text-gray-700">โปรดระบุวันที่คุณต้องการรับอาหาร</label>
-                        <input type="text" v-model="delivery_date" placeholder="กรอกโปรดระบุวันที่คุณต้องการรับอาหาร"
-                            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange" />
+                        <label for="note" class="block  font-medium text-gray-700">โปรดระบุเบอร์โทรติดต่อสำรอง
+                            หรือรายละเอียดอื่น ๆ ที่เราควรทราบ (ถ้ามี)</label>
+                        <textarea id="note" v-model="note"
+                            placeholder="ระบุเบอร์โทรติดต่อสำรอง หรือรายละเอียดอื่น ๆ ที่เราควรทราบ (ถ้ามี)"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange"
+                            rows="4"></textarea>
                     </div>
 
                     <div>
@@ -112,15 +95,26 @@
                     </div>
 
                     <div>
-                        <label for="address_2" class="block  font-medium text-gray-700">ที่อยู่จัดส่ง 2 (ถ้ามี)</label>
+                        <label for="address_2" class="block  font-medium text-gray-700">ที่อยู่จัดส่ง 2
+                            (ถ้ามี)</label>
                         <textarea id="address_2" v-model="address_2" placeholder="กรอกที่อยู่การจัดส่ง"
                             class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange"
                             rows="4"></textarea>
                     </div>
 
                     <div>
-                        <label for="address_3" class="block  font-medium text-gray-700">ที่อยู่จัดส่ง 3 (ถ้ามี)</label>
+                        <label for="address_3" class="block  font-medium text-gray-700">ที่อยู่จัดส่ง 3
+                            (ถ้ามี)</label>
                         <textarea id="address_3" v-model="address_3" placeholder="กรอกที่อยู่การจัดส่ง"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange"
+                            rows="4"></textarea>
+                    </div>
+
+                    <div>
+                        <label for="nearby_places"
+                            class="block  font-medium text-gray-700">สถานที่ใกล้เคียงหรือจุดสังเกตอื่น ๆ </label>
+                        <textarea id="nearby_places" v-model="nearby_places"
+                            placeholder="กรอกสถานที่ใกล้เคียงหรือจุดสังเกตอื่น ๆ "
                             class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange"
                             rows="4"></textarea>
                     </div>
@@ -130,6 +124,8 @@
                     ยืนยัน
                 </button>
             </div>
+
+
         </div>
     </div>
 
@@ -148,11 +144,11 @@ export default {
             address_1: '',
             address_2: '',
             address_3: '',
-            gender: '',
+            nearby_places: '',
             tel: '',
-            food_allergies: '',
-            food_allergies_detail: '',
-            delivery_date: '',
+            recipient: [],
+            recipient_detail: '',
+            note: '',
             customer_id: '',
             error: null,
             success: null
@@ -175,24 +171,26 @@ export default {
         async addCustomer() {
             try {
                 // ส่งข้อมูล address และ gender ไปยัง backend
-                const response = await axios.post('http://127.0.0.1:3333/customer', {
+                const response = await axios.post('http://127.0.0.1:3333/customer-hhb', {
                     address_1: this.address_1,
                     address_2: this.address_2,
                     address_3: this.address_3,
-                    gender: this.gender,
+                    nearby_places: this.nearby_places,
                     customer_id: this.customer_id,
                     name: `${this.firstname} ${this.lastname}`,
                     email: this.email,
                     line_id: this.line_id,
                     tel: this.tel,
-                    food_allergies: this.food_allergies + this.food_allergies_detail,
-                    delivery_date: this.delivery_date,
+                    recipient: this.recipient + this.recipient_detail,
+                    note: this.note,
                 });
 
+                // ถ้าสำเร็จ
                 this.success = response.data.message;
-                this.address = ''; // ล้างค่าในฟอร์ม
+                // this.address = ''; // ล้างค่าในฟอร์ม
             } catch (err) {
-                this.error = err.response.data.message || 'Failed to add address';
+                // ถ้ามีข้อผิดพลาด
+                this.error = err.response.data.message || 'Failed to Register';
             }
         },
         // validatePhoneNumber() {

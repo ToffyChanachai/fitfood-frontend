@@ -1,12 +1,13 @@
 <template>
     <div>
-        <div @click="$router.back()"
-            class="mt-4 flex items-center space-x-1 cursor-pointer text-custom-orange hover:text-custom-orange-hover">
-            <span class="material-symbols-outlined text-2xl ">arrow_back</span>
-            <span class="text  font-bold">กลับ</span>
-        </div>
 
         <div class="flex items-center space-x-3 py-2">
+            <div @click="$router.back()"
+                class="flex items-center space-x-1 cursor-pointer text-custom-orange hover:text-custom-orange-hover">
+                <span class="material-symbols-outlined text-2xl ">arrow_back</span>
+                <span class="text  font-bold">กลับ</span>
+            </div>
+
             <!-- ปุ่มลูกศรย้อนกลับ -->
             <button @click="changeDate(-1)" class="flex items-center">
                 <span class="material-symbols-outlined text-3xl text-custom-orange hover:text-custom-orange-hover">
@@ -52,24 +53,31 @@
             <div v-if="loading" class="mt-4 text-center text-gray-600">กำลังโหลด...</div>
 
             <!-- กล่องที่มีการจัดกลุ่มคำสั่งซื้อ -->
-            <div v-if="groupedOrders.length > 0"
+            <div v-if="orders.length > 0"
                 class="mt-4 bg-white rounded-md shadow-lg p-4 border border-gray-300 overflow-y-auto h-[650px]">
-                <div v-for="order in groupedOrders" :key="order.order_date" class="border-b border-gray-200 py-4">
+                <div v-for="order in orders" :key="order.order_date" class="border-b border-gray-200 py-4">
                     <div class="flex justify-between items-center">
-                        <div class="font-semibold">{{ order.menu_eng_name }} ({{ order.menu_name }})</div>
+                        <div class="font-semibold">{{ getMenuEngName(order.menu_id) }} ({{ getMenuThaiName(order.menu_id) }})</div>
                         <div class="text-gray-600">{{ formattedDate(order.order_date) }}</div>
                     </div>
                     <div class="mt-2 text-gray-500">
-                        <div>จำนวน: {{ order.quantity }}</div>
-                        <div
-                            :class="{ 'text-yellow-500': order.status === 'pending', 'text-green-500': order.status === 'confirm' }">
-                            สถานะ: {{ getStatusText(order.status) }}
+                        <div class="flex items-center">
+                            <p>จำนวน:</p>
+                             <strong class="ml-2 text-black">{{ order.quantity }}</strong>
+                            </div>
+                        <div class="flex items-center">
+                            <p>สถานะ: </p>
+                            <div :class="{ 'text-yellow-500 font-bold': order.status === 'pending', 'text-green-500 font-bold': order.status === 'confirm' }"
+                                class="ml-2">
+                                {{ getStatusText(order.status) }}
+                            </div>
                         </div>
+
                     </div>
                 </div>
             </div>
 
-            <div v-if="groupedOrders.length === 0"
+            <div v-if="orders.length === 0"
                 class="mt-4 bg-white rounded-md shadow-lg p-4 border border-gray-300 h-[650px] flex justify-center items-center">
                 <div class="flex items-center space-x-1 text-gray-500 font-bold text-center">
                     <span class="material-symbols-outlined text-3xl">history_off</span>

@@ -4,8 +4,7 @@
         <div v-if="error" class="text-red-500">{{ error }}</div>
         <div v-if="loading" class="text-gray-500">Loading...</div>
 
-        <div v-if="customer" class="profile-info flex space-x-8">
-            <!-- ข้อมูลที่ 1/4 และใส่สีพื้นหลัง -->
+        <div class="flex space-x-8">
             <div v-if="user" class="w-1/4 bg-white shadow-lg p-4 rounded-md text-center">
                 <div v-if="user.profilePicture" class="w-16 h-16 rounded-full overflow-hidden mb-4 mx-auto">
                     <img :src="user.profilePicture" alt="Profile Picture" class="w-full h-full object-cover" />
@@ -32,19 +31,31 @@
                 </button>
             </div>
 
-            <!-- ข้อมูลที่ 3/4 -->
-            <div class="w-3/4 bg-white shadow-lg p-4 rounded-md">
-                <p><strong>Name:</strong> {{ customer.name }}</p>
-                <p><strong>Email:</strong> {{ customer.email }}</p>
-                <p><strong>Gender:</strong> {{ customer.gender }}</p>
-                <p><strong>Phone Number:</strong> {{ customer.tel }}</p>
-                <p><strong>Line ID:</strong> {{ customer.line_id }}</p>
-                <p><strong>Food Allergies:</strong> {{ customer.food_allergies }}</p>
-                <p><strong>Delivery Date:</strong> {{ customer.delivery_date }}</p>
-                <p><strong>Address 1:</strong> {{ customer.address_1 }}</p>
-                <p><strong>Address 2:</strong> {{ customer.address_2 }}</p>
-                <p><strong>Address 3:</strong> {{ customer.address_3 }}</p>
+            <div v-if="customer_aff" class="profile-info flex space-x-8">
+                <div class="w-3/4 bg-white shadow-lg p-4 rounded-md">
+                    <p><strong>Name:</strong> {{ customer_aff.name }}</p>
+                    <p><strong>Email:</strong> {{ customer_aff.email }}</p>
+                    <p><strong>Gender:</strong> {{ customer_aff.gender }}</p>
+                    <p><strong>Phone Number:</strong> {{ customer_aff.tel }}</p>
+                    <p><strong>Line ID:</strong> {{ customer_aff.line_id }}</p>
+                    <p><strong>Food Allergies:</strong> {{ customer_aff.food_allergies }}</p>
+                    <p><strong>Delivery Date:</strong> {{ customer_aff.delivery_date }}</p>
+                    <p><strong>Address 1:</strong> {{ customer_aff.address_1 }}</p>
+                    <p><strong>Address 2:</strong> {{ customer_aff.address_2 }}</p>
+                    <p><strong>Address 3:</strong> {{ customer_aff.address_3 }}</p>
+                </div>
+            </div>
+        </div>
 
+        <div v-if="customer_hhb" class="profile-info flex space-x-8">
+            <div class="w-3/4 bg-white shadow-lg p-4 rounded-md">
+                <p><strong>Name:</strong> {{ customer_hhb.name }}</p>
+                <p><strong>Email:</strong> {{ customer_hhb.email }}</p>
+                <p><strong>Phone Number:</strong> {{ customer_hhb.tel }}</p>
+                <p><strong>Line ID:</strong> {{ customer_hhb.line_id }}</p>
+                <p><strong>Address 1:</strong> {{ customer_hhb.address_1 }}</p>
+                <p><strong>Address 2:</strong> {{ customer_hhb.address_2 }}</p>
+                <p><strong>Address 3:</strong> {{ customer_hhb.address_3 }}</p>
             </div>
         </div>
 
@@ -94,7 +105,9 @@ import AuthService from '@/services/auth';
 export default {
     data() {
         return {
-            customer: null,
+            customer_aff: '',
+            customer_hhb: '',
+
             error: null,
             loading: false,
             user: {},
@@ -108,6 +121,7 @@ export default {
     },
     created() {
         this.fetchCustomerData();
+        this.fetchCustomerHHBData();
         this.fetchProfile();
     },
     methods: {
@@ -115,13 +129,26 @@ export default {
             this.loading = true;
             try {
                 const response = await axios.get('http://127.0.0.1:3333/customer/profile');
-                this.customer = response.data.customer;
+                this.customer_aff = response.data.customer_aff;
             } catch (error) {
                 this.error = 'Failed to fetch customer data';
             } finally {
                 this.loading = false;
             }
         },
+        async fetchCustomerHHBData() {
+            this.loading = true;
+            try {
+                const response = await axios.get('http://127.0.0.1:3333/customer-hhb/profile');
+                this.customer_hhb = response.data.customer_hhb;
+            } catch (error) {
+                this.error = 'Failed to fetch customer data';
+            } finally {
+                this.loading = false;
+            }
+        },
+
+
         async fetchProfile() {
             try {
                 this.user = await AuthService.getProfile();
@@ -133,7 +160,7 @@ export default {
             localStorage.removeItem('token');
             this.isLoggedIn = false;
             this.username = '';
-            this.$router.push('/test2'); // เปลี่ยนเส้นทางไปหน้า Login หลังจาก logout
+            this.$router.push('/'); // เปลี่ยนเส้นทางไปหน้า Login หลังจาก logout
         },
 
         // เปิด Modal สำหรับการเปลี่ยนรหัสผ่าน

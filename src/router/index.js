@@ -8,6 +8,8 @@ import Login from "@/views/users/LoginPage.vue";
 import Register from "@/views/users/RegisterPage.vue";
 import Profile from "@/views/users/ProfilePage.vue";
 import RegisterAFF from "@/views/users/RegisterAFFPage.vue";
+import RegisterHHB from "@/views/users/RegisterHHBPage.vue";
+
 import User from "@/views/UserPage.vue";
 
 // import ForgotPassword from '@/views/users/ForgotPasswordPage.vue';
@@ -22,7 +24,6 @@ import SalesRecordAdditHHB from "@/views/sale-records/SalesRecrdHHBAdditPage.vue
 
 import DailySale from "../views/daily-sales/DailySalePage.vue";
 import DailySaleHHB from "../views/daily-sales/DailySaleHHBPage.vue";
-
 
 import Customers from "../views/customers/CustomersPage.vue";
 import Test from "../views/TestPage.vue";
@@ -56,9 +57,13 @@ import ResultOrder from "@/views/result-orders/ResultOrderPage.vue";
 import ResultOrderHHB from "@/views/result-orders/ResultOrderHHBPage.vue";
 import KitchenOrder from "@/views/KitchenOrderPage.vue";
 
-import RemainingPackage from "@/views/RemainingPackagePage.vue";
-import OrderHistory from "@/views/OrderHistoryPage.vue";
+import RemainingPackage from "@/views/remaining/RemainingPackagePage.vue";
+import OrderHistory from "@/views/remaining/OrderHistoryPage.vue";
 
+import RemainingPackageHHB from "@/views/remaining/RemainingPackageHHBPage.vue";
+import OrderHistoryHHB from "@/views/remaining/OrderHistoryHHBPage.vue";
+
+import Delivery from "@/views/DeliveryPage.vue";
 
 import PH from "@/views/orders/OrderPHPage.vue";
 import HHB from "@/views/orders/OrderHHBPage.vue";
@@ -94,10 +99,19 @@ const routes = [
     },
   },
   {
+    path: "/register-hhb",
+    name: "register-hhb",
+    component: RegisterHHB,
+    meta: {
+      title: "สมัครสมาชิก HHB - Absolute FitFood",
+      layout: "SimpleLayout",
+    },
+  },
+  {
     path: "/users",
     name: "ข้อมูลผู้ใช้งาน",
     component: User,
-    meta: { title: "ข้อมูลผู้ใช้งาน  - Absolute FitFood"},
+    meta: { title: "ข้อมูลผู้ใช้งาน  - Absolute FitFood" },
   },
   // { path: '/forgot-password',
   //   name: 'forgot-password',
@@ -235,7 +249,6 @@ const routes = [
     meta: { title: "รายการอาหารประจำวันของลูกค้า - Absolute FitFood" },
   },
 
-
   {
     path: "/remaining-packages",
     name: "แพ็คเกจคงเหลือของลูกค้า",
@@ -250,10 +263,30 @@ const routes = [
   },
 
   {
+    path: "/remaining-packages-hhb",
+    name: "แพ็คเกจคงเหลือของลูกค้า HHB",
+    component: RemainingPackageHHB,
+    meta: { title: "แพ็คเกจคงเหลือของลูกค้า - Absolute FitFood" },
+  },
+  {
+    path: "/order-history-hhb/:customerId",
+    name: "ประวัติการสั่งซื้อ HHB",
+    component: OrderHistoryHHB,
+    meta: { title: "ประวัติการสั่งซื้อ - Absolute FitFood" },
+  },
+
+  {
     path: "/kitchen-orders",
     name: "Kitchen Orders",
     component: KitchenOrder,
     meta: { title: "Kitchen Orders - Absolute FitFood" },
+  },
+
+  {
+    path: "/delivery",
+    name: "การจัดส่งอาหารประจำวัน",
+    component: Delivery,
+    meta: { title: "การจัดส่งอาหารประจำวัน - Absolute FitFood" },
   },
 
   {
@@ -389,17 +422,16 @@ router.beforeEach((to, from, next) => {
     document.title = to.meta.title;
   }
 
-  const role = store.getters.getUserRole;  // ดึงค่า userRole จาก Vuex
+  const role = store.getters.getUserRole; // ดึงค่า userRole จาก Vuex
 
-  console.log("Current user role:", role);  // ตรวจสอบ role ที่ได้
+  console.log("Current user role:", role); // ตรวจสอบ role ที่ได้
 
   // ถ้า route มี meta.requiresAdmin และ userRole ไม่ใช่ admin
   if (to.meta.requiresAdmin && role !== "admin") {
-    return next({ name: "login" });  // เปลี่ยนไปหน้า login หรือหน้าอื่นๆ
+    return next({ name: "login" }); // เปลี่ยนไปหน้า login หรือหน้าอื่นๆ
   }
 
-  next();  // ถ้า role เป็น admin หรือไม่ต้องการการตรวจสอบ ก็ให้ดำเนินการต่อไป
+  next(); // ถ้า role เป็น admin หรือไม่ต้องการการตรวจสอบ ก็ให้ดำเนินการต่อไป
 });
-
 
 export default router;

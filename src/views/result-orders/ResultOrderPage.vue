@@ -23,6 +23,16 @@
       </button>
     </div>
 
+    <div
+      class="fixed top-4 right-8 bg-yellow-500 text-white px-8 py-4 flex items-center space-x-4 rounded-lg shadow-lg transition-opacity duration-300 z-50"
+      :class="{ 'opacity-100': showErrorToast, 'opacity-0': !showErrorToast }">
+      <span class="material-symbols-outlined text-white">cancel</span>
+      <span>{{ toastErrorMessage }}</span>
+      <button @click="showErrorToast = false" class="text-white hover:text-gray-200 focus:outline-none">
+        <span class="material-symbols-outlined text-xl">close</span>
+      </button>
+    </div>
+
     <div class="flex items-center space-x-3 py-2">
       <!-- ปุ่มลูกศรย้อนกลับ -->
       <button @click="changeDate(-1)" class="flex items-center">
@@ -203,7 +213,7 @@
             :style="{ width: headerWidths[index], cursor: 'default', pointerEvents: 'none' }">
             {{ header }}
           </th>
-                </tr>
+        </tr>
 
       </thead>
       <tbody>
@@ -245,20 +255,6 @@
 
             <div v-if="isConfirmStatusModalOpen"
               class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-10 z-50">
-
-              <div
-                class="absolute top-8 left-1/2 transform -translate-x-1/2 bg-yellow-500 text-white px-8 py-4 flex items-center space-x-4 rounded-lg transition-opacity duration-300 z-60"
-                :class="{
-                  'opacity-100': showErrorToast,
-                  'opacity-0': !showErrorToast,
-                }">
-
-                <span class="material-symbols-outlined text-white">error</span>
-                <span>{{ toastErrorMessage }}</span>
-                <button @click="showErrorToast = false" class="text-white hover:text-gray-200 focus:outline-none">
-                  <span class="material-symbols-outlined text-xl">close</span>
-                </button>
-              </div>
 
               <div class="bg-white rounded-md w-1/3 max-w-lg">
                 <!-- Header -->
@@ -450,33 +446,33 @@ export default {
       return this.menu_types.filter(type => !type.name.startsWith('Happy'));
     },
     filteredOrdersWithoutHappy() {
-    return this.orders.filter(order => {
-      const menuTypeName = this.getMenuTypeName(order.menu_type_id) || ''; // ป้องกัน undefined
-      return !menuTypeName.startsWith("Happy");
-    });
-  },
+      return this.orders.filter(order => {
+        const menuTypeName = this.getMenuTypeName(order.menu_type_id) || ''; // ป้องกัน undefined
+        return !menuTypeName.startsWith("Happy");
+      });
+    },
 
-  filteredOrders() {
-    const searchQuery = this.searchQuery ? this.searchQuery.toLowerCase() : ''; // ป้องกัน undefined
-    return this.filteredOrdersWithoutHappy.filter(order => {
-      const customerName = this.getCustomerName(order.user_id) || ''; // ป้องกัน undefined
-      const matchesSearch = searchQuery === '' || customerName.toLowerCase().includes(searchQuery);
-      const matchesPromotionType = !Array.isArray(this.selectedOrder) || this.selectedOrder.length === 0 || this.selectedOrder.includes(order.menu_type_id);
-      return matchesSearch && matchesPromotionType;
-    }).slice((this.currentPage - 1) * this.itemsPerPage, this.currentPage * this.itemsPerPage);
-  },
-
-  totalPages() {
-    const searchQuery = this.searchQuery ? this.searchQuery.toLowerCase() : ''; // ป้องกัน undefined
-    return Math.ceil(
-      this.filteredOrdersWithoutHappy.filter(order => {
+    filteredOrders() {
+      const searchQuery = this.searchQuery ? this.searchQuery.toLowerCase() : ''; // ป้องกัน undefined
+      return this.filteredOrdersWithoutHappy.filter(order => {
         const customerName = this.getCustomerName(order.user_id) || ''; // ป้องกัน undefined
         const matchesSearch = searchQuery === '' || customerName.toLowerCase().includes(searchQuery);
         const matchesPromotionType = !Array.isArray(this.selectedOrder) || this.selectedOrder.length === 0 || this.selectedOrder.includes(order.menu_type_id);
         return matchesSearch && matchesPromotionType;
-      }).length / this.itemsPerPage
-    );
-  },
+      }).slice((this.currentPage - 1) * this.itemsPerPage, this.currentPage * this.itemsPerPage);
+    },
+
+    totalPages() {
+      const searchQuery = this.searchQuery ? this.searchQuery.toLowerCase() : ''; // ป้องกัน undefined
+      return Math.ceil(
+        this.filteredOrdersWithoutHappy.filter(order => {
+          const customerName = this.getCustomerName(order.user_id) || ''; // ป้องกัน undefined
+          const matchesSearch = searchQuery === '' || customerName.toLowerCase().includes(searchQuery);
+          const matchesPromotionType = !Array.isArray(this.selectedOrder) || this.selectedOrder.length === 0 || this.selectedOrder.includes(order.menu_type_id);
+          return matchesSearch && matchesPromotionType;
+        }).length / this.itemsPerPage
+      );
+    },
 
     totalPagesArray() {
       const maxVisiblePages = 5;
@@ -765,39 +761,45 @@ export default {
     },
     async confirmStatus() {
       try {
-        const newStatus =
-          this.selectedOrder.status === "confirm" ? "pending" : "confirm";
+        const newStatus = this.selectedOrder.status === "confirm" ? "pending" : "confirm";
 
         const payload = {
           status: newStatus,
         };
 
+        // ส่งคำขอ PUT ไปยังเซิร์ฟเวอร์
         const response = await axios.put(
-          `http://127.0.0.1:3333/order/${this.selectedOrder.id}/status`,
-          payload
+          `http://127.0.0.1:3333/order/${this.selectedOrder.id}/status`, // URL ที่จะอัปเดตสถานะคำสั่งซื้อ
+          payload // ส่งข้อมูลสถานะใหม่
         );
-        await this.fetchOrders();
+        await this.fetchOrders(); // ดึงข้อมูลคำสั่งซื้อทั้งหมดใหม่
 
         if (response.status === 200) {
           const updatedOrder = response.data.data;
+
+          // ค้นหาคำสั่งซื้อที่มี ID ตรงกับคำสั่งที่อัปเดต
           const index = this.orders.findIndex(
             (record) => record.id === updatedOrder.id
           );
+
           if (index !== -1) {
             this.orders[index] = updatedOrder;
           }
+
           this.showSuccessToastNotification("อัปเดตสถานะสำเร็จ!");
         } else {
           throw new Error("Unexpected response status");
         }
       } catch (error) {
-        console.error("Error updating payment status:", error);
+        // แสดงข้อผิดพลาดหากมีการเกิดข้อผิดพลาดในระหว่างการอัปเดต
         console.error(
           "Error response data:",
           error.response?.data || "No additional data"
         );
         this.showErrorToastNotification("เกิดข้อผิดพลาดในการอัปเดตสถานะ!");
       }
+
+      // ปิด modal หลังจากอัปเดตสถานะเสร็จ
       this.closeConfirmStatusModal();
     },
 
@@ -1025,8 +1027,8 @@ export default {
 
 
   },
-    beforeUnmount() {
-      document.removeEventListener('click', this.handleClickOutside);
+  beforeUnmount() {
+    document.removeEventListener('click', this.handleClickOutside);
   },
 
   watch: {

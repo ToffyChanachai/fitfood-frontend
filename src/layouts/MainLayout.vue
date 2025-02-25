@@ -63,6 +63,12 @@
                         </router-link>
                     </li>
                     <li class="hover:bg-custom-orange-hover">
+                        <router-link to="/delivery" class=" py-2 px-4 flex items-center space-x-2">
+                            <span class="material-symbols-outlined text-3xl">delivery_truck_speed</span>
+                            <span v-if="isExpanded">การจัดส่งอาหารประจำวัน</span>
+                        </router-link>
+                    </li>
+                    <li class="hover:bg-custom-orange-hover">
                         <router-link to="/remaining-packages" class=" py-2 px-4 flex items-center space-x-2">
                             <span class="material-symbols-outlined text-3xl">deployed_code_history</span>
                             <span v-if="isExpanded">แพ็คเกจคงเหลือของลูกค้า</span>
@@ -291,6 +297,18 @@
                 </router-link>
             </div>
 
+            <div v-if="$route.path === '/remaining-packages' || $route.path === '/remaining-packages-hhb'"
+                class="mt-4 p-4 flex items-left space-x-6 text-m font-bold">
+                <router-link to="remaining-packages" class="hover:text-custom-orange"
+                    :class="{ 'text-custom-orange border-b-2 border-custom-orange': $route.path === '/' || $route.path === '/remaining-packages' }">
+                    Absolute FitFood
+                </router-link>
+                <router-link to="/remaining-packages-hhb" class="hover:text-custom-orange"
+                    :class="{ 'text-custom-orange border-b-2 border-custom-orange': $route.path === '/remaining-packages-hhb' }">
+                    Happy Healthy Box
+                </router-link>
+            </div>
+
             <!-- Content of the page -->
             <div class="mt-4">
                 <router-view></router-view>
@@ -381,6 +399,12 @@ export default {
                 case "Kitchen Orders":
                     this.pageIcon = "stockpot";
                     break;
+
+                    case "การจัดส่งอาหารประจำวัน":
+                    this.pageIcon = "delivery_truck_speed";
+                    break;
+                    
+
                 case "แพ็คเกจคงเหลือของลูกค้า":
                     this.pageIcon = "deployed_code_history";
                     break;
@@ -388,6 +412,14 @@ export default {
                     this.pageIcon = "history";
                     break;
 
+                case "แพ็คเกจคงเหลือของลูกค้า HHB":
+                    this.pageIcon = "deployed_code_history";
+                    this.pageTitle = "แพ็คเกจคงเหลือของลูกค้า";
+                    break;
+                case "ประวัติการสั่งซื้อ HHB":
+                    this.pageIcon = "history";
+                    this.pageTitle = "ประวัติการสั่งซื้อ";
+                    break;
 
 
                 default:

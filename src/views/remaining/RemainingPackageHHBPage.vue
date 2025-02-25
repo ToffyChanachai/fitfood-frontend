@@ -22,7 +22,7 @@
     </button>
   </div>
 
-  <div>
+  <div class="mt-[-20px]">
     <div class="flex space-x-2 items-center relative">
       <div class="mt-4 px-4 flex items-center space-x-1 mr-auto">
         <span class="material-symbols-outlined text-2xl text-gray-700">deployed_code_history</span>
@@ -192,13 +192,12 @@
             </td> -->
 
             <td class="px-4 py-2 align-top pb-5">
-    <router-link 
-      :to="`/order-history/${saleRecord.customer_id}`"
-      class="flex items-center space-x-1 text-custom-orange">
-      <span class="material-symbols-outlined text-2xl">history</span>
-      <span class="text-m">ประวัติการสั่งซื้อ</span>
-    </router-link>
-  </td>
+              <router-link :to="`/order-history-hhb/${saleRecord.customer_id}`"
+                class="flex items-center space-x-1 text-custom-orange hover:text-custom-orange-hover">
+                <span class="material-symbols-outlined text-2xl">history</span>
+                <span class="text-m">ประวัติการสั่งซื้อ</span>
+              </router-link>
+            </td>
           </tr>
         </template>
 
@@ -850,22 +849,15 @@ export default {
     filteredSaleRecords1standRenew() {
       return this.saleRecords
         .filter((record) => {
-          const packageTypeName = this.getPackageTypeName(
-            record.package_type_id
-          ).toLowerCase();
-          return (
-            packageTypeName !== "additional sales" &&
-            packageTypeName !== "consignment"
-          );
+          const packageTypeName = this.getPackageTypeName(record.package_type_id).toLowerCase();
+          return packageTypeName !== "additional sales" && packageTypeName !== "consignment";
         })
         .filter((saleRecord) => {
-          const matchesSearch = this.getCustomerName(
-            saleRecord.customer_id
-          ).toLowerCase().includes(this.searchQuery.toLowerCase());
+          const matchesSearch = this.getCustomerName(saleRecord.customer_id).toLowerCase().includes(this.searchQuery.toLowerCase());
           const matchesPackageType = this.selectedPackageType.length === 0 || this.selectedPackageType.includes(saleRecord.package_type_id);
-          return matchesSearch && matchesPackageType;
+          const matchesPaymentStatus = saleRecord.payment_status === "paid"; // เพิ่มเงื่อนไขกรอง payment_status
+          return matchesSearch && matchesPackageType && matchesPaymentStatus;
         });
-
     },
 
     filteredPackageTypes() {
@@ -1066,7 +1058,7 @@ export default {
           receiveFoodRes,
           selectFoodRes,
         ] = await Promise.all([
-          axios.get("http://127.0.0.1:3333/customers"),
+          axios.get("http://127.0.0.1:3333/customers-hhb"),
           axios.get("http://127.0.0.1:3333/promotion-types"),
           axios.get("http://127.0.0.1:3333/programs"),
           axios.get("http://127.0.0.1:3333/packages"),
@@ -1148,7 +1140,7 @@ export default {
 
     async fetchSaleRecords() {
       try {
-        const response = await axios.get("http://127.0.0.1:3333/sale-records");
+        const response = await axios.get("http://127.0.0.1:3333/sale-records-hhb");
         this.saleRecords = response.data;
         this.filteredSaleRecords = response.data;
         this.saleRecords.sort((a, b) => a.id - b.id);
@@ -1266,7 +1258,7 @@ export default {
     // async deleteConfirmed() {
     //   try {
     //     await axios.delete(
-    //       `http://127.0.0.1:3333/sale-records/${this.itemToDelete}`
+    //       `http://127.0.0.1:3333/sale-records-hhb/${this.itemToDelete}`
     //     );
     //     this.saleRecords = this.saleRecords.filter(
     //       (item) => item.id !== this.itemToDelete

@@ -36,11 +36,7 @@
 
       <div v-if="isLoggedIn" class="flex items-center space-x-4">
         <!-- คลิกที่ชื่อผู้ใช้เพื่อแสดง/ซ่อนเมนู -->
-        <div class="relative flex items-center space-x-4">
-          <span v-if="!isUserRegistered" class="cursor-pointer text-custom-orange font-bold"
-            @click="$router.push('/register-aff')">
-            Register Aff
-          </span>
+        <div class="relative flex items-center space-x-4" ref="menuDropdown">
 
           <!-- <button @click="checkIfAdmin" class="text-black">Check if Admin</button> -->
 
@@ -54,13 +50,20 @@
 
 
           <div v-show="isMenuOpen"
-            class="absolute right-0 top-full mt-1 bg-white text-black text-left shadow-lg rounded-md w-48 z-50 border">
+            class="absolute right-0 top-full mt-1 bg-white text-black text-left shadow-lg rounded-md w-72 z-50 border">
             <ul class="list-none p-0 m-0">
               <li
                 class="px-4 py-3 cursor-pointer hover:bg-gray-100 hover:text-custom-orange hover:font-bold border-b flex items-center justify-between"
                 @click="goToProfile">
                 <span class="material-symbols-outlined"> person </span>
                 <span>Profile</span>
+              </li>
+
+              <li v-if="!(isUserRegistered && isUserRegisteredHHB)"
+                class="px-4 py-3 cursor-pointer hover:bg-gray-100 hover:text-custom-orange hover:font-bold border-b flex items-center justify-between"
+                @click="goToRegister">
+                <span class="material-symbols-outlined"> person_add </span>
+                <span>Register Customer Profile</span>
               </li>
 
               <li v-if="role === 'admin'"
@@ -96,9 +99,28 @@
 
     </header>
 
-    <main class="flex-1 p-4 px-32 relative">
+    <main class="flex-1 p-4 px-32 relative" style="height: calc(100vh - 80px)"
+      :class="{ 'bg-gradient-to-r from-custom-orange via-orange-500 to-custom-orange-hover text-black': $route.path === '/register-aff' || $route.path === '/register-hhb' }">
+
+      <!-- เมนูนี้จะแสดงเฉพาะในหน้าที่กำหนด -->
+      <div v-if="$route.path === '/register-aff' || $route.path === '/register-hhb'"
+        class="flex justify-center space-x-6">
+        <span v-if="!isUserRegistered" class="cursor-pointer hover:text-gray-700" @click="$router.push('/register-aff')"
+          :class="{ 'border-b-2 border-gray-700 text-gray-700 font-bold': $route.path === '/register-aff' }">
+          Absolute FitFood
+        </span>
+
+        <span v-if="!isUserRegisteredHHB" class="cursor-pointer hover:text-gray-700"
+          @click="$router.push('/register-hhb')"
+          :class="{ 'border-b-2 border-gray-700 text-gray-700 font-bold': $route.path === '/register-hhb' }">
+          Happy Healthy Box
+        </span>
+      </div>
+
       <router-view></router-view>
     </main>
+
+
 
   </div>
 </template>
@@ -115,6 +137,8 @@ export default {
       isLoggedIn: false,
       isMenuOpen: false, // สถานะการแสดงเมนู
       isUserRegistered: false,
+      isUserRegisteredHHB: false,
+
     };
   },
   created() {
@@ -141,25 +165,40 @@ export default {
     goToLogin() {
       this.$router.push('/login'); // เมื่อกด login จะไปที่หน้า login
     },
-    // ฟังก์ชันเพื่อแสดง/ซ่อนเมนู
+
     toggleMenu() {
       this.isMenuOpen = !this.isMenuOpen;
     },
-
     goToHome() {
-      this.$router.push('/premium-health'); // เปลี่ยนเส้นทางไปหน้า test2
+      this.$router.push('/premium-health');
     },
     goToProfile() {
-      this.$router.push('/profile'); // เปลี่ยนเส้นทางไปที่หน้าโปรไฟล์
+      this.$router.push('/profile'); 
+      this.isMenuOpen = false;
+
+    },
+    goToRegister() {
+      if (this.isUserRegistered) {
+        this.$router.push('/register-hhb'); // เปลี่ยนเส้นทางไปที่หน้าที่ต้องการ
+      } else {
+        this.$router.push('/register-aff');
+      }
+      this.isMenuOpen = false;
     },
     goToBackend() {
-      this.$router.push('/master'); // เปลี่ยนเส้นทางไปที่หน้าโปรไฟล์
+      this.$router.push('/master');
     },
     logout() {
       localStorage.removeItem('token');
       this.isLoggedIn = false;
       this.username = '';
-      this.$router.push('/'); 
+      this.$router.push('/');
+    },
+
+    handleClickOutside(event) {
+      if (this.$refs.menuDropdown && !this.$refs.menuDropdown.contains(event.target)) {
+        this.isMenuOpen = false;
+      }
     },
 
     checkIfAdmin() {
@@ -170,17 +209,35 @@ export default {
       }
     }
   },
-  async mounted() {
+  mounted() {
     try {
-      // เช็คว่า user_id ของผู้ใช้ที่ล็อกอินมีอยู่ในฐานข้อมูลหรือไม่
-      const response = await axios.get('http://127.0.0.1:3333/check-user-registration');
-      if (response.data.isRegistered) {
-        this.isUserRegistered = true;
-      }
+      // ตรวจสอบการลงทะเบียนผู้ใช้
+      axios.get('http://127.0.0.1:3333/check-user-registration')
+        .then(response => {
+          this.isUserRegistered = response.data.isRegistered;
+        });
+
+      // ตรวจสอบการลงทะเบียน HHB
+      axios.get('http://127.0.0.1:3333/check-user-registration-hhb')
+        .then(response => {
+          this.isUserRegisteredHHB = response.data.isRegistered;
+        });
+
+      // ดึงข้อมูลโปรไฟล์ผู้ใช้
+      this.getUserProfile();
+
+      document.addEventListener("click", this.handleClickOutside);
     } catch (error) {
       console.error('Error checking user registration', error);
     }
   },
+
+  beforeUnmount() {
+    document.removeEventListener("click", this.handleClickOutside);
+  },
+
+
+
   watch: {
     // เพิ่ม watch เพื่ออัพเดตสถานะการล็อกอินเมื่อ token ถูกเปลี่ยน
     '$route'() {

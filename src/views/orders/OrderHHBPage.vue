@@ -259,11 +259,10 @@ export default {
 
     orderMenu(menu) {
   if (menu.quantity && menu.quantity > 0) {
-    // ดึง meal_type_id จาก menu
     const mealTypeId = menu.meal_type_id;  // ดึง meal_type_id จาก menu ที่เลือก
 
     // ส่งข้อมูลไปยัง backend
-    axios.post('http://127.0.0.1:3333/order', {
+    axios.post('http://127.0.0.1:3333/order-hhb', {
       menu_id: menu.menu_id,
       quantity: menu.quantity,
       order_date: this.selectedDate,

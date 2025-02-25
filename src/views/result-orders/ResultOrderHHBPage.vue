@@ -599,7 +599,7 @@ export default {
 
     async fetchOrders(startDate, endDate) {
       try {
-        const response = await axios.get('http://127.0.0.1:3333/orders/date-range', {
+        const response = await axios.get('http://127.0.0.1:3333/orders-hhb/date-range', {
           params: { start_date: startDate, end_date: endDate }, // ส่งค่าพารามิเตอร์ start_date และ end_date
         });
 
@@ -624,7 +624,7 @@ export default {
     async fetchLookupData() {
       try {
         const [customersRes, menuRes, menuTypeRes] = await Promise.all([
-          axios.get("http://127.0.0.1:3333/customers"),
+          axios.get("http://127.0.0.1:3333/customers-hhb"),
           axios.get("http://127.0.0.1:3333/menus"),
           axios.get("http://127.0.0.1:3333/menu-types"),
         ]);
@@ -775,7 +775,7 @@ export default {
         };
 
         const response = await axios.put(
-          `http://127.0.0.1:3333/order/${this.selectedOrder.id}/status`,
+          `http://127.0.0.1:3333/order-hhb/${this.selectedOrder.id}/status`,
           payload
         );
         await this.fetchOrders();
@@ -809,7 +809,7 @@ export default {
       console.log("Selected Orders:", this.selectedOrders);
 
       try {
-        const response = await fetch("http://127.0.0.1:3333/order/update-status", {
+        const response = await fetch("http://127.0.0.1:3333/order-hhb/update-status", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -836,7 +836,7 @@ export default {
       const orderIds = this.selectedOrders.map(order => order.id);
 
       try {
-        const response = await fetch("http://127.0.0.1:3333/order/update-status", {
+        const response = await fetch("http://127.0.0.1:3333/order-hhb/update-status", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
