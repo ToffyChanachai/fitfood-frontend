@@ -88,8 +88,8 @@
             <tbody>
                 <template v-if="filteredCustomers.length > 0">
                     <tr v-for="(customer, index) in filteredCustomers" :key="index"
-                    class=" bg-white relative border-b border-b-gray-200">
-                    <td class="px-4 py-2 align-top pb-5">{{ (currentPage - 1) * itemsPerPage + index + 1 }}</td>
+                        class=" bg-white relative border-b border-b-gray-200">
+                        <td class="px-4 py-2 align-top pb-5">{{ (currentPage - 1) * itemsPerPage + index + 1 }}</td>
                         <td class="px-4 py-2 align-top font-bold text-custom-orange pb-5">{{ customer.name }}</td>
                         <td class="px-4 py-2 align-top pb-5">{{ customer.customer_id }}</td>
                         <td class="px-4 py-2 align-top pb-5">
@@ -104,7 +104,7 @@
                         <td class="px-4 py-2 align-top pb-5">{{ customer.address_1 }}</td>
                         <td class="px-4 py-2 align-top pb-5">
                             {{ formatFoodAllergies(customer.food_allergies) }}
-                            <span v-if="customer.food_allergies_detail"> 
+                            <span v-if="customer.food_allergies_detail">
                                 {{ customer.food_allergies_detail }}
                             </span>
                         </td>
@@ -307,8 +307,32 @@
                         </div>
 
                         <div>
-                            <label for="note" class="block font-medium text-gray-700">Note</label>
-                            <textarea id="note" v-model="selectedCustomer.note" placeholder="กรอก Note"
+                            <label class="block font-medium text-gray-700">ผู้รับอาหาร?</label>
+                            <div class="flex space-x-4">
+                                <label class="text-gray-700">
+                                    <input type="radio" v-model="selectedCustomer.recipient_mon_to_fri"
+                                        value="ตัวคุณเอง" class="focus:ring-custom-orange custom-radio" />
+                                    ตัวคุณเอง
+                                </label>
+                                <label class="text-gray-700">
+                                    มีผู้อื่นรับแทน (โปรดระบุชื่อ พร้อมเบอร์โทรติดต่อในบรรทัดด้านล่าง)
+                                </label>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="recipient_mon_to_fri" class="block  font-medium text-gray-700">โปรดระบุชื่อ
+                                พร้อมเบอร์โทรติดต่อ</label>
+                            <textarea id="recipient_mon_to_fri" v-model="selectedCustomer.recipient_mon_to_fri"
+                                placeholder="Enter details here"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange"
+                                rows="4"></textarea>
+                        </div>
+
+                        <div>
+                            <label for="note" class="block font-medium text-gray-700">หากมีรายละเอียดอื่นๆ ที่เราควรทราบ
+                                โปรดระบุ</label>
+                            <textarea id="note" v-model="selectedCustomer.note" placeholder="กรอกรายละเอียดอื่นๆ"
                                 class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange"
                                 rows="4"></textarea>
                         </div>
@@ -560,7 +584,7 @@ export default {
                 line_id: this.selectedCustomer.line_id,
                 food_allergies: this.formatFoodAllergies(this.selectedCustomer.food_allergies) + (this.selectedCustomer.food_allergies_detail || ''),
                 delivery_date: this.selectedCustomer.delivery_date,
-                // other_detail: this.selectedCustomer.other_detail,
+                recipient_mon_to_fri: this.selectedCustomer.recipient_mon_to_fri,
                 note: this.selectedCustomer.note + '\n' + (this.selectedCustomer.other_detail || ''),
                 address_1: this.selectedCustomer.address_1,
                 address_2: this.selectedCustomer.address_2,
@@ -681,6 +705,7 @@ export default {
                     address_1: this.selectedCustomer.address_1,
                     address_2: this.selectedCustomer.address_2,
                     address_3: this.selectedCustomer.address_3,
+                    recipient_mon_to_fri: this.selectedCustomer.recipient_mon_to_fri,
                 });
 
                 const index = this.customers.findIndex(customer => customer.id === this.selectedCustomer.id);
@@ -700,7 +725,7 @@ export default {
             this.isEditModalOpen = false; // ปิด Modal
             this.selectedCustomer = {}; // รีเซ็ตข้อมูลลูกค้าที่เลือก
         },
-        
+
 
         confirmDelete(itemId) {
             this.itemToDelete = itemId;
@@ -735,8 +760,8 @@ export default {
                 line_id: 'Line ID',
                 food_allergies: 'ข้อมูลแพ้อาหาร',
                 delivery_date: 'วันที่ต้องการรับอาหาร',
-                // other_detail: 'รายละเอียดอื่นๆ',
-                note: 'Note',
+                recipient_mon_to_fri: 'ผู้รับอาหาร',
+                note: 'หากมีรายละเอียดอื่นๆ ที่เราควรทราบ โปรดระบุ',
                 address_1: 'ที่อยู่ 1',
                 address_2: 'ที่อยู่ 2',
                 address_3: 'ที่อยู่ 3',
@@ -766,13 +791,13 @@ export default {
             }, 3000);
         },
         formatFoodAllergies(value) {
-        if (value === 'Yes') {
-            return 'ใช่ Yes,';
-        } else if (value === 'No') {
-            return 'ไม่ No';
+            if (value === 'Yes') {
+                return 'ใช่ Yes,';
+            } else if (value === 'No') {
+                return 'ไม่ No';
+            }
+            return value; // ถ้าไม่ใช่ Yes หรือ No ให้แสดงค่าปกติ
         }
-        return value; // ถ้าไม่ใช่ Yes หรือ No ให้แสดงค่าปกติ
-    }
 
     },
     created() {

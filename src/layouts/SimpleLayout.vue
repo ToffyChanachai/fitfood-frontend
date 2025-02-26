@@ -9,7 +9,6 @@
         </div> -->
       </div>
 
-
       <div v-if="['/premium-health', '/', '/happy-healthy-box', '/low-carb', '/fat-loss'].includes($route.path)"
         class="flex items-left space-x-6 text-black font-bold">
         <router-link to="/premium-health" class="hover:text-custom-orange"
@@ -66,6 +65,13 @@
                 <span>Register Customer Profile</span>
               </li>
 
+              <li
+                class="px-4 py-3 cursor-pointer hover:bg-gray-100 hover:text-custom-orange hover:font-bold border-b flex items-center justify-between"
+                @click="goToOrderHistory">
+                <span class="material-symbols-outlined">history</span>
+                <span>Orders History</span>
+              </li>
+
               <li v-if="role === 'admin'"
                 class="px-4 py-3 cursor-pointer hover:bg-gray-100 hover:text-custom-orange hover:font-bold border-b flex items-center justify-between"
                 @click="goToBackend">
@@ -117,6 +123,21 @@
         </span>
       </div>
 
+      <div v-if="isOrderHistoryPath" class="flex justify-center space-x-6">
+        <span class="cursor-pointer hover:text-custom-orange"
+          @click="$router.push(`/order-history-user/${getCustomerID(id)}`)"
+          :class="{ 'border-b-2 border-custom-orange text-custom-orange font-bold': $route.path === `/order-history-user/${getCustomerID(id)}` }">
+          Absolute FitFood
+        </span>
+
+        <span class="cursor-pointer hover:text-custom-orange"
+          @click="$router.push(`/order-history-hhb-user/${getCustomerHHBID(id)}`)"
+          :class="{ 'border-b-2 border-custom-orange text-custom-orange font-bold': $route.path === `/order-history-hhb-user/${getCustomerHHBID(id)}` }">
+          Happy Healthy Box
+        </span>
+      </div>
+
+
       <router-view></router-view>
     </main>
 
@@ -138,11 +159,13 @@ export default {
       isMenuOpen: false, // สถานะการแสดงเมนู
       isUserRegistered: false,
       isUserRegisteredHHB: false,
-
+      customers: [],
+      customers_hhb: [],
     };
   },
   created() {
     this.checkLoginStatus();
+    this.fetchLookupData();
   },
   methods: {
     // ตรวจสอบสถานะการล็อกอินและดึงชื่อผู้ใช้
@@ -158,10 +181,29 @@ export default {
         const res = await api.getProfile(); // ใช้ฟังก์ชันจาก service
         this.username = res.username; // ตั้งค่าชื่อผู้ใช้
         this.role = res.role;
+        this.id = res.id;
       } catch (error) {
         console.log('Error fetching profile:', error);
       }
     },
+    async fetchLookupData() {
+      try {
+        const [
+          customersRes,
+          customersHHBRes,
+        ] = await Promise.all([
+          axios.get("http://127.0.0.1:3333/customers"),
+          axios.get("http://127.0.0.1:3333/customers-hhb"),
+        ]);
+
+        this.customers = customersRes.data;
+        this.customers_hhb = customersHHBRes.data;
+
+      } catch (error) {
+        console.error("Error fetching lookup data:", error);
+      }
+    },
+
     goToLogin() {
       this.$router.push('/login'); // เมื่อกด login จะไปที่หน้า login
     },
@@ -173,7 +215,7 @@ export default {
       this.$router.push('/premium-health');
     },
     goToProfile() {
-      this.$router.push('/profile'); 
+      this.$router.push('/profile');
       this.isMenuOpen = false;
 
     },
@@ -183,6 +225,11 @@ export default {
       } else {
         this.$router.push('/register-aff');
       }
+      this.isMenuOpen = false;
+    },
+    goToOrderHistory() {
+      const customerId = this.getCustomerID(this.id);
+      this.$router.push(`/order-history-user/${customerId}`);
       this.isMenuOpen = false;
     },
     goToBackend() {
@@ -207,7 +254,17 @@ export default {
       } else {
         console.log("User is not an admin.");
       }
-    }
+    },
+
+    getCustomerID(customerId) {
+      const customer = this.customers.find((c) => c.user_id === customerId);
+      return customer ? customer.id : "ไม่พบข้อมูล";
+    },
+    getCustomerHHBID(customerId) {
+      const customer = this.customers_hhb.find((c) => c.user_id === customerId);
+      return customer ? customer.id : "ไม่พบข้อมูล";
+    },
+
   },
   mounted() {
     try {
@@ -225,6 +282,7 @@ export default {
 
       // ดึงข้อมูลโปรไฟล์ผู้ใช้
       this.getUserProfile();
+      this.fetchLookupData();
 
       document.addEventListener("click", this.handleClickOutside);
     } catch (error) {
@@ -248,6 +306,12 @@ export default {
     // ดึง userRole จาก Vuex store
     userRole() {
       return this.$store.getters.getUserRole;
+    },
+    isOrderHistoryPath() {
+      return (
+        this.$route.path === `/order-history-user/${this.getCustomerID(this.id)}` ||
+        this.$route.path === `/order-history-hhb-user/${this.getCustomerHHBID(this.id)}`
+      );
     }
   },
 };

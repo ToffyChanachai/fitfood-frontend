@@ -105,6 +105,36 @@
                     </div>
 
                     <div>
+                        <label class="block font-medium text-gray-700">ผู้รับอาหาร?</label>
+                        <div class="flex space-x-4">
+                            <label class="text-gray-700">
+                                <input type="radio" v-model="recipient_mon_to_fri" value="ตัวคุณเอง"
+                                    class="focus:ring-custom-orange custom-radio" />
+                                ตัวคุณเอง
+                            </label>
+                            <label class="text-gray-700">
+                                มีผู้อื่นรับแทน (โปรดระบุชื่อ พร้อมเบอร์โทรติดต่อในบรรทัดด้านล่าง)
+                            </label>
+                        </div>
+                    </div>
+
+                    <div>
+                    <label for="recipient_mon_to_fri" class="block  font-medium text-gray-700">โปรดระบุชื่อ
+                        พร้อมเบอร์โทรติดต่อ</label>
+                    <textarea id="recipient_mon_to_fri" v-model="recipient_mon_to_fri"
+                        placeholder="Enter details here"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange"
+                        rows="4"></textarea>
+                    </div>
+
+                    <div>
+                        <label for="note" class="block font-medium text-gray-700">หากมีรายละเอียดอื่นๆ ที่เราควรทราบ โปรดระบุ</label>
+                        <textarea id="note" v-model="note" placeholder="กรอกรายละเอียดอื่นๆ"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange"
+                            rows="4"></textarea>
+                    </div>
+
+                    <div>
                         <label for="address_1" class="block  font-medium text-gray-700">ที่อยู่จัดส่ง 1</label>
                         <textarea id="address" v-model="address_1" placeholder="กรอกที่อยู่การจัดส่ง"
                             class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange"
@@ -153,6 +183,8 @@ export default {
             food_allergies: '',
             food_allergies_detail: '',
             delivery_date: '',
+            recipient_mon_to_fri: '',
+            note: '',
             customer_id: '',
             error: null,
             success: null
@@ -187,6 +219,8 @@ export default {
                     tel: this.tel,
                     food_allergies: this.food_allergies + this.food_allergies_detail,
                     delivery_date: this.delivery_date,
+                    recipient_mon_to_fri: this.recipient_mon_to_fri,
+                    note: this.note,
                 });
 
                 this.success = response.data.message;

@@ -60,21 +60,19 @@
                         <label class="block font-medium text-gray-700">ผู้รับอาหาร?</label>
                         <div class="flex space-x-4">
                             <label class="text-gray-700">
-                                <input type="checkbox" v-model="recipient" value="ตัวคุณเอง"
-                                    class="focus:ring-custom-orange custom-checkbox" />
+                                <input type="radio" v-model="recipient" value="ตัวคุณเอง"
+                                    class="focus:ring-custom-orange custom-radio" />
                                 ตัวคุณเอง
                             </label>
                             <label class="text-gray-700">
-                                <input type="checkbox" v-model="recipient" value="มีผู้อื่นรับแทน"
-                                    class="focus:ring-custom-orange custom-checkbox" />
                                 มีผู้อื่นรับแทน (โปรดระบุชื่อ พร้อมเบอร์โทรติดต่อในบรรทัดด้านล่าง)
                             </label>
                         </div>
                     </div>
 
-                    <label for="recipient_detail" class="block  font-medium text-gray-700">โปรดระบุชื่อ
+                    <label for="recipient" class="block  font-medium text-gray-700">โปรดระบุชื่อ
                         พร้อมเบอร์โทรติดต่อ</label>
-                    <textarea id="recipient_detail" v-model="recipient_detail" placeholder="Enter details here"
+                    <textarea id="recipient" v-model="recipient" placeholder="Enter details here"
                         class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange"
                         rows="4"></textarea>
 
@@ -181,7 +179,7 @@ export default {
                     email: this.email,
                     line_id: this.line_id,
                     tel: this.tel,
-                    recipient: this.recipient + this.recipient_detail,
+                    recipient: this.recipient,
                     note: this.note,
                 });
 

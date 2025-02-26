@@ -251,42 +251,33 @@
                         </div>
 
                         <div>
-                            <label class="block  font-medium text-gray-700">คุณแพ้อาหารชนิดใดหรือไม่?</label>
+                            <label class="block font-medium text-gray-700">ผู้รับอาหาร?</label>
                             <div class="flex space-x-4">
-                                <label>
+                                <label class="text-gray-700">
                                     <input type="radio" v-model="selectedCustomer.recipient" value="ตัวคุณเอง"
-                                        class="focus:ring-custom-orange" />
+                                        class="focus:ring-custom-orange custom-radio" />
                                     ตัวคุณเอง
                                 </label>
-                                <label>
-                                    <input type="radio" v-model="selectedCustomer.recipient" value="อื่นๆ, "
-                                        class="focus:ring-custom-orange" />
-อื่นๆ
+                                <label class="text-gray-700">
+                                    มีผู้อื่นรับแทน (โปรดระบุชื่อ พร้อมเบอร์โทรติดต่อในบรรทัดด้านล่าง)
                                 </label>
-
                             </div>
                         </div>
 
-                        <div v-if="selectedCustomer.recipient === 'อื่นๆ, '">
-                            <label for="recipient_detail"
-                                class="block  font-medium text-gray-700">โปรดระบุประเภทอาหารที่คุณมีอาการแพ้ในบรรทัดด้านล่าง</label>
-                            <textarea id="recipient_detail" v-model="selectedCustomer.recipient_detail"
+                        <div>
+                            <label for="recipient" class="block  font-medium text-gray-700">โปรดระบุชื่อ
+                                พร้อมเบอร์โทรติดต่อ</label>
+                            <textarea id="recipient" v-model="selectedCustomer.recipient"
                                 placeholder="Enter details here"
                                 class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange"
                                 rows="4"></textarea>
                         </div>
 
                         <div>
-                            <label for="nearby_places"
-                                class="block  font-medium text-gray-700">โปรดระบุวันที่คุณต้องการรับอาหาร</label>
-                            <input type="text" v-model="selectedCustomer.nearby_places"
-                                placeholder="กรอกโปรดระบุวันที่คุณต้องการรับอาหาร"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange" />
-                        </div>
-
-                        <div>
-                            <label for="note" class="block font-medium text-gray-700">Note</label>
-                            <textarea id="note" v-model="selectedCustomer.note" placeholder="กรอก Note"
+                            <label for="note" class="block  font-medium text-gray-700">โปรดระบุเบอร์โทรติดต่อสำรอง
+                                หรือรายละเอียดอื่น ๆ ที่เราควรทราบ (ถ้ามี)</label>
+                            <textarea id="note" v-model="selectedCustomer.note"
+                                placeholder="ระบุเบอร์โทรติดต่อสำรอง หรือรายละเอียดอื่น ๆ ที่เราควรทราบ (ถ้ามี)"
                                 class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange"
                                 rows="4"></textarea>
                         </div>
@@ -316,6 +307,15 @@
                                 class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange"
                                 rows="4"></textarea>
                         </div>
+
+                        <div>
+                        <label for="nearby_places"
+                            class="block  font-medium text-gray-700">สถานที่ใกล้เคียงหรือจุดสังเกตอื่นๆ </label>
+                        <textarea id="nearby_places" v-model="selectedCustomer.nearby_places"
+                            placeholder="กรอกสถานที่ใกล้เคียงหรือจุดสังเกตอื่น ๆ "
+                            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange"
+                            rows="4"></textarea>
+                    </div>
 
 
                     </div>
@@ -655,7 +655,7 @@ export default {
                     line_id: this.selectedCustomer.line_id,
                     nearby_places: this.selectedCustomer.nearby_places,
                     // recipient: this.selectedCustomer.recipient,
-                    recipient: this.selectedCustomer.recipient + (this.selectedCustomer.recipient_detail || ""),
+                    recipient: this.selectedCustomer.recipient,
                     note: this.selectedCustomer.note,
                     address_1: this.selectedCustomer.address_1,
                     address_2: this.selectedCustomer.address_2,
@@ -717,7 +717,7 @@ export default {
                 nearby_places: 'สถานที่ใกล้เคียงหรือจุดสังเกตอื่นๆ',
                 recipient: 'ผู้รับอาหาร',
                 // other_detail: 'รายละเอียดอื่นๆ',
-                note: 'Note',
+                note: 'รายละเอียดอื่น ๆ',
                 address_1: 'ที่อยู่ 1',
                 address_2: 'ที่อยู่ 2',
                 address_3: 'ที่อยู่ 3',

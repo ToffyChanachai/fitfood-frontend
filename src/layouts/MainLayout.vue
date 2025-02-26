@@ -297,6 +297,18 @@
                 </router-link>
             </div>
 
+            <div v-if="$route.path === '/delivery' || $route.path === '/delivery-hhb'"
+                class="mt-4 p-4 flex items-left space-x-6 text-m font-bold">
+                <router-link to="delivery" class="hover:text-custom-orange"
+                    :class="{ 'text-custom-orange border-b-2 border-custom-orange': $route.path === '/' || $route.path === '/delivery' }">
+                    Absolute FitFood
+                </router-link>
+                <router-link to="/delivery-hhb" class="hover:text-custom-orange"
+                    :class="{ 'text-custom-orange border-b-2 border-custom-orange': $route.path === '/delivery-hhb' }">
+                    Happy Healthy Box
+                </router-link>
+            </div>
+
             <div v-if="$route.path === '/remaining-packages' || $route.path === '/remaining-packages-hhb'"
                 class="mt-4 p-4 flex items-left space-x-6 text-m font-bold">
                 <router-link to="remaining-packages" class="hover:text-custom-orange"
@@ -400,10 +412,14 @@ export default {
                     this.pageIcon = "stockpot";
                     break;
 
-                    case "การจัดส่งอาหารประจำวัน":
+                case "การจัดส่งอาหารประจำวัน":
                     this.pageIcon = "delivery_truck_speed";
                     break;
-                    
+                case "การจัดส่งอาหารประจำวัน HHB":
+                    this.pageIcon = "delivery_truck_speed";
+                    this.pageTitle = "การจัดส่งอาหารประจำวัน";
+                    break;
+
 
                 case "แพ็คเกจคงเหลือของลูกค้า":
                     this.pageIcon = "deployed_code_history";

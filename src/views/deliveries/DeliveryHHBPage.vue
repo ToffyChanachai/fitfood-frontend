@@ -28,7 +28,7 @@
         <span class="material-symbols-outlined text-2xl text-gray-700">delivery_truck_speed</span>
         <span class="text-m text-gray-700">จำนวนการจัดส่งอาหารทั้งหมด: </span>
         <span class="text-m text-custom-orange font-bold">
-          {{ saleRecords.length }} รายการ</span>
+          {{ filteredSaleRecordsPaid.length }} รายการ</span>
       </div>
 
       <button v-if="selectedPackageType.length > 0" @click="clearFilter"
@@ -828,14 +828,14 @@
 
 
       <tbody>
-        <tr v-for="(saleRecord, index) in saleRecords" :key="index"
+        <tr v-for="(saleRecord, index) in filteredSaleRecordsPaid" :key="index"
           class="bg-white border-b border-gray-300 hover:bg-gray-100">
 
           <td class="px-6 py-4 text-[12px]  text-black border-b border-b-gray-300">{{
-            saleRecord.name }}</td>
+            getCustomerName(saleRecord.customer_id) }}</td>
           <td class="px-6 py-4 text-[12px] border-b border-b-gray-300">
             <div class="flex items-center">
-              {{ saleRecord.tel }}
+              {{ getCustomerTel(saleRecord.customer_id) }}
             </div>
           </td>
 
@@ -1158,7 +1158,9 @@ export default {
         .toLowerCase()
         .includes(this.searchQuery.toLowerCase()); // กรองตามชื่อ
       const matchesPackageType = this.selectedPackageType.length === 0 || this.selectedPackageType.includes(saleRecord.package_type_id); // กรองตาม package_type (ถ้าต้องการกรอง)
-      return matchesSearch && matchesPackageType;
+      const validRemainingDays = saleRecord.remaining_days > 0; // ตรวจสอบ remaining_days
+      const validTotalBoxes = saleRecord.total_boxes > 0; // ตรวจสอบ total_boxes
+      return matchesSearch && matchesPackageType && validRemainingDays && validTotalBoxes; // กรองรวมทั้งสามเงื่อนไข
     });
 },
 
@@ -1535,7 +1537,7 @@ export default {
 
     async fetchSaleRecords() {
       try {
-        const response = await axios.get("http://127.0.0.1:3333/customers-hhb");
+        const response = await axios.get("http://127.0.0.1:3333/sale-records-hhb");
         this.saleRecords = response.data;
         this.filteredSaleRecords = response.data;
         this.saleRecords.sort((a, b) => a.id - b.id);
@@ -1674,7 +1676,7 @@ export default {
 
     async updateDelivery(saleRecord) {
       try {
-        await axios.put(`http://127.0.0.1:3333/customers-hhb/${saleRecord.id}/delivery`, {
+        await axios.put(`http://127.0.0.1:3333/sale-records-hhb/${saleRecord.id}/delivery`, {
           delivery_round: saleRecord.delivery_round || '',
           deliver: saleRecord.deliver || '',
           delivery_zone: saleRecord.delivery_zone || ''

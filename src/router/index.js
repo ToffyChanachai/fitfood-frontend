@@ -10,6 +10,9 @@ import Profile from "@/views/users/ProfilePage.vue";
 import RegisterAFF from "@/views/users/RegisterAFFPage.vue";
 import RegisterHHB from "@/views/users/RegisterHHBPage.vue";
 
+import OrderHistoryUser from "@/views/users/OrderHistoryUserPage.vue";
+import OrderHistoryHHBUser from "@/views/users/OrderHistoryHHBUserPage.vue";
+
 import User from "@/views/UserPage.vue";
 
 // import ForgotPassword from '@/views/users/ForgotPasswordPage.vue';
@@ -63,7 +66,8 @@ import OrderHistory from "@/views/remaining/OrderHistoryPage.vue";
 import RemainingPackageHHB from "@/views/remaining/RemainingPackageHHBPage.vue";
 import OrderHistoryHHB from "@/views/remaining/OrderHistoryHHBPage.vue";
 
-import Delivery from "@/views/DeliveryPage.vue";
+import Delivery from "@/views/deliveries/DeliveryPage.vue";
+import DeliveryHHB from "@/views/deliveries/DeliveryHHBPage.vue";
 
 import PH from "@/views/orders/OrderPHPage.vue";
 import HHB from "@/views/orders/OrderHHBPage.vue";
@@ -107,6 +111,27 @@ const routes = [
       layout: "SimpleLayout",
     },
   },
+  {
+    path: "/order-history-user/:customerId",
+    name: "ประวัติการสั่งซื้อ User",
+    component: OrderHistoryUser,
+    meta: { 
+      title: "ประวัติการสั่งซื้อ - Absolute FitFood",
+      layout: "SimpleLayout",
+
+     },
+  },
+  {
+    path: "/order-history-hhb-user/:customerId",
+    name: "ประวัติการสั่งซื้อ User HHB",
+    component: OrderHistoryHHBUser,
+    meta: { 
+      title: "ประวัติการสั่งซื้อ - Absolute FitFood",
+      layout: "SimpleLayout",
+
+     },
+  },
+
   {
     path: "/users",
     name: "ข้อมูลผู้ใช้งาน",
@@ -286,6 +311,12 @@ const routes = [
     path: "/delivery",
     name: "การจัดส่งอาหารประจำวัน",
     component: Delivery,
+    meta: { title: "การจัดส่งอาหารประจำวัน - Absolute FitFood" },
+  },
+  {
+    path: "/delivery-hhb",
+    name: "การจัดส่งอาหารประจำวัน HHB",
+    component: DeliveryHHB,
     meta: { title: "การจัดส่งอาหารประจำวัน - Absolute FitFood" },
   },
 
