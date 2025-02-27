@@ -660,21 +660,6 @@ export default {
       );
     },
 
-
-
-    filteredAdditionalTypes() {
-      return this.additionalTypes.filter(type => type.name.startsWith("AFF"));
-    },
-    filteredPrograms() {
-      return this.programs.filter(program => !program.name.startsWith("Happy"));
-    },
-    filteredInhouse() {
-      return this.zoneDeliveries.filter(zoneDelivery => zoneDelivery.name.startsWith("AFF"));
-    },
-    filteredOutsource() {
-      return this.zoneDeliveries.filter(zoneDelivery => !zoneDelivery.name.startsWith("AFF"));
-    },
-
     ...mapGetters(["saleRecords"]),
   },
   methods: {
@@ -946,7 +931,7 @@ export default {
           receiveFoodRes,
           selectFoodRes,
         ] = await Promise.all([
-          axios.get("http://127.0.0.1:3333/customers"),
+          axios.get("http://127.0.0.1:3333/customers-hhb"),
           axios.get("http://127.0.0.1:3333/promotion-types"),
           axios.get("http://127.0.0.1:3333/programs"),
           axios.get("http://127.0.0.1:3333/packages"),
@@ -1028,7 +1013,7 @@ export default {
 
     async fetchSaleRecords() {
       try {
-        const response = await axios.get("http://127.0.0.1:3333/sale-records");
+        const response = await axios.get("http://127.0.0.1:3333/sale-records-hhb");
         this.saleRecords = response.data;
         this.filteredSaleRecords = response.data;
         this.saleRecords.sort((a, b) => a.id - b.id);
@@ -1040,7 +1025,7 @@ export default {
 
     async fetchAllDailySales() {
       try {
-        const response = await axios.get('http://127.0.0.1:3333/sales/all-daily', {
+        const response = await axios.get('http://127.0.0.1:3333/sales-hhb/all-daily', {
         });
 
         this.allDailySales = response.data.data.allDailySales;
@@ -1056,7 +1041,7 @@ export default {
     },
     async fetchDailySales(startDate, endDate) {
       try {
-        const response = await axios.get('http://127.0.0.1:3333/sales/daily', {
+        const response = await axios.get('http://127.0.0.1:3333/sales-hhb/daily', {
           params: { startDate, endDate },
         });
 

@@ -1747,9 +1747,9 @@ export default {
         },
 
         filteredDetailSaleRecord() {
-            if (!this.selectedSaleRecord || !this.selectedSaleRecord.customer) {
-                return { name: "", expiry_date: "" };
-            }
+            // if (!this.selectedSaleRecord || !this.selectedSaleRecord.customer) {
+            //     return { name: "", expiry_date: "" };
+            // }
             return {
                 seller_name_id: this.getSellerName(
                     this.selectedSaleRecord.seller_name_id

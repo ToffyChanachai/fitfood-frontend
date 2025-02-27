@@ -229,13 +229,13 @@
       <div v-for="(orders, index) in groupedOrdersPrint" :key="index" class="mb-4 mt-2 p-4">
         <span class="font-bold text-lg text-center w-full block">{{ orders.menu_type }}</span>
         <div v-for="(order, idx) in orders.items" :key="idx">
-          <h2 class="font-bold text-lg mt-4">{{ formatDate(order.order_date) }}</h2>
+          <h2 class="font-medium text-lg mt-4">{{ formatDate(order.order_date) }}</h2>
           <div v-for="(meal, index) in order.items" :key="index">
             <div class="mt-2">
               <span class="font-semibold text-custom-orange underline">{{ meal.meal_type }}</span>
               <ul class="ml-4">
                 <li v-for="(item, itemIndex) in meal.items" :key="itemIndex">
-                  <strong>{{ item.quantity }}</strong> x {{ item.menu_eng_name }}
+                  <strong>{{ item.quantity }}</strong> x {{ item.menu_name }} ({{ item.menu_eng_name  }})
                 </li>
               </ul>
             </div>
@@ -332,7 +332,7 @@ export default {
         return !menuTypeName.startsWith("Happy");
       });
     },
-    
+
 
     filteredOrders() {
       const searchQuery = this.searchQuery ? this.searchQuery.toLowerCase() : ''; // ป้องกัน undefined
@@ -919,7 +919,7 @@ export default {
 };
 </script>
 
-<style>
+<style >
 .dropdown-up {
   bottom: 100%;
   margin-bottom: 4px;
@@ -932,30 +932,14 @@ export default {
   }
 }
 
-@media print {
-  .hidden-print {
-    display: block;
-  }
-
-  .page-section {
-    page-break-inside: avoid;
-  }
-
-  .page-break {
-    page-break-after: always;
-  }
-
-  /* เพิ่ม padding สำหรับ content-section เมื่อพิมพ์ */
-  .content-section {
-    padding: 20px !important;
-    /* ใช้ !important เพื่อให้สไตล์นี้มีความสำคัญสูงสุด */
-  }
-}
+/*   */
 
 @media print {
   @page {
-    margin-top: 10mm;
-    margin-bottom: 10mm;
+    size: auto;
+    margin: 10mm;
+    /* margin-top: 10mm;
+    margin-bottom: 10mm; */
   }
 }
 </style>

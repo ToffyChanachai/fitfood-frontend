@@ -1981,9 +1981,7 @@ export default {
 @media print {
 
   @page {
-    size: landscape; 
     margin: 10mm;   
-    
   }
 }
 </style>

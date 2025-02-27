@@ -1,5 +1,6 @@
 <template>
-    <div class="fixed top-4 right-8 bg-green-500 text-white px-8 py-4 flex items-center space-x-4 rounded-lg shadow-lg transition-opacity duration-300 z-50"
+    <div v-if="showSuccessToast"
+        class="fixed top-4 right-8 bg-green-500 text-white px-8 py-4 flex items-center space-x-4 rounded-lg shadow-lg transition-opacity duration-300 z-50"
         :class="{ 'opacity-100': showSuccessToast, 'opacity-0': !showSuccessToast }">
         <span class="material-symbols-outlined text-white">check_circle</span>
         <span>{{ toastSuccessMessage }}</span>
@@ -8,7 +9,8 @@
         </button>
     </div>
 
-    <div class="fixed top-4 right-8 bg-red-500 text-white px-8 py-4 flex items-center space-x-4 rounded-lg shadow-lg transition-opacity duration-300 z-50"
+    <div v-if="showFailToast"
+        class="fixed top-4 right-8 bg-red-500 text-white px-8 py-4 flex items-center space-x-4 rounded-lg shadow-lg transition-opacity duration-300 z-50"
         :class="{ 'opacity-100': showFailToast, 'opacity-0': !showFailToast }">
         <span class="material-symbols-outlined text-white">cancel</span>
         <span>{{ toastFailMessage }}</span>
@@ -17,7 +19,7 @@
         </button>
     </div>
     <div>
-        <div v-if="error" class="text-red-500">{{ error }}</div>
+        <!-- <div v-if="error" class="text-red-500">{{ error }}</div> -->
         <div v-if="loading" class="text-gray-500">Loading...</div>
 
         <div class="flex space-x-4">
@@ -30,11 +32,11 @@
                     <div v-else
                         class="w-16 h-16 rounded-full bg-gray-300 text-white flex items-center justify-center mb-4">
                         <span class="text-xl font-bold">
-                            {{ user.firstname && user.lastname ? user.firstname.charAt(0) + user.lastname.charAt(0) :
+                            {{ user.username ? user.username.charAt(0) :
                                 'N/A' }}
                         </span>
                     </div>
-                    <strong class="text-lg">{{ user.firstname || 'N/A' }} {{ user.lastname || 'N/A' }}</strong>
+                    <strong class="text-lg">{{ user.username || 'N/A' }}</strong>
                     <p class="text-gray-700 pb-3">{{ user.email || 'No email provided' }}</p>
                 </div>
 
@@ -55,7 +57,7 @@
             <!-- คอลัมน์ข้อมูลลูกค้า -->
             <div class="w-4/5 flex flex-col space-y-4 ">
 
-                <div v-if="customer_aff" class="relative bg-white shadow-lg p-4 rounded-md border">
+                <div v-if="customer_aff" class="relative bg-white shadow-lg p-8 rounded-md border">
                     <button @click="onEdit(customer_aff)"
                         class="absolute top-4 right-4 bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 flex items-center space-x-1">
                         <span class="material-symbols-outlined">edit_square</span>
@@ -83,9 +85,18 @@
                     <p><strong>ที่อยู่จัดส่ง 3:</strong> {{ customer_aff.address_3 }}</p>
                 </div>
 
+                <div v-else class="relative bg-white shadow-lg p-8 rounded-md border flex">
+                    <strong class="text-xl text-custom-orange mr-4 block">Abosolute FitFood Profile</strong>
+
+                    <button @click="goToRegisterAFF"
+                        class="bg-custom-orange text-white px-4 py-2 rounded hover:bg-custom-orange-hover flex items-center justify-center ml-auto">
+                        Register Profile
+                    </button>
+                </div>
+
 
                 <!-- กล่องข้อมูลของ customer_hhb -->
-                <div v-if="customer_hhb" class="relative bg-white shadow-lg p-4 rounded-md border">
+                <div v-if="customer_hhb" class="relative bg-white shadow-lg p-8 rounded-md border">
                     <button @click="onEditHHB(customer_hhb)"
                         class="absolute top-4 right-4 bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 flex items-center space-x-1">
                         <span class="material-symbols-outlined">edit_square</span>
@@ -104,11 +115,37 @@
                     <p><strong>ผู้รับอาหาร:</strong> {{ customer_hhb.recipient }}</p>
                     <p><strong>รายละเอียดอื่นๆ:</strong> {{ customer_hhb.note }}</p>
                 </div>
+
+                <div v-else class="relative bg-white shadow-lg p-8 rounded-md border flex">
+                    <strong class="text-xl text-custom-orange mr-4 block">Happy Healthy Box Profile</strong>
+
+                    <button @click="goToRegisterHHB"
+                        class="bg-custom-orange text-white px-4 py-2 rounded hover:bg-custom-orange-hover flex items-center justify-center ml-auto">
+                        Register Profile
+                    </button>
+                </div>
+
+
+
             </div>
         </div>
 
         <div v-if="isEditModalOpen"
             class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
+
+            <div v-if="showErrorToast"
+                class="absolute top-8 left-1/2 transform -translate-x-1/2 bg-yellow-500 text-white px-8 py-4 flex items-center space-x-4 rounded-lg shadow-lg transition-opacity duration-300 z-60"
+                :class="{
+                    'opacity-100': showErrorToast,
+                    'opacity-0': !showErrorToast,
+                }">
+                <span class="material-symbols-outlined text-white">error</span>
+                <span>{{ toastErrorMessage }}</span>
+                <button @click="showErrorToast = false" class="text-white hover:text-gray-200 focus:outline-none">
+                    <span class="material-symbols-outlined text-xl">close</span>
+                </button>
+            </div>
+
             <div class="bg-white rounded-md shadow-lg w-1/2 max-w-3xl h-auto max-h-[800px] flex flex-col">
                 <div class="flex justify-between items-center bg-custom-orange text-white px-4 py-2 rounded-t-md">
                     <span class="font-bold">แก้ไขข้อมูลลูกค้า</span>
@@ -220,16 +257,17 @@
                     </div>
 
                     <div>
-                    <label for="recipient_mon_to_fri" class="block  font-medium text-gray-700">โปรดระบุชื่อ
-                        พร้อมเบอร์โทรติดต่อ</label>
-                    <textarea id="recipient_mon_to_fri" v-model="selectedCustomer.recipient_mon_to_fri"
-                        placeholder="Enter details here"
-                        class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange"
-                        rows="4"></textarea>
+                        <label for="recipient_mon_to_fri" class="block  font-medium text-gray-700">โปรดระบุชื่อ
+                            พร้อมเบอร์โทรติดต่อ</label>
+                        <textarea id="recipient_mon_to_fri" v-model="selectedCustomer.recipient_mon_to_fri"
+                            placeholder="Enter details here"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange"
+                            rows="4"></textarea>
                     </div>
 
                     <div>
-                        <label for="note" class="block font-medium text-gray-700">หากมีรายละเอียดอื่นๆ ที่เราควรทราบ โปรดระบุ</label>
+                        <label for="note" class="block font-medium text-gray-700">หากมีรายละเอียดอื่นๆ ที่เราควรทราบ
+                            โปรดระบุ</label>
                         <textarea id="note" v-model="selectedCustomer.note" placeholder="กรอกรายละเอียดอื่นๆ"
                             class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange"
                             rows="4"></textarea>
@@ -279,6 +317,20 @@
 
         <div v-if="isEditHHBModalOpen"
             class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
+
+            <div v-if="showErrorToast"
+                class="absolute top-8 left-1/2 transform -translate-x-1/2 bg-yellow-500 text-white px-8 py-4 flex items-center space-x-4 rounded-lg shadow-lg transition-opacity duration-300 z-60"
+                :class="{
+                    'opacity-100': showErrorToast,
+                    'opacity-0': !showErrorToast,
+                }">
+                <span class="material-symbols-outlined text-white">error</span>
+                <span>{{ toastErrorMessage }}</span>
+                <button @click="showErrorToast = false" class="text-white hover:text-gray-200 focus:outline-none">
+                    <span class="material-symbols-outlined text-xl">close</span>
+                </button>
+            </div>
+            
             <div class="bg-white rounded-md shadow-lg w-1/2 max-w-3xl h-auto max-h-[800px] flex flex-col">
                 <div class="flex justify-between items-center bg-custom-orange text-white px-4 py-2 rounded-t-md">
                     <span class="font-bold">แก้ไขข้อมูล</span>
@@ -365,12 +417,12 @@
                     </div>
 
                     <div>
-                    <label for="recipient" class="block  font-medium text-gray-700">โปรดระบุชื่อ
-                        พร้อมเบอร์โทรติดต่อ</label>
-                    <textarea id="recipient" v-model="selectedCustomerHHB.recipient"
-                        placeholder="Enter details here"
-                        class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange"
-                        rows="4"></textarea>
+                        <label for="recipient" class="block  font-medium text-gray-700">โปรดระบุชื่อ
+                            พร้อมเบอร์โทรติดต่อ</label>
+                        <textarea id="recipient" v-model="selectedCustomerHHB.recipient"
+                            placeholder="Enter details here"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange"
+                            rows="4"></textarea>
                     </div>
 
                     <div>
@@ -553,13 +605,13 @@ export default {
         },
 
         formatFoodAllergies(value) {
-        if (value === 'Yes') {
-            return 'ใช่ Yes,';
-        } else if (value === 'No') {
-            return 'ไม่ No';
-        }
-        return value; // ถ้าไม่ใช่ Yes หรือ No ให้แสดงค่าปกติ
-    },
+            if (value === 'Yes') {
+                return 'ใช่ Yes,';
+            } else if (value === 'No') {
+                return 'ไม่ No';
+            }
+            return value; // ถ้าไม่ใช่ Yes หรือ No ให้แสดงค่าปกติ
+        },
 
         onEdit(customer) {
             this.selectedCustomer = { ...customer }; // คัดลอกข้อมูลลูกค้า
@@ -585,8 +637,8 @@ export default {
                     food_allergies: this.selectedCustomer.food_allergies,
                     food_allergies_detail: this.selectedCustomer.food_allergies_detail,
                     delivery_date: this.selectedCustomer.delivery_date,
-                        recipient_mon_to_fri: this.selectedCustomer.recipient_mon_to_fri,
-                        note: this.selectedCustomer.note,
+                    recipient_mon_to_fri: this.selectedCustomer.recipient_mon_to_fri,
+                    note: this.selectedCustomer.note,
                     address_1: this.selectedCustomer.address_1,
                     address_2: this.selectedCustomer.address_2,
                     address_3: this.selectedCustomer.address_3,
@@ -649,6 +701,12 @@ export default {
         closeEditModalHHB() {
             this.isEditHHBModalOpen = false; // ปิด Modal
             this.selectedCustomerHHB = {}; // รีเซ็ตข้อมูลลูกค้าที่เลือก
+        },
+        goToRegisterHHB() {
+            this.$router.push('/register-hhb');  // ใช้ Vue Router เพื่อไปที่หน้า /register-hbb
+        },
+        goToRegisterAFF() {
+            this.$router.push('/register-aff');  // ใช้ Vue Router เพื่อไปที่หน้า /register-hbb
         },
 
         showSuccessToastNotification(message) {

@@ -185,7 +185,7 @@ export default {
 
                 // ถ้าสำเร็จ
                 this.success = response.data.message;
-                // this.address = ''; // ล้างค่าในฟอร์ม
+                this.$router.push('/');
             } catch (err) {
                 // ถ้ามีข้อผิดพลาด
                 this.error = err.response.data.message || 'Failed to Register';

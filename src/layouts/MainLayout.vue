@@ -75,21 +75,6 @@
                         </router-link>
                     </li>
 
-
-                    <li class="hover:bg-custom-orange-hover">
-                        <router-link to="/test" class=" py-2 px-4 flex items-center space-x-2">
-                            <span class="material-symbols-outlined text-3xl">fullscreen</span>
-                            <span v-if="isExpanded">test</span>
-                        </router-link>
-                    </li>
-                    <!-- <li class="hover:bg-custom-orange-hover">
-                        <router-link to="/test2" class=" py-2 px-4 flex items-center space-x-2">
-                            <span class="material-symbols-outlined text-3xl">fullscreen</span>
-                            <span v-if="isExpanded">test2</span>
-                        </router-link>
-                    </li> -->
-
-
                     <li v-if="isExpanded" class="relative">
                         <button @click="toggleSubMenu" class=" py-2 px-4 flex items-center space-x-2 w-full text-left">
                             <span class="material-symbols-outlined">folder</span>
@@ -126,16 +111,16 @@
                 <!-- Profile Picture and Username -->
                 <div class="flex items-center space-x-2">
                     <div class="relative w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center text-white text-lg font-bold flex-shrink-0 cursor-pointer"
-                        @click="toggleDropdown">
-                        <img v-if="userProfileImage" :src="userProfileImage" alt="User Profile"
+                    @click="goToProfile">
+                        <img v-if="userProfileImage" :src="userProfileImage" alt="User Profile" 
                             class="w-full h-full rounded-full object-cover border-2 border-white">
                         <span v-else class="uppercase">{{ username.charAt(0) }}</span>
                     </div>
 
                     <!-- Username and Profile Info when sidebar is expanded -->
                     <div v-if="isExpanded" class="flex flex-col items-start">
-                        <strong class="text-white ml-2">{{ username }}</strong>
-                        <p class="text-white text-sm ml-2">View Profile</p>
+                        <strong class="text-white ml-2 cursor-default">{{ username }}</strong>
+                        <p class="text-white text-sm ml-2 hover:underline cursor-pointer" @click="goToProfile">View Profile</p>
                     </div>
                 </div>
 
@@ -164,6 +149,18 @@
                     <h1 class="text-xl text-gray-600 font-bold">{{ pageTitle }}</h1>
                 </div>
             </header>
+
+            <div v-if="$route.path === '/master' || $route.path === '/master-hhb'"
+                class="mt-4 p-4 flex items-left space-x-6 text-m font-bold">
+                <router-link to="master" class="hover:text-custom-orange"
+                    :class="{ 'text-custom-orange border-b-2 border-custom-orange': $route.path === '/' || $route.path === '/master' }">
+                    Absolute FitFood
+                </router-link>
+                <router-link to="/master-hhb" class="hover:text-custom-orange"
+                    :class="{ 'text-custom-orange border-b-2 border-custom-orange': $route.path === '/master-hhb' }">
+                    Happy Healthy Box
+                </router-link>
+            </div>
 
             <div v-if="$route.path === '/customers' || $route.path === '/customers-hhb'"
                 class="mt-4 p-4 flex items-left space-x-6 text-m font-bold">
@@ -297,6 +294,18 @@
                 </router-link>
             </div>
 
+            <div v-if="$route.path === '/kitchen-orders' || $route.path === '/kitchen-orders-hhb'"
+                class="mt-4 p-4 flex items-left space-x-6 text-m font-bold">
+                <router-link to="kitchen-orders" class="hover:text-custom-orange"
+                    :class="{ 'text-custom-orange border-b-2 border-custom-orange': $route.path === '/' || $route.path === '/kitchen-orders' }">
+                    Absolute FitFood
+                </router-link>
+                <router-link to="/kitchen-orders-hhb" class="hover:text-custom-orange"
+                    :class="{ 'text-custom-orange border-b-2 border-custom-orange': $route.path === '/kitchen-orders-hhb' }">
+                    Happy Healthy Box
+                </router-link>
+            </div>
+
             <div v-if="$route.path === '/delivery' || $route.path === '/delivery-hhb'"
                 class="mt-4 p-4 flex items-left space-x-6 text-m font-bold">
                 <router-link to="delivery" class="hover:text-custom-orange"
@@ -358,6 +367,10 @@ export default {
                 case "Home":
                     this.pageIcon = "home";
                     break;
+                case "Home HHB":
+                    this.pageIcon = "home";
+                    this.pageTitle = "Home";
+                    break;
                 case "ข้อมูลลูกค้า":
                     this.pageIcon = "groups";
                     break;
@@ -411,6 +424,11 @@ export default {
                 case "Kitchen Orders":
                     this.pageIcon = "stockpot";
                     break;
+                case "Kitchen Orders HHB":
+                    this.pageIcon = "stockpot";
+                    this.pageTitle = "Kitchen Orders";
+
+                    break;
 
                 case "การจัดส่งอาหารประจำวัน":
                     this.pageIcon = "delivery_truck_speed";
@@ -463,6 +481,9 @@ export default {
             this.isLoggedIn = false;
             this.username = '';
             this.$router.push('/login'); // เปลี่ยนเส้นทางไปหน้า Login หลังจาก logout
+        },
+        goToProfile() {
+            this.$router.push('/profile');
         }
     },
     watch: {

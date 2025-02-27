@@ -18,6 +18,7 @@ import User from "@/views/UserPage.vue";
 // import ForgotPassword from '@/views/users/ForgotPasswordPage.vue';
 
 import Home from "../views/HomePage.vue";
+import HomeHHB from "../views/HomeHHBPage.vue";
 
 import SalesRecord from "@/views/sale-records/SalesRecordPage.vue";
 import SalesRecordAddit from "@/views/sale-records/SalesRecrdAdditPage.vue";
@@ -58,7 +59,9 @@ import SetupMenuDiabete from "@/views/setupMenus/setupMenuDiabetePage.vue";
 
 import ResultOrder from "@/views/result-orders/ResultOrderPage.vue";
 import ResultOrderHHB from "@/views/result-orders/ResultOrderHHBPage.vue";
-import KitchenOrder from "@/views/KitchenOrderPage.vue";
+
+import KitchenOrder from "@/views/kitchen-orders/KitchenOrderPage.vue";
+import KitchenOrderHHB from "@/views/kitchen-orders/KitchenOrderHHBPage.vue";
 
 import RemainingPackage from "@/views/remaining/RemainingPackagePage.vue";
 import OrderHistory from "@/views/remaining/OrderHistoryPage.vue";
@@ -150,16 +153,12 @@ const routes = [
     path: "/master",
     name: "Home",
     component: Home,
-    beforeEnter: (to, from, next) => {
-      // ตรวจสอบว่าผู้ใช้ล็อกอินแล้วหรือยัง
-      if (!localStorage.getItem("token")) {
-        // ถ้ายังไม่ได้ล็อกอิน ให้เปลี่ยนเส้นทางไปหน้า login
-        next("/login");
-      } else {
-        // ถ้าล็อกอินแล้วให้ไปที่หน้า order
-        next();
-      }
-    },
+    meta: { title: "หน้าแรก - Absolute FitFood" },
+  },
+  {
+    path: "/master-hhb",
+    name: "Home HHB",
+    component: HomeHHB,
     meta: { title: "หน้าแรก - Absolute FitFood" },
   },
   {
@@ -304,6 +303,12 @@ const routes = [
     path: "/kitchen-orders",
     name: "Kitchen Orders",
     component: KitchenOrder,
+    meta: { title: "Kitchen Orders - Absolute FitFood" },
+  },
+  {
+    path: "/kitchen-orders-hhb",
+    name: "Kitchen Orders HHB",
+    component: KitchenOrderHHB,
     meta: { title: "Kitchen Orders - Absolute FitFood" },
   },
 

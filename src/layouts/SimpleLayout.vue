@@ -170,12 +170,15 @@ export default {
   methods: {
     // ตรวจสอบสถานะการล็อกอินและดึงชื่อผู้ใช้
     checkLoginStatus() {
-      const token = localStorage.getItem('token');
-      if (token) {
-        this.isLoggedIn = true;
-        this.getUserProfile();
-      }
-    },
+    const token = localStorage.getItem('token');
+    if (token) {
+      this.isLoggedIn = true;
+      this.getUserProfile(); // ดึงข้อมูลโปรไฟล์ผู้ใช้
+    } else {
+      this.isLoggedIn = false;
+    }
+  },
+
     async getUserProfile() {
       try {
         const res = await api.getProfile(); // ใช้ฟังก์ชันจาก service
@@ -267,20 +270,18 @@ export default {
 
   },
   mounted() {
+    if (this.isLoggedIn) {
     try {
-      // ตรวจสอบการลงทะเบียนผู้ใช้
       axios.get('http://127.0.0.1:3333/check-user-registration')
         .then(response => {
           this.isUserRegistered = response.data.isRegistered;
         });
 
-      // ตรวจสอบการลงทะเบียน HHB
       axios.get('http://127.0.0.1:3333/check-user-registration-hhb')
         .then(response => {
           this.isUserRegisteredHHB = response.data.isRegistered;
         });
 
-      // ดึงข้อมูลโปรไฟล์ผู้ใช้
       this.getUserProfile();
       this.fetchLookupData();
 
@@ -288,7 +289,10 @@ export default {
     } catch (error) {
       console.error('Error checking user registration', error);
     }
-  },
+  } else {
+    console.log('User not logged in, skipping registration check');
+  }
+},
 
   beforeUnmount() {
     document.removeEventListener("click", this.handleClickOutside);
@@ -297,13 +301,11 @@ export default {
 
 
   watch: {
-    // เพิ่ม watch เพื่ออัพเดตสถานะการล็อกอินเมื่อ token ถูกเปลี่ยน
     '$route'() {
       this.checkLoginStatus();
     }
   },
   computed: {
-    // ดึง userRole จาก Vuex store
     userRole() {
       return this.$store.getters.getUserRole;
     },

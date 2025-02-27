@@ -1,5 +1,39 @@
 <template>
-        <h1 class="mt-4 font-bold text-custom-orange text-2xl mb-4 text-center">Happy Healthy Box</h1>
+  <div v-if="showSuccessToast"
+  class="fixed top-4 right-8 bg-green-500 text-white px-8 py-4 flex items-center space-x-4 rounded-lg shadow-lg transition-opacity duration-300 z-50"
+    :class="{
+      'opacity-100': showSuccessToast,
+      'opacity-0': !showSuccessToast,
+    }">
+    <span class="material-symbols-outlined text-white">check_circle</span>
+    <span>{{ toastSuccessMessage }}</span>
+    <button @click="showSuccessToast = false" class="text-white hover:text-gray-200 focus:outline-none">
+      <span class="material-symbols-outlined text-xl">close</span>
+    </button>
+  </div>
+  
+
+  <div v-if="showFailToast"
+    class="fixed top-4 right-8 bg-red-500 text-white px-8 py-4 flex items-center space-x-4 rounded-lg shadow-lg transition-opacity duration-300 z-50"
+    :class="{ 'opacity-100': showFailToast, 'opacity-0': !showFailToast }">
+    <span class="material-symbols-outlined text-white">cancel</span>
+    <span>{{ toastFailMessage }}</span>
+    <button @click="showFailToast = false" class="text-white hover:text-gray-200 focus:outline-none">
+      <span class="material-symbols-outlined text-xl">close</span>
+    </button>
+  </div>
+
+  <div v-if="showErrorToast"
+    class="fixed top-4 right-8 bg-yellow-500 text-white px-8 py-4 flex items-center space-x-4 rounded-lg shadow-lg transition-opacity duration-300 z-50"
+    :class="{ 'opacity-100': showErrorToast, 'opacity-0': !showErrorToast }">
+    <span class="material-symbols-outlined text-white">cancel</span>
+    <span>{{ toastErrorMessage }}</span>
+    <button @click="showErrorToast = false" class="text-white hover:text-gray-200 focus:outline-none">
+      <span class="material-symbols-outlined text-xl">close</span>
+    </button>
+  </div>
+
+  <h1 class="mt-4 font-bold text-custom-orange text-2xl mb-4 text-center">Happy Healthy Box</h1>
 
   <div class="mt-4 flex">
     <div class="w-1/5">
@@ -28,7 +62,7 @@
 
         </div>
       </div>
-      
+
       <h1 class="font-bold text-xl mb-4">ประเภทเมนู</h1>
 
       <div class="mb-4 space-y-2">
@@ -131,6 +165,13 @@ export default {
       meal_types: [],
       selectedDate: this.getTodayDate(),  // กำหนดค่าเริ่มต้นเป็นวันที่ปัจจุบัน
       selectedMealType: "",
+
+      toastSuccessMessage: "",
+      showSuccessToast: false,
+      toastFailMessage: "",
+      showFailToast: false,
+      showErrorToast: false,
+      toastErrorMessage: "",
     };
   },
   computed: {
@@ -258,39 +299,55 @@ export default {
     },
 
     orderMenu(menu) {
-  if (menu.quantity && menu.quantity > 0) {
-    const mealTypeId = menu.meal_type_id;  // ดึง meal_type_id จาก menu ที่เลือก
+      if (menu.quantity && menu.quantity > 0) {
+        const mealTypeId = menu.meal_type_id;  // ดึง meal_type_id จาก menu ที่เลือก
 
-    // ส่งข้อมูลไปยัง backend
-    axios.post('http://127.0.0.1:3333/order-hhb', {
-      menu_id: menu.menu_id,
-      quantity: menu.quantity,
-      order_date: this.selectedDate,
-      meal_type_id: mealTypeId,  // ส่ง meal_type_id ไปด้วย
-    })
-    .then((response) => {
-      console.log('Order Success:', response.data);
-
-      alert(
-        `สั่งซื้อ ${menu.quantity} ชิ้น ${this.getMenuEnglishName(menu.menu_id)} สำหรับวันที่ ${this.selectedDate}`
-      );
-
-      menu.quantity = 0;  // รีเซ็ตจำนวนหลังจากสั่งซื้อ
-    })
-    .catch((error) => {
-      console.error('Order Error:', error);
-      alert('เกิดข้อผิดพลาดในการสั่งซื้อ');
-    });
-  } else {
-    alert('กรุณาระบุจำนวนที่ต้องการ');
-  }
-},
+        // ส่งข้อมูลไปยัง backend
+        axios.post('http://127.0.0.1:3333/order-hhb', {
+          menu_id: menu.menu_id,
+          quantity: menu.quantity,
+          order_date: this.selectedDate,
+          meal_type_id: mealTypeId,  // ส่ง meal_type_id ไปด้วย
+        })
+          .then(() => {
+            this.showSuccessToastNotification("Order successful!");
+            menu.quantity = 0;  // รีเซ็ตจำนวนหลังจากสั่งซื้อ
+          })
+          .catch(() => {
+            this.showErrorToastNotification("Please register before placing an order!!");
+          });
+      } else {
+        this.showErrorToastNotification("Please specify the quantity!");
+      }
+    },
     adjustQuantity(menu, amount) {
       const newQuantity = menu.quantity + amount;
       if (newQuantity >= 0) {
         menu.quantity = newQuantity;
       }
-    }
+    },
+
+    showSuccessToastNotification(message) {
+      this.toastSuccessMessage = message;
+      this.showSuccessToast = true;
+      setTimeout(() => {
+        this.showSuccessToast = false;
+      }, 3000);
+    },
+    showFailToastNotification(message) {
+      this.toastFailMessage = message;
+      this.showFailToast = true;
+      setTimeout(() => {
+        this.showFailToast = false;
+      }, 3000);
+    },
+    showErrorToastNotification(message) {
+      this.toastErrorMessage = message;
+      this.showErrorToast = true;
+      setTimeout(() => {
+        this.showErrorToast = false;
+      }, 3000);
+    },
   },
   created() {
     this.fetchLookupData();
