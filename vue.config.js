@@ -2,7 +2,8 @@ const { defineConfig } = require('@vue/cli-service')
 module.exports = defineConfig({
   transpileDependencies: true,
   devServer: {
-    disableHostCheck: true, // ยอมรับทุก Host header
-    public: 'https://<your-project-name>.up.railway.app' // หรือโดเมนของคุณถ้ามี
+    disableHostCheck: true,
+    allowedHosts: 'all',  // ยอมรับทุก Host header
+    public: 'https://fitfood-frontend-production.up.railway.app' // หรือโดเมนของคุณถ้ามี
   }
 })
