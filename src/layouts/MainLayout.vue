@@ -480,7 +480,8 @@ export default {
             localStorage.removeItem('token');
             this.isLoggedIn = false;
             this.username = '';
-            this.$router.push('/login'); // เปลี่ยนเส้นทางไปหน้า Login หลังจาก logout
+            this.$router.push('/login');
+            // window.location.reload('/login');
         },
         goToProfile() {
             this.$router.push('/profile');

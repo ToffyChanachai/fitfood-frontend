@@ -243,6 +243,7 @@ export default {
       this.isLoggedIn = false;
       this.username = '';
       this.$router.push('/');
+      window.location.reload();
     },
 
     handleClickOutside(event) {
@@ -304,6 +305,7 @@ export default {
     '$route'() {
       this.checkLoginStatus();
     }
+    
   },
   computed: {
     userRole() {
