@@ -677,7 +677,7 @@ export default {
 
         async fetchMenus() {
             try {
-                const response = await axios.get('${API_URL}/menus');
+                const response = await axios.get(`${API_URL}/menus`);
                 this.menus = response.data;
                 this.menus.sort((a, b) => a.id - b.id);
             } catch (error) {
@@ -910,7 +910,7 @@ export default {
                     formData.append("image", this.newMenu.imageFile);
                 }
 
-                const response = await axios.post('${API_URL}/menus', formData, {
+                const response = await axios.post(`${API_URL}/menus`, formData, {
                     headers: {
                         "Content-Type": "multipart/form-data",
                     },
@@ -930,7 +930,7 @@ export default {
 
         async fetchMealTypes() {
             try {
-                const response = await axios.get('${API_URL}/meal-types');
+                const response = await axios.get(`${API_URL}/meal-types`);
                 this.meal_types = response.data;
             } catch (error) {
                 console.error("Error fetching promotion types:", error);

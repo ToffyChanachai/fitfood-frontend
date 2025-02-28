@@ -232,8 +232,8 @@ export default {
     async fetchLookupData() {
       try {
         const [menuRes, mealTypeRes] = await Promise.all([
-          axios.get("${API_URL}/menus"),
-          axios.get("${API_URL}/meal-types"),
+          axios.get(`${API_URL}/menus`),
+          axios.get(`${API_URL}/meal-type`),
         ]);
         this.menus = menuRes.data;
         this.meal_types = mealTypeRes.data;
@@ -303,7 +303,7 @@ export default {
   if (menu.quantity && menu.quantity > 0) {
     const mealTypeId = menu.meal_type_id;  // ดึง meal_type_id จาก menu ที่เลือก
 
-    axios.post('${API_URL}/order', {
+    axios.post(`${API_URL}/order`, {
       menu_id: menu.menu_id,
       quantity: menu.quantity,
       order_date: this.selectedDate,
