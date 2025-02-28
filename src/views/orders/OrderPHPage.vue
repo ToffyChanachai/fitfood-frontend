@@ -209,7 +209,7 @@ export default {
     },
     async fetchMenusForSelectedDate() {
       try {
-        const response = await axios.get(`http://127.0.0.1:3333/setup-menu-ph/menus-by-day/${this.selectedDate}`);
+        const response = await axios.get(`https://fitfood-backend.onrender.com/setup-menu-ph/menus-by-day/${this.selectedDate}`);
         console.log('API Response:', response.data);
 
         // ตรวจสอบว่า menus มีข้อมูลหรือไม่
