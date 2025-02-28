@@ -354,6 +354,7 @@
 import axios from 'axios';
 import Multiselect from "vue-multiselect";
 import { mapActions, mapGetters } from "vuex";
+import { API_URL } from "@/services/api";
 
 
 export default {
@@ -459,7 +460,7 @@ export default {
         ...mapActions(["fetchMenuTypes", "fetchMealTypes"]),
         async fetchMealTypes() {
             try {
-                const response = await axios.get('http://127.0.0.1:3333/meal-types');
+                const response = await axios.get('${API_URL}/meal-types');
                 this.meal_types = response.data;
                 this.meal_types.sort((a, b) => a.id - b.id);
             } catch (error) {
@@ -555,7 +556,7 @@ export default {
                     return;
                 }
 
-                const response = await axios.put(`http://127.0.0.1:3333/meal-types/${this.selectedMealType.id}`, {
+                const response = await axios.put(`${API_URL}/meal-types/${this.selectedMealType.id}`, {
                     name: this.selectedMealType.name,
                     menu_type_id: this.selectedMealType.menu_type_id.id,  // ส่งแค่ค่า id
                 });
@@ -585,7 +586,7 @@ export default {
         },
         async deleteConfirmed() {
             try {
-                await axios.delete(`http://127.0.0.1:3333/meal-types/${this.itemToDelete}`);
+                await axios.delete(`${API_URL}/meal-types/${this.itemToDelete}`);
                 this.meal_types = this.meal_types.filter(
                     (item) => item.id !== this.itemToDelete
                 );
@@ -617,7 +618,7 @@ export default {
                 return;
             }
             try {
-                const response = await axios.post('http://127.0.0.1:3333/meal-types', {
+                const response = await axios.post('${API_URL}/meal-types', {
                     name: this.newMealType.name,
                     menu_type_id: this.newMealType.menu_type_id.id,
                 });
@@ -632,7 +633,7 @@ export default {
 
         async fetchMenuTypes() {
             try {
-                const response = await axios.get('http://127.0.0.1:3333/menu-types');
+                const response = await axios.get('${API_URL}/menu-types');
                 this.menu_types = response.data;
             } catch (error) {
                 // console.error("Error fetching promotion types:", error);

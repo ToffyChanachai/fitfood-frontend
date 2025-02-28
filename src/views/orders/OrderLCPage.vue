@@ -96,7 +96,7 @@
           class="p-4 border rounded-lg shadow-md bg-white flex flex-col h-full mb-6">
           <!-- รูปภาพและข้อมูลเมนู -->
           <div class="mb-4">
-            <img v-if="getMenuImage(menu.menu_id)" :src="`http://127.0.0.1:3333/images/${getMenuImage(menu.menu_id)}`"
+            <img v-if="getMenuImage(menu.menu_id)" :src="`${API_URL}/images/${getMenuImage(menu.menu_id)}`"
               alt="Menu Image" class="min-h-48 max-h-48 w-full object-cover rounded">
             <div v-else class="bg-gray-100 w-full h-48 rounded-md flex items-center justify-center">
               <span class="material-symbols-outlined text-4xl text-gray-500">
@@ -156,6 +156,8 @@
 
 <script>
 import axios from 'axios';
+import { API_URL } from "@/services/api";
+
 
 export default {
   data() {
@@ -209,7 +211,7 @@ export default {
     },
     async fetchMenusForSelectedDate() {
       try {
-        const response = await axios.get(`http://127.0.0.1:3333/setup-menu-lc/menus-by-day/${this.selectedDate}`);
+        const response = await axios.get(`${API_URL}/setup-menu-lc/menus-by-day/${this.selectedDate}`);
         console.log('API Response:', response.data);
 
         // ตรวจสอบว่า menus มีข้อมูลหรือไม่
@@ -231,8 +233,8 @@ export default {
     async fetchLookupData() {
       try {
         const [menuRes, mealTypeRes] = await Promise.all([
-          axios.get("http://127.0.0.1:3333/menus"),
-          axios.get("http://127.0.0.1:3333/meal-types"),
+          axios.get("${API_URL}/menus"),
+          axios.get("${API_URL}/meal-types"),
         ]);
         this.menus = menuRes.data;
         this.meal_types = mealTypeRes.data;
@@ -302,7 +304,7 @@ export default {
       if (menu.quantity && menu.quantity > 0) {
         const mealTypeId = menu.meal_type_id;  // ดึง meal_type_id จาก menu ที่เลือก
 
-        axios.post('http://127.0.0.1:3333/order', {
+        axios.post('${API_URL}/order', {
           menu_id: menu.menu_id,
           quantity: menu.quantity,
           order_date: this.selectedDate,

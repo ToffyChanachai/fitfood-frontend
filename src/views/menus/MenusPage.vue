@@ -70,7 +70,7 @@
                                 <div class="flex items-center space-x-4 w-full">
                                     <!-- รูปภาพตัวอย่าง -->
                                     <div v-if="previewImage || newMenu.image" class="flex-shrink-0">
-                                        <img :src="previewImage || `http://127.0.0.1:3333/images/${newMenu.image}`"
+                                        <img :src="previewImage || `${API_URL}/images/${newMenu.image}`"
                                             alt="Menu Image" class="max-w-48 max-h-48 object-contain rounded border">
                                     </div>
 
@@ -294,7 +294,7 @@
                     class=" bg-white relative border-b border-b-gray-200">
                     <td class="px-4 py-2 align-top pb-5">{{ (currentPage - 1) * itemsPerPage + index + 1 }}</td>
                     <!-- <td class="px-4 py-2 align-top text-center">
-                        <img v-if="menu.image" :src="`http://127.0.0.1:3333/images/${menu.image}`" alt="Menu Image"
+                        <img v-if="menu.image" :src="`${API_URL}/images/${menu.image}`" alt="Menu Image"
                             class="w-16 h-16 object-cover rounded">
                         <span v-else>ไม่มีรูปภาพ</span>
                     </td> -->
@@ -366,7 +366,7 @@
                             <label for="editImage" class="block text-gray-700 font-bold">เลือกรูปภาพ</label>
                             <div v-if="selectedMenu.image || previewImage" class="mb-2 flex items-center space-x-4">
                                 <!-- ใช้ object-contain เพื่อให้รูปภาพพอดีกับขนาด -->
-                                <img :src="previewImage || `http://127.0.0.1:3333/images/${selectedMenu.image}`"
+                                <img :src="previewImage || `${API_URL}/images/${selectedMenu.image}`"
                                     alt="Menu Image" class="max-w-48 max-h-48 object-contain rounded border">
 
                                 <input id="editImage" type="file" @change="onFileChange"
@@ -542,7 +542,7 @@ import axios from 'axios';
 import Multiselect from "vue-multiselect";
 import { mapActions, mapGetters } from "vuex";
 import "vue-multiselect/dist/vue-multiselect.min.css";
-
+import { API_URL } from "@/services/api";
 
 export default {
     name: "menuPage",
@@ -677,7 +677,7 @@ export default {
 
         async fetchMenus() {
             try {
-                const response = await axios.get('http://127.0.0.1:3333/menus');
+                const response = await axios.get('${API_URL}/menus');
                 this.menus = response.data;
                 this.menus.sort((a, b) => a.id - b.id);
             } catch (error) {
@@ -816,7 +816,7 @@ export default {
                     formData.append("image", this.selectedMenu.imageFile);
                 }
 
-                const response = await axios.put(`http://127.0.0.1:3333/menus/${this.selectedMenu.id}`, formData, {
+                const response = await axios.put(`${API_URL}/menus/${this.selectedMenu.id}`, formData, {
                     headers: {
                         "Content-Type": "multipart/form-data",
                     },
@@ -853,7 +853,7 @@ export default {
         },
         async deleteConfirmed() {
             try {
-                await axios.delete(`http://127.0.0.1:3333/menus/${this.itemToDelete}`);
+                await axios.delete(`${API_URL}/menus/${this.itemToDelete}`);
                 this.menus = this.menus.filter(
                     (item) => item.id !== this.itemToDelete
                 );
@@ -910,7 +910,7 @@ export default {
                     formData.append("image", this.newMenu.imageFile);
                 }
 
-                const response = await axios.post('http://127.0.0.1:3333/menus', formData, {
+                const response = await axios.post('${API_URL}/menus', formData, {
                     headers: {
                         "Content-Type": "multipart/form-data",
                     },
@@ -930,7 +930,7 @@ export default {
 
         async fetchMealTypes() {
             try {
-                const response = await axios.get('http://127.0.0.1:3333/meal-types');
+                const response = await axios.get('${API_URL}/meal-types');
                 this.meal_types = response.data;
             } catch (error) {
                 console.error("Error fetching promotion types:", error);

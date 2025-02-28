@@ -300,6 +300,7 @@
 
 <script>
 import axios from 'axios';
+import { API_URL } from "@/services/api";
 
 export default {
     name: "PromotionTypePage",
@@ -387,7 +388,7 @@ export default {
     methods: {
         async fetchMenuTypes() {
             try {
-                const response = await axios.get('http://127.0.0.1:3333/menu-types');
+                const response = await axios.get('${API_URL}/menu-types');
                 this.menu_types = response.data;
                 this.menu_types.sort((a, b) => a.id - b.id);
             } catch (error) {
@@ -448,7 +449,7 @@ export default {
         },
         async saveChanges() {
             try {
-                await axios.put(`http://127.0.0.1:3333/menu-types/${this.selectedPromotionType.id}`, {
+                await axios.put(`${API_URL}/menu-types/${this.selectedPromotionType.id}`, {
                     name: this.selectedPromotionType.name,
                 });
                 const index = this.menu_types.findIndex(pt => pt.id === this.selectedPromotionType.id);
@@ -478,7 +479,7 @@ export default {
         },
         async deleteConfirmed() {
             try {
-                await axios.delete(`http://127.0.0.1:3333/menu-types/${this.itemToDelete}`);
+                await axios.delete(`${API_URL}/menu-types/${this.itemToDelete}`);
                 this.menu_types = this.menu_types.filter(
                     (item) => item.id !== this.itemToDelete
                 );
@@ -504,7 +505,7 @@ export default {
                 return;
             }
             try {
-                const response = await axios.post('http://127.0.0.1:3333/menu-types', this.newMenuType);
+                const response = await axios.post('${API_URL}/menu-types', this.newMenuType);
                 this.menu_types.push(response.data);
                 await this.fetchMenuTypes();
                 this.closeAddModal();
