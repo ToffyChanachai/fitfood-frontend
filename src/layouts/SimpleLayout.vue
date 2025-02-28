@@ -195,8 +195,8 @@ export default {
           customersRes,
           customersHHBRes,
         ] = await Promise.all([
-          axios.get("http://127.0.0.1:3333/customers"),
-          axios.get("http://127.0.0.1:3333/customers-hhb"),
+          axios.get(`${API_URL}/customers`),
+          axios.get(`${API_URL}/customers-hhb`),
         ]);
 
         this.customers = customersRes.data;
@@ -273,12 +273,12 @@ export default {
   mounted() {
     if (this.isLoggedIn) {
     try {
-      axios.get('http://127.0.0.1:3333/check-user-registration')
+      axios.get(`${API_URL}/check-user-registration`)
         .then(response => {
           this.isUserRegistered = response.data.isRegistered;
         });
 
-      axios.get('http://127.0.0.1:3333/check-user-registration-hhb')
+      axios.get(`${API_URL}/check-user-registration-hhb`)
         .then(response => {
           this.isUserRegisteredHHB = response.data.isRegistered;
         });
