@@ -63,7 +63,7 @@
         </div>
       </div>
       
-      <h1 class="font-bold text-xl mb-4">ฟิลเตอร์เมนู</h1>
+      <h1 class="font-bold text-xl mb-4">ประเภทเมนู</h1>
 
       <div class="mb-4 space-y-2">
         <button @click="selectedMealType = ''" :class="[
