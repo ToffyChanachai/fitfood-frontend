@@ -149,6 +149,7 @@
 <script>
 import api from '@/services/auth';
 import axios from 'axios';
+import { API_URL } from "@/services/api";
 
 export default {
   data() {
