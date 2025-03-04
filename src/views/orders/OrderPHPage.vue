@@ -1,151 +1,158 @@
 <template>
-  <div v-if="showSuccessToast"
-    class="fixed top-4 right-8 bg-green-500 text-white px-8 py-4 flex items-center space-x-4 rounded-lg shadow-lg transition-opacity duration-300 z-50"
-    :class="{
-      'opacity-100': showSuccessToast,
-      'opacity-0': !showSuccessToast,
-    }">
-    <span class="material-symbols-outlined text-white">check_circle</span>
-    <span>{{ toastSuccessMessage }}</span>
-    <button @click="showSuccessToast = false" class="text-white hover:text-gray-200 focus:outline-none">
-      <span class="material-symbols-outlined text-xl">close</span>
-    </button>
+  <div v-if="isLoading" class="flex justify-center items-center h-screen">
+    <div class="spinner-border animate-spin inline-block w-12 h-12 border-4 border-t-4 border-gray-200 rounded-full">
+    </div>
   </div>
 
+  <div v-else>
+    <div v-if="showSuccessToast"
+      class="fixed top-4 right-8 bg-green-500 text-white px-8 py-4 flex items-center space-x-4 rounded-lg shadow-lg transition-opacity duration-300 z-50"
+      :class="{
+        'opacity-100': showSuccessToast,
+        'opacity-0': !showSuccessToast,
+      }">
+      <span class="material-symbols-outlined text-white">check_circle</span>
+      <span>{{ toastSuccessMessage }}</span>
+      <button @click="showSuccessToast = false" class="text-white hover:text-gray-200 focus:outline-none">
+        <span class="material-symbols-outlined text-xl">close</span>
+      </button>
+    </div>
 
-  <div v-if="showFailToast"
-    class="fixed top-4 right-8 bg-red-500 text-white px-8 py-4 flex items-center space-x-4 rounded-lg shadow-lg transition-opacity duration-300 z-50"
-    :class="{ 'opacity-100': showFailToast, 'opacity-0': !showFailToast }">
-    <span class="material-symbols-outlined text-white">cancel</span>
-    <span>{{ toastFailMessage }}</span>
-    <button @click="showFailToast = false" class="text-white hover:text-gray-200 focus:outline-none">
-      <span class="material-symbols-outlined text-xl">close</span>
-    </button>
-  </div>
+    <div v-if="showFailToast"
+      class="fixed top-4 right-8 bg-red-500 text-white px-8 py-4 flex items-center space-x-4 rounded-lg shadow-lg transition-opacity duration-300 z-50"
+      :class="{ 'opacity-100': showFailToast, 'opacity-0': !showFailToast }">
+      <span class="material-symbols-outlined text-white">cancel</span>
+      <span>{{ toastFailMessage }}</span>
+      <button @click="showFailToast = false" class="text-white hover:text-gray-200 focus:outline-none">
+        <span class="material-symbols-outlined text-xl">close</span>
+      </button>
+    </div>
 
-  <div v-if="showErrorToast"
-    class="fixed top-4 right-8 bg-yellow-500 text-white px-8 py-4 flex items-center space-x-4 rounded-lg shadow-lg transition-opacity duration-300 z-50"
-    :class="{ 'opacity-100': showErrorToast, 'opacity-0': !showErrorToast }">
-    <span class="material-symbols-outlined text-white">cancel</span>
-    <span>{{ toastErrorMessage }}</span>
-    <button @click="showErrorToast = false" class="text-white hover:text-gray-200 focus:outline-none">
-      <span class="material-symbols-outlined text-xl">close</span>
-    </button>
-  </div>
+    <div v-if="showErrorToast"
+      class="fixed top-4 right-8 bg-yellow-500 text-white px-8 py-4 flex items-center space-x-4 rounded-lg shadow-lg transition-opacity duration-300 z-50"
+      :class="{ 'opacity-100': showErrorToast, 'opacity-0': !showErrorToast }">
+      <span class="material-symbols-outlined text-white">cancel</span>
+      <span>{{ toastErrorMessage }}</span>
+      <button @click="showErrorToast = false" class="text-white hover:text-gray-200 focus:outline-none">
+        <span class="material-symbols-outlined text-xl">close</span>
+      </button>
+    </div>
 
-  <h1 class="mt-4 font-bold text-custom-orange text-2xl mb-4 text-center">Premium Health</h1>
+    <h1 class="mt-4 font-bold text-custom-orange text-2xl mb-4 text-center">Premium Health</h1>
 
-  <div class="mt-4 flex">
-    <div class="w-1/5">
-      <div class="mb-4">
-        <div class="flex items-center space-x-3 py-2">
+    <div class="mt-4 flex">
+      <div class="w-1/5">
+        <div class="mb-4">
+          <div class="flex items-center space-x-3 py-2">
 
-          <button @click="changeDate(-1)" class="flex items-center">
-            <span class="material-symbols-outlined text-3xl text-custom-orange hover:text-custom-orange-hover">
-              chevron_backward
-            </span>
+            <button @click="changeDate(-1)" class="flex items-center">
+              <span class="material-symbols-outlined text-3xl text-custom-orange hover:text-custom-orange-hover">
+                chevron_backward
+              </span>
+            </button>
+
+            <button @click="setToday"
+              class="flex items-center text-custom-orange hover:underline hover:text-custom-orange">
+              <span class="mr-2 font-bold">วันนี้</span>
+            </button>
+
+            <button @click="changeDate(1)" class="flex items-center">
+              <span class="material-symbols-outlined text-3xl text-custom-orange hover:text-custom-orange-hover">
+                chevron_forward
+              </span>
+            </button>
+
+            <input type="date" id="menuDate" v-model="selectedDate" class="p-2 border rounded-md w-auto"
+              @change="fetchMenusForSelectedDate" />
+
+          </div>
+        </div>
+
+        <h1 class="font-bold text-xl mb-4">ประเภทเมนู</h1>
+
+        <div class="mb-4 space-y-2">
+          <button @click="selectedMealType = ''" :class="[
+            'w-full text-left py-2 hover:text-custom-orange',
+            selectedMealType === '' ? 'text-custom-orange font-bold' : 'text-gray-600'
+          ]">
+            ทุกประเภท
           </button>
 
-          <button @click="setToday"
-            class="flex items-center text-custom-orange hover:underline hover:text-custom-orange">
-            <span class="mr-2 font-bold">วันนี้</span>
+          <button v-for="mealType in filteredMealTypes" :key="mealType.id" @click="selectedMealType = mealType.id"
+            :class="[
+              'w-full py-2 text-left hover:text-custom-orange',
+              selectedMealType === mealType.id ? 'text-custom-orange font-bold' : 'text-gray-600'
+            ]">
+            {{ mealType.name }}
           </button>
-
-          <button @click="changeDate(1)" class="flex items-center">
-            <span class="material-symbols-outlined text-3xl text-custom-orange hover:text-custom-orange-hover">
-              chevron_forward
-            </span>
-          </button>
-
-          <input type="date" id="menuDate" v-model="selectedDate" class="p-2 border rounded-md w-auto"
-            @change="fetchMenusForSelectedDate" />
-
         </div>
       </div>
 
-      <h1 class="font-bold text-xl mb-4">ประเภทเมนู</h1>
+      <!-- เมนูส่วนขวา -->
+      <div class="w-4/5 p-4">
+        <h1 class="font-bold text-xl mb-4">รายการอาหารประจำวันที่ {{ formatDate(selectedDate) }} ({{
+          formatDateEng(selectedDate) }})</h1>
 
-      <div class="mb-4 space-y-2">
-        <button @click="selectedMealType = ''" :class="[
-          'w-full text-left py-2 hover:text-custom-orange',
-          selectedMealType === '' ? 'text-custom-orange font-bold' : 'text-gray-600'
-        ]">
-          ทุกประเภท
-        </button>
+        <div v-if="todayMenus.length === 0" class="text-center text-gray-600">
+          <strong class="text-2xl">ไม่มีเมนู</strong>
+        </div>
 
-        <button v-for="mealType in filteredMealTypes" :key="mealType.id" @click="selectedMealType = mealType.id" :class="[
-          'w-full py-2 text-left hover:text-custom-orange',
-          selectedMealType === mealType.id ? 'text-custom-orange font-bold' : 'text-gray-600'
-        ]">
-          {{ mealType.name }}
-        </button>
-      </div>
-    </div>
-
-    <!-- เมนูส่วนขวา -->
-    <div class="w-4/5 p-4">
-      <h1 class="font-bold text-xl mb-4">รายการอาหารประจำวันที่ {{ formatDate(selectedDate) }} ({{
-        formatDateEng(selectedDate) }})</h1>
-
-      <div v-if="todayMenus.length === 0" class="text-center text-gray-600">
-        <strong class="text-2xl">ไม่มีเมนู</strong>
-      </div>
-
-      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-3">
-        <div v-for="menu in filteredMenus" :key="menu.id"
-          class="p-4 border rounded-lg shadow-md bg-white flex flex-col h-full mb-6">
-          <!-- รูปภาพและข้อมูลเมนู -->
-          <div class="mb-4">
-            <img v-if="getMenuImage(menu.menu_id)" :src="`${API_URL}/images/${getMenuImage(menu.menu_id)}`"
-              alt="Menu Image" class="min-h-48 max-h-48 w-full object-cover rounded" @error="handleImageError">
-            <div v-else class="bg-gray-100 w-full h-48 rounded-md flex items-center justify-center">
-              <span class="material-symbols-outlined text-4xl text-gray-500">
-                hide_image
-              </span>
-            </div>
-
-          </div>
-
-          <span class="text-lg font-semibold block">{{ getMenuEnglishName(menu.menu_id) }}</span>
-          <span class="block">{{ getMenuThaiName(menu.menu_id) }}</span>
-          <span class="block text-custom-orange font-bold">{{ getMealTypeName(getMealTypeID(menu.menu_id)) }}</span>
-
-          <div class="text-gray-700 text-sm">
-            <span class="mr-2">{{ getMenuCal(menu.menu_id) }} Cal</span>
-            <span class="mr-2">|<strong> Protein: </strong> {{ getMenuProtein(menu.menu_id) }} g</span>
-            <span class="mr-2">|<strong> Carbohydrate: </strong>{{ getMenuCarb(menu.menu_id) }} g</span>
-            <span class="mr-2">|<strong> Fat: </strong>{{ getMenuFat(menu.menu_id) }} g</span>
-          </div>
-
-          <!-- ปุ่มเพิ่ม/ลดจำนวน และปุ่มสั่งซื้อ (บังคับอยู่ล่างสุด) -->
-          <div class="mt-auto flex w-full space-x-2">
-            <!-- ส่วนปรับจำนวน (ครึ่งหนึ่งของพื้นที่) -->
-            <div class="flex items-center justify-center w-1/2 space-x-2 p-2">
-              <!-- ปุ่มลดจำนวน -->
-              <button @click="adjustQuantity(menu, -1)"
-                class="px-2 py-1 w-8 rounded-md text-white bg-custom-orange hover:bg-custom-orange-hover">-</button>
-
-              <!-- ช่องใส่จำนวน -->
-              <input type="number" v-model.number="menu.quantity" min="0" placeholder="จำนวน"
-                class="p-2 border rounded-md w-16 text-center input-no-spinner" />
-
-              <!-- ปุ่มเพิ่มจำนวน -->
-              <button @click="adjustQuantity(menu, 1)"
-                class="px-2 py-1 w-8 rounded-md text-white bg-custom-orange hover:bg-custom-orange-hover">+</button>
-            </div>
-
-            <!-- ปุ่มสั่งซื้อ (ครึ่งหนึ่งของพื้นที่) -->
-            <div class="w-1/2 p-2 flex justify-end">
-              <button @click="orderMenu(menu)"
-                class="px-4 py-2 w-full bg-custom-orange text-white rounded-md hover:bg-custom-orange-hover transition flex items-center space-x-2 justify-center">
-                <span class="material-symbols-outlined">
-                  shopping_cart
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-3">
+          <div v-for="menu in filteredMenus" :key="menu.id"
+            class="p-4 border rounded-lg shadow-md bg-white flex flex-col h-full mb-6">
+            <!-- รูปภาพและข้อมูลเมนู -->
+            <div class="mb-4">
+              <img v-if="getMenuImage(menu.menu_id)" :src="`${API_URL}/images/${getMenuImage(menu.menu_id)}`"
+                alt="Menu Image" class="min-h-48 max-h-48 w-full object-cover rounded" @error="handleImageError">
+              <div v-else class="bg-gray-100 w-full h-48 rounded-md flex items-center justify-center">
+                <span class="material-symbols-outlined text-4xl text-gray-500">
+                  hide_image
                 </span>
-                <span>สั่งซื้อ</span>
-              </button>
-            </div>
-          </div>
+              </div>
 
+            </div>
+
+            <span class="text-lg font-semibold block">{{ getMenuEnglishName(menu.menu_id) }}</span>
+            <span class="block">{{ getMenuThaiName(menu.menu_id) }}</span>
+            <span class="block text-custom-orange font-bold">{{ getMealTypeName(getMealTypeID(menu.menu_id)) }}</span>
+
+            <div class="text-gray-700 text-sm">
+              <span class="mr-2">{{ getMenuCal(menu.menu_id) }} Cal</span>
+              <span class="mr-2">|<strong> Protein: </strong> {{ getMenuProtein(menu.menu_id) }} g</span>
+              <span class="mr-2">|<strong> Carbohydrate: </strong>{{ getMenuCarb(menu.menu_id) }} g</span>
+              <span class="mr-2">|<strong> Fat: </strong>{{ getMenuFat(menu.menu_id) }} g</span>
+            </div>
+
+            <!-- ปุ่มเพิ่ม/ลดจำนวน และปุ่มสั่งซื้อ (บังคับอยู่ล่างสุด) -->
+            <div class="mt-auto flex w-full space-x-2">
+              <!-- ส่วนปรับจำนวน (ครึ่งหนึ่งของพื้นที่) -->
+              <div class="flex items-center justify-center w-1/2 space-x-2 p-2">
+                <!-- ปุ่มลดจำนวน -->
+                <button @click="adjustQuantity(menu, -1)"
+                  class="px-2 py-1 w-8 rounded-md text-white bg-custom-orange hover:bg-custom-orange-hover">-</button>
+
+                <!-- ช่องใส่จำนวน -->
+                <input type="number" v-model.number="menu.quantity" min="0" placeholder="จำนวน"
+                  class="p-2 border rounded-md w-16 text-center input-no-spinner" />
+
+                <!-- ปุ่มเพิ่มจำนวน -->
+                <button @click="adjustQuantity(menu, 1)"
+                  class="px-2 py-1 w-8 rounded-md text-white bg-custom-orange hover:bg-custom-orange-hover">+</button>
+              </div>
+
+              <!-- ปุ่มสั่งซื้อ (ครึ่งหนึ่งของพื้นที่) -->
+              <div class="w-1/2 p-2 flex justify-end">
+                <button @click="orderMenu(menu)"
+                  class="px-4 py-2 w-full bg-custom-orange text-white rounded-md hover:bg-custom-orange-hover transition flex items-center space-x-2 justify-center">
+                  <span class="material-symbols-outlined">
+                    shopping_cart
+                  </span>
+                  <span>สั่งซื้อ</span>
+                </button>
+              </div>
+            </div>
+
+          </div>
         </div>
       </div>
     </div>
@@ -173,6 +180,8 @@ export default {
       showFailToast: false,
       showErrorToast: false,
       toastErrorMessage: "",
+
+      isLoading: false,
     };
   },
   computed: {
@@ -213,6 +222,7 @@ export default {
       this.fetchMenusForSelectedDate();
     },
     async fetchMenusForSelectedDate() {
+      this.isLoading = true;
       try {
         const response = await axios.get(`${API_URL}/setup-menu-ph/menus-by-day/${this.selectedDate}`);
         if (response.data.menus && response.data.menus.length > 0) {
@@ -228,6 +238,7 @@ export default {
       }
     },
     async fetchLookupData() {
+      this.isLoading = true;
       try {
         const [menuRes, mealTypeRes] = await Promise.all([
           axios.get(`${API_URL}/menus`),
@@ -273,10 +284,10 @@ export default {
       return menu ? menu.carb : null;
     },
     getMenuImage(menuId) {
-  const menu = this.menus.find((m) => m.id === menuId);
-  console.log("Image URL:", `${API_URL}/images/${menu.image}`);
-  return menu ? menu.image : null;
-},
+      const menu = this.menus.find((m) => m.id === menuId);
+      console.log("Image URL:", `${API_URL}/images/${menu.image}`);
+      return menu ? menu.image : null;
+    },
 
 
     formatDate(date) {
