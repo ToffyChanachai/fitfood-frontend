@@ -236,6 +236,9 @@ export default {
       } catch (error) {
         this.todayMenus = []; // กรณีเกิดข้อผิดพลาด ให้แสดงค่าว่าง
       }
+      finally {
+      this.isLoading = false; // หมดการโหลด
+    }
     },
     async fetchLookupData() {
       this.isLoading = true;
@@ -249,6 +252,9 @@ export default {
       } catch (error) {
         console.error("Error fetching lookup data:", error);
       }
+      finally {
+      this.isLoading = false; // หมดการโหลด
+    }
     },
 
     getMenuEnglishName(menuId) {
