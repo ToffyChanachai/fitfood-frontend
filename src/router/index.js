@@ -461,8 +461,6 @@ router.beforeEach((to, from, next) => {
   const role = store.getters.getUserRole; // ดึงค่า userRole จาก Vuex
 
   console.log("Current user role:", role); // ตรวจสอบ role ที่ได้
-
-  // ถ้า route มี meta.requiresAdmin และ userRole ไม่ใช่ admin
   if (to.meta.requiresAdmin && role !== "admin") {
     return next({ name: "login" }); // เปลี่ยนไปหน้า login หรือหน้าอื่นๆ
   }
