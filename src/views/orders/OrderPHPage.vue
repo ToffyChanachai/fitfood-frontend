@@ -353,9 +353,9 @@ export default {
     this.fetchMenusForSelectedDate();
   },
   mounted() {
+    console.log("Component Mounted - Fetching Lookup Data");
     this.fetchLookupData();
-    this.fetchMenusForSelectedDate();
-    console.log(this.getMenuEnglishName(1));
+    // this.fetchMenusForSelectedDate();
   },
   watch: {
     selectedDate() {
