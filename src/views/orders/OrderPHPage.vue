@@ -273,10 +273,10 @@ export default {
       return menu ? menu.carb : null;
     },
     getMenuImage(menuId) {
-      const menu = this.menus.find((m) => m.id === menuId);
-      console.log("Image URL:", `${API_URL}/images/${menu}`);
-      return menu ? menu.image : null;
-    },
+  const menu = this.menus.find((m) => m.id === menuId);
+  console.log("Image URL:", `${API_URL}/images/${menu.image}`);
+  return menu ? menu.image : null;
+},
 
 
     formatDate(date) {
