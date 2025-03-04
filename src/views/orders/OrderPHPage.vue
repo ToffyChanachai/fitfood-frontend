@@ -234,7 +234,8 @@ export default {
         ]);
         this.menus = menuRes.data;
         this.meal_types = mealTypeRes.data;
-      } catch (error) {
+        console.log("Menu Response:", menuRes.data);
+              } catch (error) {
         console.error("Error fetching lookup data:", error);
       }
     },
