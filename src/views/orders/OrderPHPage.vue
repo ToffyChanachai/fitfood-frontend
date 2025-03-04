@@ -1,6 +1,6 @@
 <template>
   <div v-if="showSuccessToast"
-  class="fixed top-4 right-8 bg-green-500 text-white px-8 py-4 flex items-center space-x-4 rounded-lg shadow-lg transition-opacity duration-300 z-50"
+    class="fixed top-4 right-8 bg-green-500 text-white px-8 py-4 flex items-center space-x-4 rounded-lg shadow-lg transition-opacity duration-300 z-50"
     :class="{
       'opacity-100': showSuccessToast,
       'opacity-0': !showSuccessToast,
@@ -11,7 +11,7 @@
       <span class="material-symbols-outlined text-xl">close</span>
     </button>
   </div>
-  
+
 
   <div v-if="showFailToast"
     class="fixed top-4 right-8 bg-red-500 text-white px-8 py-4 flex items-center space-x-4 rounded-lg shadow-lg transition-opacity duration-300 z-50"
@@ -33,7 +33,7 @@
     </button>
   </div>
 
-    <h1 class="mt-4 font-bold text-custom-orange text-2xl mb-4 text-center">Premium Health</h1>
+  <h1 class="mt-4 font-bold text-custom-orange text-2xl mb-4 text-center">Premium Health</h1>
 
   <div class="mt-4 flex">
     <div class="w-1/5">
@@ -62,7 +62,7 @@
 
         </div>
       </div>
-      
+
       <h1 class="font-bold text-xl mb-4">ประเภทเมนู</h1>
 
       <div class="mb-4 space-y-2">
@@ -192,9 +192,8 @@ export default {
   },
   methods: {
     handleImageError(event) {
-    console.error("Image load error", event);
-    // อาจจะเปลี่ยนเป็นภาพ placeholder หรือแสดงข้อความ error
-  },
+      console.error("Image load error", event);
+    },
 
     getTodayDate() {
       const today = new Date();
@@ -216,14 +215,11 @@ export default {
     async fetchMenusForSelectedDate() {
       try {
         const response = await axios.get(`${API_URL}/setup-menu-ph/menus-by-day/${this.selectedDate}`);
-        // console.log('API Response:', response.data);
-
         if (response.data.menus && response.data.menus.length > 0) {
           this.todayMenus = response.data.menus;
           this.todayMenus.forEach(menu => {
             menu.quantity = 0;
           });
-          console.log("Date", this.selectedDate);
         } else {
           this.todayMenus = [];
         }
@@ -239,9 +235,7 @@ export default {
         ]);
         this.menus = menuRes.data;
         this.meal_types = mealTypeRes.data;
-        console.log("Menu Response:", menuRes.data);
-        console.log("Menus Loaded:", this.menus);
-              } catch (error) {
+      } catch (error) {
         console.error("Error fetching lookup data:", error);
       }
     },
@@ -306,27 +300,27 @@ export default {
     },
 
     orderMenu(menu) {
-  if (menu.quantity && menu.quantity > 0) {
-    const mealTypeId = menu.meal_type_id;  // ดึง meal_type_id จาก menu ที่เลือก
+      if (menu.quantity && menu.quantity > 0) {
+        const mealTypeId = menu.meal_type_id;  // ดึง meal_type_id จาก menu ที่เลือก
 
-    axios.post(`${API_URL}/order`, {
-      menu_id: menu.menu_id,
-      quantity: menu.quantity,
-      order_date: this.selectedDate,
-      meal_type_id: mealTypeId,  // ส่ง meal_type_id ไปด้วย
-    })
-    .then(() => {
-      this.showSuccessToastNotification("Order successful!");
+        axios.post(`${API_URL}/order`, {
+          menu_id: menu.menu_id,
+          quantity: menu.quantity,
+          order_date: this.selectedDate,
+          meal_type_id: mealTypeId,  // ส่ง meal_type_id ไปด้วย
+        })
+          .then(() => {
+            this.showSuccessToastNotification("Order successful!");
 
-      menu.quantity = 0;  // รีเซ็ตจำนวนหลังจากสั่งซื้อ
-    })
-    .catch(() => {
-      this.showErrorToastNotification("Please register before placing an order!!");
-    });
-  } else {
-    this.showErrorToastNotification("Please specify the quantity!");
-  }
-},
+            menu.quantity = 0;  // รีเซ็ตจำนวนหลังจากสั่งซื้อ
+          })
+          .catch(() => {
+            this.showErrorToastNotification("Please register before placing an order!!");
+          });
+      } else {
+        this.showErrorToastNotification("Please specify the quantity!");
+      }
+    },
     adjustQuantity(menu, amount) {
       const newQuantity = menu.quantity + amount;
       if (newQuantity >= 0) {
@@ -378,5 +372,4 @@ export default {
   -webkit-appearance: none;
   margin: 0;
 }
-
 </style>
