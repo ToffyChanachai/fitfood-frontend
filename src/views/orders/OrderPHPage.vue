@@ -1,6 +1,6 @@
 <template>
-  <div v-if="isLoading" class="flex justify-center items-center h-screen">
-    <div class="spinner-border animate-spin inline-block w-12 h-12 border-4 border-t-4 border-gray-200 rounded-full">
+  <div v-if="isLoading" class="flex justify-center items-center h-full">
+    <div class="spinner-border animate-spin inline-block w-16 h-16 border-4 border-t-4 border-gray-200 rounded-full">
     </div>
   </div>
 
@@ -237,8 +237,8 @@ export default {
         this.todayMenus = []; // กรณีเกิดข้อผิดพลาด ให้แสดงค่าว่าง
       }
       finally {
-      this.isLoading = false; // หมดการโหลด
-    }
+        this.isLoading = false; // หมดการโหลด
+      }
     },
     async fetchLookupData() {
       this.isLoading = true;
@@ -253,8 +253,8 @@ export default {
         console.error("Error fetching lookup data:", error);
       }
       finally {
-      this.isLoading = false; // หมดการโหลด
-    }
+        this.isLoading = false; // หมดการโหลด
+      }
     },
 
     getMenuEnglishName(menuId) {
@@ -387,5 +387,10 @@ export default {
 .input-no-spinner::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
+}
+
+.spinner-border {
+  border-top-color: #FFB539;
+  /* เปลี่ยนสีของเส้นด้านบน */
 }
 </style>

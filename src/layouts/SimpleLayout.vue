@@ -3,10 +3,6 @@
     <header class="flex justify-between items-center p-4 px-32 bg-white text-white shadow-lg relative">
       <div class="flex justify-center items-center cursor-pointer" @click="goToHome">
         <img src="@/assets/logo_fitfood_full.png" alt="Logo" class="w-50 h-12">
-        <!-- <div class="leading-none ml-2">
-          <p class="text-lg font-bold text-black">ABSOLUTE</p>
-          <p class="text-lg font-bold text-custom-orange -mt-3">FITFOOD</p>
-        </div> -->
       </div>
 
       <div v-if="['/premium-health', '/', '/happy-healthy-box', '/low-carb', '/fat-loss'].includes($route.path)"
@@ -34,20 +30,23 @@
 
 
       <div v-if="isLoggedIn" class="flex items-center space-x-4">
-        <!-- คลิกที่ชื่อผู้ใช้เพื่อแสดง/ซ่อนเมนู -->
         <div class="relative flex items-center space-x-4" ref="menuDropdown">
 
-          <!-- <button @click="checkIfAdmin" class="text-black">Check if Admin</button> -->
+          <div v-if="isLoading" class="flex items-center space-x-2">
+            <span class="text-black">Welcome,</span>
+            <div class="bg-gray-300 animate-pulse h-6 w-32 rounded-md"></div>
+          </div>
 
-          <span @click="toggleMenu" class="cursor-pointer flex items-center space-x-2">
-            <span class="text-black">Welcome, <strong class="text-custom-orange">{{ username }}</strong></span>
-            <span :class="{ 'rotate-180': isMenuOpen }"
-              class="material-symbols-outlined text-black transition-transform duration-300">
-              arrow_drop_down
+          <span v-else>
+            <span @click="toggleMenu" class="cursor-pointer flex items-center space-x-2">
+              <span class="text-black">Welcome, <strong class="text-custom-orange">{{ username }}</strong></span>
+              <span :class="{ 'rotate-180': isMenuOpen }"
+                class="material-symbols-outlined text-black transition-transform duration-300">
+                arrow_drop_down
+              </span>
             </span>
+
           </span>
-
-
           <div v-show="isMenuOpen"
             class="absolute right-0 top-full mt-1 bg-white text-black text-left shadow-lg rounded-md w-72 z-50 border">
             <ul class="list-none p-0 m-0">
@@ -137,7 +136,6 @@
         </span>
       </div>
 
-
       <router-view></router-view>
     </main>
 
@@ -162,6 +160,8 @@ export default {
       isUserRegisteredHHB: false,
       customers: [],
       customers_hhb: [],
+
+      isLoading: false,
     };
   },
   created() {
@@ -171,16 +171,17 @@ export default {
   methods: {
     // ตรวจสอบสถานะการล็อกอินและดึงชื่อผู้ใช้
     checkLoginStatus() {
-    const token = localStorage.getItem('token');
-    if (token) {
-      this.isLoggedIn = true;
-      this.getUserProfile(); // ดึงข้อมูลโปรไฟล์ผู้ใช้
-    } else {
-      this.isLoggedIn = false;
-    }
-  },
+      const token = localStorage.getItem('token');
+      if (token) {
+        this.isLoggedIn = true;
+        this.getUserProfile(); // ดึงข้อมูลโปรไฟล์ผู้ใช้
+      } else {
+        this.isLoggedIn = false;
+      }
+    },
 
     async getUserProfile() {
+      this.isLoading = true;
       try {
         const res = await api.getProfile(); // ใช้ฟังก์ชันจาก service
         this.username = res.username; // ตั้งค่าชื่อผู้ใช้
@@ -188,6 +189,9 @@ export default {
         this.id = res.id;
       } catch (error) {
         console.log('Error fetching profile:', error);
+      }
+      finally {
+        this.isLoading = false; // หมดการโหลด
       }
     },
     async fetchLookupData() {
@@ -273,28 +277,28 @@ export default {
   },
   mounted() {
     if (this.isLoggedIn) {
-    try {
-      axios.get(`${API_URL}/check-user-registration`)
-        .then(response => {
-          this.isUserRegistered = response.data.isRegistered;
-        });
+      try {
+        axios.get(`${API_URL}/check-user-registration`)
+          .then(response => {
+            this.isUserRegistered = response.data.isRegistered;
+          });
 
-      axios.get(`${API_URL}/check-user-registration-hhb`)
-        .then(response => {
-          this.isUserRegisteredHHB = response.data.isRegistered;
-        });
+        axios.get(`${API_URL}/check-user-registration-hhb`)
+          .then(response => {
+            this.isUserRegisteredHHB = response.data.isRegistered;
+          });
 
-      this.getUserProfile();
-      this.fetchLookupData();
+        this.getUserProfile();
+        this.fetchLookupData();
 
-      document.addEventListener("click", this.handleClickOutside);
-    } catch (error) {
-      console.error('Error checking user registration', error);
+        document.addEventListener("click", this.handleClickOutside);
+      } catch (error) {
+        console.error('Error checking user registration', error);
+      }
+    } else {
+      console.log('User not logged in, skipping registration check');
     }
-  } else {
-    console.log('User not logged in, skipping registration check');
-  }
-},
+  },
 
   beforeUnmount() {
     document.removeEventListener("click", this.handleClickOutside);
@@ -306,7 +310,7 @@ export default {
     '$route'() {
       this.checkLoginStatus();
     }
-    
+
   },
   computed: {
     userRole() {
@@ -322,4 +326,9 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+.spinner-border {
+  border-top-color: #FFB539;
+  /* เปลี่ยนสีของเส้นด้านบน */
+}
+</style>
