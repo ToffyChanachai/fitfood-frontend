@@ -167,6 +167,8 @@
 
 <script>
 import axios from 'axios';
+import { API_URL } from "@/services/api";
+
 
 export default {
     data() {
@@ -196,7 +198,7 @@ export default {
     methods: {
         async fetchUserData() {
             try {
-                const response = await axios.get('http://127.0.0.1:3333/profile'); // สร้าง API ที่ backend เพื่อดึงข้อมูลผู้ใช้
+                const response = await axios.get(`${API_URL}/profile`); // สร้าง API ที่ backend เพื่อดึงข้อมูลผู้ใช้
                 this.firstname = response.data.firstname; // รับข้อมูล firstname
                 this.lastname = response.data.lastname;   // รับข้อมูล lastname
                 this.email = response.data.email;          // รับข้อมูล email
@@ -207,7 +209,7 @@ export default {
         async addCustomer() {
             try {
                 // ส่งข้อมูล address และ gender ไปยัง backend
-                const response = await axios.post('http://127.0.0.1:3333/customer', {
+                const response = await axios.post(`${API_URL}/customer`, {
                     address_1: this.address_1,
                     address_2: this.address_2,
                     address_3: this.address_3,

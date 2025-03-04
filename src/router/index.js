@@ -415,7 +415,7 @@ const routes = [
     component: PH,
     alias: "/",
     meta: {
-      title: "premium health - Absolute FitFood",
+      title: "Premium Health - Absolute FitFood",
       layout: "SimpleLayout",
     },
   },
@@ -424,7 +424,7 @@ const routes = [
     name: "happy healthy box",
     component: HHB,
     meta: {
-      title: "happy healthy box - Absolute FitFood",
+      title: "Happy Healthy Box - Absolute FitFood",
       layout: "SimpleLayout",
     },
   },

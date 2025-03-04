@@ -19,25 +19,44 @@
         </button>
     </div>
     <div>
-        <!-- <div v-if="error" class="text-red-500">{{ error }}</div> -->
-        <div v-if="loading" class="text-gray-500">Loading...</div>
 
         <div class="flex space-x-4">
             <div v-if="user"
                 class="w-1/5 bg-white shadow-lg p-4 rounded-md border text-center max-h-[350px] flex flex-col justify-between">
                 <div class="flex flex-col items-center justify-center flex-grow">
-                    <div v-if="user.profilePicture" class="w-16 h-16 rounded-full overflow-hidden mb-4">
-                        <img :src="user.profilePicture" alt="Profile Picture" class="w-full h-full object-cover" />
+
+                    <div class="w-16 h-16 rounded-full mb-4" v-if="isLoading">
+                        <div class="bg-gray-100 animate-pulse w-full h-full rounded-full"></div>
                     </div>
-                    <div v-else
-                        class="w-16 h-16 rounded-full bg-gray-300 text-white flex items-center justify-center mb-4">
-                        <span class="text-xl font-bold">
-                            {{ user.username ? user.username.charAt(0) :
-                                'N/A' }}
-                        </span>
+
+                    <div v-else>
+                        <div v-if="user.profilePicture" class="w-16 h-16 rounded-full overflow-hidden mb-4">
+                            <img :src="user.profilePicture" alt="Profile Picture" class="w-full h-full object-cover" />
+                        </div>
+                        <div v-else
+                            class="w-16 h-16 rounded-full bg-gray-300 text-white flex items-center justify-center mb-4">
+                            <span class="text-xl font-bold">
+                                {{ user.username ? user.username.charAt(0) : 'N/A' }}
+                            </span>
+                        </div>
                     </div>
-                    <strong class="text-lg">{{ user.username || 'N/A' }}</strong>
-                    <p class="text-gray-700 pb-3">{{ user.email || 'No email provided' }}</p>
+
+
+
+                    <strong v-if="isLoading" class="text-lg">
+                        <div class="bg-gray-100 animate-pulse h-6 w-32 rounded-md mb-2"></div>
+                    </strong>
+                    <strong v-else class="text-lg">
+                        {{ user.username || 'N/A' }}
+                    </strong>
+
+                    <strong v-if="isLoading" class="text-lg">
+                        <div class="bg-gray-100 animate-pulse h-6 w-32 rounded-md"></div>
+                    </strong>
+                    <span v-else class="text-lg">
+                        <span class="text-gray-700 pb-3">{{ user.email || 'No email provided' }}</span>
+                    </span>
+
                 </div>
 
                 <div class="mt-auto w-full">
@@ -57,72 +76,78 @@
             <!-- คอลัมน์ข้อมูลลูกค้า -->
             <div class="w-4/5 flex flex-col space-y-4 ">
 
-                <div v-if="customer_aff" class="relative bg-white shadow-lg p-8 rounded-md border">
-                    <button @click="onEdit(customer_aff)"
-                        class="absolute top-4 right-4 bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 flex items-center space-x-1">
-                        <span class="material-symbols-outlined">edit_square</span>
-                        <span>แก้ไข</span>
-                    </button>
-
-                    <strong class="text-xl text-custom-orange mb-2 block">Abosolute FitFood Profile</strong>
-                    <p><strong>ชื่อ:</strong> {{ customer_aff.name }}</p>
-                    <p><strong>Email:</strong> {{ customer_aff.email }}</p>
-                    <p><strong>รหัสอ้างอิงที่คุณได้รับจากเจ้าหน้าที่:</strong> {{ customer_aff.customer_id }}</p>
-                    <p><strong>เพศ:</strong> {{ customer_aff.gender }}</p>
-                    <p><strong>เบอร์โทรศัพท์:</strong> {{ customer_aff.tel }}</p>
-                    <p><strong>Line ID:</strong> {{ customer_aff.line_id }}</p>
-                    <p><strong>แพ้อาหาร:</strong>
-                        {{ formatFoodAllergies(customer_aff.food_allergies) }}
-                        <span v-if="customer_aff.food_allergies_detail">
-                            {{ customer_aff.food_allergies_detail }}
-                        </span>
-                    </p>
-                    <p><strong>วันที่ต้องการรับอาหาร:</strong> {{ customer_aff.delivery_date }}</p>
-                    <p><strong>ผู้รับอาหาร:</strong> {{ customer_aff.recipient_mon_to_fri }}</p>
-                    <p><strong>รายละเอียดอื่นๆ:</strong> {{ customer_aff.note }}</p>
-                    <p><strong>ที่อยู่จัดส่ง 1:</strong> {{ customer_aff.address_1 }}</p>
-                    <p><strong>ที่อยู่จัดส่ง 2:</strong> {{ customer_aff.address_2 }}</p>
-                    <p><strong>ที่อยู่จัดส่ง 3:</strong> {{ customer_aff.address_3 }}</p>
+                <div v-if="isLoading" class="text-lg">
+                    <div class="bg-gray-100 animate-pulse h-64  rounded-md mb-2"></div>
                 </div>
 
-                <div v-else class="relative bg-white shadow-lg p-8 rounded-md border flex">
-                    <strong class="text-xl text-custom-orange mr-4 block">Abosolute FitFood Profile</strong>
+                <div v-else>
+                    <div v-if="customer_aff" class="relative bg-white shadow-lg p-8 rounded-md border">
+                        <button @click="onEdit(customer_aff)"
+                            class="absolute top-4 right-4 bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 flex items-center space-x-1">
+                            <span class="material-symbols-outlined">edit_square</span>
+                            <span>แก้ไข</span>
+                        </button>
 
-                    <button @click="goToRegisterAFF"
-                        class="bg-custom-orange text-white px-4 py-2 rounded hover:bg-custom-orange-hover flex items-center justify-center ml-auto">
-                        Register Profile
-                    </button>
-                </div>
+                        <strong class="text-xl text-custom-orange mb-2 block">Abosolute FitFood Profile</strong>
+                        <p><strong>ชื่อ:</strong> {{ customer_aff.name }}</p>
+                        <p><strong>Email:</strong> {{ customer_aff.email }}</p>
+                        <p><strong>รหัสอ้างอิงที่คุณได้รับจากเจ้าหน้าที่:</strong> {{ customer_aff.customer_id }}</p>
+                        <p><strong>เพศ:</strong> {{ customer_aff.gender }}</p>
+                        <p><strong>เบอร์โทรศัพท์:</strong> {{ customer_aff.tel }}</p>
+                        <p><strong>Line ID:</strong> {{ customer_aff.line_id }}</p>
+                        <p><strong>แพ้อาหาร:</strong>
+                            {{ formatFoodAllergies(customer_aff.food_allergies) }}
+                            <span v-if="customer_aff.food_allergies_detail">
+                                {{ customer_aff.food_allergies_detail }}
+                            </span>
+                        </p>
+                        <p><strong>วันที่ต้องการรับอาหาร:</strong> {{ customer_aff.delivery_date }}</p>
+                        <p><strong>ผู้รับอาหาร:</strong> {{ customer_aff.recipient_mon_to_fri }}</p>
+                        <p><strong>รายละเอียดอื่นๆ:</strong> {{ customer_aff.note }}</p>
+                        <p><strong>ที่อยู่จัดส่ง 1:</strong> {{ customer_aff.address_1 }}</p>
+                        <p><strong>ที่อยู่จัดส่ง 2:</strong> {{ customer_aff.address_2 }}</p>
+                        <p><strong>ที่อยู่จัดส่ง 3:</strong> {{ customer_aff.address_3 }}</p>
+                    </div>
+
+                    <div v-else class="relative bg-white shadow-lg p-8 rounded-md border flex">
+                        <strong class="text-xl text-custom-orange mr-4 block">Abosolute FitFood Profile</strong>
+
+                        <button @click="goToRegisterAFF"
+                            class="bg-custom-orange text-white px-4 py-2 rounded hover:bg-custom-orange-hover flex items-center justify-center ml-auto">
+                            Register Profile
+                        </button>
+                    </div>
 
 
-                <!-- กล่องข้อมูลของ customer_hhb -->
-                <div v-if="customer_hhb" class="relative bg-white shadow-lg p-8 rounded-md border">
-                    <button @click="onEditHHB(customer_hhb)"
-                        class="absolute top-4 right-4 bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 flex items-center space-x-1">
-                        <span class="material-symbols-outlined">edit_square</span>
-                        <span>แก้ไข</span>
-                    </button>
+                    <!-- กล่องข้อมูลของ customer_hhb -->
+                    <div v-if="customer_hhb" class="relative bg-white shadow-lg p-8 rounded-md border">
+                        <button @click="onEditHHB(customer_hhb)"
+                            class="absolute top-4 right-4 bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 flex items-center space-x-1">
+                            <span class="material-symbols-outlined">edit_square</span>
+                            <span>แก้ไข</span>
+                        </button>
 
-                    <strong class="text-xl text-custom-orange mb-2 block">Happy Healthy Box Profile</strong>
-                    <p><strong>ชื่อ:</strong> {{ customer_hhb.name }}</p>
-                    <p><strong>Email:</strong> {{ customer_hhb.email }}</p>
-                    <p><strong>เบอร์โทรศัพท์:</strong> {{ customer_hhb.tel }}</p>
-                    <p><strong>Line ID:</strong> {{ customer_hhb.line_id }}</p>
-                    <p><strong>ที่อยู่จัดส่ง 1:</strong> {{ customer_hhb.address_1 }}</p>
-                    <p><strong>ที่อยู่จัดส่ง 2:</strong> {{ customer_hhb.address_2 }}</p>
-                    <p><strong>ที่อยู่จัดส่ง 3:</strong> {{ customer_hhb.address_3 }}</p>
-                    <p><strong>สถานที่ใกล้เคียงหรือจุดสังเกตอื่นๆ:</strong> {{ customer_hhb.nearby_places }}</p>
-                    <p><strong>ผู้รับอาหาร:</strong> {{ customer_hhb.recipient }}</p>
-                    <p><strong>รายละเอียดอื่นๆ:</strong> {{ customer_hhb.note }}</p>
-                </div>
+                        <strong class="text-xl text-custom-orange mb-2 block">Happy Healthy Box Profile</strong>
+                        <p><strong>ชื่อ:</strong> {{ customer_hhb.name }}</p>
+                        <p><strong>Email:</strong> {{ customer_hhb.email }}</p>
+                        <p><strong>เบอร์โทรศัพท์:</strong> {{ customer_hhb.tel }}</p>
+                        <p><strong>Line ID:</strong> {{ customer_hhb.line_id }}</p>
+                        <p><strong>ที่อยู่จัดส่ง 1:</strong> {{ customer_hhb.address_1 }}</p>
+                        <p><strong>ที่อยู่จัดส่ง 2:</strong> {{ customer_hhb.address_2 }}</p>
+                        <p><strong>ที่อยู่จัดส่ง 3:</strong> {{ customer_hhb.address_3 }}</p>
+                        <p><strong>สถานที่ใกล้เคียงหรือจุดสังเกตอื่นๆ:</strong> {{ customer_hhb.nearby_places }}</p>
+                        <p><strong>ผู้รับอาหาร:</strong> {{ customer_hhb.recipient }}</p>
+                        <p><strong>รายละเอียดอื่นๆ:</strong> {{ customer_hhb.note }}</p>
+                    </div>
 
-                <div v-else class="relative bg-white shadow-lg p-8 rounded-md border flex">
-                    <strong class="text-xl text-custom-orange mr-4 block">Happy Healthy Box Profile</strong>
+                    <div v-else class="relative bg-white shadow-lg p-8 rounded-md border flex">
+                        <strong class="text-xl text-custom-orange mr-4 block">Happy Healthy Box Profile</strong>
 
-                    <button @click="goToRegisterHHB"
-                        class="bg-custom-orange text-white px-4 py-2 rounded hover:bg-custom-orange-hover flex items-center justify-center ml-auto">
-                        Register Profile
-                    </button>
+                        <button @click="goToRegisterHHB"
+                            class="bg-custom-orange text-white px-4 py-2 rounded hover:bg-custom-orange-hover flex items-center justify-center ml-auto">
+                            Register Profile
+                        </button>
+                    </div>
                 </div>
 
 
@@ -330,7 +355,7 @@
                     <span class="material-symbols-outlined text-xl">close</span>
                 </button>
             </div>
-            
+
             <div class="bg-white rounded-md shadow-lg w-1/2 max-w-3xl h-auto max-h-[800px] flex flex-col">
                 <div class="flex justify-between items-center bg-custom-orange text-white px-4 py-2 rounded-t-md">
                     <span class="font-bold">แก้ไขข้อมูล</span>
@@ -531,6 +556,7 @@
 <script>
 import axios from 'axios';
 import AuthService from '@/services/auth';
+import { API_URL } from "@/services/api";
 
 export default {
     data() {
@@ -539,9 +565,9 @@ export default {
             customer_hhb: '',
 
             error: null,
-            loading: false,
+            isLoading: false,
             user: {},
-            isModalOpen: false,  // เปิด/ปิด modal
+            isModalOpen: false,
             oldPassword: '',
             newPassword: '',
             confirmPassword: '',
@@ -569,33 +595,38 @@ export default {
     },
     methods: {
         async fetchCustomerData() {
-            this.loading = true;
+            this.isLoading = true;
             try {
-                const response = await axios.get('http://127.0.0.1:3333/customer/profile');
+                const response = await axios.get(`${API_URL}/customer/profile`);
                 this.customer_aff = response.data.customer_aff;
             } catch (error) {
                 this.error = 'Failed to fetch customer data';
             } finally {
-                this.loading = false;
+                this.isLoading = false;
             }
         },
         async fetchCustomerHHBData() {
-            this.loading = true;
+            this.isLoading = true;
             try {
-                const response = await axios.get('http://127.0.0.1:3333/customer-hhb/profile');
+                const response = await axios.get(`${API_URL}/customer-hhb/profile`);
                 this.customer_hhb = response.data.customer_hhb;
             } catch (error) {
                 this.error = 'Failed to fetch customer data';
             } finally {
-                this.loading = false;
+                this.isLoading = false;
             }
         },
         async fetchProfile() {
+            this.isLoading = true;
             try {
                 this.user = await AuthService.getProfile();
             } catch (err) {
                 this.error = err.message || 'Failed to fetch profile';
             }
+            finally {
+                this.isLoading = false;
+            }
+
         },
         logout() {
             localStorage.removeItem('token');
@@ -624,10 +655,10 @@ export default {
                     return;
                 }
 
-                console.log(this.selectedCustomer.recipient_mon_to_fri);
+                // console.log(this.selectedCustomer.recipient_mon_to_fri);
 
 
-                const response = await axios.put(`http://127.0.0.1:3333/customers/${this.selectedCustomer.id}`, {
+                const response = await axios.put(`${API_URL}/customers/${this.selectedCustomer.id}`, {
                     email: this.selectedCustomer.email,
                     customer_id: this.selectedCustomer.customer_id,
                     name: this.selectedCustomer.name,
@@ -672,7 +703,7 @@ export default {
                     return;
                 }
 
-                const response = await axios.put(`http://127.0.0.1:3333/customers-hhb/${this.selectedCustomerHHB.id}`, {
+                const response = await axios.put(`${API_URL}/customers-hhb/${this.selectedCustomerHHB.id}`, {
                     email: this.selectedCustomerHHB.email,
                     customer_id: this.selectedCustomerHHB.customer_id,
                     name: this.selectedCustomerHHB.name,
