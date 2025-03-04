@@ -5,7 +5,7 @@
         <img src="@/assets/logo_fitfood_full.png" alt="Logo" class="w-50 h-12">
       </div>
 
-      <div v-if="['/premium-health', '/', '/happy-healthy-box', '/low-carb', '/fat-loss'].includes($route.path)"
+      <div v-if="['/premium-health', '/', '/happy-healthy-box'].includes($route.path)"
         class="flex items-left space-x-6 text-black font-bold">
         <router-link to="/premium-health" class="hover:text-custom-orange"
           :class="{ 'text-custom-orange border-b-2 border-custom-orange': $route.path === '/premium-health' || $route.path === '/' }">
@@ -17,7 +17,7 @@
           Happy Healthy Box
         </router-link>
 
-        <router-link to="/low-carb" class="hover:text-custom-orange"
+        <!-- <router-link to="/low-carb" class="hover:text-custom-orange"
           :class="{ 'text-custom-orange border-b-2 border-custom-orange': $route.path === '/low-carb' }">
           Low Carb
         </router-link>
@@ -25,7 +25,7 @@
         <router-link to="/fat-loss" class="hover:text-custom-orange"
           :class="{ 'text-custom-orange border-b-2 border-custom-orange': $route.path === '/fat-loss' }">
           Fat Loss
-        </router-link>
+        </router-link> -->
       </div>
 
 
@@ -34,7 +34,7 @@
 
           <div v-if="isLoading" class="flex items-center space-x-2">
             <span class="text-black">Welcome,</span>
-            <div class="bg-gray-300 animate-pulse h-6 w-32 rounded-md"></div>
+            <div class="bg-gray-100 animate-pulse h-6 w-32 rounded-md"></div>
           </div>
 
           <span v-else>

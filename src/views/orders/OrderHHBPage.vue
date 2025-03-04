@@ -1,6 +1,7 @@
 <template>
+
   <div v-if="showSuccessToast"
-  class="fixed top-4 right-8 bg-green-500 text-white px-8 py-4 flex items-center space-x-4 rounded-lg shadow-lg transition-opacity duration-300 z-50"
+    class="fixed top-4 right-8 bg-green-500 text-white px-8 py-4 flex items-center space-x-4 rounded-lg shadow-lg transition-opacity duration-300 z-50"
     :class="{
       'opacity-100': showSuccessToast,
       'opacity-0': !showSuccessToast,
@@ -11,7 +12,6 @@
       <span class="material-symbols-outlined text-xl">close</span>
     </button>
   </div>
-  
 
   <div v-if="showFailToast"
     class="fixed top-4 right-8 bg-red-500 text-white px-8 py-4 flex items-center space-x-4 rounded-lg shadow-lg transition-opacity duration-300 z-50"
@@ -65,89 +65,114 @@
 
       <h1 class="font-bold text-xl mb-4">ประเภทเมนู</h1>
 
-      <div class="mb-4 space-y-2">
-        <button @click="selectedMealType = ''" :class="[
-          'w-full text-left py-2 hover:text-custom-orange',
-          selectedMealType === '' ? 'text-custom-orange font-bold' : 'text-gray-600'
-        ]">
-          ทุกประเภท
-        </button>
+      <div v-if="isLoading" class="flex h-full">
+        <div class="space-y-4 w-full">
+          <div class="space-y-2">
+            <div class="bg-gray-100 animate-pulse h-6 w-full rounded-md"></div>
+            <div class="bg-gray-100 animate-pulse h-6 w-full rounded-md"></div>
+            <div class="bg-gray-100 animate-pulse h-6 w-full rounded-md"></div>
+          </div>
+        </div>
+      </div>
 
-        <button v-for="mealType in filteredMealTypes" :key="mealType.id" @click="selectedMealType = mealType.id" :class="[
-          'w-full py-2 text-left hover:text-custom-orange',
-          selectedMealType === mealType.id ? 'text-custom-orange font-bold' : 'text-gray-600'
-        ]">
-          {{ mealType.name }}
-        </button>
+      <div v-else>
+        <div class="mb-4 space-y-2">
+          <button @click="selectedMealType = ''" :class="[
+            'w-full text-left py-2 hover:text-custom-orange',
+            selectedMealType === '' ? 'text-custom-orange font-bold' : 'text-gray-600'
+          ]">
+            ทุกประเภท
+          </button>
+
+          <button v-for="mealType in filteredMealTypes" :key="mealType.id" @click="selectedMealType = mealType.id"
+            :class="[
+              'w-full py-2 text-left hover:text-custom-orange',
+              selectedMealType === mealType.id ? 'text-custom-orange font-bold' : 'text-gray-600'
+            ]">
+            {{ mealType.name }}
+          </button>
+        </div>
       </div>
     </div>
 
+
     <!-- เมนูส่วนขวา -->
     <div class="w-4/5 p-4">
-      <h1 class="font-bold text-xl mb-4">รายการอาหารประจำวันที่ {{ formatDate(selectedDate) }} ({{
-        formatDateEng(selectedDate) }})</h1>
+      <div v-if="isLoading" class="flex h-full">
+        <!-- <div
+            class="spinner-border animate-spin inline-block w-16 h-16 border-4 border-t-4 border-gray-200 rounded-full">
+          </div> -->
+        <div class="space-y-4 w-full">
+          <div class="bg-gray-100 animate-pulse h-8 w-1/3 rounded-md"></div>
 
-      <div v-if="todayMenus.length === 0" class="text-center text-gray-600">
-        <strong class="text-2xl">ไม่มีเมนู</strong>
-      </div>
-
-      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-3">
-        <div v-for="menu in filteredMenus" :key="menu.id"
-          class="p-4 border rounded-lg shadow-md bg-white flex flex-col h-full mb-6">
-          <!-- รูปภาพและข้อมูลเมนู -->
-          <div class="mb-4">
-            <img v-if="getMenuImage(menu.menu_id)" :src="`${API_URL}/images/${getMenuImage(menu.menu_id)}`"
-              alt="Menu Image" class="min-h-48 max-h-48 w-full object-cover rounded">
-            <div v-else class="bg-gray-100 w-full h-48 rounded-md flex items-center justify-center">
-              <span class="material-symbols-outlined text-4xl text-gray-500">
-                hide_image
-              </span>
-            </div>
-
-          </div>
-
-          <span class="text-lg font-semibold block">{{ getMenuEnglishName(menu.menu_id) }}</span>
-          <span class="block">{{ getMenuThaiName(menu.menu_id) }}</span>
-          <span class="block text-custom-orange font-bold">{{ getMealTypeName(getMealTypeID(menu.menu_id)) }}</span>
-
-          <div class="text-gray-700 text-sm">
-            <span class="mr-2">{{ getMenuCal(menu.menu_id) }} Cal</span>
-            <span class="mr-2">|<strong> Protein: </strong> {{ getMenuProtein(menu.menu_id) }} g</span>
-            <span class="mr-2">|<strong> Carbohydrate: </strong>{{ getMenuCarb(menu.menu_id) }} g</span>
-            <span class="mr-2">|<strong> Fat: </strong>{{ getMenuFat(menu.menu_id) }} g</span>
-          </div>
-
-          <!-- ปุ่มเพิ่ม/ลดจำนวน และปุ่มสั่งซื้อ (บังคับอยู่ล่างสุด) -->
-          <div class="mt-auto flex w-full space-x-2">
-            <!-- ส่วนปรับจำนวน (ครึ่งหนึ่งของพื้นที่) -->
-            <div class="flex items-center justify-center w-1/2 space-x-2 p-2">
-              <!-- ปุ่มลดจำนวน -->
-              <button @click="adjustQuantity(menu, -1)"
-                class="px-2 py-1 w-8 rounded-md text-white bg-custom-orange hover:bg-custom-orange-hover">-</button>
-
-              <!-- ช่องใส่จำนวน -->
-              <input type="number" v-model.number="menu.quantity" min="0" placeholder="จำนวน"
-                class="p-2 border rounded-md w-16 text-center input-no-spinner" />
-
-              <!-- ปุ่มเพิ่มจำนวน -->
-              <button @click="adjustQuantity(menu, 1)"
-                class="px-2 py-1 w-8 rounded-md text-white bg-custom-orange hover:bg-custom-orange-hover">+</button>
-            </div>
-
-            <!-- ปุ่มสั่งซื้อ (ครึ่งหนึ่งของพื้นที่) -->
-            <div class="w-1/2 p-2 flex justify-end">
-              <button @click="orderMenu(menu)"
-                class="px-4 py-2 w-full bg-custom-orange text-white rounded-md hover:bg-custom-orange-hover transition flex items-center space-x-2 justify-center">
-                <span class="material-symbols-outlined">
-                  shopping_cart
-                </span>
-                <span>สั่งซื้อ</span>
-              </button>
-            </div>
+          <div class="flex space-x-2">
+            <div class="bg-gray-100 animate-pulse h-64 w-1/3 rounded-md"></div>
+            <div class="bg-gray-100 animate-pulse h-64 w-1/3 rounded-md"></div>
+            <div class="bg-gray-100 animate-pulse h-64 w-1/3 rounded-md"></div>
           </div>
 
         </div>
       </div>
+
+      <div v-else>
+        <h1 class="font-bold text-xl mb-4">รายการอาหารประจำวันที่ {{ formatDate(selectedDate) }} ({{
+          formatDateEng(selectedDate) }})</h1>
+
+        <div v-if="todayMenus.length === 0" class="text-center text-gray-600">
+          <strong class="text-2xl">ไม่มีเมนู</strong>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-3">
+          <div v-for="menu in filteredMenus" :key="menu.id"
+            class="p-4 border rounded-lg shadow-md bg-white flex flex-col h-full mb-6">
+            <div class="mb-4">
+              <img v-if="getMenuImage(menu.menu_id)" :src="`${API_URL}/images/${getMenuImage(menu.menu_id)}`"
+                alt="Menu Image" class="min-h-48 max-h-48 w-full object-cover rounded" @error="handleImageError">
+              <div v-else class="bg-gray-100 w-full h-48 rounded-md flex items-center justify-center">
+                <span class="material-symbols-outlined text-4xl text-gray-500">
+                  hide_image
+                </span>
+              </div>
+
+            </div>
+
+            <span class="text-lg font-semibold block">{{ getMenuEnglishName(menu.menu_id) }}</span>
+            <span class="block">{{ getMenuThaiName(menu.menu_id) }}</span>
+            <span class="block text-custom-orange font-bold">{{ getMealTypeName(getMealTypeID(menu.menu_id)) }}</span>
+
+            <div class="text-gray-700 text-sm">
+              <span class="mr-2">{{ getMenuCal(menu.menu_id) }} Cal</span>
+              <span class="mr-2">|<strong> Protein: </strong> {{ getMenuProtein(menu.menu_id) }} g</span>
+              <span class="mr-2">|<strong> Carbohydrate: </strong>{{ getMenuCarb(menu.menu_id) }} g</span>
+              <span class="mr-2">|<strong> Fat: </strong>{{ getMenuFat(menu.menu_id) }} g</span>
+            </div>
+
+            <div class="mt-auto flex w-full space-x-2">
+              <div class="flex items-center justify-center w-1/2 space-x-2 p-2">
+                <button @click="adjustQuantity(menu, -1)"
+                  class="px-2 py-1 w-8 rounded-md text-white bg-custom-orange hover:bg-custom-orange-hover">-</button>
+
+                <input type="number" v-model.number="menu.quantity" min="0" placeholder="จำนวน"
+                  class="p-2 border rounded-md w-16 text-center input-no-spinner" />
+
+                <button @click="adjustQuantity(menu, 1)"
+                  class="px-2 py-1 w-8 rounded-md text-white bg-custom-orange hover:bg-custom-orange-hover">+</button>
+              </div>
+
+              <div class="w-1/2 p-2 flex justify-end">
+                <button @click="orderMenu(menu)"
+                  class="px-4 py-2 w-full bg-custom-orange text-white rounded-md hover:bg-custom-orange-hover transition flex items-center space-x-2 justify-center">
+                  <span class="material-symbols-outlined">
+                    shopping_cart
+                  </span>
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 </template>
@@ -173,6 +198,8 @@ export default {
       showFailToast: false,
       showErrorToast: false,
       toastErrorMessage: "",
+
+      isLoading: false,
     };
   },
   computed: {
@@ -191,6 +218,10 @@ export default {
     }
   },
   methods: {
+    handleImageError(event) {
+      console.error("Image load error", event);
+    },
+
     getTodayDate() {
       const today = new Date();
       const year = today.getFullYear();
@@ -209,36 +240,38 @@ export default {
       this.fetchMenusForSelectedDate();
     },
     async fetchMenusForSelectedDate() {
+      this.isLoading = true;
       try {
         const response = await axios.get(`${API_URL}/setup-menu-hhb/menus-by-day/${this.selectedDate}`);
-        console.log('API Response:', response.data);
-
-        // ตรวจสอบว่า menus มีข้อมูลหรือไม่
         if (response.data.menus && response.data.menus.length > 0) {
           this.todayMenus = response.data.menus;
-          // ตั้งค่าเริ่มต้นของ quantity เป็น 0
           this.todayMenus.forEach(menu => {
             menu.quantity = 0;
           });
-          console.log("Date", this.selectedDate);
         } else {
-          // ถ้าไม่มีเมนูให้แสดงค่าว่างเปล่า
           this.todayMenus = [];
         }
       } catch (error) {
         this.todayMenus = []; // กรณีเกิดข้อผิดพลาด ให้แสดงค่าว่าง
       }
+      finally {
+        this.isLoading = false; // หมดการโหลด
+      }
     },
     async fetchLookupData() {
+      this.isLoading = true;
       try {
         const [menuRes, mealTypeRes] = await Promise.all([
-          axios.get("${API_URL}/menus"),
-          axios.get("${API_URL}/meal-types"),
+          axios.get(`${API_URL}/menus`),
+          axios.get(`${API_URL}/meal-types`),
         ]);
         this.menus = menuRes.data;
         this.meal_types = mealTypeRes.data;
       } catch (error) {
         console.error("Error fetching lookup data:", error);
+      }
+      finally {
+        this.isLoading = false; // หมดการโหลด
       }
     },
 
@@ -301,21 +334,25 @@ export default {
 
     orderMenu(menu) {
       if (menu.quantity && menu.quantity > 0) {
-        const mealTypeId = menu.meal_type_id;  // ดึง meal_type_id จาก menu ที่เลือก
+        const mealTypeId = menu.meal_type_id;
 
-        // ส่งข้อมูลไปยัง backend
-        axios.post('${API_URL}/order-hhb', {
+        this.isLoading = true;
+
+        axios.post(`${API_URL}/order`, {
           menu_id: menu.menu_id,
           quantity: menu.quantity,
           order_date: this.selectedDate,
-          meal_type_id: mealTypeId,  // ส่ง meal_type_id ไปด้วย
+          meal_type_id: mealTypeId,
         })
           .then(() => {
             this.showSuccessToastNotification("Order successful!");
-            menu.quantity = 0;  // รีเซ็ตจำนวนหลังจากสั่งซื้อ
+            menu.quantity = 0;
           })
           .catch(() => {
             this.showErrorToastNotification("Please register before placing an order!!");
+          })
+          .finally(() => {
+            this.isLoading = false;
           });
       } else {
         this.showErrorToastNotification("Please specify the quantity!");
@@ -360,7 +397,6 @@ export default {
   },
   watch: {
     selectedDate() {
-      // เมื่อเปลี่ยนวันที่ให้ดึงข้อมูลใหม่
       this.fetchMenusForSelectedDate();
     }
   },
@@ -372,5 +408,10 @@ export default {
 .input-no-spinner::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
+}
+
+.spinner-border {
+  border-top-color: #FFB539;
+  /* เปลี่ยนสีของเส้นด้านบน */
 }
 </style>

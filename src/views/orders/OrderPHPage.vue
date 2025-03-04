@@ -1,75 +1,81 @@
 <template>
-  <div v-if="isLoading" class="flex justify-center items-center h-full">
-    <div class="spinner-border animate-spin inline-block w-16 h-16 border-4 border-t-4 border-gray-200 rounded-full">
-    </div>
+
+  <div v-if="showSuccessToast"
+    class="fixed top-4 right-8 bg-green-500 text-white px-8 py-4 flex items-center space-x-4 rounded-lg shadow-lg transition-opacity duration-300 z-50"
+    :class="{
+      'opacity-100': showSuccessToast,
+      'opacity-0': !showSuccessToast,
+    }">
+    <span class="material-symbols-outlined text-white">check_circle</span>
+    <span>{{ toastSuccessMessage }}</span>
+    <button @click="showSuccessToast = false" class="text-white hover:text-gray-200 focus:outline-none">
+      <span class="material-symbols-outlined text-xl">close</span>
+    </button>
   </div>
 
-  <div v-else>
-    <div v-if="showSuccessToast"
-      class="fixed top-4 right-8 bg-green-500 text-white px-8 py-4 flex items-center space-x-4 rounded-lg shadow-lg transition-opacity duration-300 z-50"
-      :class="{
-        'opacity-100': showSuccessToast,
-        'opacity-0': !showSuccessToast,
-      }">
-      <span class="material-symbols-outlined text-white">check_circle</span>
-      <span>{{ toastSuccessMessage }}</span>
-      <button @click="showSuccessToast = false" class="text-white hover:text-gray-200 focus:outline-none">
-        <span class="material-symbols-outlined text-xl">close</span>
-      </button>
-    </div>
+  <div v-if="showFailToast"
+    class="fixed top-4 right-8 bg-red-500 text-white px-8 py-4 flex items-center space-x-4 rounded-lg shadow-lg transition-opacity duration-300 z-50"
+    :class="{ 'opacity-100': showFailToast, 'opacity-0': !showFailToast }">
+    <span class="material-symbols-outlined text-white">cancel</span>
+    <span>{{ toastFailMessage }}</span>
+    <button @click="showFailToast = false" class="text-white hover:text-gray-200 focus:outline-none">
+      <span class="material-symbols-outlined text-xl">close</span>
+    </button>
+  </div>
 
-    <div v-if="showFailToast"
-      class="fixed top-4 right-8 bg-red-500 text-white px-8 py-4 flex items-center space-x-4 rounded-lg shadow-lg transition-opacity duration-300 z-50"
-      :class="{ 'opacity-100': showFailToast, 'opacity-0': !showFailToast }">
-      <span class="material-symbols-outlined text-white">cancel</span>
-      <span>{{ toastFailMessage }}</span>
-      <button @click="showFailToast = false" class="text-white hover:text-gray-200 focus:outline-none">
-        <span class="material-symbols-outlined text-xl">close</span>
-      </button>
-    </div>
+  <div v-if="showErrorToast"
+    class="fixed top-4 right-8 bg-yellow-500 text-white px-8 py-4 flex items-center space-x-4 rounded-lg shadow-lg transition-opacity duration-300 z-50"
+    :class="{ 'opacity-100': showErrorToast, 'opacity-0': !showErrorToast }">
+    <span class="material-symbols-outlined text-white">cancel</span>
+    <span>{{ toastErrorMessage }}</span>
+    <button @click="showErrorToast = false" class="text-white hover:text-gray-200 focus:outline-none">
+      <span class="material-symbols-outlined text-xl">close</span>
+    </button>
+  </div>
 
-    <div v-if="showErrorToast"
-      class="fixed top-4 right-8 bg-yellow-500 text-white px-8 py-4 flex items-center space-x-4 rounded-lg shadow-lg transition-opacity duration-300 z-50"
-      :class="{ 'opacity-100': showErrorToast, 'opacity-0': !showErrorToast }">
-      <span class="material-symbols-outlined text-white">cancel</span>
-      <span>{{ toastErrorMessage }}</span>
-      <button @click="showErrorToast = false" class="text-white hover:text-gray-200 focus:outline-none">
-        <span class="material-symbols-outlined text-xl">close</span>
-      </button>
-    </div>
+  <h1 class="mt-4 font-bold text-custom-orange text-2xl mb-4 text-center">Premium Health</h1>
 
-    <h1 class="mt-4 font-bold text-custom-orange text-2xl mb-4 text-center">Premium Health</h1>
+  <div class="mt-4 flex">
+    <div class="w-1/5">
+      <div class="mb-4">
+        <div class="flex items-center space-x-3 py-2">
 
-    <div class="mt-4 flex">
-      <div class="w-1/5">
-        <div class="mb-4">
-          <div class="flex items-center space-x-3 py-2">
+          <button @click="changeDate(-1)" class="flex items-center">
+            <span class="material-symbols-outlined text-3xl text-custom-orange hover:text-custom-orange-hover">
+              chevron_backward
+            </span>
+          </button>
 
-            <button @click="changeDate(-1)" class="flex items-center">
-              <span class="material-symbols-outlined text-3xl text-custom-orange hover:text-custom-orange-hover">
-                chevron_backward
-              </span>
-            </button>
+          <button @click="setToday"
+            class="flex items-center text-custom-orange hover:underline hover:text-custom-orange">
+            <span class="mr-2 font-bold">วันนี้</span>
+          </button>
 
-            <button @click="setToday"
-              class="flex items-center text-custom-orange hover:underline hover:text-custom-orange">
-              <span class="mr-2 font-bold">วันนี้</span>
-            </button>
+          <button @click="changeDate(1)" class="flex items-center">
+            <span class="material-symbols-outlined text-3xl text-custom-orange hover:text-custom-orange-hover">
+              chevron_forward
+            </span>
+          </button>
 
-            <button @click="changeDate(1)" class="flex items-center">
-              <span class="material-symbols-outlined text-3xl text-custom-orange hover:text-custom-orange-hover">
-                chevron_forward
-              </span>
-            </button>
+          <input type="date" id="menuDate" v-model="selectedDate" class="p-2 border rounded-md w-auto"
+            @change="fetchMenusForSelectedDate" />
 
-            <input type="date" id="menuDate" v-model="selectedDate" class="p-2 border rounded-md w-auto"
-              @change="fetchMenusForSelectedDate" />
+        </div>
+      </div>
 
+      <h1 class="font-bold text-xl mb-4">ประเภทเมนู</h1>
+
+      <div v-if="isLoading" class="flex h-full">
+        <div class="space-y-4 w-full">
+          <div class="space-y-2">
+            <div class="bg-gray-100 animate-pulse h-6 w-full rounded-md"></div>
+            <div class="bg-gray-100 animate-pulse h-6 w-full rounded-md"></div>
+            <div class="bg-gray-100 animate-pulse h-6 w-full rounded-md"></div>
           </div>
         </div>
+      </div>
 
-        <h1 class="font-bold text-xl mb-4">ประเภทเมนู</h1>
-
+      <div v-else>
         <div class="mb-4 space-y-2">
           <button @click="selectedMealType = ''" :class="[
             'w-full text-left py-2 hover:text-custom-orange',
@@ -87,9 +93,28 @@
           </button>
         </div>
       </div>
+    </div>
 
-      <!-- เมนูส่วนขวา -->
-      <div class="w-4/5 p-4">
+
+    <!-- เมนูส่วนขวา -->
+    <div class="w-4/5 p-4">
+      <div v-if="isLoading" class="flex h-full">
+        <!-- <div
+            class="spinner-border animate-spin inline-block w-16 h-16 border-4 border-t-4 border-gray-200 rounded-full">
+          </div> -->
+        <div class="space-y-4 w-full">
+          <div class="bg-gray-100 animate-pulse h-8 w-1/3 rounded-md"></div>
+
+          <div class="flex space-x-2">
+            <div class="bg-gray-100 animate-pulse h-64 w-1/3 rounded-md"></div>
+            <div class="bg-gray-100 animate-pulse h-64 w-1/3 rounded-md"></div>
+            <div class="bg-gray-100 animate-pulse h-64 w-1/3 rounded-md"></div>
+          </div>
+
+        </div>
+      </div>
+
+      <div v-else>
         <h1 class="font-bold text-xl mb-4">รายการอาหารประจำวันที่ {{ formatDate(selectedDate) }} ({{
           formatDateEng(selectedDate) }})</h1>
 
@@ -100,7 +125,6 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-3">
           <div v-for="menu in filteredMenus" :key="menu.id"
             class="p-4 border rounded-lg shadow-md bg-white flex flex-col h-full mb-6">
-            <!-- รูปภาพและข้อมูลเมนู -->
             <div class="mb-4">
               <img v-if="getMenuImage(menu.menu_id)" :src="`${API_URL}/images/${getMenuImage(menu.menu_id)}`"
                 alt="Menu Image" class="min-h-48 max-h-48 w-full object-cover rounded" @error="handleImageError">
@@ -123,31 +147,24 @@
               <span class="mr-2">|<strong> Fat: </strong>{{ getMenuFat(menu.menu_id) }} g</span>
             </div>
 
-            <!-- ปุ่มเพิ่ม/ลดจำนวน และปุ่มสั่งซื้อ (บังคับอยู่ล่างสุด) -->
             <div class="mt-auto flex w-full space-x-2">
-              <!-- ส่วนปรับจำนวน (ครึ่งหนึ่งของพื้นที่) -->
               <div class="flex items-center justify-center w-1/2 space-x-2 p-2">
-                <!-- ปุ่มลดจำนวน -->
                 <button @click="adjustQuantity(menu, -1)"
                   class="px-2 py-1 w-8 rounded-md text-white bg-custom-orange hover:bg-custom-orange-hover">-</button>
 
-                <!-- ช่องใส่จำนวน -->
                 <input type="number" v-model.number="menu.quantity" min="0" placeholder="จำนวน"
                   class="p-2 border rounded-md w-16 text-center input-no-spinner" />
 
-                <!-- ปุ่มเพิ่มจำนวน -->
                 <button @click="adjustQuantity(menu, 1)"
                   class="px-2 py-1 w-8 rounded-md text-white bg-custom-orange hover:bg-custom-orange-hover">+</button>
               </div>
 
-              <!-- ปุ่มสั่งซื้อ (ครึ่งหนึ่งของพื้นที่) -->
               <div class="w-1/2 p-2 flex justify-end">
                 <button @click="orderMenu(menu)"
                   class="px-4 py-2 w-full bg-custom-orange text-white rounded-md hover:bg-custom-orange-hover transition flex items-center space-x-2 justify-center">
                   <span class="material-symbols-outlined">
                     shopping_cart
                   </span>
-                  <span>สั่งซื้อ</span>
                 </button>
               </div>
             </div>
@@ -155,6 +172,7 @@
           </div>
         </div>
       </div>
+
     </div>
   </div>
 </template>
@@ -291,7 +309,6 @@ export default {
     },
     getMenuImage(menuId) {
       const menu = this.menus.find((m) => m.id === menuId);
-      console.log("Image URL:", `${API_URL}/images/${menu.image}`);
       return menu ? menu.image : null;
     },
 
@@ -317,21 +334,25 @@ export default {
 
     orderMenu(menu) {
       if (menu.quantity && menu.quantity > 0) {
-        const mealTypeId = menu.meal_type_id;  // ดึง meal_type_id จาก menu ที่เลือก
+        const mealTypeId = menu.meal_type_id;
+
+        this.isLoading = true;
 
         axios.post(`${API_URL}/order`, {
           menu_id: menu.menu_id,
           quantity: menu.quantity,
           order_date: this.selectedDate,
-          meal_type_id: mealTypeId,  // ส่ง meal_type_id ไปด้วย
+          meal_type_id: mealTypeId,
         })
           .then(() => {
             this.showSuccessToastNotification("Order successful!");
-
-            menu.quantity = 0;  // รีเซ็ตจำนวนหลังจากสั่งซื้อ
+            menu.quantity = 0;
           })
           .catch(() => {
             this.showErrorToastNotification("Please register before placing an order!!");
+          })
+          .finally(() => {
+            this.isLoading = false;
           });
       } else {
         this.showErrorToastNotification("Please specify the quantity!");
