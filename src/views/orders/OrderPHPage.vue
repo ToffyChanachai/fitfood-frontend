@@ -96,7 +96,7 @@
           class="p-4 border rounded-lg shadow-md bg-white flex flex-col h-full mb-6">
           <!-- รูปภาพและข้อมูลเมนู -->
           <div class="mb-4">
-            <img v-if="getMenuImage(menu.menu_id)" :src="`${API_URL}/images/${getMenuImage(menu.menu_id)}`"
+            <img v-if="getMenuImage(menu.menu_id)" :src="`https://fitfood-backend.onrender.com/images/${getMenuImage(menu.menu_id)}`"
               alt="Menu Image" class="min-h-48 max-h-48 w-full object-cover rounded" @error="handleImageError">
             <div v-else class="bg-gray-100 w-full h-48 rounded-md flex items-center justify-center">
               <span class="material-symbols-outlined text-4xl text-gray-500">
@@ -241,8 +241,6 @@ export default {
     },
 
     getMenuEnglishName(menuId) {
-      console.log(this.menus);
-      console.log("menuId:", menuId);
       const menu = this.menus.find((m) => m.id === menuId);
       return menu ? menu.name_english : null;
     },
