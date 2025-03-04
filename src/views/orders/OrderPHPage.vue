@@ -211,18 +211,15 @@ export default {
     async fetchMenusForSelectedDate() {
       try {
         const response = await axios.get(`${API_URL}/setup-menu-ph/menus-by-day/${this.selectedDate}`);
-        console.log('API Response:', response.data);
+        // console.log('API Response:', response.data);
 
-        // ตรวจสอบว่า menus มีข้อมูลหรือไม่
         if (response.data.menus && response.data.menus.length > 0) {
           this.todayMenus = response.data.menus;
-          // ตั้งค่าเริ่มต้นของ quantity เป็น 0
           this.todayMenus.forEach(menu => {
             menu.quantity = 0;
           });
           console.log("Date", this.selectedDate);
         } else {
-          // ถ้าไม่มีเมนูให้แสดงค่าว่างเปล่า
           this.todayMenus = [];
         }
       } catch (error) {
@@ -357,10 +354,10 @@ export default {
   mounted() {
     this.fetchLookupData();
     this.fetchMenusForSelectedDate();
+    console.log(this.getMenuEnglishName(1));
   },
   watch: {
     selectedDate() {
-      // เมื่อเปลี่ยนวันที่ให้ดึงข้อมูลใหม่
       this.fetchMenusForSelectedDate();
     }
   },
