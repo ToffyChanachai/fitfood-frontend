@@ -97,7 +97,7 @@
           <!-- รูปภาพและข้อมูลเมนู -->
           <div class="mb-4">
             <img v-if="getMenuImage(menu.menu_id)" :src="`${API_URL}/images/${getMenuImage(menu.menu_id)}`"
-              alt="Menu Image" class="min-h-48 max-h-48 w-full object-cover rounded">
+              alt="Menu Image" class="min-h-48 max-h-48 w-full object-cover rounded" @error="handleImageError">
             <div v-else class="bg-gray-100 w-full h-48 rounded-md flex items-center justify-center">
               <span class="material-symbols-outlined text-4xl text-gray-500">
                 hide_image
@@ -191,6 +191,11 @@ export default {
     }
   },
   methods: {
+    handleImageError(event) {
+    console.error("Image load error", event);
+    // อาจจะเปลี่ยนเป็นภาพ placeholder หรือแสดงข้อความ error
+  },
+
     getTodayDate() {
       const today = new Date();
       const year = today.getFullYear();
