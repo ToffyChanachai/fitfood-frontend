@@ -274,7 +274,7 @@ export default {
     },
     getMenuImage(menuId) {
       const menu = this.menus.find((m) => m.id === menuId);
-      console.log("Image URL:", `${API_URL}/images/${imageName}`);
+      console.log("Image URL:", `${API_URL}/images/${menu}`);
       return menu ? menu.image : null;
     },
 
