@@ -230,7 +230,7 @@ export default {
       try {
         const [menuRes, mealTypeRes] = await Promise.all([
           axios.get(`${API_URL}/menus`),
-          axios.get(`${API_URL}/meal-type`),
+          axios.get(`${API_URL}/meal-types`),
         ]);
         this.menus = menuRes.data;
         this.meal_types = mealTypeRes.data;
