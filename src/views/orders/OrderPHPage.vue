@@ -241,6 +241,8 @@ export default {
     },
 
     getMenuEnglishName(menuId) {
+      console.log(this.menus);
+      console.log("menuId:", menuId);
       const menu = this.menus.find((m) => m.id === menuId);
       return menu ? menu.name_english : null;
     },
@@ -353,9 +355,8 @@ export default {
     this.fetchMenusForSelectedDate();
   },
   mounted() {
-    console.log("Component Mounted - Fetching Lookup Data");
     this.fetchLookupData();
-    // this.fetchMenusForSelectedDate();
+    this.fetchMenusForSelectedDate();
   },
   watch: {
     selectedDate() {
