@@ -241,30 +241,22 @@ export default {
     },
 
     async fetchMenusForSelectedDate() {
-  this.isLoading = true;
-  try {
-    const response = await axios.get(`${process.env.VUE_APP_API_URL}/setup-menu-ph/menus-by-day/${this.selectedDate}`);
-    if (response.data.menus && response.data.menus.length > 0) {
-      this.todayMenus = response.data.menus;
-    } else {
-      this.todayMenus = [];
-      console.log('ไม่มีเมนูในวันเลือก');
-    }
-  } catch (error) {
-    this.todayMenus = [];
-    // จัดการข้อผิดพลาดให้แสดงข้อความที่เหมาะสม
-    if (error.response) {
-      // หากมีการตอบกลับจาก API
-      console.error('เกิดข้อผิดพลาดในการดึงข้อมูลเมนู:', error.response.data.message || error.message);
-    } else {
-      // หากไม่มีการตอบกลับจาก API
-      console.error('ไม่สามารถเชื่อมต่อกับ API:', error.message);
-    }
-  } finally {
-    this.isLoading = false;
-  }
-},
-    
+      this.isLoading = true;
+      try {
+        const response = await axios.get(`${API_URL}/setup-menu-ph/menus-by-day/${this.selectedDate}`);
+        if (response.data.menus && response.data.menus.length > 0) {
+          this.todayMenus = response.data.menus;
+        } else {
+          this.todayMenus = [];
+          console.log('ไม่มีเมนูในวันเลือก');
+        }
+      } catch (error) {
+        this.todayMenus = [];
+      } finally {
+        this.isLoading = false;
+      }
+    },
+
     async fetchLookupData() {
       this.isLoading = true;
       try {

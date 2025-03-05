@@ -75,7 +75,6 @@
             </div>
 
         </div>
-
         <table class="min-w-full table-auto rounded-t-2xl overflow-hidden mt-4">
             <thead>
                 <tr class="bg-custom-orange text-white">
@@ -85,93 +84,108 @@
                     </th>
                 </tr>
             </thead>
+
             <tbody>
-                <template v-if="filteredCustomers.length > 0">
-                    <tr v-for="(customer, index) in filteredCustomers" :key="index"
-                        class=" bg-white relative border-b border-b-gray-200">
-                        <td class="px-4 py-2 align-top pb-5">{{ (currentPage - 1) * itemsPerPage + index + 1 }}</td>
-                        <td class="px-4 py-2 align-top font-bold text-custom-orange pb-5">{{ customer.name }}</td>
-                        <td class="px-4 py-2 align-top pb-5">{{ customer.customer_id }}</td>
-                        <td class="px-4 py-2 align-top pb-5">
-                            <div class="flex items-center">
-                                <span class="material-symbols-outlined mr-1 text-xl">mail</span>{{ customer.email
-                                }}
-                            </div>
-                            <div class="flex items-center">
-                                <span class="material-symbols-outlined mr-1 text-xl">phone</span>{{ customer.tel }}
-                            </div>
-                        </td>
-                        <td class="px-4 py-2 align-top pb-5">{{ customer.address_1 }}</td>
-                        <td class="px-4 py-2 align-top pb-5">
-                            {{ formatFoodAllergies(customer.food_allergies) }}
-                            <span v-if="customer.food_allergies_detail">
-                                {{ customer.food_allergies_detail }}
-                            </span>
-                        </td>
+                <tr v-if="isLoading" class="bg-white">
+                    <td colspan="7" class="py-16 text-center">
+                        <div class="flex justify-center items-center space-x-2">
+                            <div class="w-3 h-3 bg-gray-500 rounded-full animate-pulse"></div>
+                            <div class="w-3 h-3 bg-gray-500 rounded-full animate-pulse delay-200"></div>
+                            <div class="w-3 h-3 bg-gray-500 rounded-full animate-pulse delay-400"></div>
+                        </div>
+                    </td>
+                </tr>
 
-                        <td class="px-4 py-2 text-right relative" ref="moreDropdown">
-                            <button @click="toggleMoreDropdown(index)">
-                                <span class="material-symbols-outlined cursor-pointer">more_vert</span>
-                            </button>
-
-                            <div v-if="filteredCustomers.length > 4">
-                                <div v-if="moreOpenDropdownIndex === index" :class="moreDropdownPositionClass(index)"
-                                    class="dropdown-menu absolute right-0 text-center bg-white shadow-lg rounded-md z-50 w-40 border border-gray-300">
-                                    <ul class="list-none p-0 m-0">
-                                        <li @click="onViewDetails(customer)"
-                                            class="px-4 py-2 cursor-pointer hover:bg-gray-100 text-gray-700 border-b border-gray-300">
-                                            ดูรายละเอียด
-                                        </li>
-                                        <li @click="onEdit(customer)"
-                                            class="px-4 py-2 cursor-pointer hover:bg-gray-100 text-blue-500 border-b border-gray-300">
-                                            แก้ไขข้อมูล
-                                        </li>
-                                        <li @click="confirmDelete(customer.id)"
-                                            class="px-4 py-2 cursor-pointer hover:bg-gray-100 text-red-500 border-b border-gray-300">
-                                            ลบข้อมูล
-                                        </li>
-                                    </ul>
+                <template v-else>
+                    <template v-if="filteredCustomers.length > 0">
+                        <tr v-for="(customer, index) in filteredCustomers" :key="index"
+                            class=" bg-white relative border-b border-b-gray-200">
+                            <td class="px-4 py-2 align-top pb-5">{{ (currentPage - 1) * itemsPerPage + index + 1 }}</td>
+                            <td class="px-4 py-2 align-top font-bold text-custom-orange pb-5">{{ customer.name }}</td>
+                            <td class="px-4 py-2 align-top pb-5">{{ customer.customer_id }}</td>
+                            <td class="px-4 py-2 align-top pb-5">
+                                <div class="flex items-center">
+                                    <span class="material-symbols-outlined mr-1 text-xl">mail</span>{{ customer.email
+                                    }}
                                 </div>
-                            </div>
-
-                            <div v-else>
-                                <div v-if="moreOpenDropdownIndex === index"
-                                    class="dropdown-menu absolute right-0 text-center bg-white shadow-lg rounded-md z-50 w-40 border border-gray-300">
-                                    <ul class="list-none p-0 m-0">
-                                        <li @click="onViewDetails(customer)"
-                                            class="px-4 py-2 cursor-pointer hover:bg-gray-100 text-gray-700 border-b border-gray-300">
-                                            ดูรายละเอียด
-                                        </li>
-                                        <li @click="onEdit(customer)"
-                                            class="px-4 py-2 cursor-pointer hover:bg-gray-100 text-blue-500 border-b border-gray-300">
-                                            แก้ไขข้อมูล
-                                        </li>
-                                        <li @click="confirmDelete(customer.id)"
-                                            class="px-4 py-2 cursor-pointer hover:bg-gray-100 text-red-500 border-b border-gray-300">
-                                            ลบข้อมูล
-                                        </li>
-                                    </ul>
+                                <div class="flex items-center">
+                                    <span class="material-symbols-outlined mr-1 text-xl">phone</span>{{ customer.tel }}
                                 </div>
-                            </div>
-                        </td>
+                            </td>
+                            <td class="px-4 py-2 align-top pb-5">{{ customer.address_1 }}</td>
+                            <td class="px-4 py-2 align-top pb-5">
+                                {{ formatFoodAllergies(customer.food_allergies) }}
+                                <span v-if="customer.food_allergies_detail">
+                                    {{ customer.food_allergies_detail }}
+                                </span>
+                            </td>
 
-                    </tr>
+                            <td class="px-4 py-2 text-right relative" ref="moreDropdown">
+                                <button @click="toggleMoreDropdown(index)">
+                                    <span class="material-symbols-outlined cursor-pointer">more_vert</span>
+                                </button>
+
+                                <div v-if="filteredCustomers.length > 4">
+                                    <div v-if="moreOpenDropdownIndex === index"
+                                        :class="moreDropdownPositionClass(index)"
+                                        class="dropdown-menu absolute right-0 text-center bg-white shadow-lg rounded-md z-50 w-40 border border-gray-300">
+                                        <ul class="list-none p-0 m-0">
+                                            <li @click="onViewDetails(customer)"
+                                                class="px-4 py-2 cursor-pointer hover:bg-gray-100 text-gray-700 border-b border-gray-300">
+                                                ดูรายละเอียด
+                                            </li>
+                                            <li @click="onEdit(customer)"
+                                                class="px-4 py-2 cursor-pointer hover:bg-gray-100 text-blue-500 border-b border-gray-300">
+                                                แก้ไขข้อมูล
+                                            </li>
+                                            <li @click="confirmDelete(customer.id)"
+                                                class="px-4 py-2 cursor-pointer hover:bg-gray-100 text-red-500 border-b border-gray-300">
+                                                ลบข้อมูล
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                <div v-else>
+                                    <div v-if="moreOpenDropdownIndex === index"
+                                        class="dropdown-menu absolute right-0 text-center bg-white shadow-lg rounded-md z-50 w-40 border border-gray-300">
+                                        <ul class="list-none p-0 m-0">
+                                            <li @click="onViewDetails(customer)"
+                                                class="px-4 py-2 cursor-pointer hover:bg-gray-100 text-gray-700 border-b border-gray-300">
+                                                ดูรายละเอียด
+                                            </li>
+                                            <li @click="onEdit(customer)"
+                                                class="px-4 py-2 cursor-pointer hover:bg-gray-100 text-blue-500 border-b border-gray-300">
+                                                แก้ไขข้อมูล
+                                            </li>
+                                            <li @click="confirmDelete(customer.id)"
+                                                class="px-4 py-2 cursor-pointer hover:bg-gray-100 text-red-500 border-b border-gray-300">
+                                                ลบข้อมูล
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </td>
+
+                        </tr>
+                    </template>
+
+                    <template v-if="filteredCustomers.length < 6 && filteredCustomers.length > 0">
+                        <tr v-for="emptyIndex in (6 - filteredCustomers.length)" :key="'empty-' + emptyIndex"
+                            class="bg-white">
+                            <td colspan="7" class="py-16"></td>
+                        </tr>
+                    </template>
+
+                    <template v-if="filteredCustomers.length === 0">
+                        <tr>
+                            <td colspan="7" class="py-10 bg-white text-center text-gray-500 font-bold">
+                                ไม่พบข้อมูล
+                            </td>
+                        </tr>
+                    </template>
                 </template>
 
-                <template v-if="filteredCustomers.length < 6 && filteredCustomers.length > 0">
-                    <tr v-for="emptyIndex in (6 - filteredCustomers.length)" :key="'empty-' + emptyIndex"
-                        class="bg-white">
-                        <td colspan="7" class="py-16"></td>
-                    </tr>
-                </template>
-
-                <template v-if="filteredCustomers.length === 0">
-                    <tr>
-                        <td colspan="7" class="py-10 bg-white text-center text-gray-500 font-bold">
-                            ไม่พบข้อมูล
-                        </td>
-                    </tr>
-                </template>
 
             </tbody>
 
@@ -265,7 +279,8 @@
                             </div>
 
                             <div class="w-1/2">
-                                <label for="line_id" class="block  font-medium text-gray-700">Line ID (ถ้ามี)</label>
+                                <label for="line_id" class="block  font-medium text-gray-700">Line ID
+                                    (ถ้ามี)</label>
                                 <input type="text" v-model="selectedCustomer.line_id" placeholder="กรอก line id"
                                     class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange" />
                             </div>
@@ -330,7 +345,8 @@
                         </div>
 
                         <div>
-                            <label for="note" class="block font-medium text-gray-700">หากมีรายละเอียดอื่นๆ ที่เราควรทราบ
+                            <label for="note" class="block font-medium text-gray-700">หากมีรายละเอียดอื่นๆ
+                                ที่เราควรทราบ
                                 โปรดระบุ</label>
                             <textarea id="note" v-model="selectedCustomer.note" placeholder="กรอกรายละเอียดอื่นๆ"
                                 class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange"
@@ -465,6 +481,8 @@
 
 <script>
 import axios from 'axios';
+import { API_URL } from "@/services/api";
+
 
 export default {
     name: "AFF Customers",
@@ -527,6 +545,8 @@ export default {
             showFailToast: false,
             showErrorToast: false,
             toastErrorMessage: "",
+
+            isLoading: false,
 
         };
     },
@@ -596,12 +616,16 @@ export default {
     },
     methods: {
         async fetchCustomers() {
+            this.isLoading = true;
+
             try {
-                const response = await axios.get('http://127.0.0.1:3333/customers');
+                const response = await axios.get(`${API_URL}/customers`);
                 this.customers = response.data;
                 this.customers.sort((a, b) => a.id - b.id);
             } catch (error) {
                 console.error("Error fetching customers:", error);
+            } finally {
+                this.isLoading = false;
             }
         },
         goToPage(page) {
@@ -673,11 +697,6 @@ export default {
             this.selectedCustomer = {};
         },
 
-
-        // onEdit(customer) {
-        //     alert(`แก้ไขข้อมูล: ${customer.name}`);
-        // },
-
         onEdit(customer) {
             this.selectedCustomer = { ...customer }; // คัดลอกข้อมูลลูกค้า
             this.isEditModalOpen = true; // เปิด Modal
@@ -690,8 +709,7 @@ export default {
                     return;
                 }
 
-                // ส่งคำขอไปที่ Backend เพื่ออัปเดตข้อมูล
-                const response = await axios.put(`http://127.0.0.1:3333/customers/${this.selectedCustomer.id}`, {
+                const response = await axios.put(`${API_URL}/customers/${this.selectedCustomer.id}`, {
                     email: this.selectedCustomer.email,
                     customer_id: this.selectedCustomer.customer_id,
                     name: this.selectedCustomer.name,
@@ -738,7 +756,7 @@ export default {
         async deleteConfirmed() {
             try {
                 await axios.delete(
-                    `http://127.0.0.1:3333/customers/${this.itemToDelete}`
+                    `${API_URL}/customers/${this.itemToDelete}`
                 );
                 this.customers = this.customers.filter((item) => item.id !== this.itemToDelete);
                 this.closeDeleteModal();

@@ -48,11 +48,34 @@
         <div class="mt-4">
             <div class="flex items-center">
                 <h1 class="text-xl font-bold">ประวัติการสั่งซื้อ: </h1>
-                <h1 class="text-xl text-custom-orange font-bold ml-2">{{ getCustomerName(customerId) }}</h1>
-            </div>
-            <div v-if="loading" class="mt-4 text-center text-gray-600">กำลังโหลด...</div>
 
-            <!-- กล่องที่มีการจัดกลุ่มคำสั่งซื้อ -->
+                <h1 v-if="isLoading" class="text-xl font-bold ml-2">
+                    <div class="bg-gray-100 animate-pulse h-6 w-48 rounded-md"></div>
+                </h1>
+                <h1 v-else class="text-xl text-custom-orange font-bold ml-2">
+                    {{ getCustomerName(customerId) }}
+                </h1>
+            </div>
+
+            <div v-if="isLoading"
+                class="mt-4 bg-white rounded-md shadow-lg p-4 border border-gray-100 overflow-y-auto h-[650px]">
+                <div v-for="n in 5" :key="n" class="border-b border-gray-200 py-4 animate-pulse">
+                    <div class="flex justify-between items-center">
+                        <div class="bg-gray-100 h-6 w-1/4 rounded-md"></div>
+                        <div class="bg-gray-100 h-6 w-1/6 rounded-md"></div>
+                    </div>
+                    <div class="mt-2 text-gray-500">
+                        <div class="flex items-center">
+                            <div class="bg-gray-100 h-6 w-20 rounded-md"></div>
+                        </div>
+                        <div class="flex items-center mt-2">
+                            <div class="bg-gray-100 h-6 w-24 rounded-md"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div v-else>
             <div v-if="orders.length > 0"
                 class="mt-4 bg-white rounded-md shadow-lg p-4 border border-gray-300 overflow-y-auto h-[650px]">
                 <div v-for="order in orders" :key="order.order_date" class="border-b border-gray-200 py-4">
@@ -84,6 +107,8 @@
                     <span class="text-xl">ไม่มีประวัติการสั่งซื้อในวันนี้</span>
                 </div>
             </div>
+        </div>
+
 
         </div>
 
@@ -98,7 +123,7 @@
 import axios from "axios";
 import flatpickr from "flatpickr";
 import "flatpickr/dist/flatpickr.css";
-// import { API_URL } from "@/services/api";
+import { API_URL } from "@/services/api";
 
 export default {
     data() {
@@ -107,7 +132,7 @@ export default {
             orders: [],
             customers: [],
             menus: [],
-            loading: false,
+            isLoading: false,
             startDate: '', // วันที่เริ่มต้น
             endDate: '',
             selectedDate: "",
@@ -173,9 +198,9 @@ export default {
         },
 
         async fetchOrders(startDate, endDate) {
-            this.loading = true;
+            this.isLoading = true;
             try {
-                const response = await axios.get(`http://127.0.0.1:3333/orders-hhb/user/${this.customerId}`, {
+                const response = await axios.get(`${API_URL}/orders-hhb/user/${this.customerId}`, {
                     params: { start_date: startDate, end_date: endDate },
                 });
                 this.orders = response.data.orders || [];
@@ -183,7 +208,7 @@ export default {
                 // console.error("เกิดข้อผิดพลาดในการดึงประวัติการสั่งซื้อ:", error);
                 this.orders = []; // กรณีมีข้อผิดพลาดให้ตั้งค่าเป็นอาเรย์ว่าง
             } finally {
-                this.loading = false;
+                this.isLoading = false;
             }
         },
 
@@ -225,8 +250,8 @@ export default {
                     customersRes,
                     menuRes,
                 ] = await Promise.all([
-                    axios.get("http://127.0.0.1:3333/customers-hhb"),
-                    axios.get("http://127.0.0.1:3333/menus"),
+                    axios.get(`${API_URL}/customers-hhb`),
+                    axios.get(`${API_URL}/menus`),
                 ]);
 
                 this.customers = customersRes.data;
@@ -237,7 +262,6 @@ export default {
         },
 
         getCustomerName(customerId) {
-            // แปลง customerId และ id ให้อยู่ในรูปแบบเดียวกัน
             const customer = this.customers.find(c => c.id.toString() === customerId.toString());
             return customer ? customer.name : "ไม่พบข้อมูล";
         },

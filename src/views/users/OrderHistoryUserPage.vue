@@ -58,18 +58,18 @@
             </div>
 
             <div v-if="isLoading"
-                class="mt-4 bg-white rounded-md shadow-lg p-4 border border-gray-300 overflow-y-auto h-[650px]">
+                class="mt-4 bg-white rounded-md shadow-lg p-4 border border-gray-100 overflow-y-auto h-[650px]">
                 <div v-for="n in 5" :key="n" class="border-b border-gray-200 py-4 animate-pulse">
                     <div class="flex justify-between items-center">
-                        <div class="bg-gray-300 h-6 w-1/4 rounded-md"></div>
-                        <div class="bg-gray-300 h-6 w-1/6 rounded-md"></div>
+                        <div class="bg-gray-100 h-6 w-1/4 rounded-md"></div>
+                        <div class="bg-gray-100 h-6 w-1/6 rounded-md"></div>
                     </div>
                     <div class="mt-2 text-gray-500">
                         <div class="flex items-center">
-                            <div class="bg-gray-300 h-6 w-20 rounded-md"></div>
+                            <div class="bg-gray-100 h-6 w-20 rounded-md"></div>
                         </div>
                         <div class="flex items-center mt-2">
-                            <div class="bg-gray-300 h-6 w-24 rounded-md"></div>
+                            <div class="bg-gray-100 h-6 w-24 rounded-md"></div>
                         </div>
                     </div>
                 </div>
@@ -201,7 +201,7 @@ export default {
         async fetchOrders(startDate, endDate) {
             this.isLoading = true;
             try {
-                const response = await axios.get(`${process.env.VUE_APP_API_URL}/orders/user/${this.customerId}`, {
+                const response = await axios.get(`${API_URL}/orders/user/${this.customerId}`, {
                     params: { start_date: startDate, end_date: endDate },
                 });
                 this.orders = response.data.orders || [];
