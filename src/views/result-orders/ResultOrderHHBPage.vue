@@ -208,6 +208,17 @@
 
       </thead>
       <tbody>
+        <tr v-if="isLoading" class="bg-white">
+          <td colspan="10" class="py-16 text-center">
+            <div class="flex justify-center items-center space-x-2">
+              <div class="w-3 h-3 bg-gray-500 rounded-full animate-pulse"></div>
+              <div class="w-3 h-3 bg-gray-500 rounded-full animate-pulse delay-200"></div>
+              <div class="w-3 h-3 bg-gray-500 rounded-full animate-pulse delay-400"></div>
+            </div>
+          </td>
+        </tr>
+
+        <template v-else>
         <tr v-for="(order, index) in filteredOrders" :key="index" class="border-b border-b-gray-200 bg-white relative">
           <td class="px-4 py-2 align-top pb-5">
             <input type="checkbox" v-model="selectedOrders" :value="order"
@@ -215,18 +226,13 @@
           </td>
           <td class="px-4 py-2 align-top pb-5">{{ (currentPage - 1) * itemsPerPage + index + 1 }}</td>
 
-          <td class="px-4 py-2 align-top font-bold border-l border-r text-custom-orange pb-5"
-            v-if="shouldDisplayUserName(index, order.user_id)" :rowspan="getRowspan(order.user_id, index)">
-            {{ getCustomerName(order.user_id) }}
-          </td>
+          <td
+              class="px-4 py-2 align-top font-bold border-l border-r text-custom-orange pb-5 cursor-pointer hover:text-custom-orange-hover"
+              v-if="shouldDisplayUserName(index, order.user_id)" :rowspan="getRowspan(order.user_id, index)"
+              @click="selectCustomerOrders(order.user_id)">
+              {{ getCustomerName(order.user_id) }}
+            </td>
 
-          <!-- <td class="px-4 py-2 align-top font-bold border-l border-r text-custom-orange pb-5"
-        v-if="shouldDisplayOrderDate(index, order.order_date)"
-        :rowspan="getOrderDateRowspan(order.order_date, index)">
-      {{ formatDate(order.order_date) }}
-    </td> -->
-
-          <!-- <td class="px-4 py-2 align-top pb-5">{{ getCustomerName(order.user_id) }}</td> -->
           <td class="px-4 py-2 align-top pb-5">{{ formatDate(order.order_date) }}</td>
           <td class="px-4 py-2 align-top pb-5">{{ getMenuTypeName(order.menu_type_id) }}</td>
 
@@ -317,6 +323,9 @@
         <tr v-if="filteredOrders.length === 0">
           <td colspan="10" class="py-10 bg-white text-center text-gray-500 font-bold">ไม่พบข้อมูล </td>
         </tr>
+
+      </template>
+
       </tbody>
 
       <!-- <div v-if="isDetailModalOpen"
@@ -394,7 +403,7 @@
 import axios from 'axios';
 import flatpickr from "flatpickr";
 import "flatpickr/dist/flatpickr.css";
-//import Multiselect from 'vue-multiselect';
+import { API_URL } from "@/services/api";
 
 export default {
   data() {
@@ -440,6 +449,8 @@ export default {
         name: 1
       },
       sortColumn: '',
+      isLoading: false,
+
 
     };
   },
@@ -598,35 +609,41 @@ export default {
     // },
 
     async fetchOrders(startDate, endDate) {
+      this.isLoading = true;
+
       try {
-        const response = await axios.get('http://127.0.0.1:3333/orders-hhb/date-range', {
+        const response = await axios.get(`${API_URL}/orders-hhb/date-range`, {
           params: { start_date: startDate, end_date: endDate }, // ส่งค่าพารามิเตอร์ start_date และ end_date
         });
 
         this.orders = response.data.orders;
         this.filteredOrders = this.orders;
 
-        // console.log('Data', this.orders);
-        // console.log('Data', this.filteredOrders);
-
         this.orders.sort((a, b) => {
           const dateA = new Date(a.order_date);
           const dateB = new Date(b.order_date);
-          return dateA - dateB; // เรียงจากน้อยไปหามาก
+
+          if (dateA.getTime() === dateB.getTime()) {
+            return a.id - b.id; // เรียงจากน้อยไปหามากตาม id
+          }
+
+          return dateA - dateB; // เรียงจากน้อยไปหามากตาม order_date
         });
 
 
       } catch (error) {
         // console.error('Error fetching orders data:', error);
+      } finally {
+        this.isLoading = false;
       }
     },
 
     async fetchLookupData() {
       try {
         const [customersRes, menuRes, menuTypeRes] = await Promise.all([
-          axios.get("http://127.0.0.1:3333/customers-hhb"),
-          axios.get("http://127.0.0.1:3333/menus"),
-          axios.get("http://127.0.0.1:3333/menu-types"),
+          axios.get(`${API_URL}/customers-hhb`),
+          axios.get(`${API_URL}/menus`),
+          axios.get(`${API_URL}/menu-types`),
         ]);
         this.customers = customersRes.data;
         this.menus = menuRes.data;
@@ -775,7 +792,7 @@ export default {
         };
 
         const response = await axios.put(
-          `http://127.0.0.1:3333/order-hhb/${this.selectedOrder.id}/status`,
+          `${API_URL}/order-hhb/${this.selectedOrder.id}/status`,
           payload
         );
         await this.fetchOrders();
@@ -809,7 +826,7 @@ export default {
       console.log("Selected Orders:", this.selectedOrders);
 
       try {
-        const response = await fetch("http://127.0.0.1:3333/order-hhb/update-status", {
+        const response = await fetch(`${API_URL}/order-hhb/update-status`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -836,7 +853,7 @@ export default {
       const orderIds = this.selectedOrders.map(order => order.id);
 
       try {
-        const response = await fetch("http://127.0.0.1:3333/order-hhb/update-status", {
+        const response = await fetch(`${API_URL}/order-hhb/update-status`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -858,6 +875,18 @@ export default {
         this.showErrorToastNotification("เกิดข้อผิดพลาดในการเชื่อมต่อ!");
       }
     },
+    
+    selectCustomerOrders(userId) {
+      const customerOrders = this.filteredOrdersWithoutHappy.filter(order => order.user_id === userId);
+      const isSelected = customerOrders.every(order => this.selectedOrders.includes(order));
+
+      if (isSelected) {
+        this.selectedOrders = this.selectedOrders.filter(order => !customerOrders.includes(order));
+      } else {
+        this.selectedOrders = [...this.selectedOrders, ...customerOrders];
+      }
+    },
+
     selectOrder(order) {
       if (!this.selectedOrders.includes(order)) {
         this.selectedOrders.push(order);
@@ -867,7 +896,7 @@ export default {
     },
     toggleSelectAll(event) {
       if (event.target.checked) {
-        this.selectedOrders = [...this.filteredOrders];  // เลือกคำสั่งซื้อทั้งหมด
+        this.selectedOrders = [...this.filteredOrdersWithoutHappy];  // เลือกคำสั่งซื้อทั้งหมด
       } else {
         this.selectedOrders = [];  // ยกเลิกการเลือกทั้งหมด
       }

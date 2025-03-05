@@ -1533,6 +1533,7 @@
 import axios from "axios";
 import Multiselect from "vue-multiselect";
 import { mapActions, mapGetters } from "vuex";
+import { API_URL } from "@/services/api";
 
 export default {
   components: {
@@ -2428,7 +2429,7 @@ export default {
       }
 
       try {
-        const response = await axios.post("http://127.0.0.1:3333/sale-records-hhb", {
+        const response = await axios.post(`${API_URL}/sale-records-hhb`, {
           customer_id: this.saleRecord.customer_id?.id || null,
           promotion_type_id: this.saleRecord.promotion_type_id?.id || null,
           program_id: this.saleRecord.program_id?.id || null,
@@ -2595,7 +2596,7 @@ export default {
 
       try {
         const response = await axios.put(
-          `http://127.0.0.1:3333/sale-records-hhb/${this.selectedSaleRecord.id}`,
+          `${API_URL}/sale-records-hhb/${this.selectedSaleRecord.id}`,
           {
             customer_id: this.selectedSaleRecord.customer_id?.id || null,
             promotion_type_id: this.selectedSaleRecord.promotion_type_id?.id || null,
@@ -2712,19 +2713,19 @@ export default {
           receiveFoodRes,
           selectFoodRes,
         ] = await Promise.all([
-          axios.get("http://127.0.0.1:3333/customers-hhb"),
-          axios.get("http://127.0.0.1:3333/promotion-types"),
-          axios.get("http://127.0.0.1:3333/programs"),
-          axios.get("http://127.0.0.1:3333/packages"),
-          axios.get("http://127.0.0.1:3333/package-types"),
-          axios.get("http://127.0.0.1:3333/zone-deliveries"),
-          axios.get("http://127.0.0.1:3333/zone-delivery-types"),
-          axios.get("http://127.0.0.1:3333/seller-names"),
-          axios.get("http://127.0.0.1:3333/payment-types"),
-          axios.get("http://127.0.0.1:3333/additional-types"),
-          axios.get("http://127.0.0.1:3333/delivery-rounds"),
-          axios.get("http://127.0.0.1:3333/receive-foods"),
-          axios.get("http://127.0.0.1:3333/select-foods"),
+          axios.get(`${API_URL}/customers-hhb`),
+          axios.get(`${API_URL}/promotion-types`),
+          axios.get(`${API_URL}/programs`),
+          axios.get(`${API_URL}/packages`),
+          axios.get(`${API_URL}/package-types`),
+          axios.get(`${API_URL}/zone-deliveries`),
+          axios.get(`${API_URL}/zone-delivery-types`),
+          axios.get(`${API_URL}/seller-names`),
+          axios.get(`${API_URL}/payment-types`),
+          axios.get(`${API_URL}/additional-types`),
+          axios.get(`${API_URL}/delivery-rounds`),
+          axios.get(`${API_URL}/receive-foods`),
+          axios.get(`${API_URL}/select-foods`),
         ]);
 
         this.customers = customersRes.data;
@@ -2794,7 +2795,7 @@ export default {
 
     async fetchSaleRecords() {
       try {
-        const response = await axios.get("http://127.0.0.1:3333/sale-records-hhb");
+        const response = await axios.get(`${API_URL}/sale-records-hhb`);
         this.saleRecords = response.data;
         this.filteredSaleRecords = response.data;
         this.saleRecords.sort((a, b) => a.id - b.id);
@@ -2913,7 +2914,7 @@ export default {
     async deleteConfirmed() {
       try {
         await axios.delete(
-          `http://127.0.0.1:3333/sale-records-hhb/${this.itemToDelete}`
+          `${API_URL}/sale-records-hhb/${this.itemToDelete}`
         );
         this.saleRecords = this.saleRecords.filter(
           (item) => item.id !== this.itemToDelete
@@ -3314,7 +3315,7 @@ export default {
         };
 
         const response = await axios.put(
-          `http://127.0.0.1:3333/sale-records-hhb/${this.selectedSaleRecord.id}/payment-status`,
+          `${API_URL}/sale-records-hhb/${this.selectedSaleRecord.id}/payment-status`,
           payload
         );
         await this.fetchSaleRecords();

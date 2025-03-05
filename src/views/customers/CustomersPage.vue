@@ -700,10 +700,10 @@ export default {
         onEdit(customer) {
             this.selectedCustomer = { ...customer }; // คัดลอกข้อมูลลูกค้า
             this.isEditModalOpen = true; // เปิด Modal
+            this.moreOpenDropdownIndex = null;
         },
         async saveChanges() {
             try {
-                // ตรวจสอบว่าฟิลด์สำคัญถูกกรอกครบถ้วน
                 if (!this.selectedCustomer.name || !this.selectedCustomer.email) {
                     alert("กรุณากรอกข้อมูลให้ครบถ้วน");
                     return;

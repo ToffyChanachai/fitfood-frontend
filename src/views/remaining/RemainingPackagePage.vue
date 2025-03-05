@@ -31,16 +31,43 @@
           {{ filteredSaleRecords1standRenew.length }} รายการ</span>
       </div>
 
-      <button v-if="selectedPackageType.length > 0" @click="clearFilter"
+      <button v-if="selectedPackageType.length > 0 || selectedProgramIds.length > 0 || remainingDaysFilter"
+        @click="clearFilter"
         class="px-2 py-2 rounded-md flex items-center space-x-1 text-gray-400 hover:text-custom-orange">
         <span class="material-symbols-outlined">close</span>
         <span class="ml-2">
           รีเซ็ตตัวกรอง
-          <template v-if="selectedPackageType.length > 0">
+          <template v-if="selectedPackageType.length > 0 && selectedProgramIds.length === 0 && !remainingDaysFilter">
             ({{ selectedPackageType.length }})
+          </template>
+
+          <template v-if="selectedProgramIds.length > 0 && selectedPackageType.length === 0 && !remainingDaysFilter">
+            ({{ selectedProgramIds.length }})
+          </template>
+
+          <template v-if="remainingDaysFilter && selectedPackageType.length === 0 && selectedProgramIds.length === 0">
+            ({{ remainingDaysFilter === 'expired' ? 'หมดอายุ' : 'ยังไม่หมดอายุ' }})
+          </template>
+
+          <template v-if="selectedPackageType.length > 0 && selectedProgramIds.length > 0 && remainingDaysFilter">
+            ({{ selectedPackageType.length + selectedProgramIds.length + 1 }}) <!-- +1 สำหรับ Remaining Days -->
+          </template>
+
+          <template v-if="selectedPackageType.length > 0 && selectedProgramIds.length > 0 && !remainingDaysFilter">
+            ({{ selectedPackageType.length + selectedProgramIds.length }})
+          </template>
+
+          <template v-if="selectedPackageType.length > 0 && selectedProgramIds.length === 0 && remainingDaysFilter">
+            ({{ selectedPackageType.length + 1 }}) <!-- +1 สำหรับ Remaining Days -->
+          </template>
+
+          <template v-if="selectedProgramIds.length > 0 && selectedPackageType.length === 0 && remainingDaysFilter">
+            ({{ selectedProgramIds.length + 1 }}) <!-- +1 สำหรับ Remaining Days -->
           </template>
         </span>
       </button>
+
+
 
       <div class="sort relative inline-block" ref="sortDropdown">
         <button @click="toggleSortDropdown"
@@ -102,7 +129,31 @@
                 <span>{{ type.name }}</span>
               </label>
             </div>
+
+            <h3 class="font-bold mt-4 mb-2">กรองโดย Program</h3>
+            <div class="space-y-2">
+              <label v-for="program in filteredProgramIds" :key="program.id" class="flex items-center space-x-2">
+                <input type="checkbox" v-model="selectedProgramIds" :value="program.id"
+                  class="w-5 h-5 border-2 border-gray-400 rounded-full appearance-none checked:bg-custom-orange checked:border-transparent">
+                <span>{{ getProgramName(program.id) }}</span>
+              </label>
+            </div>
+
+            <h3 class="font-bold mt-4 mb-2">กรองโดยวันคงเหลือของแพ็กเกจ</h3>
+            <div class="grid grid-cols-2 gap-4">
+              <label class="flex items-center space-x-2">
+                <input type="radio" v-model="remainingDaysFilter" value="expired"
+                  class="w-5 h-5 border-2 border-gray-400 rounded-full appearance-none checked:bg-red-500 checked:border-transparent">
+                <span>หมดอายุ</span>
+              </label>
+              <label class="flex items-center space-x-2">
+                <input type="radio" v-model="remainingDaysFilter" value="not_expired"
+                  class="w-5 h-5 border-2 border-gray-400 rounded-full appearance-none checked:bg-green-500 checked:border-transparent">
+                <span>ยังไม่หมดอายุ</span>
+              </label>
+            </div>
           </div>
+
           <div class="flex justify-between space-x-4 p-4 bg-white border-t rounded-b-md list-none">
             <li @click="clearFilter"
               class="px-4 py-2 cursor-pointer font-bold text-custom-orange text-left hover:underline">
@@ -121,6 +172,7 @@
             </div>
           </div>
         </div>
+
       </div>
 
       <div class="flex w-[250px] relative">
@@ -148,42 +200,58 @@
         </tr>
       </thead>
       <tbody>
-        <template v-if="filteredSaleRecords1standRenew.length > 0">
-          <tr v-for="(saleRecord, index) in filteredSaleRecords" :key="index"
-            class=" bg-white relative border-b border-b-gray-200">
+        <tr v-if="isLoading" class="bg-white">
+          <td colspan="10" class="py-16 text-center">
+            <div class="flex justify-center items-center space-x-2">
+              <div class="w-3 h-3 bg-gray-500 rounded-full animate-pulse"></div>
+              <div class="w-3 h-3 bg-gray-500 rounded-full animate-pulse delay-200"></div>
+              <div class="w-3 h-3 bg-gray-500 rounded-full animate-pulse delay-400"></div>
+            </div>
+          </td>
+        </tr>
 
-            <td class="px-4 py-2 align-top pb-5">{{ (currentPage - 1) * itemsPerPage + index + 1 }}</td>
-            <td class="px-4 py-2 align-top pb-5 font-bold text-custom-orange">
-              {{ getCustomerName(saleRecord.customer_id) }}
-            </td>
-            <td class="px-4 py-2 align-top pb-5 font-bold ">
-              {{ getPackageTypeName(saleRecord.package_type_id) }}
-            </td>
-            <td class="px-4 py-2 align-top pb-5">
-              {{ getProgramName(saleRecord.program_id) }}
-            </td>
-            <td class="px-4 py-2 align-top pb-5">
-              {{ getPackageName(saleRecord.package_id) }}
-            </td>
-            <td class="px-4 py-2 align-top pb-5">
-              <span v-if="saleRecord.remaining_days < 0" class="text-red-500 font-bold">
-                หมดอายุ
-              </span>
-              <span v-else> {{ saleRecord.remaining_days }} วัน </span>
-            </td>
+        <template v-else>
 
-            <td class="px-4 py-2 align-top pb-5">
-              {{ formatDate(saleRecord.expiry_date) }}
-            </td>
+          <template v-if="filteredSaleRecords1standRenew.length > 0">
+            <tr v-for="(saleRecord, index) in filteredSaleRecords" :key="index"
+              class=" bg-white relative border-b border-b-gray-200">
 
-            <td class="px-4 py-2 align-top pb-5">
-              <span v-if="saleRecord.total_boxes <= 0" class="text-red-500 font-bold">
-                {{ saleRecord.total_boxes }}
-              </span>
-              <span v-else> {{ saleRecord.total_boxes }} </span>
-            </td>
+              <td class="px-4 py-2 align-top pb-5">{{ (currentPage - 1) * itemsPerPage + index + 1 }}</td>
 
-            <!-- <td class="px-4 py-2 align-top pb-5">
+              <td class="px-4 py-2 align-top pb-5">
+                {{ formatDate(saleRecord.paid_date) }}
+              </td>
+              <td class="px-4 py-2 align-top pb-5 font-bold text-custom-orange">
+                {{ getCustomerName(saleRecord.customer_id) }}
+              </td>
+              <td class="px-4 py-2 align-top pb-5 font-bold ">
+                {{ getPackageTypeName(saleRecord.package_type_id) }}
+              </td>
+              <td class="px-4 py-2 align-top pb-5">
+                {{ getProgramName(saleRecord.program_id) }}
+              </td>
+              <td class="px-4 py-2 align-top pb-5">
+                {{ getPackageName(saleRecord.package_id) }}
+              </td>
+              <td class="px-4 py-2 align-top pb-5">
+                <span v-if="saleRecord.remaining_days < 0" class="text-red-500 font-bold">
+                  หมดอายุ
+                </span>
+                <span v-else> {{ saleRecord.remaining_days }} วัน </span>
+              </td>
+
+              <td class="px-4 py-2 align-top pb-5">
+                {{ formatDate(saleRecord.expiry_date) }}
+              </td>
+
+              <td class="px-4 py-2 align-top pb-5">
+                <span v-if="saleRecord.total_boxes <= 0" class="text-red-500 font-bold">
+                  {{ saleRecord.total_boxes }}
+                </span>
+                <span v-else> {{ saleRecord.total_boxes }} </span>
+              </td>
+
+              <!-- <td class="px-4 py-2 align-top pb-5">
               <button @click="openHistoryModal(saleRecord.customer_id)"
                 class="flex items-center space-x-1 text-custom-orange">
                 <span class="material-symbols-outlined text-2xl">history</span>
@@ -191,29 +259,30 @@
               </button>
             </td> -->
 
-            <td class="px-4 py-2 align-top pb-5">
-              <router-link :to="`/order-history/${saleRecord.customer_id}`"
-                class="flex items-center space-x-1 text-custom-orange hover:text-custom-orange-hover">
-                <span class="material-symbols-outlined text-2xl">history</span>
-                <span class="text-m">ประวัติการสั่งซื้อ</span>
-              </router-link>
-            </td>
-          </tr>
-        </template>
+              <td class="px-4 py-2 align-top pb-5">
+                <router-link :to="`/order-history/${saleRecord.customer_id}`"
+                  class="flex items-center space-x-1 text-custom-orange hover:text-custom-orange-hover">
+                  <span class="material-symbols-outlined text-2xl">history</span>
+                  <span class="text-m">ประวัติการสั่งซื้อ</span>
+                </router-link>
+              </td>
+            </tr>
+          </template>
 
-        <template v-if="filteredSaleRecords1standRenew.length < 6 && filteredSaleRecords1standRenew.length > 0">
-          <tr v-for="emptyIndex in (6 - filteredSaleRecords1standRenew.length)" :key="'empty-' + emptyIndex"
-            class="bg-white">
-            <td colspan="9" class="py-16"></td>
-          </tr>
-        </template>
+          <template v-if="filteredSaleRecords1standRenew.length < 6 && filteredSaleRecords1standRenew.length > 0">
+            <tr v-for="emptyIndex in (6 - filteredSaleRecords1standRenew.length)" :key="'empty-' + emptyIndex"
+              class="bg-white">
+              <td colspan="10" class="py-16"></td>
+            </tr>
+          </template>
 
-        <template v-if="filteredSaleRecords1standRenew.length === 0">
-          <tr>
-            <td colspan="9" class="py-10 bg-white text-center text-gray-500 font-bold">
-              ไม่พบข้อมูล
-            </td>
-          </tr>
+          <template v-if="filteredSaleRecords1standRenew.length === 0">
+            <tr>
+              <td colspan="10" class="py-10 bg-white text-center text-gray-500 font-bold">
+                ไม่พบข้อมูล
+              </td>
+            </tr>
+          </template>
         </template>
       </tbody>
 
@@ -388,12 +457,14 @@
 
 <script>
 import axios from "axios";
+import { API_URL } from "@/services/api";
 
 export default {
   data() {
     return {
       headers: [
         "#",
+        `วันที่ชำระ`,
         `Customer's Name`,
         "Package Type",
         "Program",
@@ -403,7 +474,7 @@ export default {
         "ยอดคงเหลือแพ็กเกจ",
         "",
       ],
-      headerWidths: ["5%", "15%", "10%", "15%", "15%", "10%", "10%", "10%", "15%"],
+      headerWidths: ["5%", "8%", "15%", "10%", "11%", "11%", "10%", "10%", "10%", "15%"],
       saleRecords: [],
 
       searchQuery: "",
@@ -495,6 +566,8 @@ export default {
 
       isFilterDropdownOpen: false,
       selectedPackageType: [],
+      selectedProgramIds: [],
+      remainingDaysFilter: '',
       //filteredSaleRecord: [],
 
       isDetailModalOpen: false,
@@ -585,6 +658,8 @@ export default {
       showFailToast: false,
       showErrorToast: false,
       toastErrorMessage: "",
+
+      isLoading: false,
     };
   },
   computed: {
@@ -855,16 +930,31 @@ export default {
         .filter((saleRecord) => {
           const matchesSearch = this.getCustomerName(saleRecord.customer_id).toLowerCase().includes(this.searchQuery.toLowerCase());
           const matchesPackageType = this.selectedPackageType.length === 0 || this.selectedPackageType.includes(saleRecord.package_type_id);
-          const matchesPaymentStatus = saleRecord.payment_status === "paid"; // เพิ่มเงื่อนไขกรอง payment_status
-          return matchesSearch && matchesPackageType && matchesPaymentStatus;
+          const matchesProgram = this.selectedProgramIds.length === 0 || this.selectedProgramIds.includes(saleRecord.program_id);
+          const matchesPaymentStatus = saleRecord.payment_status === "paid";
+
+          // Filter by Remaining Days
+          const matchesRemainingDays =
+            this.remainingDaysFilter === 'expired'
+              ? saleRecord.remaining_days <= 0
+              : this.remainingDaysFilter === 'not_expired'
+                ? saleRecord.remaining_days > 0
+                : true; // No filter for remaining_days if not selected
+
+          return matchesSearch && matchesPackageType && matchesProgram && matchesPaymentStatus && matchesRemainingDays;
         });
     },
+
 
     filteredPackageTypes() {
       return this.packageTypes.filter(type =>
         !type.name.toLowerCase().includes('additional sales') &&
         !type.name.toLowerCase().includes('consignment')
       );
+    },
+
+    filteredProgramIds() {
+      return this.programs.filter(type => !type.name.startsWith('Happy'));
     },
 
     isConsignmentOrAdditional() {
@@ -937,7 +1027,6 @@ export default {
       const startIndex = (this.currentPage - 1) * this.itemsPerPage;
       const endIndex = startIndex + this.itemsPerPage;
 
-      // ใช้ข้อมูลที่กรองแล้วใน filteredSaleRecords1standRenew
       this.filteredSaleRecords = this.filteredSaleRecords1standRenew.slice(startIndex, endIndex);
     },
 
@@ -947,7 +1036,14 @@ export default {
           saleRecord.customer_id
         ).toLowerCase().includes(this.searchQuery.toLowerCase());
         const matchesPackageType = this.selectedPackageType.length === 0 || this.selectedPackageType.includes(saleRecord.package_type_id);
-        return matchesSearch && matchesPackageType;
+        const matchesProgram = this.selectedProgramIds.length === 0 || this.selectedProgramIds.includes(saleRecord.program_id);
+        const matchesRemainingDays =
+          this.remainingDaysFilter === 'expired'
+            ? saleRecord.remaining_days <= 0
+            : this.remainingDaysFilter === 'not_expired'
+              ? saleRecord.remaining_days > 0
+              : true;
+        return matchesSearch && matchesPackageType && matchesProgram && matchesRemainingDays;
       });
 
       this.currentPage = 1;
@@ -1000,21 +1096,40 @@ export default {
       this.isFilterDropdownOpen = !this.isFilterDropdownOpen;
     },
     applyFilter() {
+      let filteredRecords = this.saleRecords;
+
       if (this.selectedPackageType.length > 0) {
-        this.filteredSaleRecords = this.packageTypes.filter(packageType =>
+        filteredRecords = filteredRecords.filter(packageType =>
           this.selectedPackageType.includes(packageType.package_type_id)
         );
-      } else {
-        this.filteredSaleRecords = this.saleRecords;
       }
+      if (this.selectedProgramIds.length > 0) {
+        filteredRecords = filteredRecords.filter(program =>
+          this.selectedProgramIds.includes(program.program_id)
+        );
+
+      }
+      if (this.remainingDaysFilter === 'expired') {
+        filteredRecords = filteredRecords.filter(record =>
+          record.remaining_days <= 0
+        );
+      } else if (this.remainingDaysFilter === 'not_expired') {
+        filteredRecords = filteredRecords.filter(record =>
+          record.remaining_days > 0
+        );
+      }
+      this.filteredSaleRecords = filteredRecords;
       this.isFilterDropdownOpen = false;
       this.updatePage();
     },
     clearFilter() {
       this.selectedPackageType = [];
+      this.selectedProgramIds = [];
+      this.remainingDaysFilter = '';
       this.filteredSaleRecords = this.saleRecords;
       this.updatePage();
     },
+
 
     toggleMoreDropdown(index) {
       this.moreOpenDropdownIndex =
@@ -1042,6 +1157,8 @@ export default {
     },
 
     async fetchLookupData() {
+      this.isLoading = true;
+
       try {
         const [
           customersRes,
@@ -1058,19 +1175,19 @@ export default {
           receiveFoodRes,
           selectFoodRes,
         ] = await Promise.all([
-          axios.get("http://127.0.0.1:3333/customers"),
-          axios.get("http://127.0.0.1:3333/promotion-types"),
-          axios.get("http://127.0.0.1:3333/programs"),
-          axios.get("http://127.0.0.1:3333/packages"),
-          axios.get("http://127.0.0.1:3333/package-types"),
-          axios.get("http://127.0.0.1:3333/zone-deliveries"),
-          axios.get("http://127.0.0.1:3333/zone-delivery-types"),
-          axios.get("http://127.0.0.1:3333/seller-names"),
-          axios.get("http://127.0.0.1:3333/payment-types"),
-          axios.get("http://127.0.0.1:3333/additional-types"),
-          axios.get("http://127.0.0.1:3333/delivery-rounds"),
-          axios.get("http://127.0.0.1:3333/receive-foods"),
-          axios.get("http://127.0.0.1:3333/select-foods"),
+          axios.get(`${API_URL}/customers`),
+          axios.get(`${API_URL}/promotion-types`),
+          axios.get(`${API_URL}/programs`),
+          axios.get(`${API_URL}/packages`),
+          axios.get(`${API_URL}/package-types`),
+          axios.get(`${API_URL}/zone-deliveries`),
+          axios.get(`${API_URL}/zone-delivery-types`),
+          axios.get(`${API_URL}/seller-names`),
+          axios.get(`${API_URL}/payment-types`),
+          axios.get(`${API_URL}/additional-types`),
+          axios.get(`${API_URL}/delivery-rounds`),
+          axios.get(`${API_URL}/receive-foods`),
+          axios.get(`${API_URL}/select-foods`),
         ]);
 
         this.customers = customersRes.data;
@@ -1135,18 +1252,24 @@ export default {
         //console.log(this.paymentTypes);
       } catch (error) {
         console.error("Error fetching lookup data:", error);
+      } finally {
+        this.isLoading = false;
       }
     },
 
     async fetchSaleRecords() {
+      this.isLoading = true;
+
       try {
-        const response = await axios.get("http://127.0.0.1:3333/sale-records");
+        const response = await axios.get(`${API_URL}/sale-records`);
         this.saleRecords = response.data;
         this.filteredSaleRecords = response.data;
         this.saleRecords.sort((a, b) => a.id - b.id);
         this.updatePage();
       } catch (error) {
         console.error("Error fetching sale records:", error);
+      } finally {
+        this.isLoading = false;
       }
     },
 
@@ -1245,32 +1368,6 @@ export default {
       const zone = this.zoneDeliveries.find((zone) => zone.id === zoneId);
       return zone ? zone.price : 0; // ถ้าไม่พบ zone ให้คืนค่า 0
     },
-
-    // confirmDelete(itemId) {
-    //   this.itemToDelete = itemId;
-    //   this.isDeleteModalOpen = true;
-    //   this.moreOpenDropdownIndex = null;
-    // },
-    // closeDeleteModal() {
-    //   this.isDeleteModalOpen = false;
-    //   this.itemToDelete = null;
-    // },
-    // async deleteConfirmed() {
-    //   try {
-    //     await axios.delete(
-    //       `http://127.0.0.1:3333/sale-records/${this.itemToDelete}`
-    //     );
-    //     this.saleRecords = this.saleRecords.filter(
-    //       (item) => item.id !== this.itemToDelete
-    //     );
-    //     this.showFailToastNotification("ลบข้อมูลสำเร็จ!");
-    //     this.closeDeleteModal();
-    //     this.updatePage();
-    //   } catch (error) {
-    //     this.showErrorToastNotification("เกิดข้อผิดพลาดในการลบข้อมูล!");
-    //     // console.error("Error deleting item:", error);
-    //   }
-    // },
 
     onViewDetail(saleRecord) {
       this.selectedSaleRecord = saleRecord;
@@ -1420,7 +1517,7 @@ export default {
       this.loadingHistory = true;
 
       try {
-        const response = await axios.get(`http://127.0.0.1:3333/orders/user/${customerId}`);
+        const response = await axios.get(`${API_URL}/orders/user/${customerId}`);
         this.orderHistory = response.data.orders;
       } catch (error) {
         console.error("เกิดข้อผิดพลาดในการดึงประวัติการสั่งซื้อ:", error);
@@ -1464,9 +1561,6 @@ export default {
     "saleRecord.customer_id"(newCustomerId) {
       this.fetchCustomerAddress(newCustomerId);
     },
-    'saleRecord.package_type_id': 'checkPackageType',
-
-    'selectedSaleRecord.package_type_id': 'checkEditPackageType',
     searchQuery() {
       this.updatePage();
     },

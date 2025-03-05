@@ -86,9 +86,20 @@
                 </tr>
             </thead>
             <tbody>
+                <tr v-if="isLoading" class="bg-white">
+                    <td colspan="7" class="py-16 text-center">
+                        <div class="flex justify-center items-center space-x-2">
+                            <div class="w-3 h-3 bg-gray-500 rounded-full animate-pulse"></div>
+                            <div class="w-3 h-3 bg-gray-500 rounded-full animate-pulse delay-200"></div>
+                            <div class="w-3 h-3 bg-gray-500 rounded-full animate-pulse delay-400"></div>
+                        </div>
+                    </td>
+                </tr>
+
+                <template v-else>
                 <template v-if="filteredCustomers.length > 0">
                     <tr v-for="(customer, index) in filteredCustomers" :key="index"
-                        class="customers-data bg-white relative">
+                        class="customers-data bg-white border-b relative">
                         <td class="px-4 py-2 align-top pb-5">{{ (currentPage - 1) * itemsPerPage + index + 1 }}</td>
                         <td class="px-4 py-2 align-top font-bold text-custom-orange pb-5">{{ customer.name }}</td>
                         <td class="px-4 py-2 align-top pb-5">{{ customer.customer_id }}</td>
@@ -166,6 +177,7 @@
                             ไม่พบข้อมูล
                         </td>
                     </tr>
+                </template>
                 </template>
 
             </tbody>
@@ -419,6 +431,7 @@
 
 <script>
 import axios from 'axios';
+import { API_URL } from "@/services/api";
 
 export default {
     name: "AFF Customers",
@@ -481,6 +494,9 @@ export default {
             showFailToast: false,
             showErrorToast: false,
             toastErrorMessage: "",
+
+            isLoading: false,
+
 
         };
     },
@@ -552,12 +568,16 @@ export default {
     },
     methods: {
         async fetchCustomers() {
+            this.isLoading = true;
+
             try {
-                const response = await axios.get('http://127.0.0.1:3333/customers-hhb');
+                const response = await axios.get(`${API_URL}/customers-hhb`);
                 this.customers = response.data;
                 this.customers.sort((a, b) => a.id - b.id);
             } catch (error) {
                 console.error("Error fetching customers:", error);
+            } finally {
+                this.isLoading = false;
             }
         },
         goToPage(page) {
@@ -637,6 +657,8 @@ export default {
         onEdit(customer) {
             this.selectedCustomer = { ...customer }; // คัดลอกข้อมูลลูกค้า
             this.isEditModalOpen = true; // เปิด Modal
+            this.moreOpenDropdownIndex = null;
+
         },
         async saveChanges() {
             try {
@@ -647,7 +669,7 @@ export default {
                 }
 
                 // ส่งคำขอไปที่ Backend เพื่ออัปเดตข้อมูล
-                const response = await axios.put(`http://127.0.0.1:3333/customers-hhb/${this.selectedCustomer.id}`, {
+                const response = await axios.put(`${API_URL}/customers-hhb/${this.selectedCustomer.id}`, {
                     email: this.selectedCustomer.email,
                     customer_id: this.selectedCustomer.customer_id,
                     name: this.selectedCustomer.name,

@@ -26,21 +26,21 @@
                 </span>
             </button>
 
-            <strong class="text-gray-700">เลือกวันที่:</strong>
+            <!-- <strong class="text-gray-700">เลือกวันที่:</strong>
             <input ref="singleDatepicker" type="text" v-model="formattedStartDate"
                 class="text-center bg-white rounded-md font-bold border border-gray-200 focus:outline-none focus:ring-2 focus:ring-custom-orange hover:ring-2 hover:ring-custom-orange text-custom-orange hover:text-custom-orange-hover w-[150px]"
-                placeholder="เลือกวันที่" />
+                placeholder="เลือกวันที่" /> -->
 
 
-            <!-- <strong class="text-gray-700">Start Date:</strong>
+            <strong class="text-gray-700">Start Date:</strong>
             <input ref="startDatepicker" type="text" v-model="formattedStartDate" @input="onStartDateChange"
                 class="text-center bg-white rounded-md font-bold border border-gray-200 focus:outline-none focus:ring-2 focus:ring-custom-orange hover:ring-2 hover:ring-custom-orange text-custom-orange hover:text-custom-orange-hover w-[150px]"
-                placeholder="เลือกวันที่เริ่มต้น" /> -->
+                placeholder="เลือกวันที่เริ่มต้น" />
 
-            <!-- <strong class="text-gray-700">End Date:</strong>
+            <strong class="text-gray-700">End Date:</strong>
             <input ref="endDatepicker" type="text" v-model="formattedEndDate" @input="onEndDateChange"
                 class="text-center bg-white rounded-md font-bold border border-gray-200 focus:outline-none focus:ring-2 focus:ring-custom-orange hover:ring-2 hover:ring-custom-orange text-custom-orange hover:text-custom-orange-hover w-[150px]"
-                placeholder="เลือกวันที่สิ้นสุด" /> -->
+                placeholder="เลือกวันที่สิ้นสุด" />
 
 
         </div>
@@ -48,40 +48,64 @@
         <div class="mt-4">
             <div class="flex items-center">
                 <h1 class="text-xl font-bold">ประวัติการสั่งซื้อ: </h1>
-                <h1 class="text-xl text-custom-orange font-bold ml-2">{{ getCustomerName(customerId) }}</h1>
-            </div>
-            <div v-if="loading" class="mt-4 text-center text-gray-600">กำลังโหลด...</div>
 
-            <!-- กล่องที่มีการจัดกลุ่มคำสั่งซื้อ -->
-            <div v-if="orders.length > 0"
-                class="mt-4 bg-white rounded-md shadow-lg p-4 border border-gray-300 overflow-y-auto h-[650px]">
-                <div v-for="order in orders" :key="order.order_date" class="border-b border-gray-200 py-4">
+                <h1 v-if="isLoading" class="text-xl font-bold ml-2">
+                    <div class="bg-gray-200 animate-pulse h-6 w-48 rounded-md"></div>
+                </h1>
+                <h1 v-else class="text-xl text-custom-orange font-bold ml-2">{{ getCustomerName(customerId) }}</h1>
+            </div>
+
+            <div v-if="isLoading"
+                class="mt-4 bg-white rounded-md shadow-lg p-4 border border-gray-100 overflow-y-auto h-[650px]">
+                <div v-for="n in 5" :key="n" class="border-b border-gray-200 py-4 animate-pulse">
                     <div class="flex justify-between items-center">
-                        <div class="font-semibold">{{ getMenuEngName(order.menu_id) }} ({{ getMenuThaiName(order.menu_id) }})</div>
-                        <div class="text-gray-600">{{ formattedDate(order.order_date) }}</div>
+                        <div class="bg-gray-100 h-6 w-1/4 rounded-md"></div>
+                        <div class="bg-gray-100 h-6 w-1/6 rounded-md"></div>
                     </div>
                     <div class="mt-2 text-gray-500">
                         <div class="flex items-center">
-                            <p>จำนวน:</p>
-                             <strong class="ml-2 text-black">{{ order.quantity }}</strong>
-                            </div>
-                        <div class="flex items-center">
-                            <p>สถานะ: </p>
-                            <div :class="{ 'text-yellow-500 font-bold': order.status === 'pending', 'text-green-500 font-bold': order.status === 'confirm' }"
-                                class="ml-2">
-                                {{ getStatusText(order.status) }}
-                            </div>
+                            <div class="bg-gray-100 h-6 w-20 rounded-md"></div>
                         </div>
-
+                        <div class="flex items-center mt-2">
+                            <div class="bg-gray-100 h-6 w-24 rounded-md"></div>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div v-if="orders.length === 0"
-                class="mt-4 bg-white rounded-md shadow-lg p-4 border border-gray-300 h-[650px] flex justify-center items-center">
-                <div class="flex items-center space-x-1 text-gray-500 font-bold text-center">
-                    <span class="material-symbols-outlined text-3xl">history_off</span>
-                    <span class="text-xl">ไม่มีประวัติการสั่งซื้อในวันนี้</span>
+            <div v-else>
+                <div v-if="orders.length > 0"
+                    class="mt-4 bg-white rounded-md shadow-lg p-4 border border-gray-300 overflow-y-auto h-[650px]">
+                    <div v-for="order in orders" :key="order.order_date" class="border-b border-gray-200 py-4">
+                        <div class="flex justify-between items-center">
+                            <div class="font-semibold">{{ getMenuEngName(order.menu_id) }} ({{
+                                getMenuThaiName(order.menu_id) }})</div>
+                            <div class="text-gray-600">{{ formattedDate(order.order_date) }}</div>
+                        </div>
+                        <div class="mt-2 text-gray-500">
+                            <div class="flex items-center">
+                                <p>จำนวน:</p>
+                                <strong class="ml-2 text-black">{{ order.quantity }}</strong>
+                            </div>
+                            <div class="flex items-center">
+                                <p>สถานะ: </p>
+                                <div :class="{ 'text-yellow-500 font-bold': order.status === 'pending', 'text-green-500 font-bold': order.status === 'confirm' }"
+                                    class="ml-2">
+                                    {{ getStatusText(order.status) }}
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+
+                <div v-if="orders.length === 0"
+                    class="mt-4 bg-white rounded-md shadow-lg p-4 border border-gray-300 h-[650px] flex justify-center items-center">
+                    <div class="flex items-center space-x-1 text-gray-500 font-bold text-center">
+                        <span class="material-symbols-outlined text-3xl">history_off</span>
+                        <span class="text-xl">ไม่มีประวัติการสั่งซื้อในวันนี้</span>
+                    </div>
                 </div>
             </div>
 
@@ -98,6 +122,8 @@
 import axios from "axios";
 import flatpickr from "flatpickr";
 import "flatpickr/dist/flatpickr.css";
+import { API_URL } from "@/services/api";
+
 
 export default {
     data() {
@@ -106,7 +132,7 @@ export default {
             orders: [],
             customers: [],
             menus: [],
-            loading: false,
+            isLoading: false,
             startDate: '', // วันที่เริ่มต้น
             endDate: '',
             selectedDate: "",
@@ -172,25 +198,34 @@ export default {
         },
 
         async fetchOrders(startDate, endDate) {
-            this.loading = true;
+            this.isLoading = true;
             try {
-                const response = await axios.get(`http://127.0.0.1:3333/orders/user/${this.customerId}`, {
+                const response = await axios.get(`${API_URL}/orders/user/${this.customerId}`, {
                     params: { start_date: startDate, end_date: endDate },
                 });
-                this.orders = response.data.orders || [];
+                this.orders = response.data.orders;
+                this.orders.sort((a, b) => {
+                    const dateA = new Date(a.order_date);
+                    const dateB = new Date(b.order_date);
+                    return dateA - dateB;
+                });
             } catch (error) {
-                // console.error("เกิดข้อผิดพลาดในการดึงประวัติการสั่งซื้อ:", error);
                 this.orders = []; // กรณีมีข้อผิดพลาดให้ตั้งค่าเป็นอาเรย์ว่าง
             } finally {
-                this.loading = false;
+                this.isLoading = false;
             }
         },
 
         onStartDateChange(event) {
             const inputDate = new Date(event.target.value);
             if (!isNaN(inputDate)) {
-                this.startDate = inputDate.toISOString();
-                this.endDate = inputDate.toISOString();
+                this.startDate = inputDate.toISOString(); // เก็บวันที่ในรูปแบบ ISO
+            }
+        },
+        onEndDateChange(event) {
+            const inputDate = new Date(event.target.value);
+            if (!isNaN(inputDate)) {
+                this.endDate = inputDate.toISOString(); // เก็บวันที่ในรูปแบบ ISO
             }
         },
 
@@ -219,19 +254,23 @@ export default {
             }
         },
         async fetchLookupData() {
+            this.isLoading = true;
+
             try {
                 const [
                     customersRes,
                     menuRes,
                 ] = await Promise.all([
-                    axios.get("http://127.0.0.1:3333/customers"),
-                    axios.get("http://127.0.0.1:3333/menus"),
+                    axios.get(`${API_URL}/customers`),
+                    axios.get(`${API_URL}/menus`),
                 ]);
 
                 this.customers = customersRes.data;
                 this.menus = menuRes.data;
             } catch (error) {
                 console.error("Error fetching lookup data:", error);
+            } finally {
+                this.isLoading = false;
             }
         },
 
@@ -253,27 +292,35 @@ export default {
         },
     },
     created() {
-        this.fetchOrders(this.selectedDate);
+        this.fetchOrders(this.startDate, this.endDate);
         this.setToday();
         this.fetchLookupData();
     },
     mounted() {
         // document.addEventListener('click', this.handleClickOutside);
         this.fetchLookupData();
-        this.fetchOrders(this.selectedDate);
+        this.fetchOrders(this.startDate, this.endDate);
         this.setToday();
 
         this.$nextTick(() => {
-            this.fetchOrdersData();
-            flatpickr(this.$refs.singleDatepicker, {
-                // mode: "single",  // โหมดเลือกวันเดียว
-                dateFormat: "Y-m-d",  // รูปแบบวันที่
+            flatpickr(this.$refs.startDatepicker, {
+                dateFormat: "Y-m-d", // รูปแบบวันที่
                 todayButton: true,
-                defaultDate: new Date(),  // กำหนดวันที่เริ่มต้นเป็นวันนี้
+                defaultDate: new Date(),
                 onChange: (selectedDates, dateStr) => {
-                    this.startDate = dateStr;
-                    this.endDate = dateStr;
-                    this.fetchOrdersData();  // ดึงข้อมูลคำสั่งซื้อ
+                    this.startDate = dateStr; // กำหนดค่า startDate
+                    this.fetchOrdersData(); // เรียกฟังก์ชันเมื่อเลือกวันที่
+                }
+            });
+
+            // ใช้ flatpickr กับวันที่สิ้นสุด
+            flatpickr(this.$refs.endDatepicker, {
+                dateFormat: "Y-m-d",
+                todayButton: true,
+                defaultDate: new Date(),
+                onChange: (selectedDates, dateStr) => {
+                    this.endDate = dateStr; // กำหนดค่า endDate
+                    this.fetchOrdersData(); // เรียกฟังก์ชันเมื่อเลือกวันที่
                 }
             });
         });

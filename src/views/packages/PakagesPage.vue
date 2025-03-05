@@ -715,6 +715,8 @@ import Multiselect from "vue-multiselect";
 import { mapActions, mapGetters } from "vuex";
 import flatpickr from "flatpickr";
 import "flatpickr/dist/flatpickr.css";
+import { API_URL } from "@/services/api";
+
 
 export default {
     name: "PackagePage",
@@ -935,7 +937,7 @@ export default {
 
         async fetchPackages() {
             try {
-                const response = await axios.get('http://127.0.0.1:3333/packages');
+                const response = await axios.get(`${API_URL}/packages`);
                 this.packages = response.data;
                 this.packages.sort((a, b) => a.id - b.id);
 
@@ -1099,7 +1101,7 @@ export default {
                     return;
                 }
 
-                const response = await axios.put(`http://127.0.0.1:3333/packages/${this.selectedPackage.id}`, {
+                const response = await axios.put(`${API_URL}/packages/${this.selectedPackage.id}`, {
                     name: this.selectedPackage.name,
                     program_id: this.selectedPackage.program_id.id,
                     package_detail: this.selectedPackage.package_detail,
@@ -1149,7 +1151,7 @@ export default {
         },
         async deleteConfirmed() {
             try {
-                await axios.delete(`http://127.0.0.1:3333/packages/${this.itemToDelete}`);
+                await axios.delete(`${API_URL}/packages/${this.itemToDelete}`);
                 this.packages = this.packages.filter(
                     (item) => item.id !== this.itemToDelete
                 );
@@ -1196,7 +1198,7 @@ export default {
                 return;
             }
             try {
-                const response = await axios.post('http://127.0.0.1:3333/packages', {
+                const response = await axios.post(`${API_URL}/packages`, {
                     name: this.newPackage.name,
                     program_id: this.newPackage.program_id.id,
                     package_detail: this.newPackage.package_detail,
@@ -1232,7 +1234,7 @@ export default {
 
         async fetchPrograms() {
             try {
-                const response = await axios.get('http://127.0.0.1:3333/programs');
+                const response = await axios.get(`${API_URL}/programs`);
                 this.programs = response.data;
             } catch (error) {
                 console.error("Error fetching promotion types:", error);
@@ -1241,7 +1243,7 @@ export default {
 
         async fetchPromotionTypes() {
             try {
-                const response = await axios.get('http://127.0.0.1:3333/promotion-types');
+                const response = await axios.get(`${API_URL}/promotion-types`);
                 this.promotion_types = response.data;
             } catch (error) {
                 console.error("Error fetching promotion types:", error);

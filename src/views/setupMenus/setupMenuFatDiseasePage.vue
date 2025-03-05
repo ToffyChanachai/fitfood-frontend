@@ -1,85 +1,38 @@
 <template>
-  <!-- <table class="min-w-full table-auto rounded-t-2xl overflow-hidden mt-4">
-      <thead>
-        <tr class="bg-custom-orange text-white">
-          <th v-for="(header, index) in headers" :key="index" :class="['px-4 py-2 text-left font-bold']"
-            :style="{ width: headerWidths[index] }">
-            {{ header }}
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <template v-for="(setupMenus, week) in setupMenus" :key="week">
-          <tr v-for="(menu, index) in setupMenus" :key="menu.id" class="border-b border-b-gray-200 bg-white relative">
-            <td class="px-4 py-2 align-top pb-5">{{ index + 1 }}</td>
-  
-            <td v-if="index === 0" :rowspan="setupMenus.length" class="px-4 py-2 border border-transparent">
-              {{ week }}
-            </td>
-            <td v-if="index === 0 || setupMenus[index].day_of_week !== setupMenus[index - 1].day_of_week"
-              :rowspan="setupMenus.filter(m => m.day_of_week === menu.day_of_week).length"
-              class="px-4 py-2 align-top pb-5">
-              {{ menu.day_of_week }}
-            </td>
-  
-            <td class="px-4 py-2 align-top pb-5">{{ getMenuEnglishName(menu.menu_id) }}</td>
-            <td class="px-4 py-2 align-top pb-5">{{ getMenuThaiName(menu.menu_id) }}</td>
-          </tr>
-        </template>
-</tbody>
-</table> -->
 
   <div
     class="fixed top-4 right-8 bg-green-500 text-white px-8 py-4 flex items-center space-x-4 rounded-lg shadow-lg transition-opacity duration-300 z-50"
-    :class="{ 'opacity-100': showSuccessToast, 'opacity-0': !showSuccessToast }"
-  >
+    :class="{ 'opacity-100': showSuccessToast, 'opacity-0': !showSuccessToast }">
     <span class="material-symbols-outlined text-white">check_circle</span>
     <span>{{ toastSuccessMessage }}</span>
-    <button
-      @click="showSuccessToast = false"
-      class="text-white hover:text-gray-200 focus:outline-none"
-    >
+    <button @click="showSuccessToast = false" class="text-white hover:text-gray-200 focus:outline-none">
       <span class="material-symbols-outlined text-xl">close</span>
     </button>
   </div>
 
   <div
     class="fixed top-4 right-8 bg-red-500 text-white px-8 py-4 flex items-center space-x-4 rounded-lg shadow-lg transition-opacity duration-300 z-50"
-    :class="{ 'opacity-100': showFailToast, 'opacity-0': !showFailToast }"
-  >
+    :class="{ 'opacity-100': showFailToast, 'opacity-0': !showFailToast }">
     <span class="material-symbols-outlined text-white">cancel</span>
     <span>{{ toastFailMessage }}</span>
-    <button
-      @click="showFailToast = false"
-      class="text-white hover:text-gray-200 focus:outline-none"
-    >
+    <button @click="showFailToast = false" class="text-white hover:text-gray-200 focus:outline-none">
       <span class="material-symbols-outlined text-xl">close</span>
     </button>
   </div>
 
   <div class="flex justify-end items-center space-x-2 relative">
     <div class="flex items-center space-x-1 mr-auto">
-      <button
-        @click="viewMode = 'week'"
-        :class="[
-          'px-2 py-1 rounded-lg  hover:bg-gray-50',
-          { ' text-custom-orange': viewMode === 'week' },
-        ]"
-      >
-        <span class="material-symbols-outlined text-2xl"
-          >calendar_view_week</span
-        >
+      <button @click="viewMode = 'week'" :class="[
+        'px-2 py-1 rounded-lg  hover:bg-gray-50',
+        { ' text-custom-orange': viewMode === 'week' },
+      ]">
+        <span class="material-symbols-outlined text-2xl">calendar_view_week</span>
       </button>
-      <button
-        @click="viewMode = 'day'"
-        :class="[
-          'px-2 py-1 rounded-lg  hover:bg-gray-50',
-          { ' text-custom-orange': viewMode === 'day' },
-        ]"
-      >
-        <span class="material-symbols-outlined text-2xl"
-          >calendar_view_day</span
-        >
+      <button @click="viewMode = 'day'" :class="[
+        'px-2 py-1 rounded-lg  hover:bg-gray-50',
+        { ' text-custom-orange': viewMode === 'day' },
+      ]">
+        <span class="material-symbols-outlined text-2xl">calendar_view_day</span>
       </button>
 
       <p class="text-4xl mb-2">|</p>
@@ -90,92 +43,54 @@
 
     <div class="flex items-center space-x-4">
       <div>
-        <label for="startDate" class="font-bold mr-2 text-gray-700"
-          >วันเริ่มต้น:</label
-        >
-        <input
-          type="text"
-          id="startDate"
-          ref="startDate"
-          v-model="formattedStartDate"
+        <label for="startDate" class="font-bold mr-2 text-gray-700">วันเริ่มต้น:</label>
+        <input type="text" id="startDate" ref="startDate" v-model="formattedStartDate"
           class="text-center bg-white rounded-md font-bold border border-gray-200 focus:outline-none focus:ring-2 focus:ring-custom-orange hover:ring-2 hover:ring-custom-orange text-custom-orange w-[150px]"
-          placeholder="เลือกวันที่"
-        />
+          placeholder="เลือกวันที่" />
       </div>
-      <button
-        @click="updateStartDate"
+      <button @click="updateStartDate"
         class="bg-green-500 text-white px-2 py-1 rounded flex items-center space-x-1 hover:bg-green-700"
-        v-if="!isDateConfirmed && startDate !== initialStartDate"
-      >
+        v-if="!isDateConfirmed && startDate !== initialStartDate">
         ยืนยัน
       </button>
     </div>
 
     <div class="add relative inline-block">
-      <button
-        @click="openAddModal"
-        class="bg-custom-orange text-white px-4 py-2 rounded flex items-center space-x-1 hover:bg-custom-orange-hover"
-      >
-        <span class="material-symbols-outlined text-white text-xl leading-none"
-          >add</span
-        >
+      <button @click="openAddModal"
+        class="bg-custom-orange text-white px-4 py-2 rounded flex items-center space-x-1 hover:bg-custom-orange-hover">
+        <span class="material-symbols-outlined text-white text-xl leading-none">add</span>
         <span class="text-white text-base leading-none">เพิ่ม Setup Menu</span>
       </button>
 
-      <div
-        v-if="isAddModalOpen"
-        class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50"
-      >
-        <div
-          class="bg-white rounded-md shadow-lg w-1/2 max-w-3xl h-auto max-h-[800px] flex flex-col"
-        >
+      <div v-if="isAddModalOpen" class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
+        <div class="bg-white rounded-md shadow-lg w-1/2 max-w-3xl h-auto max-h-[800px] flex flex-col">
           <div
             class="absolute top-8 left-1/2 transform -translate-x-1/2 bg-yellow-500 text-white px-8 py-4 flex items-center space-x-4 rounded-lg shadow-lg transition-opacity duration-300 z-60"
             :class="{
               'opacity-100': showErrorToast,
               'opacity-0': !showErrorToast,
-            }"
-          >
+            }">
             <span class="material-symbols-outlined text-white">error</span>
             <span>{{ toastErrorMessage }}</span>
-            <button
-              @click="showErrorToast = false"
-              class="text-white hover:text-gray-200 focus:outline-none"
-            >
+            <button @click="showErrorToast = false" class="text-white hover:text-gray-200 focus:outline-none">
               <span class="material-symbols-outlined text-xl">close</span>
             </button>
           </div>
 
-          <div
-            class="flex justify-between items-center bg-custom-orange text-white px-4 py-2 rounded-t-md"
-          >
+          <div class="flex justify-between items-center bg-custom-orange text-white px-4 py-2 rounded-t-md">
             <h2 class="text-xl font-bold">เพิ่มข้อมูล</h2>
-            <span
-              @click="closeAddModal"
-              class="material-symbols-outlined cursor-pointer hover:text-gray-200"
-              >close</span
-            >
+            <span @click="closeAddModal"
+              class="material-symbols-outlined cursor-pointer hover:text-gray-200">close</span>
           </div>
 
           <div class="p-6 space-y-4 overflow-y-auto flex-grow">
             <div class="flex items-center space-x-4">
-              <label for="day_of_week" class="font-bold text-gray-700"
-                >ลำดับวัน:</label
-              >
-              <input
-                v-model="day_of_week"
-                type="number"
-                placeholder="กรองลำดับวัน"
-                class="p-2 border border-gray-300 rounded"
-                required
-              />
+              <label for="day_of_week" class="font-bold text-gray-700">ลำดับวัน:</label>
+              <input v-model="day_of_week" type="number" placeholder="กรองลำดับวัน"
+                class="p-2 border border-gray-300 rounded" required />
             </div>
 
-            <div
-              v-for="(item, index) in formRows"
-              :key="index"
-              class="space-y-4 relative"
-            >
+            <div v-for="(item, index) in formRows" :key="index" class="space-y-4 relative">
               <!-- หัวข้อแถว -->
               <div class="text-xl font-bold text-gray-700">
                 ประเภทอาหาร {{ index + 1 }}
@@ -183,81 +98,47 @@
 
               <!-- ประเภทเมนู -->
               <div>
-                <label for="mealType" class="font-bold text-gray-700"
-                  >ประเภทอาหาร</label
-                >
-                <multiselect
-                  v-model="item.selectedMealType"
-                  :options="filteredMealTypes"
-                  :multiple="false"
-                  :searchable="true"
-                  :close-on-select="true"
-                  placeholder="เลือกประเภทอาหาร"
-                  label="name"
-                  track-by="id"
-                />
+                <label for="mealType" class="font-bold text-gray-700">ประเภทอาหาร</label>
+                <multiselect v-model="item.selectedMealType" :options="filteredMealTypes" :multiple="false"
+                  :searchable="true" :close-on-select="true" placeholder="เลือกประเภทอาหาร" label="name"
+                  track-by="id" />
               </div>
 
               <!-- เมนู -->
               <div>
-                <label for="menus" class="block font-bold text-gray-700"
-                  >เมนู</label
-                >
-                <multiselect
-                  v-model="item.selectedMenus"
-                  :options="getFilteredMenus(item.selectedMealType)"
-                  :multiple="true"
-                  :close-on-select="false"
-                  :clear-on-select="false"
-                  :preserve-search="true"
-                  track-by="id"
-                  :custom-label="menuLabel"
-                />
+                <label for="menus" class="block font-bold text-gray-700">เมนู</label>
+                <multiselect v-model="item.selectedMenus" :options="getFilteredMenus(item.selectedMealType)"
+                  :multiple="true" :close-on-select="false" :clear-on-select="false" :preserve-search="true"
+                  track-by="id" :custom-label="menuLabel" />
               </div>
 
               <!-- ปุ่มลบแถว -->
               <div class="absolute top-2 right-4">
-                <button
-                  type="button"
-                  @click="removeRow(index)"
-                  class="text-red-500 hover:text-red-600 flex items-center"
-                >
+                <button type="button" @click="removeRow(index)"
+                  class="text-red-500 hover:text-red-600 flex items-center">
                   <span>× ลบเมนู</span>
                 </button>
               </div>
             </div>
 
             <div class="mb-4 flex justify-center">
-              <button
-                type="button"
-                @click="addRow"
-                class="text-green-500 hover:text-green-600 flex items-center"
-              >
+              <button type="button" @click="addRow" class="text-green-500 hover:text-green-600 flex items-center">
                 <span>+ เพิ่มแถว</span>
               </button>
             </div>
           </div>
 
-          <div
-            class="flex justify-between space-x-4 p-4 bg-white border-t rounded-b-md list-none"
-          >
-            <li
-              @click="clearForm"
-              class="px-4 py-2 cursor-pointer font-bold text-custom-orange text-left hover:underline"
-            >
+          <div class="flex justify-between space-x-4 p-4 bg-white border-t rounded-b-md list-none">
+            <li @click="clearForm"
+              class="px-4 py-2 cursor-pointer font-bold text-custom-orange text-left hover:underline">
               <span>รีเซ็ตข้อมูล</span>
             </li>
             <div class="flex space-x-2">
-              <button
-                @click="closeAddModal"
-                class="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400 text-gray-700"
-              >
+              <button @click="closeAddModal" class="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400 text-gray-700">
                 ยกเลิก
               </button>
-              <button
-                @click="addMenus"
-                class="px-4 py-2 rounded bg-custom-orange text-white hover:bg-custom-orange-hover"
-              >
+              <button @click="addMenus"
+                class="px-4 py-2 rounded bg-custom-orange text-white hover:bg-custom-orange-hover">
                 บันทึก
               </button>
             </div>
@@ -267,24 +148,14 @@
     </div>
 
     <div class="flex w-[250px] relative">
-      <input
-        type="text"
-        v-model="searchQuery"
-        placeholder="ค้นหา..."
-        class="border border-gray-300 rounded-l px-4 py-2 w-full"
-        @keyup.enter="search"
-      />
-      <button
-        v-if="searchQuery"
-        @click="clearSearch"
-        class="material-symbols-outlined absolute right-[55px] top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
-      >
+      <input type="text" v-model="searchQuery" placeholder="ค้นหา..."
+        class="border border-gray-300 rounded-l px-4 py-2 w-full" @keyup.enter="search" />
+      <button v-if="searchQuery" @click="clearSearch"
+        class="material-symbols-outlined absolute right-[55px] top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700">
         close
       </button>
-      <button
-        @click="search"
-        class="bg-custom-orange material-symbols-outlined text-white text-xl px-4 py-2 rounded-r hover:bg-custom-orange-hover"
-      >
+      <button @click="search"
+        class="bg-custom-orange material-symbols-outlined text-white text-xl px-4 py-2 rounded-r hover:bg-custom-orange-hover">
         search
       </button>
     </div>
@@ -293,80 +164,205 @@
   <div v-show="viewMode === 'week'">
     <div class="flex items-center space-x-3 py-2">
       <button @click="changeWeek(-1)" class="flex items-center">
-        <span
-          class="material-symbols-outlined text-3xl text-custom-orange hover:text-custom-orange-hover"
-        >
+        <span class="material-symbols-outlined text-3xl text-custom-orange hover:text-custom-orange-hover">
           chevron_backward
         </span>
       </button>
 
-      <multiselect
-        v-if="weekOptions.length > 0"
-        v-model="selectedWeek"
-        :options="weekOptions"
-        placeholder="เลือกสัปดาห์"
-        :multiple="false"
-        :taggable="true"
-        :close-on-select="true"
-        :allow-empty="true"
-        class="w-60"
-      >
-      </multiselect>
-
+      <div v-if="isLoading">
+        <div class="bg-gray-200 animate-pulse h-6 w-32 rounded-md"></div>
+      </div>
+      <div v-else>
+        <multiselect v-if="weekOptions.length > 0" v-model="selectedWeek" :options="weekOptions"
+          placeholder="เลือกสัปดาห์" :multiple="false" :taggable="true" :close-on-select="true" :allow-empty="true"
+          class="w-60">
+        </multiselect>
+      </div>
       <button @click="changeWeek(1)" class="flex items-center">
-        <span
-          class="material-symbols-outlined text-3xl text-custom-orange hover:text-custom-orange-hover"
-        >
+        <span class="material-symbols-outlined text-3xl text-custom-orange hover:text-custom-orange-hover">
           chevron_forward
         </span>
       </button>
     </div>
 
-    <div v-if="selectedWeek" class="mb-8">
-      <!-- <h2 class="text-xl font-semibold mb-2 ml-2">{{ selectedWeek }}</h2> -->
-      <table class="min-w-full table-auto rounded-t-2xl overflow-hidden mt-4">
-        <thead>
-          <tr class="bg-custom-orange text-white">
-            <th
-              v-for="(header, index) in headers"
-              :key="index"
-              :class="['px-4 py-2 text-left font-bold']"
-              :style="{ width: headerWidths[index] }"
-            >
-              {{ header }}
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr
-            v-for="(menu, index) in paginatedMenus"
-            :key="menu.id"
-            class="border-b border-b-gray-200 bg-white relative"
-          >
+    <div v-if="isLoading" class="">
+      <div class="flex justify-center items-center space-x-2">
+        <div class="w-3 h-3 bg-custom-orange rounded-full animate-pulse"></div>
+        <div class="w-3 h-3 bg-custom-orange rounded-full animate-pulse delay-200"></div>
+        <div class="w-3 h-3 bg-custom-orange rounded-full animate-pulse delay-400"></div>
+      </div>
+    </div>
+
+    <template v-else>
+      <div v-if="selectedWeek" class="mb-8">
+        <!-- <h2 class="text-xl font-semibold mb-2 ml-2">{{ selectedWeek }}</h2> -->
+        <table class="min-w-full table-auto rounded-t-2xl overflow-hidden mt-4">
+          <thead>
+            <tr class="bg-custom-orange text-white">
+              <th v-for="(header, index) in headers" :key="index" :class="['px-4 py-2 text-left font-bold']"
+                :style="{ width: headerWidths[index] }">
+                {{ header }}
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(menu, index) in paginatedMenus" :key="menu.id"
+              class="border-b border-b-gray-200 bg-white relative">
+              <td class="px-4 py-2 align-top pb-5">
+                {{ (currentPage - 1) * itemsPerPage + index + 1 }}
+              </td>
+
+              <td v-if="
+                index === 0 ||
+                menu.day_of_week !== paginatedMenus[index - 1].day_of_week
+              " :rowspan="getRowSpan(paginatedMenus, menu.day_of_week)"
+                class="px-4 py-2 align-top pb-5 border-l border-r">
+                <div>
+                  <strong>ลำดับวันที่: </strong>{{ menu.day_of_week }}
+                  <br />
+                  <div class="flex items-center">
+                    <span class="material-symbols-outlined text-xl mr-2">calendar_today</span>
+                    {{ formattedDate(menu.date_to_show) }}
+                  </div>
+                </div>
+              </td>
+
+              <td class="px-4 py-2 align-top pb-5">
+                {{ getMealTypeName(getMealTypeID(menu.menu_id)) }}
+              </td>
+              <td class="px-4 py-2 align-top pb-5">
+                {{ getMenuEnglishName(menu.menu_id) }}
+              </td>
+              <td class="px-4 py-2 align-top pb-5">
+                {{ getMenuThaiName(menu.menu_id) }}
+              </td>
+              <td class="px-4 py-2 align-top text-right">
+                <div class="flex justify-end space-x-2">
+                  <button @click="openEditModal(menu)"
+                    class="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 flex items-center space-x-1">
+                    <span class="material-symbols-outlined">edit_square</span>
+                    <span>แก้ไข</span>
+                  </button>
+                  <button @click="confirmDelete(menu.id)"
+                    class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 flex items-center space-x-1">
+                    <span class="material-symbols-outlined">delete</span>
+                    <span>ลบ</span>
+                  </button>
+                </div>
+              </td>
+            </tr>
+
+            <tr v-if="paginatedMenus.length === 0">
+              <td colspan="6" class="py-10 bg-white text-center text-gray-500 font-bold">
+                ไม่พบข้อมูล
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="rounded-b-2xl flex justify-center items-center space-x-2 bg-white px-2 py-1">
+          <!-- ปุ่ม Previous -->
+          <button @click="goToPage(currentPage - 1)" :disabled="currentPage === 1"
+            class="px-3 py-2 rounded-md hover:bg-gray-100 text-custom-orange disabled:opacity-50">
+            <span class="material-symbols-outlined">chevron_left</span>
+          </button>
+
+          <div class="flex items-center space-x-1">
+            <!-- ปุ่มหน้าแรก ถ้าหน้าเริ่มต้นมากกว่า 1 -->
+            <button v-if="totalPagesArray.start > 1" @click="goToPage(1)"
+              class="px-3 py-2 rounded-md bg-white hover:bg-custom-orange hover:text-white">
+              1
+            </button>
+
+            <!-- แสดง ... ถ้าหน้าต่อไปมีหลายหน้า -->
+            <button v-if="totalPagesArray.start > 2" @click="goToPage(totalPagesArray.start - 1)"
+              class="px-3 py-2 rounded-md bg-white hover:bg-custom-orange hover:text-white">
+              ...
+            </button>
+
+            <!-- ปุ่มสำหรับหน้าแต่ละหน้า -->
+            <button v-for="page in totalPagesArray.range" :key="page" @click="goToPage(page)" :class="[
+              'px-3 py-2 rounded-md',
+              {
+                'bg-custom-orange text-white': currentPage === page,
+                'bg-white': currentPage !== page,
+              },
+            ]" class="cursor-pointer hover:bg-custom-orange hover:text-white">
+              {{ page }}
+            </button>
+
+            <!-- แสดง ... ถ้าหน้าต่อไปมีหลายหน้า -->
+            <button v-if="totalPagesArray.end < totalPages - 1" @click="goToPage(totalPagesArray.end + 1)"
+              class="px-3 py-2 rounded-md bg-white hover:bg-custom-orange hover:text-white">
+              ...
+            </button>
+
+            <!-- ปุ่มหน้าสุดท้าย -->
+            <button v-if="totalPagesArray.end < totalPages" @click="goToPage(totalPages)"
+              class="px-3 py-2 rounded-md bg-white hover:bg-custom-orange hover:text-white">
+              {{ totalPages }}
+            </button>
+          </div>
+
+          <!-- ปุ่ม Next -->
+          <button @click="goToPage(currentPage + 1)" :disabled="currentPage === totalPages"
+            class="px-3 py-2 rounded-md hover:bg-gray-100 text-custom-orange disabled:opacity-50">
+            <span class="material-symbols-outlined">chevron_right</span>
+          </button>
+        </div>
+      </div>
+    </template>
+  </div>
+
+  <div v-show="viewMode === 'day'">
+    <div class="flex items-center space-x-3 py-2">
+      <button @click="changeDate(-1)" class="flex items-center">
+        <span class="material-symbols-outlined text-3xl text-custom-orange hover:text-custom-orange-hover">
+          chevron_backward
+        </span>
+      </button>
+
+      <button @click="setToday" class="flex items-center text-custom-orange hover:underline hover:text-custom-orange">
+        <span class="mr-2 font-bold">วันนี้</span>
+      </button>
+
+      <button @click="changeDate(1)" class="flex items-center">
+        <span class="material-symbols-outlined text-3xl text-custom-orange hover:text-custom-orange-hover">
+          chevron_forward
+        </span>
+      </button>
+
+      <input ref="selectedDatePicker" type="text" v-model="formattedSelectedDate" @input="onSelectDateChange"
+        class="text-center bg-white rounded-md font-bold border border-gray-200 focus:outline-none focus:ring-2 focus:ring-custom-orange hover:ring-2 hover:ring-custom-orange w-[150px]"
+        placeholder="เลือกวันที่" />
+    </div>
+
+    <table class="min-w-full table-auto rounded-t-2xl overflow-hidden mt-4">
+      <thead>
+        <tr class="bg-custom-orange text-white">
+          <th v-for="(header, index) in headersByDay" :key="index" :class="['px-4 py-2 text-left font-bold']"
+            :style="{ width: headerWidthsByDay[index] }">
+            {{ header }}
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-if="isLoading" class="bg-white">
+          <td colspan="5" class="py-16 text-center">
+            <div class="flex justify-center items-center space-x-2">
+              <div class="w-3 h-3 bg-gray-500 rounded-full animate-pulse"></div>
+              <div class="w-3 h-3 bg-gray-500 rounded-full animate-pulse delay-200"></div>
+              <div class="w-3 h-3 bg-gray-500 rounded-full animate-pulse delay-400"></div>
+            </div>
+          </td>
+        </tr>
+
+        <template v-else>
+          <tr v-for="(menu, index) in paginatedMenusByDay" :key="menu.id"
+            class="border-b border-b-gray-200 bg-white relative">
             <td class="px-4 py-2 align-top pb-5">
               {{ (currentPage - 1) * itemsPerPage + index + 1 }}
             </td>
-
-            <td
-              v-if="
-                index === 0 ||
-                menu.day_of_week !== paginatedMenus[index - 1].day_of_week
-              "
-              :rowspan="getRowSpan(paginatedMenus, menu.day_of_week)"
-              class="px-4 py-2 align-top pb-5 border-l border-r"
-            >
-              <div>
-                <strong>ลำดับวันที่: </strong>{{ menu.day_of_week }}
-                <br />
-                <div class="flex items-center">
-                  <span class="material-symbols-outlined text-xl mr-2"
-                    >calendar_today</span
-                  >
-                  {{ formattedDate(menu.date_to_show) }}
-                </div>
-              </div>
-            </td>
-
             <td class="px-4 py-2 align-top pb-5">
               {{ getMealTypeName(getMealTypeID(menu.menu_id)) }}
             </td>
@@ -378,17 +374,13 @@
             </td>
             <td class="px-4 py-2 align-top text-right">
               <div class="flex justify-end space-x-2">
-                <button
-                  @click="openEditModal(menu)"
-                  class="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 flex items-center space-x-1"
-                >
+                <button @click="openEditModal(menu)"
+                  class="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 flex items-center space-x-1">
                   <span class="material-symbols-outlined">edit_square</span>
                   <span>แก้ไข</span>
                 </button>
-                <button
-                  @click="confirmDelete(menu.id)"
-                  class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 flex items-center space-x-1"
-                >
+                <button @click="confirmDelete(menu.id)"
+                  class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 flex items-center space-x-1">
                   <span class="material-symbols-outlined">delete</span>
                   <span>ลบ</span>
                 </button>
@@ -396,360 +388,116 @@
             </td>
           </tr>
 
-          <tr v-if="paginatedMenus.length === 0">
-            <td
-              colspan="6"
-              class="py-10 bg-white text-center text-gray-500 font-bold"
-            >
+          <tr v-if="paginatedMenusByDay.length === 0">
+            <td colspan="5" class="py-10 bg-white text-center text-gray-500 font-bold">
               ไม่พบข้อมูล
             </td>
           </tr>
-        </tbody>
-      </table>
-
-      <div
-        class="rounded-b-2xl flex justify-center items-center space-x-2 bg-white px-2 py-1"
-      >
-        <!-- ปุ่ม Previous -->
-        <button
-          @click="goToPage(currentPage - 1)"
-          :disabled="currentPage === 1"
-          class="px-3 py-2 rounded-md hover:bg-gray-100 text-custom-orange disabled:opacity-50"
-        >
-          <span class="material-symbols-outlined">chevron_left</span>
-        </button>
-
-        <div class="flex items-center space-x-1">
-          <!-- ปุ่มหน้าแรก ถ้าหน้าเริ่มต้นมากกว่า 1 -->
-          <button
-            v-if="totalPagesArray.start > 1"
-            @click="goToPage(1)"
-            class="px-3 py-2 rounded-md bg-white hover:bg-custom-orange hover:text-white"
-          >
-            1
-          </button>
-
-          <!-- แสดง ... ถ้าหน้าต่อไปมีหลายหน้า -->
-          <button
-            v-if="totalPagesArray.start > 2"
-            @click="goToPage(totalPagesArray.start - 1)"
-            class="px-3 py-2 rounded-md bg-white hover:bg-custom-orange hover:text-white"
-          >
-            ...
-          </button>
-
-          <!-- ปุ่มสำหรับหน้าแต่ละหน้า -->
-          <button
-            v-for="page in totalPagesArray.range"
-            :key="page"
-            @click="goToPage(page)"
-            :class="[
-              'px-3 py-2 rounded-md',
-              {
-                'bg-custom-orange text-white': currentPage === page,
-                'bg-white': currentPage !== page,
-              },
-            ]"
-            class="cursor-pointer hover:bg-custom-orange hover:text-white"
-          >
-            {{ page }}
-          </button>
-
-          <!-- แสดง ... ถ้าหน้าต่อไปมีหลายหน้า -->
-          <button
-            v-if="totalPagesArray.end < totalPages - 1"
-            @click="goToPage(totalPagesArray.end + 1)"
-            class="px-3 py-2 rounded-md bg-white hover:bg-custom-orange hover:text-white"
-          >
-            ...
-          </button>
-
-          <!-- ปุ่มหน้าสุดท้าย -->
-          <button
-            v-if="totalPagesArray.end < totalPages"
-            @click="goToPage(totalPages)"
-            class="px-3 py-2 rounded-md bg-white hover:bg-custom-orange hover:text-white"
-          >
-            {{ totalPages }}
-          </button>
-        </div>
-
-        <!-- ปุ่ม Next -->
-        <button
-          @click="goToPage(currentPage + 1)"
-          :disabled="currentPage === totalPages"
-          class="px-3 py-2 rounded-md hover:bg-gray-100 text-custom-orange disabled:opacity-50"
-        >
-          <span class="material-symbols-outlined">chevron_right</span>
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <div v-show="viewMode === 'day'">
-    <div class="flex items-center space-x-3 py-2">
-      <button @click="changeDate(-1)" class="flex items-center">
-        <span
-          class="material-symbols-outlined text-3xl text-custom-orange hover:text-custom-orange-hover"
-        >
-          chevron_backward
-        </span>
-      </button>
-
-      <button
-        @click="setToday"
-        class="flex items-center text-custom-orange hover:underline hover:text-custom-orange"
-      >
-        <span class="mr-2 font-bold">วันนี้</span>
-      </button>
-
-      <button @click="changeDate(1)" class="flex items-center">
-        <span
-          class="material-symbols-outlined text-3xl text-custom-orange hover:text-custom-orange-hover"
-        >
-          chevron_forward
-        </span>
-      </button>
-
-      <input
-        ref="selectedDatePicker"
-        type="text"
-        v-model="formattedSelectedDate"
-        @input="onSelectDateChange"
-        class="text-center bg-white rounded-md font-bold border border-gray-200 focus:outline-none focus:ring-2 focus:ring-custom-orange hover:ring-2 hover:ring-custom-orange w-[150px]"
-        placeholder="เลือกวันที่"
-      />
-    </div>
-
-    <table class="min-w-full table-auto rounded-t-2xl overflow-hidden mt-4">
-      <thead>
-        <tr class="bg-custom-orange text-white">
-          <th
-            v-for="(header, index) in headersByDay"
-            :key="index"
-            :class="['px-4 py-2 text-left font-bold']"
-            :style="{ width: headerWidthsByDay[index] }"
-          >
-            {{ header }}
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr
-          v-for="(menu, index) in paginatedMenusByDay"
-          :key="menu.id"
-          class="border-b border-b-gray-200 bg-white relative"
-        >
-          <td class="px-4 py-2 align-top pb-5">
-            {{ (currentPage - 1) * itemsPerPage + index + 1 }}
-          </td>
-          <td class="px-4 py-2 align-top pb-5">
-            {{ getMealTypeName(getMealTypeID(menu.menu_id)) }}
-          </td>
-          <td class="px-4 py-2 align-top pb-5">
-            {{ getMenuEnglishName(menu.menu_id) }}
-          </td>
-          <td class="px-4 py-2 align-top pb-5">
-            {{ getMenuThaiName(menu.menu_id) }}
-          </td>
-          <td class="px-4 py-2 align-top text-right">
-            <div class="flex justify-end space-x-2">
-              <button
-                @click="openEditModal(menu)"
-                class="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 flex items-center space-x-1"
-              >
-                <span class="material-symbols-outlined">edit_square</span>
-                <span>แก้ไข</span>
-              </button>
-              <button
-                @click="confirmDelete(menu.id)"
-                class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 flex items-center space-x-1"
-              >
-                <span class="material-symbols-outlined">delete</span>
-                <span>ลบ</span>
-              </button>
-            </div>
-          </td>
-        </tr>
-
-        <tr v-if="paginatedMenusByDay.length === 0">
-          <td
-            colspan="5"
-            class="py-10 bg-white text-center text-gray-500 font-bold"
-          >
-            ไม่พบข้อมูล
-          </td>
-        </tr>
+        </template>
       </tbody>
     </table>
 
-    <div
-      class="rounded-b-2xl flex justify-center items-center space-x-2 bg-white px-2 py-1"
-    >
+    <div class="rounded-b-2xl flex justify-center items-center space-x-2 bg-white px-2 py-1">
       <!-- ปุ่ม Previous -->
-      <button
-        @click="goToPageByDay(currentPage - 1)"
-        :disabled="currentPage === 1"
-        class="px-3 py-2 rounded-md hover:bg-gray-100 text-custom-orange disabled:opacity-50"
-      >
+      <button @click="goToPageByDay(currentPage - 1)" :disabled="currentPage === 1"
+        class="px-3 py-2 rounded-md hover:bg-gray-100 text-custom-orange disabled:opacity-50">
         <span class="material-symbols-outlined">chevron_left</span>
       </button>
 
       <div class="flex items-center space-x-1">
         <!-- ปุ่มหน้าแรก ถ้าหน้าเริ่มต้นมากกว่า 1 -->
-        <button
-          v-if="totalPagesArrayByDay.start > 1"
-          @click="goToPageByDay(1)"
-          class="px-3 py-2 rounded-md bg-white hover:bg-custom-orange hover:text-white"
-        >
+        <button v-if="totalPagesArrayByDay.start > 1" @click="goToPageByDay(1)"
+          class="px-3 py-2 rounded-md bg-white hover:bg-custom-orange hover:text-white">
           1
         </button>
 
         <!-- แสดง ... ถ้าหน้าต่อไปมีหลายหน้า -->
-        <button
-          v-if="totalPagesArrayByDay.start > 2"
-          @click="goToPageByDay(totalPagesArrayByDay.start - 1)"
-          class="px-3 py-2 rounded-md bg-white hover:bg-custom-orange hover:text-white"
-        >
+        <button v-if="totalPagesArrayByDay.start > 2" @click="goToPageByDay(totalPagesArrayByDay.start - 1)"
+          class="px-3 py-2 rounded-md bg-white hover:bg-custom-orange hover:text-white">
           ...
         </button>
 
         <!-- ปุ่มสำหรับหน้าแต่ละหน้า -->
-        <button
-          v-for="page in totalPagesArrayByDay.range"
-          :key="page"
-          @click="goToPageByDay(page)"
-          :class="[
-            'px-3 py-2 rounded-md',
-            {
-              'bg-custom-orange text-white': currentPage === page,
-              'bg-white': currentPage !== page,
-            },
-          ]"
-          class="cursor-pointer hover:bg-custom-orange hover:text-white"
-        >
+        <button v-for="page in totalPagesArrayByDay.range" :key="page" @click="goToPageByDay(page)" :class="[
+          'px-3 py-2 rounded-md',
+          {
+            'bg-custom-orange text-white': currentPage === page,
+            'bg-white': currentPage !== page,
+          },
+        ]" class="cursor-pointer hover:bg-custom-orange hover:text-white">
           {{ page }}
         </button>
 
         <!-- แสดง ... ถ้าหน้าต่อไปมีหลายหน้า -->
-        <button
-          v-if="totalPagesArrayByDay.end < totalPagesByDay - 1"
+        <button v-if="totalPagesArrayByDay.end < totalPagesByDay - 1"
           @click="goToPageByDay(totalPagesArrayByDay.end + 1)"
-          class="px-3 py-2 rounded-md bg-white hover:bg-custom-orange hover:text-white"
-        >
+          class="px-3 py-2 rounded-md bg-white hover:bg-custom-orange hover:text-white">
           ...
         </button>
 
         <!-- ปุ่มหน้าสุดท้าย -->
-        <button
-          v-if="totalPagesArrayByDay.end < totalPagesByDay"
-          @click="goToPageByDay(totalPagesByDay)"
-          class="px-3 py-2 rounded-md bg-white hover:bg-custom-orange hover:text-white"
-        >
+        <button v-if="totalPagesArrayByDay.end < totalPagesByDay" @click="goToPageByDay(totalPagesByDay)"
+          class="px-3 py-2 rounded-md bg-white hover:bg-custom-orange hover:text-white">
           {{ totalPages }}
         </button>
       </div>
 
       <!-- ปุ่ม Next -->
-      <button
-        @click="goToPageByDay(currentPage + 1)"
-        :disabled="currentPage === totalPagesByDay"
-        class="px-3 py-2 rounded-md hover:bg-gray-100 text-custom-orange disabled:opacity-50"
-      >
+      <button @click="goToPageByDay(currentPage + 1)" :disabled="currentPage === totalPagesByDay"
+        class="px-3 py-2 rounded-md hover:bg-gray-100 text-custom-orange disabled:opacity-50">
         <span class="material-symbols-outlined">chevron_right</span>
       </button>
     </div>
   </div>
 
-  <div
-    v-if="isEditModalOpen"
-    class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50"
-  >
+  <div v-if="isEditModalOpen" class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
     <div
       class="absolute top-8 left-1/2 transform -translate-x-1/2 bg-yellow-500 text-white px-8 py-4 flex items-center space-x-4 rounded-lg shadow-lg transition-opacity duration-300 z-60"
-      :class="{ 'opacity-100': showErrorToast, 'opacity-0': !showErrorToast }"
-    >
+      :class="{ 'opacity-100': showErrorToast, 'opacity-0': !showErrorToast }">
       <span class="material-symbols-outlined text-white">error</span>
       <span>{{ toastErrorMessage }}</span>
-      <button
-        @click="showErrorToast = false"
-        class="text-white hover:text-gray-200 focus:outline-none"
-      >
+      <button @click="showErrorToast = false" class="text-white hover:text-gray-200 focus:outline-none">
         <span class="material-symbols-outlined text-xl">close</span>
       </button>
     </div>
 
-    <div
-      class="bg-white rounded-md shadow-lg w-1/2 max-w-3xl h-auto max-h-[800px] flex flex-col"
-    >
-      <div
-        class="flex justify-between items-center bg-custom-orange text-white px-4 py-2 rounded-t-md"
-      >
+    <div class="bg-white rounded-md shadow-lg w-1/2 max-w-3xl h-auto max-h-[800px] flex flex-col">
+      <div class="flex justify-between items-center bg-custom-orange text-white px-4 py-2 rounded-t-md">
         <span class="font-bold">แก้ไข</span>
         <div class="flex space-x-2">
-          <span
-            @click="closeEditModal"
-            class="material-symbols-outlined cursor-pointer hover:text-gray-200"
-            >close</span
-          >
+          <span @click="closeEditModal"
+            class="material-symbols-outlined cursor-pointer hover:text-gray-200">close</span>
         </div>
       </div>
 
       <div class="p-6 space-y-4">
         <div class="flex items-center space-x-4">
-          <label for="editDayofWeek" class="block text-gray-700 font-bold"
-            >ลำดับวัน:</label
-          >
-          <input
-            id="editDayofWeek"
-            v-model="selectedSetupMenu.day_of_week"
-            type="number"
-            placeholder="กรอกลำดับวันที่"
-            class="p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-custom-orange"
-          />
+          <label for="editDayofWeek" class="block text-gray-700 font-bold">ลำดับวัน:</label>
+          <input id="editDayofWeek" v-model="selectedSetupMenu.day_of_week" type="number" placeholder="กรอกลำดับวันที่"
+            class="p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-custom-orange" />
         </div>
 
         <div>
-          <label for="editMealType" class="block text-gray-700 font-bold"
-            >ประเภทอาหาร</label
-          >
-          <multiselect
-            v-model="selectedSetupMenu.meal_type_id"
-            :options="filteredMealTypes"
-            :track-by="'id'"
-            :label="'name'"
-            placeholder="เลือกประเภทอาหาร"
-          ></multiselect>
+          <label for="editMealType" class="block text-gray-700 font-bold">ประเภทอาหาร</label>
+          <multiselect v-model="selectedSetupMenu.meal_type_id" :options="filteredMealTypes" :track-by="'id'"
+            :label="'name'" placeholder="เลือกประเภทอาหาร"></multiselect>
         </div>
 
         <div class="mb-4">
-          <label for="editMenuID" class="block text-gray-700 font-bold"
-            >เมนู</label
-          >
-          <multiselect
-            v-model="selectedSetupMenu.menu_id"
-            :options="filteredEditMenus"
-            :track-by="'id'"
-            :label="'name_thai'"
-            placeholder="เลือกเมนู"
-          />
+          <label for="editMenuID" class="block text-gray-700 font-bold">เมนู</label>
+          <multiselect v-model="selectedSetupMenu.menu_id" :options="filteredEditMenus" :track-by="'id'"
+            :label="'name_thai'" placeholder="เลือกเมนู" />
         </div>
       </div>
 
-      <div
-        class="flex justify-end space-x-4 p-4 bg-white border-t rounded-b-md list-none"
-      >
+      <div class="flex justify-end space-x-4 p-4 bg-white border-t rounded-b-md list-none">
         <div class="flex space-x-2">
-          <button
-            @click="isEditModalOpen = false"
-            class="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400 text-gray-700"
-          >
+          <button @click="isEditModalOpen = false"
+            class="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400 text-gray-700">
             ยกเลิก
           </button>
-          <button
-            @click="saveChanges"
-            class="px-4 py-2 rounded bg-custom-orange text-white hover:bg-custom-orange-hover"
-          >
+          <button @click="saveChanges"
+            class="px-4 py-2 rounded bg-custom-orange text-white hover:bg-custom-orange-hover">
             บันทึก
           </button>
         </div>
@@ -757,33 +505,21 @@
     </div>
   </div>
 
-  <div
-    v-if="isDeleteModalOpen"
-    class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50"
-  >
+  <div v-if="isDeleteModalOpen" class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
     <div
       class="absolute top-8 left-1/2 transform -translate-x-1/2 bg-yellow-500 text-white px-8 py-4 flex items-center space-x-4 rounded-lg shadow-lg transition-opacity duration-300 z-60"
-      :class="{ 'opacity-100': showErrorToast, 'opacity-0': !showErrorToast }"
-    >
+      :class="{ 'opacity-100': showErrorToast, 'opacity-0': !showErrorToast }">
       <span class="material-symbols-outlined text-white">error</span>
       <span>{{ toastErrorMessage }}</span>
-      <button
-        @click="showErrorToast = false"
-        class="text-white hover:text-gray-200 focus:outline-none"
-      >
+      <button @click="showErrorToast = false" class="text-white hover:text-gray-200 focus:outline-none">
         <span class="material-symbols-outlined text-xl">close</span>
       </button>
     </div>
 
     <div class="bg-white rounded-lg shadow-md w-1/3">
-      <div
-        class="flex justify-between items-center bg-red-500 text-white px-4 py-2 rounded-t"
-      >
+      <div class="flex justify-between items-center bg-red-500 text-white px-4 py-2 rounded-t">
         <h2 class="text-lg font-bold">ยืนยันการลบ</h2>
-        <span
-          @click="closeDeleteModal"
-          class="material-symbols-outlined cursor-pointer hover:text-gray-200"
-        >
+        <span @click="closeDeleteModal" class="material-symbols-outlined cursor-pointer hover:text-gray-200">
           close
         </span>
       </div>
@@ -795,36 +531,22 @@
       </div>
 
       <div class="flex justify-end space-x-2 p-4 border-t">
-        <button
-          @click="closeDeleteModal"
-          class="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400"
-        >
+        <button @click="closeDeleteModal" class="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400">
           ยกเลิก
         </button>
-        <button
-          @click="deleteConfirmed"
-          class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-        >
+        <button @click="deleteConfirmed" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
           ยืนยัน
         </button>
       </div>
     </div>
   </div>
-
-  <!-- <div class="mt-4">
-        <h1 class="font-bold">เมนูวันนี้</h1>
-        <ul>
-            <li v-for="menu in todayMenus" :key="menu.id">{{ getMenuEnglishName(menu.menu_id) }}</li>
-        </ul>
-    </div> -->
 </template>
 
 <script>
 import axios from "axios";
 import flatpickr from "flatpickr";
 import Multiselect from "vue-multiselect";
-
-// import "flatpickr/dist/flatpickr.min.css";
+import { API_URL } from "@/services/api";
 
 export default {
   data() {
@@ -897,13 +619,15 @@ export default {
       initialStartDate: "",
 
       isDateConfirmed: false,
+      isLoading: false,
+
     };
   },
   components: { Multiselect },
   computed: {
     filteredMealTypes() {
       return this.meal_types.filter(
-        (item) => item.menuType && item.menuType.id === 17
+        (item) => item.menuType && item.menuType.id === 14
       );
     },
     // filteredMenus() {
@@ -1027,7 +751,7 @@ export default {
   methods: {
     async fetchSetupMenus() {
       try {
-        const response = await fetch("http://127.0.0.1:3333/setup-menu-fat-disease");
+        const response = await fetch(`${API_URL}/setup-menu-fat-disease`);
         const data = await response.json();
         for (const week in data) {
           if (Object.prototype.hasOwnProperty.call(data, week)) {
@@ -1050,23 +774,27 @@ export default {
       return `${year}-${month}-${day}`; // แปลงเป็นรูปแบบ yyyy-mm-dd
     },
     async fetchSetupMenusForToday() {
+      this.isLoading = true;
+
       try {
         const todayDate = this.getTodayDate(); // คำนวณวันที่ปัจจุบันในรูปแบบ yyyy-mm-dd
         console.log("Today:", todayDate);
         const response = await axios.get(
-          `http://127.0.0.1:3333/setup-menu-fat-disease/menus-by-day/${todayDate}`
+          `${API_URL}/setup-menu-fat-disease/menus-by-day/${todayDate}`
         );
         console.log("API Response:", response.data);
         this.todayMenus = response.data.menus || [];
       } catch (error) {
         console.error("Error fetching menus for today:", error);
+      } finally {
+        this.isLoading = false;
       }
     },
     async fetchLookupData() {
       try {
         const [menuRes, mealTypeRes] = await Promise.all([
-          axios.get("http://127.0.0.1:3333/menus"),
-          axios.get("http://127.0.0.1:3333/meal-types"),
+          axios.get(`${API_URL}/menus`),
+          axios.get(`${API_URL}/meal-types`),
         ]);
 
         this.menus = menuRes.data;
@@ -1077,22 +805,26 @@ export default {
       }
     },
     async fetchMenusByDay() {
+      this.isLoading = true;
+
       if (!this.selectedDate) return;
 
       try {
         const response = await axios.get(
-          `http://127.0.0.1:3333/setup-menu-fat-disease/menus-by-day/${this.selectedDate}`
+          `${API_URL}/setup-menu-fat-disease/menus-by-day/${this.selectedDate}`
         );
         this.setUpMenusByDate = response.data.menus;
       } catch (error) {
         console.error("Error fetching menus:", error);
         this.setUpMenusByDate = [];
+      } finally {
+        this.isLoading = false;
       }
     },
     async fetchStartDate() {
       try {
         const response = await axios.get(
-          "http://127.0.0.1:3333/setup-menu-fat-disease/get-start-date"
+          `${API_URL}/setup-menu-fat-disease/get-start-date`
         );
         this.initialStartDate = response.data.startDate; // เก็บค่าจาก API ลงใน initialStartDate
         this.startDate = this.initialStartDate; // ตั้งค่าเริ่มต้นของ startDate เป็นค่าที่ดึงมา
@@ -1109,7 +841,7 @@ export default {
         }
 
         const response = await axios.post(
-          "http://127.0.0.1:3333/setup-menu-fat-disease/set-start-date",
+          `${API_URL}/setup-menu-fat-disease/set-start-date`,
           {
             startDate: this.startDate,
           }
@@ -1170,7 +902,7 @@ export default {
         const mealType = this.meal_types.find(
           (item) => item.id === menu.meal_type_id
         );
-        return mealType && mealType.menuType.id === 17;
+        return mealType && mealType.menuType.id === 14;
       });
     },
     getMenuEnglishName(menuId) {
@@ -1305,7 +1037,7 @@ export default {
           return;
         }
 
-        await axios.post("http://127.0.0.1:3333/setup-menu-fat-disease", {
+        await axios.post(`${API_URL}/setup-menu-fat-disease`, {
           day_of_week: this.day_of_week,
           menus: menus,
         });
@@ -1370,14 +1102,14 @@ export default {
         }
 
         await axios.put(
-          `http://127.0.0.1:3333/setup-menu-fat-disease/${this.selectedSetupMenu.id}`,
+          `${API_URL}/setup-menu-fat-disease/${this.selectedSetupMenu.id}`,
           {
             day_of_week: this.selectedSetupMenu.day_of_week,
             menu_id: this.selectedSetupMenu.menu_id.id,
           }
         );
 
-        // const response = await axios.put(`http://127.0.0.1:3333/setup-menu-fat-disease/${this.selectedSetupMenu.id}`, {
+        // const response = await axios.put(`${API_URL}/setup-menu-fat-disease/${this.selectedSetupMenu.id}`, {
         //   day_of_week: this.selectedSetupMenu.day_of_week,
         //   menu_id: this.selectedSetupMenu.menu_id.id,
         // });
@@ -1415,7 +1147,7 @@ export default {
     async deleteConfirmed() {
       try {
         await axios.delete(
-          `http://127.0.0.1:3333/setup-menu-fat-disease/${this.itemToDelete}`
+          `${API_URL}/setup-menu-fat-disease/${this.itemToDelete}`
         );
         this.menus = this.menus.filter((item) => item.id !== this.itemToDelete);
         this.closeDeleteModal();

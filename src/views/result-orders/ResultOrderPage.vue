@@ -217,126 +217,112 @@
 
       </thead>
       <tbody>
-        <tr v-for="(order, index) in filteredOrders" :key="index" class="border-b border-b-gray-200 bg-white relative">
-          <td class="px-4 py-2 align-top pb-5">
-            <input type="checkbox" v-model="selectedOrders" :value="order"
-              class="w-4 h-4 accent-custom-orange focus:ring-0" />
-          </td>
-          <td class="px-4 py-2 align-top pb-5">{{ (currentPage - 1) * itemsPerPage + index + 1 }}</td>
-
-          <td class="px-4 py-2 align-top font-bold border-l border-r text-custom-orange pb-5"
-            v-if="shouldDisplayUserName(index, order.user_id)" :rowspan="getRowspan(order.user_id, index)">
-            {{ getCustomerName(order.user_id) }}
-          </td>
-
-          <!-- <td class="px-4 py-2 align-top font-bold border-l border-r text-custom-orange pb-5"
-        v-if="shouldDisplayOrderDate(index, order.order_date)"
-        :rowspan="getOrderDateRowspan(order.order_date, index)">
-      {{ formatDate(order.order_date) }}
-    </td> -->
-
-          <!-- <td class="px-4 py-2 align-top pb-5">{{ getCustomerName(order.user_id) }}</td> -->
-          <td class="px-4 py-2 align-top pb-5">{{ formatDate(order.order_date) }}</td>
-          <td class="px-4 py-2 align-top pb-5">{{ getMenuTypeName(order.menu_type_id) }}</td>
-
-          <td class="px-4 py-2 align-top pb-5">
-            <div>{{ getMenuEngName(order.menu_id) }}</div>
-            <div>({{ getMenuName(order.menu_id) }})</div>
-          </td>
-
-          <td class="px-4 py-2 align-top pb-5">{{ order.quantity }}</td>
-
-          <td class="px-4 py-2 align-top font-bold pb-5">
-            <button @click="openConfirmSatatusModal(order)"
-              class="px-4 py-1 rounded-full font-bold focus:outline-none hover:text-gray-200"
-              :class="getStatusClass(order.status)">
-              {{ getStatusText(order.status) }}
-            </button>
-
-            <div v-if="isConfirmStatusModalOpen"
-              class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-10 z-50">
-
-              <div class="bg-white rounded-md w-1/3 max-w-lg">
-                <!-- Header -->
-                <div :class="{
-                  'bg-green-500':
-                    selectedOrder.status === 'pending',
-                  'bg-red-500': selectedOrder.status === 'confirm',
-                }" class="flex justify-between items-center text-white px-4 py-2 rounded-t-md">
-                  <span class="font-bold">
-                    {{
-                      selectedOrder.status === "paid"
-                        ? "เปลี่ยนสถานะเป็นยังไม่ได้ยืนยันการสั่งซื้อ"
-                        : "ยืนยันการสั่งซื้อ"
-                    }}
-                  </span>
-                  <button @click="closeConfirmStatusModal" class="text-white hover:text-gray-200">
-                    <span class="material-symbols-outlined">close</span>
-                  </button>
-                </div>
-
-                <!-- Content -->
-                <div class="p-6 space-y-4">
-                  <p class="text-gray-700">
-                    {{
-                      selectedOrder.status === "confirm"
-                        ? 'คุณต้องการเปลี่ยนสถานะเป็น "ยังไม่ได้ยืนยันการสั่งซื้อ" หรือไม่?'
-                        : "ยืนยันการสั่งซื้อ?"
-                    }}
-                  </p>
-
-                </div>
-
-                <!-- Footer -->
-                <div class="flex justify-end space-x-4 p-4 bg-white border-t rounded-b-md">
-                  <button @click="closeConfirmStatusModal"
-                    class="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400">
-                    ยกเลิก
-                  </button>
-                  <button @click="confirmStatus" :class="{
-                    'bg-green-500 hover:bg-green-600':
-                      selectedOrder.status === 'pending',
-                    'bg-red-500 hover:bg-red-600':
-                      selectedOrder.status === 'confirm',
-                  }" class="text-white px-4 py-2 rounded">
-                    ยืนยัน
-                  </button>
-                </div>
-              </div>
+        <tr v-if="isLoading" class="bg-white">
+          <td colspan="10" class="py-16 text-center">
+            <div class="flex justify-center items-center space-x-2">
+              <div class="w-3 h-3 bg-gray-500 rounded-full animate-pulse"></div>
+              <div class="w-3 h-3 bg-gray-500 rounded-full animate-pulse delay-200"></div>
+              <div class="w-3 h-3 bg-gray-500 rounded-full animate-pulse delay-400"></div>
             </div>
           </td>
-
-
         </tr>
 
-        <tr v-if="filteredOrders.length === 0">
-          <td colspan="10" class="py-10 bg-white text-center text-gray-500 font-bold">ไม่พบข้อมูล </td>
-        </tr>
-      </tbody>
+        <template v-else>
+          <tr v-for="(order, index) in filteredOrders" :key="index"
+            class="border-b border-b-gray-200 bg-white relative">
+            <td class="px-4 py-2 align-top pb-5">
+              <input type="checkbox" v-model="selectedOrders" :value="order"
+                class="w-4 h-4 accent-custom-orange focus:ring-0" />
+            </td>
+            <td class="px-4 py-2 align-top pb-5">{{ (currentPage - 1) * itemsPerPage + index + 1 }}</td>
 
-      <!-- <div v-if="isDetailModalOpen"
-              class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
-              <div class="bg-white rounded-md shadow-lg w-1/2 max-w-3xl h-auto max-h-[800px] flex flex-col">
-                  <div class="flex justify-between items-center bg-custom-orange text-white px-4 py-2 rounded-t-md">
-                      <span class="font-bold"><h2>รายละเอียดยอดขายประจำวัน</h2></span>
-                      <div class="flex space-x-2">
-                          <span @click="closeDetailModal"
-                              class="material-symbols-outlined cursor-pointer hover:text-gray-200">
-                              close
-                          </span>
-                      </div>
+            <td
+              class="px-4 py-2 align-top font-bold border-l border-r text-custom-orange pb-5 cursor-pointer hover:text-custom-orange-hover"
+              v-if="shouldDisplayUserName(index, order.user_id)" :rowspan="getRowspan(order.user_id, index)"
+              @click="selectCustomerOrders(order.user_id)">
+              {{ getCustomerName(order.user_id) }}
+            </td>
+
+            <!-- <td class="px-4 py-2 align-top pb-5">{{ getCustomerName(order.user_id) }}</td> -->
+            <td class="px-4 py-2 align-top pb-5">{{ formatDate(order.order_date) }}</td>
+            <td class="px-4 py-2 align-top pb-5">{{ getMenuTypeName(order.menu_type_id) }}</td>
+
+            <td class="px-4 py-2 align-top pb-5">
+              <div>{{ getMenuEngName(order.menu_id) }}</div>
+              <div>({{ getMenuName(order.menu_id) }})</div>
+            </td>
+
+            <td class="px-4 py-2 align-top pb-5">{{ order.quantity }}</td>
+
+            <td class="px-4 py-2 align-top font-bold pb-5">
+              <button @click="openConfirmSatatusModal(order)"
+                class="px-4 py-1 rounded-full font-bold focus:outline-none hover:text-gray-200"
+                :class="getStatusClass(order.status)">
+                {{ getStatusText(order.status) }}
+              </button>
+
+              <div v-if="isConfirmStatusModalOpen"
+                class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-10 z-50">
+
+                <div class="bg-white rounded-md w-1/3 max-w-lg">
+                  <!-- Header -->
+                  <div :class="{
+                    'bg-green-500':
+                      selectedOrder.status === 'pending',
+                    'bg-red-500': selectedOrder.status === 'confirm',
+                  }" class="flex justify-between items-center text-white px-4 py-2 rounded-t-md">
+                    <span class="font-bold">
+                      {{
+                        selectedOrder.status === "paid"
+                          ? "เปลี่ยนสถานะเป็นยังไม่ได้ยืนยันการสั่งซื้อ"
+                          : "ยืนยันการสั่งซื้อ"
+                      }}
+                    </span>
+                    <button @click="closeConfirmStatusModal" class="text-white hover:text-gray-200">
+                      <span class="material-symbols-outlined">close</span>
+                    </button>
                   </div>
 
-                  <div class="pb-2 pt-2">
-                      <div v-for="(value, key, index) in filteredDetail" :key="key"
-                          :class="index % 2 === 0 ? 'bg-white rounded-none' : 'bg-gray-100 rounded-none'"
-                          class="p-2 rounded-md">
-                          <p class="pl-3 pr-3"><strong class="mr-2">{{ formatLabel(key) }}:</strong> {{ value }}</p>
-                      </div>
+                  <!-- Content -->
+                  <div class="p-6 space-y-4">
+                    <p class="text-gray-700">
+                      {{
+                        selectedOrder.status === "confirm"
+                          ? 'คุณต้องการเปลี่ยนสถานะเป็น "ยังไม่ได้ยืนยันการสั่งซื้อ" หรือไม่?'
+                          : "ยืนยันการสั่งซื้อ?"
+                      }}
+                    </p>
+
                   </div>
+
+                  <!-- Footer -->
+                  <div class="flex justify-end space-x-4 p-4 bg-white border-t rounded-b-md">
+                    <button @click="closeConfirmStatusModal"
+                      class="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400">
+                      ยกเลิก
+                    </button>
+                    <button @click="confirmStatus" :class="{
+                      'bg-green-500 hover:bg-green-600':
+                        selectedOrder.status === 'pending',
+                      'bg-red-500 hover:bg-red-600':
+                        selectedOrder.status === 'confirm',
+                    }" class="text-white px-4 py-2 rounded">
+                      ยืนยัน
+                    </button>
+                  </div>
+                </div>
               </div>
-          </div> -->
+            </td>
 
+
+          </tr>
+
+          <tr v-if="filteredOrders.length === 0">
+            <td colspan="10" class="py-10 bg-white text-center text-gray-500 font-bold">ไม่พบข้อมูล </td>
+          </tr>
+
+        </template>
+      </tbody>
 
     </table>
 
@@ -389,6 +375,8 @@
 import axios from 'axios';
 import flatpickr from "flatpickr";
 import "flatpickr/dist/flatpickr.css";
+import { API_URL } from "@/services/api";
+
 //import Multiselect from 'vue-multiselect';
 
 export default {
@@ -435,6 +423,7 @@ export default {
         name: 1
       },
       sortColumn: '',
+      isLoading: false,
 
     };
   },
@@ -592,35 +581,42 @@ export default {
     // },
 
     async fetchOrders(startDate, endDate) {
+      this.isLoading = true;
+
       try {
-        const response = await axios.get('http://127.0.0.1:3333/orders/date-range', {
+        const response = await axios.get(`${API_URL}/orders/date-range`, {
           params: { start_date: startDate, end_date: endDate }, // ส่งค่าพารามิเตอร์ start_date และ end_date
         });
 
         this.orders = response.data.orders;
         this.filteredOrders = this.orders;
 
-        // console.log('Data', this.orders);
-        // console.log('Data', this.filteredOrders);
-
         this.orders.sort((a, b) => {
           const dateA = new Date(a.order_date);
           const dateB = new Date(b.order_date);
-          return dateA - dateB; // เรียงจากน้อยไปหามาก
+
+          if (dateA.getTime() === dateB.getTime()) {
+            return a.id - b.id; // เรียงจากน้อยไปหามากตาม id
+          }
+
+          return dateA - dateB; // เรียงจากน้อยไปหามากตาม order_date
         });
+
 
 
       } catch (error) {
         // console.error('Error fetching orders data:', error);
+      } finally {
+        this.isLoading = false;
       }
     },
 
     async fetchLookupData() {
       try {
         const [customersRes, menuRes, menuTypeRes] = await Promise.all([
-          axios.get("http://127.0.0.1:3333/customers"),
-          axios.get("http://127.0.0.1:3333/menus"),
-          axios.get("http://127.0.0.1:3333/menu-types"),
+          axios.get(`${API_URL}/customers`),
+          axios.get(`${API_URL}/menus`),
+          axios.get(`${API_URL}/menu-types`),
         ]);
         this.customers = customersRes.data;
         this.menus = menuRes.data;
@@ -769,7 +765,7 @@ export default {
 
         // ส่งคำขอ PUT ไปยังเซิร์ฟเวอร์
         const response = await axios.put(
-          `http://127.0.0.1:3333/order/${this.selectedOrder.id}/status`, // URL ที่จะอัปเดตสถานะคำสั่งซื้อ
+          `${API_URL}/order/${this.selectedOrder.id}/status`, // URL ที่จะอัปเดตสถานะคำสั่งซื้อ
           payload // ส่งข้อมูลสถานะใหม่
         );
         await this.fetchOrders(); // ดึงข้อมูลคำสั่งซื้อทั้งหมดใหม่
@@ -806,10 +802,10 @@ export default {
     async confirmMultipleOrders() {
       if (this.selectedOrders.length === 0) return;
       const orderIds = this.selectedOrders.map(order => order.id);
-      console.log("Selected Orders:", this.selectedOrders);
+      // console.log("Selected Orders:", this.selectedOrders);
 
       try {
-        const response = await fetch("http://127.0.0.1:3333/order/update-status", {
+        const response = await fetch(`${API_URL}/order/update-status`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -836,7 +832,7 @@ export default {
       const orderIds = this.selectedOrders.map(order => order.id);
 
       try {
-        const response = await fetch("http://127.0.0.1:3333/order/update-status", {
+        const response = await fetch(`${API_URL}/order/update-status`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -858,6 +854,18 @@ export default {
         this.showErrorToastNotification("เกิดข้อผิดพลาดในการเชื่อมต่อ!");
       }
     },
+
+    selectCustomerOrders(userId) {
+      const customerOrders = this.filteredOrdersWithoutHappy.filter(order => order.user_id === userId);
+      const isSelected = customerOrders.every(order => this.selectedOrders.includes(order));
+
+      if (isSelected) {
+        this.selectedOrders = this.selectedOrders.filter(order => !customerOrders.includes(order));
+      } else {
+        this.selectedOrders = [...this.selectedOrders, ...customerOrders];
+      }
+    },
+
     selectOrder(order) {
       if (!this.selectedOrders.includes(order)) {
         this.selectedOrders.push(order);
@@ -867,7 +875,7 @@ export default {
     },
     toggleSelectAll(event) {
       if (event.target.checked) {
-        this.selectedOrders = [...this.filteredOrders];  // เลือกคำสั่งซื้อทั้งหมด
+        this.selectedOrders = [...this.filteredOrdersWithoutHappy];  // เลือกคำสั่งซื้อทั้งหมด
       } else {
         this.selectedOrders = [];  // ยกเลิกการเลือกทั้งหมด
       }

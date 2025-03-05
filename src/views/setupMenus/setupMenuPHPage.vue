@@ -198,10 +198,15 @@
         </span>
       </button>
 
-      <multiselect v-if="weekOptions.length > 0" v-model="selectedWeek" :options="weekOptions"
-        placeholder="เลือกสัปดาห์" :multiple="false" :taggable="true" :close-on-select="true" :allow-empty="true"
-        class="w-60">
-      </multiselect>
+      <div v-if="isLoading">
+        <div class="bg-gray-200 animate-pulse h-6 w-32 rounded-md"></div>
+      </div>
+      <div v-else>
+        <multiselect v-if="weekOptions.length > 0" v-model="selectedWeek" :options="weekOptions"
+          placeholder="เลือกสัปดาห์" :multiple="false" :taggable="true" :close-on-select="true" :allow-empty="true"
+          class="w-60">
+        </multiselect>
+      </div>
 
       <button @click="changeWeek(1)" class="flex items-center">
         <span class="material-symbols-outlined text-3xl text-custom-orange hover:text-custom-orange-hover">
@@ -210,123 +215,132 @@
       </button>
     </div>
 
-    <div v-if="selectedWeek" class="mb-8">
-      <!-- <h2 class="text-xl font-semibold mb-2 ml-2">{{ selectedWeek }}</h2> -->
-      <table class="min-w-full table-auto rounded-t-2xl overflow-hidden mt-4">
-        <thead>
-          <tr class="bg-custom-orange text-white">
-            <th v-for="(header, index) in headers" :key="index" :class="['px-4 py-2 text-left font-bold']"
-              :style="{ width: headerWidths[index] }">
-              {{ header }}
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(menu, index) in paginatedMenus" :key="menu.id"
-            class="border-b border-b-gray-200 bg-white relative">
-            <td class="px-4 py-2 align-top pb-5">
-              {{ (currentPage - 1) * itemsPerPage + index + 1 }}
-            </td>
-
-            <td v-if="
-              index === 0 ||
-              menu.day_of_week !== paginatedMenus[index - 1].day_of_week
-            " :rowspan="getRowSpan(paginatedMenus, menu.day_of_week)"
-              class="px-4 py-2 align-top pb-5 border-l border-r">
-              <div>
-                <strong>ลำดับวันที่: </strong>{{ menu.day_of_week }}
-                <br />
-                <div class="flex items-center">
-                  <span class="material-symbols-outlined text-xl mr-2">calendar_today</span>
-                  {{ formattedDate(menu.date_to_show) }}
-                </div>
-              </div>
-            </td>
-
-            <td class="px-4 py-2 align-top pb-5">
-              {{ getMealTypeName(getMealTypeID(menu.menu_id)) }}
-            </td>
-            <td class="px-4 py-2 align-top pb-5">
-              {{ getMenuEnglishName(menu.menu_id) }}
-            </td>
-            <td class="px-4 py-2 align-top pb-5">
-              {{ getMenuThaiName(menu.menu_id) }}
-            </td>
-            <td class="px-4 py-2 align-top text-right">
-              <div class="flex justify-end space-x-2">
-                <button @click="openEditModal(menu)"
-                  class="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 flex items-center space-x-1">
-                  <span class="material-symbols-outlined">edit_square</span>
-                  <span>แก้ไข</span>
-                </button>
-                <button @click="confirmDelete(menu.id)"
-                  class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 flex items-center space-x-1">
-                  <span class="material-symbols-outlined">delete</span>
-                  <span>ลบ</span>
-                </button>
-              </div>
-            </td>
-          </tr>
-
-          <tr v-if="paginatedMenus.length === 0">
-            <td colspan="6" class="py-10 bg-white text-center text-gray-500 font-bold">
-              ไม่พบข้อมูล
-            </td>
-          </tr>
-        </tbody>
-      </table>
-
-      <div class="rounded-b-2xl flex justify-center items-center space-x-2 bg-white px-2 py-1">
-        <!-- ปุ่ม Previous -->
-        <button @click="goToPage(currentPage - 1)" :disabled="currentPage === 1"
-          class="px-3 py-2 rounded-md hover:bg-gray-100 text-custom-orange disabled:opacity-50">
-          <span class="material-symbols-outlined">chevron_left</span>
-        </button>
-
-        <div class="flex items-center space-x-1">
-          <!-- ปุ่มหน้าแรก ถ้าหน้าเริ่มต้นมากกว่า 1 -->
-          <button v-if="totalPagesArray.start > 1" @click="goToPage(1)"
-            class="px-3 py-2 rounded-md bg-white hover:bg-custom-orange hover:text-white">
-            1
-          </button>
-
-          <!-- แสดง ... ถ้าหน้าต่อไปมีหลายหน้า -->
-          <button v-if="totalPagesArray.start > 2" @click="goToPage(totalPagesArray.start - 1)"
-            class="px-3 py-2 rounded-md bg-white hover:bg-custom-orange hover:text-white">
-            ...
-          </button>
-
-          <!-- ปุ่มสำหรับหน้าแต่ละหน้า -->
-          <button v-for="page in totalPagesArray.range" :key="page" @click="goToPage(page)" :class="[
-            'px-3 py-2 rounded-md',
-            {
-              'bg-custom-orange text-white': currentPage === page,
-              'bg-white': currentPage !== page,
-            },
-          ]" class="cursor-pointer hover:bg-custom-orange hover:text-white">
-            {{ page }}
-          </button>
-
-          <!-- แสดง ... ถ้าหน้าต่อไปมีหลายหน้า -->
-          <button v-if="totalPagesArray.end < totalPages - 1" @click="goToPage(totalPagesArray.end + 1)"
-            class="px-3 py-2 rounded-md bg-white hover:bg-custom-orange hover:text-white">
-            ...
-          </button>
-
-          <!-- ปุ่มหน้าสุดท้าย -->
-          <button v-if="totalPagesArray.end < totalPages" @click="goToPage(totalPages)"
-            class="px-3 py-2 rounded-md bg-white hover:bg-custom-orange hover:text-white">
-            {{ totalPages }}
-          </button>
-        </div>
-
-        <!-- ปุ่ม Next -->
-        <button @click="goToPage(currentPage + 1)" :disabled="currentPage === totalPages"
-          class="px-3 py-2 rounded-md hover:bg-gray-100 text-custom-orange disabled:opacity-50">
-          <span class="material-symbols-outlined">chevron_right</span>
-        </button>
+    <div v-if="isLoading" class="">
+      <div class="flex justify-center items-center space-x-2">
+        <div class="w-3 h-3 bg-custom-orange rounded-full animate-pulse"></div>
+        <div class="w-3 h-3 bg-custom-orange rounded-full animate-pulse delay-200"></div>
+        <div class="w-3 h-3 bg-custom-orange rounded-full animate-pulse delay-400"></div>
       </div>
     </div>
+
+    <template v-else>
+      <div v-if="selectedWeek" class="mb-8">
+        <table class="min-w-full table-auto rounded-t-2xl overflow-hidden mt-4">
+          <thead>
+            <tr class="bg-custom-orange text-white">
+              <th v-for="(header, index) in headers" :key="index" :class="['px-4 py-2 text-left font-bold']"
+                :style="{ width: headerWidths[index] }">
+                {{ header }}
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(menu, index) in paginatedMenus" :key="menu.id"
+              class="border-b border-b-gray-200 bg-white relative">
+              <td class="px-4 py-2 align-top pb-5">
+                {{ (currentPage - 1) * itemsPerPage + index + 1 }}
+              </td>
+
+              <td v-if="
+                index === 0 ||
+                menu.day_of_week !== paginatedMenus[index - 1].day_of_week
+              " :rowspan="getRowSpan(paginatedMenus, menu.day_of_week)"
+                class="px-4 py-2 align-top pb-5 border-l border-r">
+                <div>
+                  <strong>ลำดับวันที่: </strong>{{ menu.day_of_week }}
+                  <br />
+                  <div class="flex items-center">
+                    <span class="material-symbols-outlined text-xl mr-2">calendar_today</span>
+                    {{ formattedDate(menu.date_to_show) }}
+                  </div>
+                </div>
+              </td>
+
+              <td class="px-4 py-2 align-top pb-5">
+                {{ getMealTypeName(getMealTypeID(menu.menu_id)) }}
+              </td>
+              <td class="px-4 py-2 align-top pb-5">
+                {{ getMenuEnglishName(menu.menu_id) }}
+              </td>
+              <td class="px-4 py-2 align-top pb-5">
+                {{ getMenuThaiName(menu.menu_id) }}
+              </td>
+              <td class="px-4 py-2 align-top text-right">
+                <div class="flex justify-end space-x-2">
+                  <button @click="openEditModal(menu)"
+                    class="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 flex items-center space-x-1">
+                    <span class="material-symbols-outlined">edit_square</span>
+                    <span>แก้ไข</span>
+                  </button>
+                  <button @click="confirmDelete(menu.id)"
+                    class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 flex items-center space-x-1">
+                    <span class="material-symbols-outlined">delete</span>
+                    <span>ลบ</span>
+                  </button>
+                </div>
+              </td>
+            </tr>
+
+            <tr v-if="paginatedMenus.length === 0">
+              <td colspan="6" class="py-10 bg-white text-center text-gray-500 font-bold">
+                ไม่พบข้อมูล
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="rounded-b-2xl flex justify-center items-center space-x-2 bg-white px-2 py-1">
+          <!-- ปุ่ม Previous -->
+          <button @click="goToPage(currentPage - 1)" :disabled="currentPage === 1"
+            class="px-3 py-2 rounded-md hover:bg-gray-100 text-custom-orange disabled:opacity-50">
+            <span class="material-symbols-outlined">chevron_left</span>
+          </button>
+
+          <div class="flex items-center space-x-1">
+            <!-- ปุ่มหน้าแรก ถ้าหน้าเริ่มต้นมากกว่า 1 -->
+            <button v-if="totalPagesArray.start > 1" @click="goToPage(1)"
+              class="px-3 py-2 rounded-md bg-white hover:bg-custom-orange hover:text-white">
+              1
+            </button>
+
+            <!-- แสดง ... ถ้าหน้าต่อไปมีหลายหน้า -->
+            <button v-if="totalPagesArray.start > 2" @click="goToPage(totalPagesArray.start - 1)"
+              class="px-3 py-2 rounded-md bg-white hover:bg-custom-orange hover:text-white">
+              ...
+            </button>
+
+            <!-- ปุ่มสำหรับหน้าแต่ละหน้า -->
+            <button v-for="page in totalPagesArray.range" :key="page" @click="goToPage(page)" :class="[
+              'px-3 py-2 rounded-md',
+              {
+                'bg-custom-orange text-white': currentPage === page,
+                'bg-white': currentPage !== page,
+              },
+            ]" class="cursor-pointer hover:bg-custom-orange hover:text-white">
+              {{ page }}
+            </button>
+
+            <!-- แสดง ... ถ้าหน้าต่อไปมีหลายหน้า -->
+            <button v-if="totalPagesArray.end < totalPages - 1" @click="goToPage(totalPagesArray.end + 1)"
+              class="px-3 py-2 rounded-md bg-white hover:bg-custom-orange hover:text-white">
+              ...
+            </button>
+
+            <!-- ปุ่มหน้าสุดท้าย -->
+            <button v-if="totalPagesArray.end < totalPages" @click="goToPage(totalPages)"
+              class="px-3 py-2 rounded-md bg-white hover:bg-custom-orange hover:text-white">
+              {{ totalPages }}
+            </button>
+          </div>
+
+          <!-- ปุ่ม Next -->
+          <button @click="goToPage(currentPage + 1)" :disabled="currentPage === totalPages"
+            class="px-3 py-2 rounded-md hover:bg-gray-100 text-custom-orange disabled:opacity-50">
+            <span class="material-symbols-outlined">chevron_right</span>
+          </button>
+        </div>
+      </div>
+    </template>
   </div>
 
   <div v-show="viewMode === 'day'">
@@ -362,41 +376,53 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(menu, index) in paginatedMenusByDay" :key="menu.id"
-          class="border-b border-b-gray-200 bg-white relative">
-          <td class="px-4 py-2 align-top pb-5">
-            {{ (currentPage - 1) * itemsPerPage + index + 1 }}
-          </td>
-          <td class="px-4 py-2 align-top pb-5">
-            {{ getMealTypeName(getMealTypeID(menu.menu_id)) }}
-          </td>
-          <td class="px-4 py-2 align-top pb-5">
-            {{ getMenuEnglishName(menu.menu_id) }}
-          </td>
-          <td class="px-4 py-2 align-top pb-5">
-            {{ getMenuThaiName(menu.menu_id) }}
-          </td>
-          <td class="px-4 py-2 align-top text-right">
-            <div class="flex justify-end space-x-2">
-              <button @click="openEditModal(menu)"
-                class="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 flex items-center space-x-1">
-                <span class="material-symbols-outlined">edit_square</span>
-                <span>แก้ไข</span>
-              </button>
-              <button @click="confirmDelete(menu.id)"
-                class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 flex items-center space-x-1">
-                <span class="material-symbols-outlined">delete</span>
-                <span>ลบ</span>
-              </button>
+        <tr v-if="isLoading" class="bg-white">
+          <td colspan="5" class="py-16 text-center">
+            <div class="flex justify-center items-center space-x-2">
+              <div class="w-3 h-3 bg-gray-500 rounded-full animate-pulse"></div>
+              <div class="w-3 h-3 bg-gray-500 rounded-full animate-pulse delay-200"></div>
+              <div class="w-3 h-3 bg-gray-500 rounded-full animate-pulse delay-400"></div>
             </div>
           </td>
         </tr>
 
-        <tr v-if="paginatedMenusByDay.length === 0">
-          <td colspan="5" class="py-10 bg-white text-center text-gray-500 font-bold">
-            ไม่พบข้อมูล
-          </td>
-        </tr>
+        <template v-else>
+          <tr v-for="(menu, index) in paginatedMenusByDay" :key="menu.id"
+            class="border-b border-b-gray-200 bg-white relative">
+            <td class="px-4 py-2 align-top pb-5">
+              {{ (currentPage - 1) * itemsPerPage + index + 1 }}
+            </td>
+            <td class="px-4 py-2 align-top pb-5">
+              {{ getMealTypeName(getMealTypeID(menu.menu_id)) }}
+            </td>
+            <td class="px-4 py-2 align-top pb-5">
+              {{ getMenuEnglishName(menu.menu_id) }}
+            </td>
+            <td class="px-4 py-2 align-top pb-5">
+              {{ getMenuThaiName(menu.menu_id) }}
+            </td>
+            <td class="px-4 py-2 align-top text-right">
+              <div class="flex justify-end space-x-2">
+                <button @click="openEditModal(menu)"
+                  class="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 flex items-center space-x-1">
+                  <span class="material-symbols-outlined">edit_square</span>
+                  <span>แก้ไข</span>
+                </button>
+                <button @click="confirmDelete(menu.id)"
+                  class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 flex items-center space-x-1">
+                  <span class="material-symbols-outlined">delete</span>
+                  <span>ลบ</span>
+                </button>
+              </div>
+            </td>
+          </tr>
+
+          <tr v-if="paginatedMenusByDay.length === 0">
+            <td colspan="5" class="py-10 bg-white text-center text-gray-500 font-bold">
+              ไม่พบข้อมูล
+            </td>
+          </tr>
+        </template>
       </tbody>
     </table>
 
@@ -556,6 +582,7 @@
 import axios from "axios";
 import flatpickr from "flatpickr";
 import Multiselect from "vue-multiselect";
+import { API_URL } from "@/services/api";
 
 // import "flatpickr/dist/flatpickr.min.css";
 
@@ -630,6 +657,8 @@ export default {
       initialStartDate: "",
 
       isDateConfirmed: false,
+      isLoading: false,
+
     };
   },
   components: { Multiselect },
@@ -759,8 +788,10 @@ export default {
   },
   methods: {
     async fetchSetupMenus() {
+      this.isLoading = true;
+
       try {
-        const response = await fetch("http://127.0.0.1:3333/setup-menu-ph");
+        const response = await fetch(`${API_URL}/setup-menu-ph`);
         const data = await response.json();
         for (const week in data) {
           if (Object.prototype.hasOwnProperty.call(data, week)) {
@@ -773,6 +804,8 @@ export default {
         }
       } catch (error) {
         console.error("Error fetching menus:", error);
+      } finally {
+        this.isLoading = false;
       }
     },
     getTodayDate() {
@@ -787,7 +820,7 @@ export default {
         const todayDate = this.getTodayDate(); // คำนวณวันที่ปัจจุบันในรูปแบบ yyyy-mm-dd
         console.log("Today:", todayDate);
         const response = await axios.get(
-          `http://127.0.0.1:3333/setup-menu-ph/menus-by-day/${todayDate}`
+          `${API_URL}/setup-menu-ph/menus-by-day/${todayDate}`
         );
         console.log("API Response:", response.data);
         this.todayMenus = response.data.menus || [];
@@ -798,8 +831,8 @@ export default {
     async fetchLookupData() {
       try {
         const [menuRes, mealTypeRes] = await Promise.all([
-          axios.get("http://127.0.0.1:3333/menus"),
-          axios.get("http://127.0.0.1:3333/meal-types"),
+          axios.get(`${API_URL}/menus`),
+          axios.get(`${API_URL}/meal-types`),
         ]);
 
         this.menus = menuRes.data;
@@ -811,21 +844,24 @@ export default {
     },
     async fetchMenusByDay() {
       if (!this.selectedDate) return;
+      this.isLoading = true;
 
       try {
         const response = await axios.get(
-          `http://127.0.0.1:3333/setup-menu-ph/menus-by-day/${this.selectedDate}`
+          `${API_URL}/setup-menu-ph/menus-by-day/${this.selectedDate}`
         );
         this.setUpMenusByDate = response.data.menus;
       } catch (error) {
         console.error("Error fetching menus:", error);
         this.setUpMenusByDate = [];
+      } finally {
+        this.isLoading = false;
       }
     },
     async fetchStartDate() {
       try {
         const response = await axios.get(
-          "http://127.0.0.1:3333/setup-menu-ph/get-start-date"
+          `${API_URL}/setup-menu-ph/get-start-date`
         );
         this.initialStartDate = response.data.startDate; // เก็บค่าจาก API ลงใน initialStartDate
         this.startDate = this.initialStartDate; // ตั้งค่าเริ่มต้นของ startDate เป็นค่าที่ดึงมา
@@ -842,7 +878,7 @@ export default {
         }
 
         const response = await axios.post(
-          "http://127.0.0.1:3333/setup-menu-ph/set-start-date",
+          `${API_URL}/setup-menu-ph/set-start-date`,
           {
             startDate: this.startDate,
           }
@@ -1040,7 +1076,7 @@ export default {
           return;
         }
 
-        await axios.post("http://127.0.0.1:3333/setup-menu-ph", {
+        await axios.post(`${API_URL}/setup-menu-ph`, {
           day_of_week: this.day_of_week,
           menus: menus,
         });
@@ -1105,7 +1141,7 @@ export default {
         }
 
         await axios.put(
-          `http://127.0.0.1:3333/setup-menu-ph/${this.selectedSetupMenu.id}`,
+          `${API_URL}/setup-menu-ph/${this.selectedSetupMenu.id}`,
           {
             day_of_week: this.selectedSetupMenu.day_of_week,
             menu_id: this.selectedSetupMenu.menu_id.id,
@@ -1150,7 +1186,7 @@ export default {
     async deleteConfirmed() {
       try {
         await axios.delete(
-          `http://127.0.0.1:3333/setup-menu-ph/${this.itemToDelete}`
+          `${API_URL}/setup-menu-ph/${this.itemToDelete}`
         );
         this.menus = this.menus.filter((item) => item.id !== this.itemToDelete);
         this.closeDeleteModal();

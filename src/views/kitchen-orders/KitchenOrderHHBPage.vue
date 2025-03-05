@@ -113,47 +113,6 @@
         </div>
       </div>
 
-      <div class="filter relative inline-block" ref="filterDropdown">
-        <button @click="toggleFiltterDropdown"
-          class="bg-custom-orange text-white px-2 py-2 rounded-md flex items-center space-x-1 hover:bg-custom-orange-hover">
-          <span class="material-symbols-outlined text-white text-xl leading-none">filter_alt</span>
-          <span class="text-white text-base leading-none">ตัวกรอง</span>
-          <span :class="{ 'rotate-180': isFilterDropdownOpen }"
-            class="material-symbols-outlined text-white text-xl leading-none items-right ml-auto duration-300">arrow_drop_down</span>
-        </button>
-
-        <div v-if="isFilterDropdownOpen"
-          class="absolute right-0 top-full mt-1 bg-white text-black text-left shadow-lg rounded-md overflow-y-auto z-50 border border-gray-300">
-          <div class="p-4 w-[500px] list-none">
-            <h3 class="font-bold mb-2">กรองโดย Package Type</h3>
-            <div class="grid grid-cols-3 gap-4">
-              <label v-for="type in filteredMenuTypes" :key="type.id" class="flex items-center space-x-2">
-                <input type="checkbox" v-model="selectedOrder" :value="type.id"
-                  class="w-5 h-5 border-2 border-gray-400 rounded-full appearance-none checked:bg-custom-orange checked:border-transparent">
-                <span>{{ type.name }}</span>
-              </label>
-            </div>
-          </div>
-          <div class="flex justify-between space-x-4 p-4 bg-white border-t rounded-b-md list-none">
-            <li @click="clearFilter"
-              class="px-4 py-2 cursor-pointer font-bold text-custom-orange text-left hover:underline">
-              <span>รีเซ็ตตัวกรอง</span>
-            </li>
-
-            <div class="flex space-x-2">
-              <button @click="toggleFiltterDropdown"
-                class="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400 text-gray-700">
-                ยกเลิก
-              </button>
-              <button @click="applyFilter"
-                class="bg-custom-orange hover:bg-custom-orange-hover text-white px-4 py-2 rounded-md">
-                ใช้ตัวกรอง
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
       <div class="flex w-[250px] relative">
         <input type="text" v-model="searchQuery" placeholder="ค้นหา..."
           class="border border-gray-300 rounded-l px-4 py-2 w-full" @keyup.enter="search" />
@@ -168,7 +127,7 @@
       </div>
     </div>
 
-    <table ref="printTable" class="min-w-full table-auto rounded-2xl overflow-hidden mt-4">
+    <table class="min-w-full table-auto rounded-2xl overflow-hidden mt-4">
       <thead>
         <tr class="bg-custom-orange text-white">
           <th v-for="(header, index) in headers" :key="index" :class="['px-4 py-2 text-left font-bold']"
@@ -183,15 +142,20 @@
       </thead>
 
       <tbody>
+        <tr v-if="isLoading" class="bg-white">
+          <td colspan="10" class="py-16 text-center">
+            <div class="flex justify-center items-center space-x-2">
+              <div class="w-3 h-3 bg-gray-500 rounded-full animate-pulse"></div>
+              <div class="w-3 h-3 bg-gray-500 rounded-full animate-pulse delay-200"></div>
+              <div class="w-3 h-3 bg-gray-500 rounded-full animate-pulse delay-400"></div>
+            </div>
+          </td>
+        </tr>
+
+        <template v-else>
+
         <tr v-for="(order, index) in filteredOrders" :key="index" class="border-b border-b-gray-200 bg-white relative">
           <td class="px-4 py-2 align-top pb-5">{{ index + 1 }}</td>
-
-          <!-- <td class="px-4 py-2 align-top font-bold border-l border-r text-custom-orange pb-5"
-    v-if="shouldDisplayOrderDate(index, order.order_date)" 
-    :rowspan="getOrderDateRowspan(order.order_date, index)">
-  {{ formatDate(order.order_date) }}
-</td> -->
-
 
           <td class="px-4 py-2 align-top pb-5">{{ formatDate(order.order_date) }}</td>
           <td class="px-4 py-2 align-top pb-5">{{ getMenuTypeName(order.menu_type_id) }}</td>
@@ -207,11 +171,66 @@
         <tr v-if="filteredOrders.length === 0">
           <td colspan="10" class="py-10 bg-white text-center text-gray-500 font-bold">ไม่พบข้อมูล </td>
         </tr>
+
+        </template>
       </tbody>
 
     </table>
 
     <div ref="componentRef" class="hidden-print p-4 relative">
+  <div class="relative flex justify-between items-center ">
+    <div class="flex flex-col">
+      <strong class="text-xl">Kitchen Orders Report</strong>
+      <span class="text-sm">Date : {{ formattedDate }}</span>
+    </div>
+
+    <div class="flex items-center space-x-4">
+      <img src="@/assets/logo_fitfood_full.png" alt="Logo" class="w-48 h-18" />
+    </div>
+  </div>
+
+  <!-- แยกข้อมูลตามวัน -->
+  <div v-for="(group, index) in groupedOrdersPrint" :key="index" class="mb-6" :style="{ pageBreakBefore: index > 0 ? 'always' : 'auto' }">
+    <!-- แสดงวันที่ข้างบน -->
+    <h2 class="text-lg font-bold mb-2 text-center w-full">{{ formatFullDate(group.date) }}</h2>
+
+    <div v-for="(menuGroup, menuIndex) in group.menuTypes" :key="menuIndex" class="mb-4">
+      <h3 class="text-md font-semibold mb-2 text-custom-orange">
+        {{ menuGroup.menuTypeName }}
+      </h3>
+
+      <table class="report-content min-w-full table-auto mt-4 p-4">
+        <thead>
+          <tr class="bg-gray-100 text-black text-[12px]">
+            <th class="px-6 py-3 text-left font-bold border-b border-b-black" style="width: 35%;">ประเภทอาหาร</th>
+            <th class="px-6 py-3 text-left font-bold border-b border-b-black" style="width: 65%;">รายการอาหาร</th>
+            <th class="px-6 py-3 text-left font-bold border-b border-b-black" style="width: 10%;">จำนวน</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <template v-for="(mealGroup, mealIndex) in menuGroup.orders" :key="mealIndex">
+            <tr v-for="(order, orderIndex) in mealGroup.items" :key="orderIndex" class="bg-white hover:bg-gray-100">
+              <!-- แสดง getMealTypeName() เฉพาะแถวแรกของกลุ่ม -->
+              <td v-if="orderIndex === 0" :rowspan="mealGroup.items.length"
+                class="px-6 py-4 text-[12px] border-b border-b-gray-300 align-top font-semibold">
+                {{ mealGroup.meal_type_name }}
+              </td>
+
+              <td class="px-6 py-4 text-[12px] border-b border-b-gray-300 block">
+                <div class="font-bold">{{ order.menu_eng_name }}</div>
+                <div class="">{{ order.menu_name }}</div>
+              </td>
+              <td class="px-6 py-4 text-[12px] border-b border-b-gray-300">{{ order.quantity }}</td>
+            </tr>
+          </template>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+    <!-- <div ref="componentRef" class="hidden-print p-4 relative">
       <div class="relative flex justify-between items-center p-4">
         <div class="flex flex-col">
           <strong class="text-xl">Kitchen Orders Report</strong>
@@ -242,7 +261,7 @@
           </div>
         </div>
       </div>
-    </div>
+    </div> -->
 
 
 
@@ -257,6 +276,8 @@ import flatpickr from "flatpickr";
 import "flatpickr/dist/flatpickr.css";
 import { useVueToPrint } from "vue-to-print";
 import { ref } from "vue";
+import { API_URL } from "@/services/api";
+
 
 export default {
   setup() {
@@ -318,6 +339,8 @@ export default {
         name: 1
       },
       sortColumn: '',
+
+      isLoading: false,
 
     };
   },
@@ -398,74 +421,124 @@ export default {
     },
 
     groupedOrdersPrint() {
-      const groupedByMenuTypeAndDate = this.filteredOrders.reduce((acc, order) => {
-        const menuType = this.getMenuTypeName(order.menu_type_id);
-        const mealType = this.getMealTypeName(this.getMealTypeID(order.menu_id));
-
-        if (!acc[menuType]) {
-          acc[menuType] = [];
+      const groupedByDate = this.filteredOrders.reduce((acc, order) => {
+        if (!acc[order.order_date]) {
+          acc[order.order_date] = {};
         }
 
-        const existingDate = acc[menuType].find(item => item.order_date === order.order_date);
+        if (!acc[order.order_date][order.menu_type_id]) {
+          acc[order.order_date][order.menu_type_id] = [];
+        }
 
-        if (existingDate) {
-          const existingMealType = existingDate.items.find(item => item.meal_type === mealType);
-
-          if (existingMealType) {
-            const existingMenu = existingMealType.items.find(item => item.menu_name === this.getMenuName(order.menu_id));
-            if (existingMenu) {
-              existingMenu.quantity += order.quantity; // รวม quantity
-            } else {
-              existingMealType.items.push({
-                menu_name: this.getMenuName(order.menu_id),
-                menu_eng_name: this.getMenuEngName(order.menu_id),
-                quantity: order.quantity,
-                meal_type: mealType,
-              });
-            }
-          } else {
-            existingDate.items.push({
-              meal_type: mealType,
-              items: [{
-                menu_name: this.getMenuName(order.menu_id),
-                menu_eng_name: this.getMenuEngName(order.menu_id),
-                quantity: order.quantity,
-                meal_type: mealType,
-              }]
-            });
-          }
+        const existingOrder = acc[order.order_date][order.menu_type_id].find(item => item.menu_id === order.menu_id);
+        if (existingOrder) {
+          existingOrder.quantity += order.quantity;
         } else {
-          acc[menuType].push({
-            menu_type: menuType,
+          acc[order.order_date][order.menu_type_id].push({
+            menu_id: order.menu_id,
+            quantity: order.quantity,
+            menu_name: this.getMenuName(order.menu_id),
+            menu_eng_name: this.getMenuEngName(order.menu_id),
             order_date: order.order_date,
-            items: [{
-              meal_type: mealType,
-              items: [{
-                menu_name: this.getMenuName(order.menu_id),
-                menu_eng_name: this.getMenuEngName(order.menu_id),
-                quantity: order.quantity,
-                meal_type: mealType,
-              }]
-            }]
+            menu_type_id: order.menu_type_id,
+            meal_type_name: this.getMealTypeName(this.getMealTypeID(order.menu_id)), // เพิ่ม field
           });
         }
 
         return acc;
       }, {});
 
-      return Object.keys(groupedByMenuTypeAndDate).map(menuType => {
-        return {
-          menu_type: menuType,
-          items: groupedByMenuTypeAndDate[menuType].map(item => ({
-            order_date: item.order_date,
-            items: item.items.map(subItem => ({
-              meal_type: subItem.meal_type,
-              items: subItem.items
-            }))
-          }))
-        };
-      });
+      return Object.keys(groupedByDate).map(date => ({
+        date,
+        menuTypes: Object.keys(groupedByDate[date]).map(menu_type_id => {
+          const numMenuTypeId = Number(menu_type_id);
+          return {
+            menu_type_id: numMenuTypeId,
+            menuTypeName: this.getMenuTypeName(numMenuTypeId),
+            orders: groupedByDate[date][menu_type_id]
+              .reduce((acc, order) => {
+                const existingGroup = acc.find(group => group.meal_type_name === order.meal_type_name);
+                if (existingGroup) {
+                  existingGroup.items.push(order);
+                } else {
+                  acc.push({ meal_type_name: order.meal_type_name, items: [order] });
+                }
+                return acc;
+              }, []),
+          };
+        }),
+      }));
     },
+
+    // groupedOrdersPrint() {
+    //   const groupedByMenuTypeAndDate = this.filteredOrders.reduce((acc, order) => {
+    //     const menuType = this.getMenuTypeName(order.menu_type_id);
+    //     const mealType = this.getMealTypeName(this.getMealTypeID(order.menu_id));
+
+    //     if (!acc[menuType]) {
+    //       acc[menuType] = [];
+    //     }
+
+    //     const existingDate = acc[menuType].find(item => item.order_date === order.order_date);
+
+    //     if (existingDate) {
+    //       const existingMealType = existingDate.items.find(item => item.meal_type === mealType);
+
+    //       if (existingMealType) {
+    //         const existingMenu = existingMealType.items.find(item => item.menu_name === this.getMenuName(order.menu_id));
+    //         if (existingMenu) {
+    //           existingMenu.quantity += order.quantity; // รวม quantity
+    //         } else {
+    //           existingMealType.items.push({
+    //             menu_name: this.getMenuName(order.menu_id),
+    //             menu_eng_name: this.getMenuEngName(order.menu_id),
+    //             quantity: order.quantity,
+    //             meal_type: mealType,
+    //           });
+    //         }
+    //       } else {
+    //         existingDate.items.push({
+    //           meal_type: mealType,
+    //           items: [{
+    //             menu_name: this.getMenuName(order.menu_id),
+    //             menu_eng_name: this.getMenuEngName(order.menu_id),
+    //             quantity: order.quantity,
+    //             meal_type: mealType,
+    //           }]
+    //         });
+    //       }
+    //     } else {
+    //       acc[menuType].push({
+    //         menu_type: menuType,
+    //         order_date: order.order_date,
+    //         items: [{
+    //           meal_type: mealType,
+    //           items: [{
+    //             menu_name: this.getMenuName(order.menu_id),
+    //             menu_eng_name: this.getMenuEngName(order.menu_id),
+    //             quantity: order.quantity,
+    //             meal_type: mealType,
+    //           }]
+    //         }]
+    //       });
+    //     }
+
+    //     return acc;
+    //   }, {});
+
+    //   return Object.keys(groupedByMenuTypeAndDate).map(menuType => {
+    //     return {
+    //       menu_type: menuType,
+    //       items: groupedByMenuTypeAndDate[menuType].map(item => ({
+    //         order_date: item.order_date,
+    //         items: item.items.map(subItem => ({
+    //           meal_type: subItem.meal_type,
+    //           items: subItem.items
+    //         }))
+    //       }))
+    //     };
+    //   });
+    // },
 
   },
   methods: {
@@ -483,6 +556,21 @@ export default {
 
       return `${day} ${month} ${year}`; // รูปแบบ "28 Jan 2025"
     },
+    formatFullDate(dateString) {
+  if (!dateString) return ""; // หากยังไม่ได้เลือกวันที่
+
+  const months = [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'
+  ];
+  const date = new Date(dateString);
+  const day = date.getDate(); // วันที่
+  const month = months[date.getMonth()]; // ชื่อเดือนเต็ม
+  const year = date.getFullYear(); // ปี
+
+  return `${day} ${month} ${year}`; // รูปแบบ "28 January 2025"
+},
+
     formatPrice(price) {
       return '฿' + new Intl.NumberFormat('th-TH', {
         minimumFractionDigits: 2,  // ตั้งค่าจำนวนตำแหน่งทศนิยมขั้นต่ำ
@@ -527,8 +615,10 @@ export default {
     // },
 
     async fetchOrders(startDate, endDate) {
+      this.isLoading = true;
+
       try {
-        const response = await axios.get('http://127.0.0.1:3333/orders/date-range', {
+        const response = await axios.get(`${API_URL}/orders/date-range`, {
           params: { start_date: startDate, end_date: endDate }, // ส่งค่าพารามิเตอร์ start_date และ end_date
         });
 
@@ -544,16 +634,20 @@ export default {
 
       } catch (error) {
         console.error('Error fetching orders data:', error);
+      } finally {
+        this.isLoading = false;
       }
     },
 
     async fetchLookupData() {
+      this.isLoading = true;
+
       try {
         const [customersRes, menuRes, menuTypeRes, mealTypeRes] = await Promise.all([
-          axios.get("http://127.0.0.1:3333/customers"),
-          axios.get("http://127.0.0.1:3333/menus"),
-          axios.get("http://127.0.0.1:3333/menu-types"),
-          axios.get("http://127.0.0.1:3333/meal-types"),
+          axios.get(`${API_URL}/customers`),
+          axios.get(`${API_URL}/menus`),
+          axios.get(`${API_URL}/menu-types`),
+          axios.get(`${API_URL}/meal-types`),
         ]);
         this.customers = customersRes.data;
         this.menus = menuRes.data;
@@ -561,6 +655,8 @@ export default {
         this.meal_types = mealTypeRes.data;
       } catch (error) {
         console.error("Error fetching lookup data:", error);
+      } finally {
+        this.isLoading = false;
       }
     },
 
