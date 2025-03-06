@@ -397,7 +397,7 @@ import "flatpickr/dist/flatpickr.css";
 import { useVueToPrint } from "vue-to-print";
 import { ref } from "vue";
 
-import { API_URL } from "@/services/testapi";
+import { API_URL } from "@/services/api";
 
 //import Multiselect from 'vue-multiselect';
 
