@@ -580,6 +580,15 @@
                                     placeholder="กรอก Note รายละเอียดโปรโมชันสำหรับส่งสรุปให้ลูกค้า (ถ้ามี)" rows="3"
                                     class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange resize-y"></textarea>
                             </div>
+
+                            <div class="mb-4">
+                <label for="Transaction_ref" class="block text-gray-700 font-bold">Transaction No. อื่นใน Payslip
+                  เดียวกัน
+                  (ถ้ามี)</label>
+                <input id="transaction_ref" v-model="saleRecord.transaction_ref"
+                  placeholder="กรอก Transaction No. อื่นใน Payslip เดียวกัน (ถ้ามี)"
+                  class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange resize-y" />
+              </div>
                         </div>
 
                         <div class="flex justify-between space-x-4 p-4 bg-white border-t rounded-b-md list-none">
@@ -1371,7 +1380,12 @@
                                 placeholder="กรอก Note รายละเอียดโปรโมชันสำหรับส่งสรุปให้ลูกค้า (ถ้ามี)" rows="3"
                                 class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange resize-y"></textarea>
                         </div>
-
+                        <div class="mb-4">
+              <label for="editTransaction_ref" class="block text-gray-700 font-bold">Transaction No. อื่นใน Payslip เดียวกัน (ถ้ามี)</label>
+              <input id="transaction_ref" v-model="selectedSaleRecord.transaction_ref"
+                placeholder="กรอก Transaction No. อื่นใน Payslip เดียวกัน (ถ้ามี)"
+                class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange resize-y" />
+            </div>
                     </div>
 
 
@@ -1498,62 +1512,7 @@ export default {
             filteredSaleRecords: [],
 
             isAddModalOpen: false,
-            saleRecord: {
-                customer_id: "",
-                promotion_type_id: "",
-                program_id: "",
-                package_id: "",
-                package_type_id: "",
-                seller_name_id: "",
-                delivery: "",
-
-                package_price: 0,
-                discount: 0,
-                extra_charge: 0,
-                extra_charge_price: '',
-                total_package_price: "",
-
-                zone1_id: "",
-                zone1_quantity: 0,
-
-                zone2_id: "",
-                zone2_quantity: 0,
-
-                zone3_id: "",
-                zone3_quantity: 0,
-
-                zone_outsource_id: "",
-                zone_outsource_quantity: 0,
-
-                total_delivery_zone_price: "",
-                total_delivery_price: "",
-                payment_status: "unpaid",
-                paid_date: "",
-                payment_type_id: "",
-                start_date: "",
-                expiry_date: "",
-                remaining_days: 0,
-
-                additional_type_id: "",
-                add_detail: "",
-                add_price: 0,
-
-                receive_food_id: "",
-                select_food_id: "",
-                delivery_round_id: "",
-                note: "",
-
-                free_mad: 0,
-                free_dessert: 0,
-                free_brittles: 0,
-                free_energy_balls: 0,
-                free_dressing: 0,
-                free_yoghurt: 0,
-                free_granola: 0,
-
-                free_credit: 0,
-                other_promotion_detail: "",
-            },
+            saleRecord: {},
 
             customers: [],
             customerAddress: null,
@@ -1593,65 +1552,7 @@ export default {
             itemToDelete: null,
 
             moreOpenDropdownIndex: null,
-
-            selectedSaleRecord: {
-                id: "",
-                customer_id: "",
-                promotion_type_id: "",
-                program_id: "",
-                package_id: "",
-                package_type_id: "",
-                seller_name_id: "",
-                delivery: "",
-
-                package_price: 0,
-                discount: 0,
-                extra_charge: 0,
-                extra_charge_price: 0,
-                total_package_price: "",
-
-                zone1_id: "",
-                zone1_quantity: 0,
-
-                zone2_id: "",
-                zone2_quantity: 0,
-
-                zone3_id: "",
-                zone3_quantity: 0,
-
-                zone_outsource_id: "",
-                zone_outsource_quantity: 0,
-
-                total_delivery_zone_price: "",
-                total_delivery_price: "",
-                payment_status: "unpaid",
-                paid_date: "",
-                payment_type_id: "",
-                start_date: "",
-                expiry_date: "",
-                remaining_days: 0,
-
-                additional_type_id: "",
-                add_detail: "",
-                add_price: 0,
-
-                receive_food_id: "",
-                select_food_id: "",
-                delivery_round_id: "",
-                note: "",
-
-                free_mad: 0,
-                free_dessert: 0,
-                free_brittles: 0,
-                free_energy_balls: 0,
-                free_dressing: 0,
-                free_yoghurt: 0,
-                free_granola: 0,
-
-                free_credit: 0,
-                other_promotion_detail: "",
-            },
-
+            selectedSaleRecord: {},
             isCopied: false,
 
             isEditModalOpen: false,
@@ -1670,6 +1571,8 @@ export default {
             showFailToast: false,
             showErrorToast: false,
             toastErrorMessage: "",
+            isLoading: false,
+
         };
     },
     computed: {
@@ -1730,6 +1633,8 @@ export default {
                 return { name: "", expiry_date: "" };
             }
             return {
+                transaction: this.selectedSaleRecord.transaction || "",
+
                 seller_name_id: this.getSellerName(
                     this.selectedSaleRecord.seller_name_id
                 ),
@@ -1781,6 +1686,8 @@ export default {
                 payment_type_id: this.getPaymentTypeName(
                     this.selectedSaleRecord.payment_type_id
                 ),
+                transaction_ref: this.selectedSaleRecord.transaction_ref || "",
+
                 // start_date: this.formatDate(this.selectedSaleRecord.start_date),
                 // expiry_date: this.formatDate(this.selectedSaleRecord.expiry_date),
                 // receive_date: this.formatDate(this.selectedSaleRecord.start_date),
@@ -2358,6 +2265,8 @@ export default {
 
                     free_credit: this.saleRecord.free_credit || 0,
                     other_promotion_detail: this.saleRecord.other_promotion_detail || null,
+                    transaction_ref: this.saleRecord.transaction_ref || null,
+
                 });
 
                 this.saleRecords.push(response.data);
@@ -2524,6 +2433,7 @@ export default {
 
                         free_credit: this.selectedSaleRecord.free_credit || 0,
                         other_promotion_detail: this.selectedSaleRecord.other_promotion_detail || null,
+                        transaction_ref: this.selectedSaleRecord.transaction_ref || null,
 
                     }
                 );
@@ -2675,6 +2585,8 @@ export default {
         },
 
         async fetchSaleRecords() {
+            this.isLoading = true;
+
             try {
                 const response = await axios.get("http://127.0.0.1:3333/sale-records-hhb");
                 this.saleRecords = response.data;
@@ -2683,7 +2595,9 @@ export default {
                 this.updatePage();
             } catch (error) {
                 console.error("Error fetching sale records:", error);
-            }
+            } finally {
+        this.isLoading = false;
+      }
         },
 
         getCustomerName(customerId) {
@@ -2856,6 +2770,8 @@ export default {
                 note: "Note รายละเอียดโปรโมชันสำหรับส่งสรุปให้ลูกค้า (ถ้ามี)",
                 delivery_date: "วันที่ต้องการรับอาหาร",
                 select_food_id: "วิธีการเลือกอาหาร",
+                transaction_ref: "Transaction No. อื่นใน Payslip เดียวกัน (ถ้ามี)",
+        transaction: "Transaction No.",
             };
             return labels[key] || key;
         },

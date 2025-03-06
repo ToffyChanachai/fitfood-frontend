@@ -96,7 +96,6 @@
     </div>
 
 
-    <!-- เมนูส่วนขวา -->
     <div class="w-4/5 p-4">
       <div v-if="isLoading" class="flex h-full">
         <!-- <div
@@ -181,7 +180,7 @@
 
 <script>
 import axios from 'axios';
-import { API_URL } from "@/services/api";
+import { API_URL } from "@/services/testapi";
 
 export default {
   data() {
