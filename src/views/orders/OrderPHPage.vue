@@ -239,24 +239,25 @@ export default {
       this.selectedDate = this.getTodayDate();
       this.fetchMenusForSelectedDate();
     },
-
     async fetchMenusForSelectedDate() {
       this.isLoading = true;
       try {
         const response = await axios.get(`${API_URL}/setup-menu-ph/menus-by-day/${this.selectedDate}`);
         if (response.data.menus && response.data.menus.length > 0) {
           this.todayMenus = response.data.menus;
+          this.todayMenus.forEach(menu => {
+            menu.quantity = 0;
+          });
         } else {
           this.todayMenus = [];
-          console.log('ไม่มีเมนูในวันเลือก');
         }
       } catch (error) {
-        this.todayMenus = [];
-      } finally {
-        this.isLoading = false;
+        this.todayMenus = []; // กรณีเกิดข้อผิดพลาด ให้แสดงค่าว่าง
+      }
+      finally {
+        this.isLoading = false; // หมดการโหลด
       }
     },
-
     async fetchLookupData() {
       this.isLoading = true;
       try {

@@ -67,9 +67,9 @@
 
     <div class="flex justify-end items-center space-x-2 relative">
       <div class="mt-4 px-4 flex items-center space-x-1 mr-auto ">
-        <span class="material-symbols-outlined text-2xl text-gray-700">receipt_long</span>
-        <span class="text-m text-gray-700">จำนวนรายการอาหารประจำวันของลูกค้าทั้งหมด: </span>
-        <span class="text-m text-custom-orange font-bold"> {{ filteredOrdersWithoutHappy.length }} รายการ</span>
+        <span class="material-symbols-outlined text-2xl text-gray-700">delivery_truck_speed</span>
+        <span class="text-m text-gray-700">จำนวนการจัดส่งอาหารทั้งหมด: </span>
+        <span class="text-m text-custom-orange font-bold"> {{ filteredUniqueOrders.length }} รายการ</span>
       </div>
 
       <div>
@@ -90,11 +90,12 @@
         </button>
       </div>
 
-      <button v-if="selectedOrder.length > 0" @click="clearFilter"
-        class="px-2 py-2 rounded-md flex items-center space-x-1 text-gray-400 hover:text-custom-orange">
-        <span class="material-symbols-outlined">close</span>
-        <span class="ml-2">รีเซ็ตตัวกรอง ({{ selectedOrder.length }})</span>
+      <button @click="handlePrint"
+        class="bg-custom-orange text-white px-2 py-2 rounded-md flex items-center space-x-1 hover:bg-custom-orange-hover">
+        <span class="material-symbols-outlined text-white text-xl leading-none">print</span>
+        <span class="text-white text-base leading-none">Print</span>
       </button>
+
 
       <div class="sort relative inline-block" ref="sortDropdown">
         <button @click="toggleSortDropdown"
@@ -147,47 +148,6 @@
         </div>
       </div>
 
-      <div class="filter relative inline-block" ref="filterDropdown">
-        <button @click="toggleFiltterDropdown"
-          class="bg-custom-orange text-white px-2 py-2 rounded-md flex items-center space-x-1 hover:bg-custom-orange-hover">
-          <span class="material-symbols-outlined text-white text-xl leading-none">filter_alt</span>
-          <span class="text-white text-base leading-none">ตัวกรอง</span>
-          <span :class="{ 'rotate-180': isFilterDropdownOpen }"
-            class="material-symbols-outlined text-white text-xl leading-none items-right ml-auto duration-300">arrow_drop_down</span>
-        </button>
-
-        <div v-if="isFilterDropdownOpen"
-          class="absolute right-0 top-full mt-1 bg-white text-black text-left shadow-lg rounded-md overflow-y-auto z-50 border border-gray-300">
-          <div class="p-4 w-[500px] list-none">
-            <h3 class="font-bold mb-2">กรองโดย Package Type</h3>
-            <div class="grid grid-cols-3 gap-4">
-              <label v-for="type in filteredMenuTypes" :key="type.id" class="flex items-center space-x-2">
-                <input type="checkbox" v-model="selectedOrder" :value="type.id"
-                  class="w-5 h-5 border-2 border-gray-400 rounded-full appearance-none checked:bg-custom-orange checked:border-transparent">
-                <span>{{ type.name }}</span>
-              </label>
-            </div>
-          </div>
-          <div class="flex justify-between space-x-4 p-4 bg-white border-t rounded-b-md list-none">
-            <li @click="clearFilter"
-              class="px-4 py-2 cursor-pointer font-bold text-custom-orange text-left hover:underline">
-              <span>รีเซ็ตตัวกรอง</span>
-            </li>
-
-            <div class="flex space-x-2">
-              <button @click="toggleFiltterDropdown"
-                class="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400 text-gray-700">
-                ยกเลิก
-              </button>
-              <button @click="applyFilter"
-                class="bg-custom-orange hover:bg-custom-orange-hover text-white px-4 py-2 rounded-md">
-                ใช้ตัวกรอง
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
       <div class="flex w-[250px] relative">
         <input type="text" v-model="searchQuery" placeholder="ค้นหา..."
           class="border border-gray-300 rounded-l px-4 py-2 w-full" @keyup.enter="search" />
@@ -226,18 +186,10 @@
         <template v-else>
           <tr v-for="(order, index) in filteredOrders" :key="index"
             class="border-b border-b-gray-200 bg-white relative">
-            
+
             <td class="px-4 py-2 align-top pb-5">{{ (currentPage - 1) * itemsPerPage + index + 1 }}</td>
-
-            <!-- <td
-              class="px-4 py-2 align-top font-bold border-l border-r text-custom-orange pb-5 cursor-pointer hover:text-custom-orange-hover"
-              v-if="shouldDisplayUserName(index, order.user_id)" :rowspan="getRowspan(order.user_id, index)"
-              @click="selectCustomerOrders(order.user_id)">
-              {{ getCustomerName(order.user_id) }}
-            </td> -->
-
             <td class="px-4 py-2 align-top text-custom-orange font-bold pb-5"> {{ getCustomerName(order.user_id) }}</td>
-         
+
 
             <td class="px-4 py-2 align-top pb-5">
               <div class="flex items-center">
@@ -247,9 +199,9 @@
             </td>
 
             <td class="px-4 py-2 align-top pb-5">
-              <input v-if="isEditing && editingOrderId === order.id" v-model="order.delivery_time"
-                type="time" class="border px-2 py-1 rounded w-full" />
-              <span v-else>{{ order.delivery_time }}</span>
+              <input v-if="isEditing && editingOrderId === order.id" v-model="order.delivery_time" type="time"
+                class="border px-2 py-1 rounded w-full" />
+              <span v-else>{{ formattedDeliveryTime(order.delivery_time) }}</span>
             </td>
 
             <td class="px-4 py-2 align-top pb-5">
@@ -268,10 +220,35 @@
               <span v-else>{{ order.delivery_zone }}</span>
             </td>
 
-            <td class="px-4 py-2 align-top pb-5"> {{ getCustomerAddress1(order.user_id) }}</td>
-            <td class="px-4 py-2 align-top pb-5"> {{ getCustomerAddress2(order.user_id) }}</td>
-            <td class="px-4 py-2 align-top pb-5"> {{ getCustomerAddress3(order.user_id) }}</td>
-            
+            <!-- <td class="px-4 py-2 align-top pb-5">
+              <select v-model="selectedAddresses[order.id]" class="border px-2 py-1 rounded w-full">
+                <option :value="getCustomerAddress1(order.user_id)">
+                  ที่อยู่ 1: {{ getCustomerAddress1(order.user_id) }}
+                </option>
+                <option :value="getCustomerAddress2(order.user_id)">
+                  ที่อยู่ 2: {{ getCustomerAddress2(order.user_id) }}
+                </option>
+                <option :value="getCustomerAddress3(order.user_id)">
+                  ที่อยู่ 3: {{ getCustomerAddress3(order.user_id) }}
+                </option>
+              </select>
+            </td> -->
+            <td class="px-4 py-2 align-top pb-5">
+              <select v-if="isEditing && editingOrderId === order.id" v-model="selectedAddresses[order.id]"
+                class="border px-2 py-1 rounded w-full">
+                <option :value="getCustomerAddress1(order.user_id)">
+                  ที่อยู่ 1: {{ getCustomerAddress1(order.user_id) }}
+                </option>
+                <option :value="getCustomerAddress2(order.user_id)">
+                  ที่อยู่ 2: {{ getCustomerAddress2(order.user_id) }}
+                </option>
+                <option :value="getCustomerAddress3(order.user_id)">
+                  ที่อยู่ 3: {{ getCustomerAddress3(order.user_id) }}
+                </option>
+              </select>
+              <span v-else>{{ selectedAddresses[order.id] || 'เลือกที่อยู่' }}</span>
+            </td>
+
             <td class="px-4 py-2 text-right pb-5 relative" ref="moreDropdown">
               <div class="flex justify-end space-x-2">
                 <button v-if="!isEditing || editingOrderId !== order.id" @click="startEditing(order)"
@@ -280,8 +257,7 @@
                   <span>แก้ไข</span>
                 </button>
 
-                <button v-if="isEditing && editingOrderId === order.id"
-                  @click="saveUpdatedDelivery(order)"
+                <button v-if="isEditing && editingOrderId === order.id" @click="saveUpdatedDelivery(order)"
                   class="bg-custom-orange text-white px-2 py-1 rounded hover:bg-custom-orange-hover flex items-center space-x-1">
                   <span class="material-symbols-outlined">check</span>
                   <span>บันทึก</span>
@@ -306,8 +282,6 @@
       </tbody>
 
     </table>
-
-
 
     <div class="rounded-b-2xl flex justify-center items-center space-x-2 bg-white px-2 py-1">
       <button @click="goToPage(currentPage - 1)" :disabled="currentPage === 1"
@@ -347,6 +321,70 @@
       </button>
     </div>
 
+    <div ref="componentRef" class="hidden-print p-4 relative">
+      <div class="relative flex justify-between items-center ">
+        <div class="flex flex-col">
+          <strong class="text-xl">Delivery Report</strong>
+          <span class="text-sm">Date : {{ formattedDate }}</span>
+        </div>
+
+
+        <div class="flex items-center space-x-4">
+          <img src="@/assets/logo_fitfood_full.png" alt="Logo" class="w-48 h-18" />
+        </div>
+      </div>
+
+      <table class="report-content min-w-full table-auto mt-4 p-4">
+        <thead>
+          <tr class="bg-gray-100 text-black text-[12px]">
+            <th class="px-6 py-3 text-left font-bold border-b border-b-black" style="width: 20%;">ชื่อ - นามสกุล</th>
+            <th class="px-6 py-3 text-left font-bold border-b border-b-black" style="width: 10%;">โทร</th>
+            <th class="px-6 py-3 text-left font-bold border-b border-b-black" style="width: 10%;">เวลา</th>
+            <th class="px-6 py-3 text-left font-bold border-b border-b-black" style="width: 10%;">รอบ</th>
+            <th class="px-6 py-3 text-left font-bold border-b border-b-black" style="width: 10%;">ผู้ส่ง</th>
+            <th class="px-6 py-3 text-left font-bold border-b border-b-black" style="width: 15%;">โซนจัดส่ง</th>
+            <th class="px-6 py-3 text-left font-bold border-b border-b-black" style="width: 25%;">ที่อยู่จัดส่ง</th>
+          </tr>
+
+        </thead>
+
+        <tbody>
+          <tr v-for="(order, index) in filteredUniqueOrders" :key="index"
+            class="bg-white border-b border-gray-300 hover:bg-gray-100">
+
+            <td class="px-6 py-4 text-[12px]  text-black border-b border-b-gray-300">
+              {{ getCustomerName(order.user_id) }}
+            </td>
+
+
+            <td class="px-6 py-4 text-[12px] border-b border-b-gray-300">
+              <div class="flex items-center">
+                {{ getCustomerTel(order.user_id) }}
+              </div>
+            </td>
+
+
+            <td class="px-6 py-4 text-[12px] border-b border-b-gray-300">{{ formattedDeliveryTime(order.delivery_time)
+            }}</td>
+            <td class="px-6 py-4 text-[12px] border-b border-b-gray-300">{{ order.delivery_round }}</td>
+            <td class="px-6 py-4 text-[12px] border-b border-b-gray-300">{{ order.deliver }}</td>
+            <td class="px-6 py-4 text-[12px] border-b border-b-gray-300">{{ order.delivery_zone }}</td>
+
+            <span v-if="selectedAddresses[order.id]">
+              <td class="px-6 py-4 text-[12px]">{{ selectedAddresses[order.id] }}</td>
+            </span>
+
+
+          </tr>
+
+          <tr v-if="filteredUniqueOrders.length === 0">
+            <td colspan="11" class="py-10 bg-white text-center text-gray-500 font-bold">ไม่พบข้อมูล </td>
+          </tr>
+        </tbody>
+
+      </table>
+    </div>
+
   </div>
 
 
@@ -356,11 +394,24 @@
 import axios from 'axios';
 import flatpickr from "flatpickr";
 import "flatpickr/dist/flatpickr.css";
+import { useVueToPrint } from "vue-to-print";
+import { ref } from "vue";
+
 import { API_URL } from "@/services/testapi";
 
 //import Multiselect from 'vue-multiselect';
 
 export default {
+  setup() {
+    const componentRef = ref();
+    const { handlePrint } = useVueToPrint({
+      content: componentRef,
+      documentTitle: "Delivery Report",
+    });
+
+    return { componentRef, handlePrint };
+  },
+
   data() {
     return {
       headers: [
@@ -371,12 +422,10 @@ export default {
         "รอบ",
         "ผู้ส่ง",
         "โซนจัดส่งตามที่อยู่ตาม Routing",
-        "ที่อยู่ 1",
-        "ที่อยู่ 2",
-        "ที่อยู่ 3",
+        "ที่อยู่จัดส่ง",
         "",
       ],
-      headerWidths: ["5%", "10%", "5%", "6%", "8%", "8%", "8%", "12%", "12%", "12%", "5%"],
+      headerWidths: ["5%", "15%", "10%", "10%", "10%", "10%", "15%", "20%", "5%"],
       // sortDateDirection: 'asc', // กำหนดทิศทางการเรียงลำดับ (asc หรือ desc)
       sortIcon: 'arrow_downward',
 
@@ -421,7 +470,6 @@ export default {
       isEditing: false,
       editingOrderId: null,
 
-
     };
   },
   // components: {
@@ -440,7 +488,7 @@ export default {
 
     filteredOrders() {
       const searchQuery = this.searchQuery ? this.searchQuery.toLowerCase() : ''; // ป้องกัน undefined
-      return this.filteredOrdersWithoutHappy.filter(order => {
+      return this.filteredUniqueOrders.filter(order => {
         const customerName = this.getCustomerName(order.user_id) || ''; // ป้องกัน undefined
         const matchesSearch = searchQuery === '' || customerName.toLowerCase().includes(searchQuery);
         const matchesPromotionType = !Array.isArray(this.selectedOrder) || this.selectedOrder.length === 0 || this.selectedOrder.includes(order.menu_type_id);
@@ -451,7 +499,7 @@ export default {
     totalPages() {
       const searchQuery = this.searchQuery ? this.searchQuery.toLowerCase() : ''; // ป้องกัน undefined
       return Math.ceil(
-        this.filteredOrdersWithoutHappy.filter(order => {
+        this.filteredUniqueOrders.filter(order => {
           const customerName = this.getCustomerName(order.user_id) || ''; // ป้องกัน undefined
           const matchesSearch = searchQuery === '' || customerName.toLowerCase().includes(searchQuery);
           const matchesPromotionType = !Array.isArray(this.selectedOrder) || this.selectedOrder.length === 0 || this.selectedOrder.includes(order.menu_type_id);
@@ -499,16 +547,51 @@ export default {
         year: "numeric",
       }).format(new Date(this.endDate));
     },
+    formattedDeliveryTime() {
+      return (time) => {
+        if (!time) return "-"; // กรณีไม่มีข้อมูล
+        return time.slice(0, 5); // ตัดเอาแค่ HH:mm
+      };
+    },
+    selectedAddresses() {
+      let addresses = {};
+      this.filteredUniqueOrders.forEach(order => {
+        addresses[order.id] = order.delivery_address || ''; // ถ้าไม่มีค่าให้เป็นค่าว่าง
+      });
+      return addresses;
+    },
+    filteredUniqueOrders() {
+      const uniqueOrders = [];
+      const seenUserIds = new Set();
+
+      this.filteredOrdersWithoutHappy.forEach(order => {
+        if (!seenUserIds.has(order.user_id)) {
+          uniqueOrders.push(order);
+          seenUserIds.add(order.user_id);
+        }
+      });
+
+      return uniqueOrders;
+      // return this.filteredOrdersWithoutHappy; 
+    },
+    formattedDate() {
+      return new Date().toLocaleDateString("en-UK", {
+        year: "numeric",
+        month: "numeric",
+        day: "numeric"
+      });
+    },
 
 
   },
   methods: {
+
     goToPage(page) {
       if (page >= 1 && page <= this.totalPages) {
         this.currentPage = page;
       }
     },
-    
+
     formatDate(dateString) {
       if (!dateString) return ""; // หากยังไม่ได้เลือกวันที่
 
@@ -617,7 +700,8 @@ export default {
           delivery_round: Order.delivery_round || '',
           deliver: Order.deliver || '',
           delivery_zone: Order.delivery_zone || '',
-          delivery_time: Order.delivery_time || '' // ✅ เพิ่มค่านี้เข้าไป
+          delivery_time: Order.delivery_time || '',
+          delivery_address: this.selectedAddresses[Order.id] || null,  // ✅ เพิ่ม delivery_address
         });
 
         await this.fetchOrders();
@@ -743,163 +827,6 @@ export default {
       this.selectedDailySaleDetail = {};
     },
 
-    formatLabel(key) {
-      const labels = {
-        paid_date: 'Transaction Date',
-        customer_id: `Customer's Name`,
-        package_type_id: 'Package Type',
-        package_id: 'Package/Purchase Details',
-        promotion_type_id: 'Sales Category',
-        package_price: 'Package Price',
-        package_detail: 'Details',
-        discount: 'Additional Discount',
-        extra_charge: '% Extra Charge',
-        extra_charge_price: 'Extra Charge Value',
-        total_package_price: 'Purchase Value',
-        total_delivery_price: 'ค่าจัดส่งรวม',
-        total_price: 'ยอดขายรวม',
-        payment_type_id: 'วิธีการชำระเงิน',
-        seller_name_id: 'Sales Rep',
-      };
-      return labels[key] || key;
-    },
-
-    openConfirmSatatusModal(saleRecord) {
-      this.selectedOrder = saleRecord;
-      this.isConfirmStatusModalOpen = true;
-    },
-    closeConfirmStatusModal() {
-      this.isConfirmStatusModalOpen = false;
-      // this.selectedOrder = null;
-      this.selectedPaidDate = "";
-    },
-    async confirmStatus() {
-      try {
-        const newStatus = this.selectedOrder.status === "confirm" ? "pending" : "confirm";
-
-        const payload = {
-          status: newStatus,
-        };
-
-        // ส่งคำขอ PUT ไปยังเซิร์ฟเวอร์
-        const response = await axios.put(
-          `${API_URL}/order/${this.selectedOrder.id}/status`, // URL ที่จะอัปเดตสถานะคำสั่งซื้อ
-          payload // ส่งข้อมูลสถานะใหม่
-        );
-        await this.fetchOrders(); // ดึงข้อมูลคำสั่งซื้อทั้งหมดใหม่
-
-        if (response.status === 200) {
-          const updatedOrder = response.data.data;
-
-          // ค้นหาคำสั่งซื้อที่มี ID ตรงกับคำสั่งที่อัปเดต
-          const index = this.orders.findIndex(
-            (record) => record.id === updatedOrder.id
-          );
-
-          if (index !== -1) {
-            this.orders[index] = updatedOrder;
-          }
-
-          this.showSuccessToastNotification("อัปเดตสถานะสำเร็จ!");
-        } else {
-          throw new Error("Unexpected response status");
-        }
-      } catch (error) {
-        // แสดงข้อผิดพลาดหากมีการเกิดข้อผิดพลาดในระหว่างการอัปเดต
-        console.error(
-          "Error response data:",
-          error.response?.data || "No additional data"
-        );
-        this.showErrorToastNotification("เกิดข้อผิดพลาดในการอัปเดตสถานะ!");
-      }
-
-      // ปิด modal หลังจากอัปเดตสถานะเสร็จ
-      this.closeConfirmStatusModal();
-    },
-
-    async confirmMultipleOrders() {
-      if (this.selectedOrders.length === 0) return;
-      const orderIds = this.selectedOrders.map(order => order.id);
-      // console.log("Selected Orders:", this.selectedOrders);
-
-      try {
-        const response = await fetch(`${API_URL}/order/update-status`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            order_ids: orderIds,
-            status: "confirm",
-          }),
-        });
-        await response.json();
-
-        if (response.ok) {
-          this.showSuccessToastNotification("อัปเดตสถานะสำเร็จ!");
-          this.selectedOrders = [];
-          await this.fetchOrders(this.startDate, this.endDate);
-        } else {
-          this.showErrorToastNotification("เกิดข้อผิดพลาดในการอัปเดตสถานะ!");
-        }
-      } catch (error) {
-        console.error("Error:", error);
-        this.showErrorToastNotification("เกิดข้อผิดพลาดในการเชื่อมต่อ!");
-      }
-    },
-    async pendingMultipleOrders() {
-      if (this.selectedOrders.length === 0) return;
-      const orderIds = this.selectedOrders.map(order => order.id);
-
-      try {
-        const response = await fetch(`${API_URL}/order/update-status`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            order_ids: orderIds,
-            status: "pending",
-          }),
-        });
-        await response.json();
-
-        if (response.ok) {
-          this.showSuccessToastNotification("อัปเดตสถานะสำเร็จ!");
-          this.selectedOrders = [];
-          await this.fetchOrders(this.startDate, this.endDate);
-        } else {
-          this.showErrorToastNotification("เกิดข้อผิดพลาดในการอัปเดตสถานะ!");
-        }
-      } catch (error) {
-        console.error("Error:", error);
-        this.showErrorToastNotification("เกิดข้อผิดพลาดในการเชื่อมต่อ!");
-      }
-    },
-
-    selectCustomerOrders(userId) {
-      const customerOrders = this.filteredOrdersWithoutHappy.filter(order => order.user_id === userId);
-      const isSelected = customerOrders.every(order => this.selectedOrders.includes(order));
-
-      if (isSelected) {
-        this.selectedOrders = this.selectedOrders.filter(order => !customerOrders.includes(order));
-      } else {
-        this.selectedOrders = [...this.selectedOrders, ...customerOrders];
-      }
-    },
-
-    selectOrder(order) {
-      if (!this.selectedOrders.includes(order)) {
-        this.selectedOrders.push(order);
-      } else {
-        this.selectedOrders = this.selectedOrders.filter(item => item.id !== order.id);
-      }
-    },
-    toggleSelectAll(event) {
-      if (event.target.checked) {
-        this.selectedOrders = [...this.filteredOrdersWithoutHappy];  // เลือกคำสั่งซื้อทั้งหมด
-      } else {
-        this.selectedOrders = [];  // ยกเลิกการเลือกทั้งหมด
-      }
-      this.isAllSelected = event.target.checked;
-    },
-
     toggleFiltterDropdown() {
       this.isFilterDropdownOpen = !this.isFilterDropdownOpen;
     },
@@ -1021,13 +948,13 @@ export default {
     this.sortData('id');
     this.fetchLookupData();
     this.fetchOrders(this.selectedDate);
-    // this.updatePage();
   },
   mounted() {
     document.addEventListener('click', this.handleClickOutside);
     this.fetchLookupData();
     this.fetchOrders(this.selectedDate);
     this.setToday();
+
 
     this.$nextTick(() => {
       flatpickr(this.$refs.startDatepicker, {
@@ -1058,10 +985,6 @@ export default {
   },
 
   watch: {
-    // คอยติดตามการเปลี่ยนแปลงของ selectedOrders
-    selectedOrders() {
-      this.isAllSelected = this.selectedOrders.length === this.filteredOrders.length;
-    },
   }
 };
 </script>

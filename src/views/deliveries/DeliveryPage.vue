@@ -1,52 +1,101 @@
 <template>
-  <div
-    class="fixed top-4 right-8 bg-green-500 text-white px-8 py-4 flex items-center space-x-4 rounded-lg shadow-lg transition-opacity duration-300 z-50"
-    :class="{
-      'opacity-100': showSuccessToast,
-      'opacity-0': !showSuccessToast,
-    }">
-    <span class="material-symbols-outlined text-white">check_circle</span>
-    <span>{{ toastSuccessMessage }}</span>
-    <button @click="showSuccessToast = false" class="text-white hover:text-gray-200 focus:outline-none">
-      <span class="material-symbols-outlined text-xl">close</span>
-    </button>
-  </div>
-
-  <div
-    class="fixed top-4 right-8 bg-red-500 text-white px-8 py-4 flex items-center space-x-4 rounded-lg shadow-lg transition-opacity duration-300 z-50"
-    :class="{ 'opacity-100': showFailToast, 'opacity-0': !showFailToast }">
-    <span class="material-symbols-outlined text-white">cancel</span>
-    <span>{{ toastFailMessage }}</span>
-    <button @click="showFailToast = false" class="text-white hover:text-gray-200 focus:outline-none">
-      <span class="material-symbols-outlined text-xl">close</span>
-    </button>
-  </div>
-
   <div class="mt-[-20px]">
-    <div class="flex space-x-2 items-center relative">
-      <div class="mt-4 px-4 flex items-center space-x-1 mr-auto">
-        <span class="material-symbols-outlined text-2xl text-gray-700">delivery_truck_speed</span>
-        <span class="text-m text-gray-700">จำนวนการจัดส่งอาหารทั้งหมด: </span>
-        <span class="text-m text-custom-orange font-bold">
-          {{ filteredSaleRecordsPaid.length }} รายการ</span>
-      </div>
+    <div
+      class="fixed top-4 right-8 bg-green-500 text-white px-8 py-4 flex items-center space-x-4 rounded-lg shadow-lg transition-opacity duration-300 z-50"
+      :class="{
+        'opacity-100': showSuccessToast,
+        'opacity-0': !showSuccessToast,
+      }">
+      <span class="material-symbols-outlined text-white">check_circle</span>
+      <span>{{ toastSuccessMessage }}</span>
+      <button @click="showSuccessToast = false" class="text-white hover:text-gray-200 focus:outline-none">
+        <span class="material-symbols-outlined text-xl">close</span>
+      </button>
+    </div>
 
-      <button v-if="selectedPackageType.length > 0" @click="clearFilter"
-        class="px-2 py-2 rounded-md flex items-center space-x-1 text-gray-400 hover:text-custom-orange">
-        <span class="material-symbols-outlined">close</span>
-        <span class="ml-2">
-          รีเซ็ตตัวกรอง
-          <template v-if="selectedPackageType.length > 0">
-            ({{ selectedPackageType.length }})
-          </template>
+    <div
+      class="fixed top-4 right-8 bg-red-500 text-white px-8 py-4 flex items-center space-x-4 rounded-lg shadow-lg transition-opacity duration-300 z-50"
+      :class="{ 'opacity-100': showFailToast, 'opacity-0': !showFailToast }">
+      <span class="material-symbols-outlined text-white">cancel</span>
+      <span>{{ toastFailMessage }}</span>
+      <button @click="showFailToast = false" class="text-white hover:text-gray-200 focus:outline-none">
+        <span class="material-symbols-outlined text-xl">close</span>
+      </button>
+    </div>
+
+    <div
+      class="fixed top-4 right-8 bg-yellow-500 text-white px-8 py-4 flex items-center space-x-4 rounded-lg shadow-lg transition-opacity duration-300 z-50"
+      :class="{ 'opacity-100': showErrorToast, 'opacity-0': !showErrorToast }">
+      <span class="material-symbols-outlined text-white">cancel</span>
+      <span>{{ toastErrorMessage }}</span>
+      <button @click="showErrorToast = false" class="text-white hover:text-gray-200 focus:outline-none">
+        <span class="material-symbols-outlined text-xl">close</span>
+      </button>
+    </div>
+
+    <div class="flex items-center space-x-3 py-2">
+      <!-- ปุ่มลูกศรย้อนกลับ -->
+      <button @click="changeDate(-1)" class="flex items-center">
+        <span class="material-symbols-outlined text-3xl text-custom-orange hover:text-custom-orange-hover">
+          chevron_backward
         </span>
       </button>
+
+      <button @click="setToday" class="flex items-center text-custom-orange hover:underline hover:text-custom-orange">
+        <span class="mr-2 font-bold">วันนี้</span>
+      </button>
+
+      <button @click="changeDate(1)" class="flex items-center">
+        <span class="material-symbols-outlined text-3xl text-custom-orange hover:text-custom-orange-hover">
+          chevron_forward
+        </span>
+      </button>
+
+      <strong class="text-gray-700">Start Date:</strong>
+      <input ref="startDatepicker" type="text" v-model="formattedStartDate" @input="onStartDateChange"
+        class="text-center bg-white rounded-md font-bold border border-gray-200 focus:outline-none focus:ring-2 focus:ring-custom-orange hover:ring-2 hover:ring-custom-orange text-custom-orange hover:text-custom-orange-hover w-[150px]"
+        placeholder="เลือกวันที่เริ่มต้น" />
+
+      <strong class="text-gray-700">End Date:</strong>
+      <input ref="endDatepicker" type="text" v-model="formattedEndDate" @input="onEndDateChange"
+        class="text-center bg-white rounded-md font-bold border border-gray-200 focus:outline-none focus:ring-2 focus:ring-custom-orange hover:ring-2 hover:ring-custom-orange text-custom-orange hover:text-custom-orange-hover w-[150px]"
+        placeholder="เลือกวันที่สิ้นสุด" />
+
+
+    </div>
+
+
+    <div class="flex justify-end items-center space-x-2 relative">
+      <div class="mt-4 px-4 flex items-center space-x-1 mr-auto ">
+        <span class="material-symbols-outlined text-2xl text-gray-700">delivery_truck_speed</span>
+        <span class="text-m text-gray-700">จำนวนการจัดส่งอาหารทั้งหมด: </span>
+        <span class="text-m text-custom-orange font-bold"> {{ filteredUniqueOrders.length }} รายการ</span>
+      </div>
+
+      <div>
+        <button
+          v-if="selectedOrders.some(order => order.status === 'pending') && !selectedOrders.some(order => order.status === 'confirm')"
+          @click="confirmMultipleOrders"
+          class="bg-green-500 hover:bg-green-600 text-white px-2 py-2 rounded-md flex items-center space-x-1 "
+          :disabled="selectedOrders.length === 0">
+          ยืนยันการสั่งซื้อที่เลือก ({{ selectedOrders.length }})
+        </button>
+
+        <button
+          v-if="selectedOrders.some(order => order.status === 'confirm') && !selectedOrders.some(order => order.status === 'pending')"
+          @click="pendingMultipleOrders"
+          class="bg-red-500 hover:bg-red-600 text-white px-2 py-2 rounded-md flex items-center space-x-1"
+          :disabled="selectedOrders.length === 0">
+          ยกเลิกยืนยันการสั่งซื้อที่เลือก ({{ selectedOrders.length }})
+        </button>
+      </div>
 
       <button @click="handlePrint"
         class="bg-custom-orange text-white px-2 py-2 rounded-md flex items-center space-x-1 hover:bg-custom-orange-hover">
         <span class="material-symbols-outlined text-white text-xl leading-none">print</span>
         <span class="text-white text-base leading-none">Print</span>
       </button>
+
 
       <div class="sort relative inline-block" ref="sortDropdown">
         <button @click="toggleSortDropdown"
@@ -58,7 +107,7 @@
         </button>
 
         <div v-if="isSortDropdownOpen"
-          class="absolute left-0 top-full mt-1 bg-white text-black text-left shadow-lg rounded-md w-48 z-50 border border-gray-300">
+          class="absolute left-0 top-full mt-1 bg-white text-black text-left shadow-lg rounded-md w-52 z-50 border border-gray-300">
           <ul class="list-none p-0 m-0">
             <li @click="sortData('id')"
               class="px-4 py-2 cursor-pointer hover:bg-gray-100 flex items-center justify-between">
@@ -69,12 +118,23 @@
                 }}
               </span>
             </li>
-            <li @click="sortData('name')"
+            <li @click="sortData('user_id')"
               class="px-4 py-2 cursor-pointer hover:bg-gray-100 flex items-center justify-between">
               <span>จัดเรียงตามชื่อลูกค้า</span>
-              <span v-if="sortColumn === 'name'" class="material-symbols-outlined text-sm">
+              <span v-if="sortColumn === 'user_id'" class="material-symbols-outlined text-sm">
                 {{
-                  sortDirection["name"] === 1
+                  sortDirection["user_id"] === 1
+                    ? "arrow_upward"
+                    : "arrow_downward"
+                }}
+              </span>
+            </li>
+            <li @click="sortData('order_date')"
+              class="px-4 py-2 cursor-pointer hover:bg-gray-100 flex items-center justify-between">
+              <span>จัดเรียงตามวันที่สั่งซื้อ</span>
+              <span v-if="sortColumn === 'order_date'" class="material-symbols-outlined text-sm">
+                {{
+                  sortDirection["order_date"] === 1
                     ? "arrow_upward"
                     : "arrow_downward"
                 }}
@@ -88,47 +148,6 @@
         </div>
       </div>
 
-      <!-- <div class="filter relative inline-block" ref="filterDropdown">
-        <button @click="toggleFiltterDropdown"
-          class="bg-custom-orange text-white px-2 py-2 rounded-md flex items-center space-x-1 hover:bg-custom-orange-hover">
-          <span class="material-symbols-outlined text-white text-xl leading-none">filter_alt</span>
-          <span class="text-white text-base leading-none">ตัวกรอง</span>
-          <span :class="{ 'rotate-180': isFilterDropdownOpen }"
-            class="material-symbols-outlined text-white text-xl leading-none items-right ml-auto duration-300">arrow_drop_down</span>
-        </button>
-
-        <div v-if="isFilterDropdownOpen"
-          class="absolute right-0 top-full mt-1 bg-white text-black text-left shadow-lg rounded-md overflow-y-auto z-50 border border-gray-300">
-          <div class="p-4 w-[500px] list-none">
-            <h3 class="font-bold mb-2">กรองโดย Package Type</h3>
-            <div class="grid grid-cols-3 gap-4">
-              <label v-for="type in filteredPackageTypes" :key="type.id" class="flex items-center space-x-2">
-                <input type="checkbox" v-model="selectedPackageType" :value="type.id"
-                  class="w-5 h-5 border-2 border-gray-400 rounded-full appearance-none checked:bg-custom-orange checked:border-transparent">
-                <span>{{ type.name }}</span>
-              </label>
-            </div>
-          </div>
-          <div class="flex justify-between space-x-4 p-4 bg-white border-t rounded-b-md list-none">
-            <li @click="clearFilter"
-              class="px-4 py-2 cursor-pointer font-bold text-custom-orange text-left hover:underline">
-              <span>รีเซ็ตตัวกรอง</span>
-            </li>
-
-            <div class="flex space-x-2">
-              <button @click="toggleFiltterDropdown"
-                class="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400 text-gray-700">
-                ยกเลิก
-              </button>
-              <button @click="applyFilter"
-                class="bg-custom-orange hover:bg-custom-orange-hover text-white px-4 py-2 rounded-md">
-                ใช้ตัวกรอง
-              </button>
-            </div>
-          </div>
-        </div>
-      </div> -->
-
       <div class="flex w-[250px] relative">
         <input type="text" v-model="searchQuery" placeholder="ค้นหา..."
           class="border border-gray-300 rounded-l px-4 py-2 w-full" @keyup.enter="search" />
@@ -141,7 +160,6 @@
           search
         </button>
       </div>
-
     </div>
 
     <table class="min-w-full table-auto rounded-t-2xl overflow-hidden mt-4">
@@ -152,86 +170,114 @@
             {{ header }}
           </th>
         </tr>
+
       </thead>
       <tbody>
-        <template v-if="filteredSaleRecordsPaid.length > 0">
-          <tr v-for="(saleRecord, index) in filteredSaleRecords" :key="index"
-            class="bg-white relative border-b border-b-gray-200">
+        <tr v-if="isLoading" class="bg-white">
+          <td colspan="11" class="py-16 text-center">
+            <div class="flex justify-center items-center space-x-2">
+              <div class="w-3 h-3 bg-gray-500 rounded-full animate-pulse"></div>
+              <div class="w-3 h-3 bg-gray-500 rounded-full animate-pulse delay-200"></div>
+              <div class="w-3 h-3 bg-gray-500 rounded-full animate-pulse delay-400"></div>
+            </div>
+          </td>
+        </tr>
+
+        <template v-else>
+          <tr v-for="(order, index) in filteredOrders" :key="index"
+            class="border-b border-b-gray-200 bg-white relative">
+
             <td class="px-4 py-2 align-top pb-5">{{ (currentPage - 1) * itemsPerPage + index + 1 }}</td>
-            <td class="px-4 py-2 align-top pb-5 font-bold text-custom-orange">{{ getCustomerName(saleRecord.customer_id)
-            }}</td>
+            <td class="px-4 py-2 align-top text-custom-orange font-bold pb-5"> {{ getCustomerName(order.user_id) }}</td>
+
+
             <td class="px-4 py-2 align-top pb-5">
               <div class="flex items-center">
                 <span class="material-symbols-outlined mr-1 text-xl">phone</span>{{
-                  getCustomerTel(saleRecord.customer_id) }}
+                  getCustomerTel(order.user_id) }}
               </div>
             </td>
 
             <td class="px-4 py-2 align-top pb-5">
-              <input v-if="isEditing && editingSaleRecordId === saleRecord.id" v-model="saleRecord.delivery_date"
-                type="time" class="border px-2 py-1 rounded w-full" />
-              <span v-else>{{ saleRecord.delivery_date }}</span>
+              <input v-if="isEditing && editingOrderId === order.id" v-model="order.delivery_time" type="time"
+                class="border px-2 py-1 rounded w-full" />
+              <span v-else>{{ formattedDeliveryTime(order.delivery_time) }}</span>
             </td>
 
             <td class="px-4 py-2 align-top pb-5">
-              <textarea v-if="isEditing && editingSaleRecordId === saleRecord.id" v-model="saleRecord.delivery_round"
+              <textarea v-if="isEditing && editingOrderId === order.id" v-model="order.delivery_round"
                 class="border px-2 py-1 rounded w-full h-24"></textarea>
-              <span v-else>{{ saleRecord.delivery_round }}</span>
+              <span v-else>{{ order.delivery_round }}</span>
             </td>
             <td class="px-4 py-2 align-top pb-5">
-              <textarea v-if="isEditing && editingSaleRecordId === saleRecord.id" v-model="saleRecord.deliver"
+              <textarea v-if="isEditing && editingOrderId === order.id" v-model="order.deliver"
                 class="border px-2 py-1 rounded w-full h-24"></textarea>
-              <span v-else>{{ saleRecord.deliver }}</span>
+              <span v-else>{{ order.deliver }}</span>
             </td>
             <td class="px-4 py-2 align-top pb-5">
-              <textarea v-if="isEditing && editingSaleRecordId === saleRecord.id" v-model="saleRecord.delivery_zone"
+              <textarea v-if="isEditing && editingOrderId === order.id" v-model="order.delivery_zone"
                 class="border px-2 py-1 rounded w-full h-24"></textarea>
-              <span v-else>{{ saleRecord.delivery_zone }}</span>
+              <span v-else>{{ order.delivery_zone }}</span>
             </td>
 
-
-            <td class="px-4 py-2 align-top pb-5"> {{ getCustomerAddress1(saleRecord.customer_id) }}</td>
-            <td class="px-4 py-2 align-top pb-5"> {{ getCustomerAddress2(saleRecord.customer_id) }}</td>
-            <td class="px-4 py-2 align-top pb-5"> {{ getCustomerAddress3(saleRecord.customer_id) }}</td>
-
+            <!-- <td class="px-4 py-2 align-top pb-5">
+              <select v-model="selectedAddresses[order.id]" class="border px-2 py-1 rounded w-full">
+                <option :value="getCustomerAddress1(order.user_id)">
+                  ที่อยู่ 1: {{ getCustomerAddress1(order.user_id) }}
+                </option>
+                <option :value="getCustomerAddress2(order.user_id)">
+                  ที่อยู่ 2: {{ getCustomerAddress2(order.user_id) }}
+                </option>
+                <option :value="getCustomerAddress3(order.user_id)">
+                  ที่อยู่ 3: {{ getCustomerAddress3(order.user_id) }}
+                </option>
+              </select>
+            </td> -->
+            <td class="px-4 py-2 align-top pb-5">
+              <select v-if="isEditing && editingOrderId === order.id" v-model="selectedAddresses[order.id]"
+                class="border px-2 py-1 rounded w-full">
+                <option :value="getCustomerAddress1(order.user_id)">
+                  ที่อยู่ 1: {{ getCustomerAddress1(order.user_id) }}
+                </option>
+                <option :value="getCustomerAddress2(order.user_id)">
+                  ที่อยู่ 2: {{ getCustomerAddress2(order.user_id) }}
+                </option>
+                <option :value="getCustomerAddress3(order.user_id)">
+                  ที่อยู่ 3: {{ getCustomerAddress3(order.user_id) }}
+                </option>
+              </select>
+              <span v-else>{{ selectedAddresses[order.id] || 'เลือกที่อยู่' }}</span>
+            </td>
 
             <td class="px-4 py-2 text-right pb-5 relative" ref="moreDropdown">
               <div class="flex justify-end space-x-2">
-                <button v-if="!isEditing || editingSaleRecordId !== saleRecord.id" @click="startEditing(saleRecord)"
+                <button v-if="!isEditing || editingOrderId !== order.id" @click="startEditing(order)"
                   class="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 flex items-center space-x-1">
                   <span class="material-symbols-outlined">edit_square</span>
                   <span>แก้ไข</span>
                 </button>
 
-                <button v-if="isEditing && editingSaleRecordId === saleRecord.id"
-                  @click="saveUpdatedDelivery(saleRecord)"
+                <button v-if="isEditing && editingOrderId === order.id" @click="saveUpdatedDelivery(order)"
                   class="bg-custom-orange text-white px-2 py-1 rounded hover:bg-custom-orange-hover flex items-center space-x-1">
                   <span class="material-symbols-outlined">check</span>
                   <span>บันทึก</span>
                 </button>
 
-                <button v-if="isEditing && editingSaleRecordId === saleRecord.id" @click="cancelEditing"
+                <button v-if="isEditing && editingOrderId === order.id" @click="cancelEditing"
                   class="bg-gray-500 text-white px-2 py-1 rounded hover:bg-gray-600 flex items-center space-x-1">
                   <span class="material-symbols-outlined">close</span>
                   <span>ยกเลิก</span>
                 </button>
               </div>
             </td>
-          </tr>
-        </template>
 
-        <template v-if="filteredSaleRecordsPaid.length < 6 && filteredSaleRecordsPaid.length > 0">
-          <tr v-for="emptyIndex in (6 - filteredSaleRecordsPaid.length)" :key="'empty-' + emptyIndex" class="bg-white">
-            <td colspan="11" class="py-16"></td>
-          </tr>
-        </template>
 
-        <template v-if="filteredSaleRecordsPaid.length === 0">
-          <tr>
-            <td colspan="11" class="py-10 bg-white text-center text-gray-500 font-bold">
-              ไม่พบข้อมูล
-            </td>
           </tr>
+
+          <tr v-if="filteredOrders.length === 0">
+            <td colspan="11" class="py-10 bg-white text-center text-gray-500 font-bold">ไม่พบข้อมูล </td>
+          </tr>
+
         </template>
       </tbody>
 
@@ -253,13 +299,9 @@
           ...
         </button>
 
-        <button v-for="page in totalPagesArray.range" :key="page" @click="goToPage(page)" :class="[
-          'px-3 py-2 rounded-md',
-          {
-            'bg-custom-orange text-white': currentPage === page,
-            'bg-white': currentPage !== page,
-          },
-        ]" class="cursor-pointer hover:bg-custom-orange hover:text-white">
+        <button v-for="page in totalPagesArray.range" :key="page" @click="goToPage(page)"
+          :class="['px-3 py-2 rounded-md', { 'bg-custom-orange text-white': currentPage === page, 'bg-white': currentPage !== page }]"
+          class="cursor-pointer hover:bg-custom-orange hover:text-white">
           {{ page }}
         </button>
 
@@ -295,60 +337,69 @@
       <table class="report-content min-w-full table-auto mt-4 p-4">
         <thead>
           <tr class="bg-gray-100 text-black text-[12px]">
-            <th class="px-6 py-3 text-left font-bold border-b border-b-black" style="width: 20%;">ชื่อ</th>
-            <th class="px-6 py-3 text-left font-bold border-b border-b-black" style="width: 5%;">โทรศัพท์</th>
-            <th class="px-6 py-3 text-left font-bold border-b border-b-black" style="width: 6%;">เวลา</th>
+            <th class="px-6 py-3 text-left font-bold border-b border-b-black" style="width: 20%;">ชื่อ - นามสกุล</th>
+            <th class="px-6 py-3 text-left font-bold border-b border-b-black" style="width: 10%;">โทร</th>
+            <th class="px-6 py-3 text-left font-bold border-b border-b-black" style="width: 10%;">เวลา</th>
             <th class="px-6 py-3 text-left font-bold border-b border-b-black" style="width: 10%;">รอบ</th>
-            <th class="px-6 py-3 text-left font-bold border-b border-b-black" style="width: 10%;">ผู้จัดส่ง</th>
-            <th class="px-6 py-3 text-left font-bold border-b border-b-black" style="width: 10%;">โซน</th>
-            <th class="px-6 py-3 text-left font-bold border-b border-b-black" style="width: 30%;">ที่อยู่</th>
+            <th class="px-6 py-3 text-left font-bold border-b border-b-black" style="width: 10%;">ผู้ส่ง</th>
+            <th class="px-6 py-3 text-left font-bold border-b border-b-black" style="width: 15%;">โซนจัดส่ง</th>
+            <th class="px-6 py-3 text-left font-bold border-b border-b-black" style="width: 25%;">ที่อยู่จัดส่ง</th>
           </tr>
+
         </thead>
 
-
         <tbody>
-          <tr v-for="(saleRecord, index) in filteredSaleRecordsPaid" :key="index"
+          <tr v-for="(order, index) in filteredUniqueOrders" :key="index"
             class="bg-white border-b border-gray-300 hover:bg-gray-100">
 
-            <td class="px-6 py-4 text-[12px]  text-black border-b border-b-gray-300">{{
-              getCustomerName(saleRecord.customer_id) }}</td>
+            <td class="px-6 py-4 text-[12px]  text-black border-b border-b-gray-300">
+              {{ getCustomerName(order.user_id) }}
+            </td>
+
+
             <td class="px-6 py-4 text-[12px] border-b border-b-gray-300">
               <div class="flex items-center">
-                {{ getCustomerTel(saleRecord.customer_id) }}
+                {{ getCustomerTel(order.user_id) }}
               </div>
             </td>
 
-            <td class="px-6 py-4 text-[12px] border-b border-b-gray-300">{{ saleRecord.delivery_date }}</td>
-            <td class="px-6 py-4 text-[12px] border-b border-b-gray-300">{{ saleRecord.delivery_round }}</td>
-            <td class="px-6 py-4 text-[12px] border-b border-b-gray-300">{{ saleRecord.deliver }}</td>
-            <td class="px-6 py-4 text-[12px] border-b border-b-gray-300">{{ saleRecord.delivery_zone }}</td>
 
-            <td class="px-6 py-4 text-[12px] border-b border-b-gray-300">
-              <ul class="list-disc pl-4"
-                v-if="getCustomerAddress1(saleRecord.customer_id) || getCustomerAddress2(saleRecord.customer_id) || getCustomerAddress3(saleRecord.customer_id)">
-                <li v-if="getCustomerAddress1(saleRecord.customer_id)">{{ getCustomerAddress1(saleRecord.customer_id) }}
-                </li>
-                <li v-if="getCustomerAddress2(saleRecord.customer_id)">{{ getCustomerAddress2(saleRecord.customer_id) }}
-                </li>
-                <li v-if="getCustomerAddress3(saleRecord.customer_id)">{{ getCustomerAddress3(saleRecord.customer_id) }}
-                </li>
-              </ul>
-            </td>
+            <td class="px-6 py-4 text-[12px] border-b border-b-gray-300">{{ formattedDeliveryTime(order.delivery_time)
+            }}</td>
+            <td class="px-6 py-4 text-[12px] border-b border-b-gray-300">{{ order.delivery_round }}</td>
+            <td class="px-6 py-4 text-[12px] border-b border-b-gray-300">{{ order.deliver }}</td>
+            <td class="px-6 py-4 text-[12px] border-b border-b-gray-300">{{ order.delivery_zone }}</td>
+
+            <span v-if="selectedAddresses[order.id]">
+              <td class="px-6 py-4 text-[12px]">{{ selectedAddresses[order.id] }}</td>
+            </span>
+
 
           </tr>
+
+          <tr v-if="filteredUniqueOrders.length === 0">
+            <td colspan="11" class="py-10 bg-white text-center text-gray-500 font-bold">ไม่พบข้อมูล </td>
+          </tr>
         </tbody>
+
       </table>
     </div>
+
   </div>
+
+
 </template>
 
 <script>
-import axios from "axios";
-import { mapActions, mapGetters } from "vuex";
+import axios from 'axios';
+import flatpickr from "flatpickr";
+import "flatpickr/dist/flatpickr.css";
 import { useVueToPrint } from "vue-to-print";
 import { ref } from "vue";
-import { API_URL } from "@/services/api";
 
+import { API_URL } from "@/services/testapi";
+
+//import Multiselect from 'vue-multiselect';
 
 export default {
   setup() {
@@ -360,82 +411,45 @@ export default {
 
     return { componentRef, handlePrint };
   },
-  // components: {
-  //   Multiselect,
-  // },
+
   data() {
     return {
       headers: [
         "#",
-        `ชื่อ/นามสกุล (ไทย)`,
+        `ชื่อ-นามสกุล`,
         "โทร",
         "เวลา",
         "รอบ",
         "ผู้ส่ง",
         "โซนจัดส่งตามที่อยู่ตาม Routing",
-        "ที่อยู่ 1",
-        "ที่อยู่ 2",
-        "ที่อยู่ 3",
+        "ที่อยู่จัดส่ง",
         "",
       ],
-      headerWidths: ["5%", "10%", "5%", "6%", "8%", "8%", "8%", "12%", "12%", "12%", "5%"],
-      saleRecords: [],
+      headerWidths: ["5%", "15%", "10%", "10%", "10%", "10%", "15%", "20%", "5%"],
+      // sortDateDirection: 'asc', // กำหนดทิศทางการเรียงลำดับ (asc หรือ desc)
+      sortIcon: 'arrow_downward',
 
+      orders: [],
       searchQuery: "",
-      filteredSaleRecords: [],
-      selectedAddressType: {},
-      saleRecord: [],
+
+
+      // filteredOrders: [],
+      selectedDate: "",
       customers: [],
-      customerAddress: null,
+      menus: [],
+      menu_types: [],
 
-      promotionTypes: [],
-      programs: [],
-      packages: [],
-      packageTypes: [],
-      zoneDeliveries: [],
-      zoneDeliveryTypes: [],
-      selectedZoneDeliveryType: "",
-      sellerNames: [],
-      paymentTypes: [],
-      additionalTypes: [],
-      deliveryRounds: [],
-      receiveFoods: [],
-      selectFoods: [],
+      selectedOrder: [],
+      selectedOrders: [],
 
-      packageDetails: null,
-      isShowingPackageDetails: false,
-
-      isSortDropdownOpen: false,
-      sortDirection: {
-        id: 1,
-        name: 1,
-      },
-      sortColumn: "",
-
-      isFilterDropdownOpen: false,
-      selectedPackageType: [],
-      //filteredSaleRecord: [],
-
-      isDetailModalOpen: false,
-      isResultModalOpen: false,
-
-      isDeleteModalOpen: false,
-      itemToDelete: null,
-
-      moreOpenDropdownIndex: null,
-
-      selectedSaleRecord: [],
-      isCopied: false,
-
-      isEditModalOpen: false,
-
-      isConfirmPaymentModalOpen: false,
-      selectedPaidDate: "",
-      selectedPaymentTypeId: "",
-      // selectedSaleRecord: null,
+      isConfirmStatusModalOpen: false,
+      isAllSelected: false,
 
       currentPage: 1,
       itemsPerPage: 10,
+
+      startDate: '', // วันที่เริ่มต้น
+      endDate: '',
 
       toastSuccessMessage: "",
       showSuccessToast: false,
@@ -444,15 +458,56 @@ export default {
       showErrorToast: false,
       toastErrorMessage: "",
 
+      isFilterDropdownOpen: false,
+      isSortDropdownOpen: false,
+      sortDirection: {
+        id: 1,
+        name: 1
+      },
+      sortColumn: '',
+      isLoading: false,
+
       isEditing: false,
-      editingSaleRecordId: null,
+      editingOrderId: null,
+
     };
   },
+  // components: {
+  //     Multiselect
+  // },
   computed: {
-    totalPages() {
-      // ใช้ข้อมูลที่กรองแล้วใน filteredSaleRecordsPaid
-      return Math.ceil(this.filteredSaleRecordsPaid.length / this.itemsPerPage);
+    filteredMenuTypes() {
+      return this.menu_types.filter(type => !type.name.startsWith('Happy'));
     },
+    filteredOrdersWithoutHappy() {
+      return this.orders.filter(order => {
+        const menuTypeName = this.getMenuTypeName(order.menu_type_id) || ''; // ป้องกัน undefined
+        return !menuTypeName.startsWith("Happy");
+      });
+    },
+
+    filteredOrders() {
+      const searchQuery = this.searchQuery ? this.searchQuery.toLowerCase() : ''; // ป้องกัน undefined
+      return this.filteredUniqueOrders.filter(order => {
+        const customerName = this.getCustomerName(order.user_id) || ''; // ป้องกัน undefined
+        const matchesSearch = searchQuery === '' || customerName.toLowerCase().includes(searchQuery);
+        const matchesPromotionType = !Array.isArray(this.selectedOrder) || this.selectedOrder.length === 0 || this.selectedOrder.includes(order.menu_type_id);
+        return matchesSearch && matchesPromotionType;
+      }).slice((this.currentPage - 1) * this.itemsPerPage, this.currentPage * this.itemsPerPage);
+    },
+
+    totalPages() {
+      const searchQuery = this.searchQuery ? this.searchQuery.toLowerCase() : ''; // ป้องกัน undefined
+      return Math.ceil(
+        this.filteredUniqueOrders.filter(order => {
+          const customerName = this.getCustomerName(order.user_id) || ''; // ป้องกัน undefined
+          const matchesSearch = searchQuery === '' || customerName.toLowerCase().includes(searchQuery);
+          const matchesPromotionType = !Array.isArray(this.selectedOrder) || this.selectedOrder.length === 0 || this.selectedOrder.includes(order.menu_type_id);
+          return matchesSearch && matchesPromotionType;
+        }).length / this.itemsPerPage
+      );
+    },
+
     totalPagesArray() {
       const maxVisiblePages = 5;
       const halfVisible = Math.floor(maxVisiblePages / 2);
@@ -476,125 +531,49 @@ export default {
         range: Array.from({ length: end - start + 1 }, (_, i) => start + i),
       };
     },
-    filteredResultSaleRecord() {
-      if (!this.selectedSaleRecord || !this.selectedSaleRecord.customer) {
-        return { name: "", expiry_date: "" };
-      }
-      return {
-        name: this.selectedSaleRecord.customer.name,
-        package: this.selectedSaleRecord.package.package_detail,
-        promotion_detail: this.selectedSaleRecord.package.promotion_detail,
-        receive_food: this.totalReceiveFood,
-        start_date: this.formatDate(this.selectedSaleRecord.start_date),
-        sellect_by: this.getSelectFood(this.selectedSaleRecord.select_food_id),
-        delivery_date: this.selectedSaleRecord.customer.delivery_date,
-        delivery: this.getDeliveryRoundName(
-          this.selectedSaleRecord.delivery_round_id
-        ),
-        package_price: this.formatPrice(this.selectedSaleRecord.package.price),
-        extra_charge: this.formatPrice(this.selectedSaleRecord.extra_charge),
-        discount: this.formatPrice(this.selectedSaleRecord.discount),
-        total_delivery_price: this.totalDeliveryPrice,
-        total_price: this.formatPrice(this.selectedSaleRecord.total_price),
-        expiry_date: this.formatDate(this.selectedSaleRecord.expiry_date),
-        note: this.selectedSaleRecord.note,
+    formattedStartDate() {
+      if (!this.startDate) return ""; // หากยังไม่ได้เลือกวันที่
+      return new Intl.DateTimeFormat("en-UK", {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+      }).format(new Date(this.startDate));
+    },
+    formattedEndDate() {
+      if (!this.endDate) return ""; // หากยังไม่ได้เลือกวันที่
+      return new Intl.DateTimeFormat("en-UK", {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+      }).format(new Date(this.endDate));
+    },
+    formattedDeliveryTime() {
+      return (time) => {
+        if (!time) return "-"; // กรณีไม่มีข้อมูล
+        return time.slice(0, 5); // ตัดเอาแค่ HH:mm
       };
     },
-
-    filteredDetailSaleRecord() {
-      if (!this.selectedSaleRecord || !this.selectedSaleRecord.customer) {
-        return { name: "", expiry_date: "" };
-      }
-      return {
-        seller_name_id: this.getSellerName(
-          this.selectedSaleRecord.seller_name_id
-        ),
-        name: this.selectedSaleRecord.customer?.name || "",
-        package_type: this.getPackageTypeName(
-          this.selectedSaleRecord.package_type_id
-        ),
-        // promotion_type: this.selectedSaleRecord.promotionType?.name || "",
-        promotion_type: this.getPromotionTypeName(this.selectedSaleRecord.promotion_type_id) || "",
-        program: this.getProgramName(this.selectedSaleRecord.program_id),
-        package: this.selectedSaleRecord.package?.name || "",
-        package_price: this.formatPrice(this.selectedSaleRecord.package?.price),
-        promotion_detail: this.selectedSaleRecord.package?.promotion_detail || "",
-        other_promotion_detail: this.selectedSaleRecord.other_promotion_detail || "",
-
-        free_mad: this.selectedSaleRecord.free_mad,
-        free_dessert: this.selectedSaleRecord.free_dessert,
-        free_brittles: this.selectedSaleRecord.free_brittles,
-        free_energy_balls: this.selectedSaleRecord.free_energy_balls,
-        free_dressing: this.selectedSaleRecord.free_dressing,
-        free_yoghurt: this.selectedSaleRecord.free_yoghurt,
-        free_granola: this.selectedSaleRecord.free_granola,
-        free_credit: this.selectedSaleRecord.free_credit,
-
-        discount: this.formatPrice(this.selectedSaleRecord.discount),
-        extra_charge: this.formatPercent(this.selectedSaleRecord.extra_charge),
-        extra_charge_price: this.formatPrice(
-          this.selectedSaleRecord.extra_charge_price
-        ),
-        total_package_price: this.formatPrice(
-          this.selectedSaleRecord.total_package_price
-        ),
-        receive_food_id: this.getReceiveFoodName(
-          this.selectedSaleRecord.receive_food_id
-        ),
-        zone1_id: this.getZoneName(this.selectedSaleRecord.zone1_id),
-        total_zone1_price: this.formatPrice(
-          this.selectedSaleRecord.total_zone1_price
-        ),
-        zone2_id: this.getZoneName(this.selectedSaleRecord.zone2_id),
-        total_zone2_price: this.formatPrice(
-          this.selectedSaleRecord.total_zone2_price
-        ),
-        zone3_id: this.getZoneName(this.selectedSaleRecord.zone3_id),
-        total_zone3_price: this.formatPrice(
-          this.selectedSaleRecord.total_zone3_price
-        ),
-        zone_outsource_id: this.getZoneName(
-          this.selectedSaleRecord.zone_outsource_id
-        ),
-        total_zone_outsource_price: this.formatPrice(
-          this.selectedSaleRecord.total_zone_outsource_price
-        ),
-        total_delivery_zone_price: this.formatPrice(
-          this.selectedSaleRecord.total_delivery_zone_price
-        ),
-        total_delivery_price: this.formatPrice(
-          this.selectedSaleRecord.total_delivery_price
-        ),
-        total_price: this.formatPrice(this.selectedSaleRecord.total_price),
-        payment_status: this.getPaymentStatusText(
-          this.selectedSaleRecord.payment_status
-        ),
-        paid_date: this.formatDate(this.selectedSaleRecord.paid_date),
-        payment_type_id: this.getPaymentTypeName(
-          this.selectedSaleRecord.payment_type_id
-        ),
-        start_date: this.formatDate(this.selectedSaleRecord.start_date),
-        expiry_date: this.formatDate(this.selectedSaleRecord.expiry_date),
-        receive_date: this.formatDate(this.selectedSaleRecord.start_date),
-        note: this.selectedSaleRecord.note || "",
-        package_detail: this.selectedSaleRecord.package?.package_detail || "",
-
-        mad: this.selectedSaleRecord.mad,
-        dessert: this.selectedSaleRecord.dessert,
-        brittles: this.selectedSaleRecord.brittles,
-        energy_balls: this.selectedSaleRecord.energy_balls,
-        dressing: this.selectedSaleRecord.dressing,
-        yoghurt: this.selectedSaleRecord.yoghurt,
-        granola: this.selectedSaleRecord.granola,
-        credit: this.selectedSaleRecord.credit,
-
-        delivery_date: this.selectedSaleRecord.customer?.delivery_date || "",
-        select_food_id: this.getSelectFood(
-          this.selectedSaleRecord.select_food_id
-        ),
-      };
+    selectedAddresses() {
+      let addresses = {};
+      this.filteredUniqueOrders.forEach(order => {
+        addresses[order.id] = order.delivery_address || ''; // ถ้าไม่มีค่าให้เป็นค่าว่าง
+      });
+      return addresses;
     },
+    filteredUniqueOrders() {
+      const uniqueOrders = [];
+      const seenUserIds = new Set();
 
+      this.filteredOrdersWithoutHappy.forEach(order => {
+        if (!seenUserIds.has(order.user_id)) {
+          uniqueOrders.push(order);
+          seenUserIds.add(order.user_id);
+        }
+      });
+
+      return uniqueOrders;
+      // return this.filteredOrdersWithoutHappy; 
+    },
     formattedDate() {
       return new Date().toLocaleDateString("en-UK", {
         year: "numeric",
@@ -603,87 +582,16 @@ export default {
       });
     },
 
-    zone1_info() {
-      const zoneName = this.getZoneName(this.selectedSaleRecord.zone1_id);
-      const zoneQuantity = this.selectedSaleRecord.zone1_quantity;
-      return `${zoneName} (${zoneQuantity})`;
-    },
 
-    zone1Name() {
-      return this.selectedSaleRecord.zone1_id
-        ? this.getZoneName(this.selectedSaleRecord.zone1_id)
-        : "ไม่พบข้อมูล";
-    },
-    zone2Name() {
-      return this.selectedSaleRecord.zone2_id
-        ? this.getZoneName(this.selectedSaleRecord.zone2_id)
-        : "ไม่พบข้อมูล";
-    },
-    zone3Name() {
-      return this.selectedSaleRecord.zone3_id
-        ? this.getZoneName(this.selectedSaleRecord.zone3_id)
-        : "ไม่พบข้อมูล";
-    },
-    zoneOutsourceName() {
-      return this.selectedSaleRecord.zone_outsource_id
-        ? this.getZoneName(this.selectedSaleRecord.zone_outsource_id)
-        : "ไม่พบข้อมูล";
-    },
-
-
-    filteredSaleRecordsPaid() {
-      return this.saleRecords
-        .filter((record) => record.payment_status === "paid") // กรองเฉพาะที่มี payment_status เป็น "paid"
-        .filter((saleRecord) => {
-          const matchesSearch = this.getCustomerName(saleRecord.customer_id)
-            .toLowerCase()
-            .includes(this.searchQuery.toLowerCase()); // กรองตามชื่อ
-          const matchesPackageType = this.selectedPackageType.length === 0 || this.selectedPackageType.includes(saleRecord.package_type_id); // กรองตาม package_type (ถ้าต้องการกรอง)
-          const validRemainingDays = saleRecord.remaining_days > 0; // ตรวจสอบ remaining_days
-          const validTotalBoxes = saleRecord.total_boxes > 0; // ตรวจสอบ total_boxes
-          return matchesSearch && matchesPackageType && validRemainingDays && validTotalBoxes; // กรองรวมทั้งสามเงื่อนไข
-        });
-    },
-
-    filteredPackageTypes() {
-      return this.packageTypes.filter(type =>
-        !type.name.toLowerCase().includes('additional sales') &&
-        !type.name.toLowerCase().includes('consignment')
-      );
-    },
-
-    // isConsignmentOrAdditional() {
-    //   const packageType = this.saleRecord.package_type_id?.name?.toLowerCase();
-    //   return ["consignment", "additional sales"].includes(packageType);
-    // },
-
-
-    filteredAdditionalTypes() {
-      return this.additionalTypes.filter(type => type.name.startsWith("AFF"));
-    },
-    filteredPrograms() {
-      return this.programs.filter(program => !program.name.startsWith("Happy"));
-    },
-    filteredInhouse() {
-      return this.zoneDeliveries.filter(zoneDelivery => zoneDelivery.name.startsWith("AFF"));
-    },
-    filteredOutsource() {
-      return this.zoneDeliveries.filter(zoneDelivery => !zoneDelivery.name.startsWith("AFF"));
-    },
-
-    ...mapGetters(["saleRecords"]),
   },
   methods: {
-    ...mapActions([
-      "fetchSaleRecords",
-      "fetchLookupData",
-      "fetchCustomerAddress",
-    ]),
 
-    resetProgramAndPackage() {
-      this.saleRecord.program_id = null;
-      this.saleRecord.package_id = null;
+    goToPage(page) {
+      if (page >= 1 && page <= this.totalPages) {
+        this.currentPage = page;
+      }
     },
+
     formatDate(dateString) {
       if (!dateString) return ""; // หากยังไม่ได้เลือกวันที่
 
@@ -699,70 +607,242 @@ export default {
       return `${day} ${month} ${year}`; // รูปแบบ "28 Jan 2025"
     },
     formatPrice(price) {
-      return "฿" + new Intl.NumberFormat("th-TH").format(price);
+      return '฿' + new Intl.NumberFormat('th-TH', {
+        minimumFractionDigits: 2,  // ตั้งค่าจำนวนตำแหน่งทศนิยมขั้นต่ำ
+        maximumFractionDigits: 2   // ตั้งค่าจำนวนตำแหน่งทศนิยมสูงสุด
+      }).format(price);
     },
     formatPercent(percent) {
       return new Intl.NumberFormat("th-TH").format(percent) + "%";
     },
 
-    fetchCustomerAddress(selectedCustomer) {
-      if (!selectedCustomer || !selectedCustomer.id) {
-        this.customerAddress = "เลือกลูกค้าใหม่";
-        this.saleRecord.address_1 = "";
-        this.saleRecord.address_2 = "";
-        this.saleRecord.address_3 = "";
-        return;
+    onStartDateChange(event) {
+      const inputDate = new Date(event.target.value);
+      if (!isNaN(inputDate)) {
+        this.startDate = inputDate.toISOString(); // เก็บวันที่ในรูปแบบ ISO
       }
-
-      const selectedCustomerId =
-        selectedCustomer.id || selectedCustomer.customer_id;
-      const customer = this.customers.find((c) => c.id === selectedCustomerId);
-
-      if (customer) {
-        this.customerAddress = `${customer.address_1 || ""} ${customer.address_2 || ""
-          } ${customer.address_3 || ""}`.trim();
-        this.saleRecord.address_1 = customer.address_1;
-        this.saleRecord.address_2 = customer.address_2;
-        this.saleRecord.address_3 = customer.address_3;
-
-        if (!this.customerAddress) {
-          this.customerAddress = "ไม่มีที่อยู่";
-        }
-      } else {
-        this.customerAddress = "ไม่พบข้อมูลลูกค้า";
-        // console.log('Customer not found');
+    },
+    onEndDateChange(event) {
+      const inputDate = new Date(event.target.value);
+      if (!isNaN(inputDate)) {
+        this.endDate = inputDate.toISOString(); // เก็บวันที่ในรูปแบบ ISO
       }
     },
 
-    goToPage(page) {
-      if (page < 1 || page > this.totalPages) return;
-      this.currentPage = page;
-      this.updatePage();
-    },
-    updatePage() {
-      const startIndex = (this.currentPage - 1) * this.itemsPerPage;
-      const endIndex = startIndex + this.itemsPerPage;
+    async fetchOrders(startDate, endDate) {
+      this.isLoading = true;
 
-      // ใช้ข้อมูลที่กรองแล้วใน filteredSaleRecordsPaid
-      this.filteredSaleRecords = this.filteredSaleRecordsPaid.slice(startIndex, endIndex);
+      try {
+        const response = await axios.get(`${API_URL}/orders/date-range`, {
+          params: { start_date: startDate, end_date: endDate }, // ส่งค่าพารามิเตอร์ start_date และ end_date
+        });
+
+        this.orders = response.data.orders;
+        this.filteredOrders = this.orders;
+
+        this.orders.sort((a, b) => {
+          const dateA = new Date(a.order_date);
+          const dateB = new Date(b.order_date);
+
+          if (dateA.getTime() === dateB.getTime()) {
+            return a.id - b.id; // เรียงจากน้อยไปหามากตาม id
+          }
+
+          return dateA - dateB; // เรียงจากน้อยไปหามากตาม order_date
+        });
+
+
+
+      } catch (error) {
+        // console.error('Error fetching orders data:', error);
+      } finally {
+        this.isLoading = false;
+      }
+    },
+
+    async fetchLookupData() {
+      try {
+        const [customersRes, menuRes, menuTypeRes] = await Promise.all([
+          axios.get(`${API_URL}/customers`),
+          axios.get(`${API_URL}/menus`),
+          axios.get(`${API_URL}/menu-types`),
+        ]);
+        this.customers = customersRes.data;
+        this.menus = menuRes.data;
+        this.menu_types = menuTypeRes.data;
+
+      } catch (error) {
+        console.error("Error fetching lookup data:", error);
+      }
+    },
+
+    startEditing(Order) {
+      this.isEditing = true;
+      this.editingOrderId = Order.id;
+    },
+
+    saveUpdatedDelivery(Order) {
+      this.updateDelivery(Order);
+      this.isEditing = false;
+      this.editingOrderId = null;
+    },
+
+    cancelEditing() {
+      this.fetchOrders();
+      this.isEditing = false;
+      this.editingOrderId = null;
+
+    },
+
+    async updateDelivery(Order) {
+      try {
+        await axios.put(`${API_URL}/orders/${Order.id}/delivery`, {
+          delivery_round: Order.delivery_round || '',
+          deliver: Order.deliver || '',
+          delivery_zone: Order.delivery_zone || '',
+          delivery_time: Order.delivery_time || '',
+          delivery_address: this.selectedAddresses[Order.id] || null,  // ✅ เพิ่ม delivery_address
+        });
+
+        await this.fetchOrders();
+        this.showSuccessToastNotification("แก้ไขข้อมูลสำเร็จ!");
+      } catch (error) {
+        console.error("เกิดข้อผิดพลาดในการอัปเดตข้อมูลการจัดส่ง:", error);
+        this.showErrorToastNotification("เกิดข้อผิดพลาดในการแก้ไข!");
+      }
     },
 
     search() {
-      const filtered = this.saleRecords.filter((saleRecord) => {
-        const matchesSearch = this.getCustomerName(
-          saleRecord.customer_id
-        ).toLowerCase().includes(this.searchQuery.toLowerCase());
-        const matchesPackageType = this.selectedPackageType.length === 0 || this.selectedPackageType.includes(saleRecord.package_type_id);
-        return matchesSearch && matchesPackageType;
-      });
-
       this.currentPage = 1;
-      this.filteredSaleRecordsPaid = filtered;
-      this.updatePage();
     },
     clearSearch() {
       this.searchQuery = "";
-      this.search();
+      this.currentPage = 1;
+    },
+
+    getCustomerName(customerId) {
+      const customer = this.customers.find((c) => c.user_id === customerId);
+      return customer ? customer.name : null;
+    },
+    getMenuName(menuId) {
+      const menu = this.menus.find((c) => c.id === menuId);
+      return menu ? menu.name_thai : null;
+    },
+    getMenuEngName(menuId) {
+      const menu = this.menus.find((c) => c.id === menuId);
+      return menu ? menu.name_english : null;
+    },
+    getMenuTypeName(menuId) {
+      const menu = this.menu_types.find((c) => c.id === menuId);
+      return menu ? menu.name : null;
+    },
+    getStatusText(status) {
+      return status === "confirm" ? "ยืนยันการสั่งซื้อแล้ว" : "ยังไม่ได้ยืนยันการสั่งซื้อ";
+    },
+    getStatusClass(status) {
+      return status === "confirm"
+        ? "text-white bg-green-500"
+        : "text-white bg-red-500";
+    },
+    getCustomerTel(customerId) {
+      const customer = this.customers.find((c) => c.user_id === customerId);
+      return customer ? customer.tel : "ไม่พบข้อมูล";
+    },
+    getCustomerAddress1(customerId) {
+      const customer = this.customers.find((c) => c.user_id === customerId);
+      return customer ? customer.address_1 : "ไม่พบข้อมูล";
+    },
+    getCustomerAddress2(customerId) {
+      const customer = this.customers.find((c) => c.user_id === customerId);
+      return customer ? customer.address_2 : "ไม่พบข้อมูล";
+    },
+    getCustomerAddress3(customerId) {
+      const customer = this.customers.find((c) => c.user_id === customerId);
+      return customer ? customer.address_3 : "ไม่พบข้อมูล";
+    },
+
+
+    changeDate(offset) {
+      const startDate = new Date(this.startDate);
+      startDate.setDate(startDate.getDate() + offset); // เลื่อนวันตาม offset
+      this.startDate = startDate.toISOString().split('T')[0]; // แปลงวันที่ใหม่เป็นรูปแบบ Y-m-d
+
+      const endDate = new Date(this.endDate);
+      endDate.setDate(endDate.getDate() + offset); // เลื่อนวันตาม offset
+      this.endDate = endDate.toISOString().split('T')[0]; // แปลงวันที่ใหม่เป็นรูปแบบ Y-m-d
+
+      this.fetchOrdersData(); // เรียกฟังก์ชันหลังจากเลื่อนวันที่
+    },
+
+    setToday() {
+      const today = new Date().toISOString().split('T')[0]; // ค่าของวันที่วันนี้
+      this.startDate = today;  // กำหนด startDate เป็นวันนี้
+      this.endDate = today;    // กำหนด endDate เป็นวันนี้
+      this.fetchOrdersData();   // เรียกฟังก์ชันหลังจากตั้งค่า startDate และ endDate
+    },
+
+    fetchOrdersData() {
+      if (this.startDate && this.endDate) {
+        this.fetchOrders(this.startDate, this.endDate);
+      }
+    },
+
+    shouldDisplayUserName(index, userId) {
+      return index === 0 || this.filteredOrders[index - 1].user_id !== userId;
+    },
+    getRowspan(userId, index) {
+      let count = 0;
+      // คำนวณจำนวนแถวที่มี user_id ซ้ำ
+      for (let i = index; i < this.filteredOrders.length; i++) {
+        if (this.filteredOrders[i].user_id === userId) {
+          count++;
+        } else {
+          break;
+        }
+      }
+      return count;
+    },
+
+    shouldDisplayOrderDate(index, orderDate) {
+      return index === 0 || this.filteredOrders[index - 1].order_date !== orderDate;
+    },
+    getOrderDateRowspan(orderDate, index) {
+      let count = 0;
+      for (let i = index; i < this.filteredOrders.length; i++) {
+        if (this.filteredOrders[i].order_date === orderDate) {
+          count++;
+        } else {
+          break;
+        }
+      }
+      return count;
+    },
+
+    onViewDetails(dailySale) {
+      this.selectedDailySaleDetail = { ...dailySale };
+      this.isDetailModalOpen = true;
+    },
+    closeDetailModal() {
+      this.isDetailModalOpen = false;
+      this.selectedDailySaleDetail = {};
+    },
+
+    toggleFiltterDropdown() {
+      this.isFilterDropdownOpen = !this.isFilterDropdownOpen;
+    },
+    applyFilter() {
+      if (this.selectedOrder.length > 0) {
+        this.filteredOrders = this.menu_types.filter(packageType =>
+          this.selectedOrder.includes(packageType.menu_type_id)
+        );
+      } else {
+        this.filteredOrders = this.orders;
+      }
+      this.isFilterDropdownOpen = false;
+    },
+    clearFilter() {
+      this.selectedOrder = [];
+      this.filteredOrders = this.orders;
     },
 
     toggleSortDropdown() {
@@ -776,578 +856,25 @@ export default {
         this.sortDirection[column] = 1;
       }
 
-      this.saleRecords.sort((a, b) => {
-        let aValue, bValue;
-        if (column === "name") {
-          aValue = this.getCustomerName(a.customer_id);
-          bValue = this.getCustomerName(b.customer_id);
-        } else {
-          aValue = a[column];
-          bValue = b[column];
-        }
-
+      this.orders.sort((a, b) => {
+        const aValue = a[column];
+        const bValue = b[column];
         if (aValue < bValue) return -this.sortDirection[column];
         if (aValue > bValue) return this.sortDirection[column];
         return 0;
       });
 
       this.currentPage = 1;
-      this.updatePage();
     },
     clearSort() {
-      this.sortColumn = "id";
+      this.sortColumn = 'id';
       this.sortDirection.id = 1;
-      this.saleRecords.sort((a, b) => a.id - b.id);
+      this.orders.sort((a, b) => {
+        const dateA = new Date(a.order_date);
+        const dateB = new Date(b.order_date);
+        return dateA - dateB; // เรียงจากน้อยไปหามาก
+      });
       this.currentPage = 1;
-      this.updatePage();
-    },
-
-    toggleFiltterDropdown() {
-      this.isFilterDropdownOpen = !this.isFilterDropdownOpen;
-    },
-    applyFilter() {
-      if (this.selectedPackageType.length > 0) {
-        this.filteredSaleRecords = this.packageTypes.filter(packageType =>
-          this.selectedPackageType.includes(packageType.package_type_id)
-        );
-      } else {
-        this.filteredSaleRecords = this.saleRecords;
-      }
-      this.isFilterDropdownOpen = false;
-      this.updatePage();
-    },
-    clearFilter() {
-      this.selectedPackageType = [];
-      this.filteredSaleRecords = this.saleRecords;
-      this.updatePage();
-    },
-
-    toggleMoreDropdown(index) {
-      this.moreOpenDropdownIndex =
-        this.moreOpenDropdownIndex === index ? null : index;
-    },
-    moreDropdownPositionClass(index) {
-      if (index >= this.filteredSaleRecords.length - 2) {
-        return "dropdown-up";
-      }
-      return "dropdown-down";
-    },
-
-    getPaymentStatusText(status) {
-      return status === "paid" ? "ชำระเงินแล้ว" : "ยังไม่ได้ชำระเงิน";
-    },
-    getPaymentStatusClass(status) {
-      return status === "paid"
-        ? "text-white bg-green-500"
-        : "text-white bg-red-500";
-    },
-    getAddPaymentStatusClass(status) {
-      return status === "paid"
-        ? "text-green-500 font-bold"
-        : "text-red-500 font-bold";
-    },
-
-    filterPrograms() {
-      if (
-        this.saleRecord.promotion_type_id &&
-        this.saleRecord.promotion_type_id.id
-      ) {
-        this.programs = this.allPrograms.filter(
-          (program) =>
-            program.promotion_type_id === this.saleRecord.promotion_type_id.id
-        );
-      } else {
-        this.programs = this.allPrograms; // หรือค่า default ที่คุณต้องการ
-      }
-      this.saleRecord.program_id = [];
-    },
-
-    filterPackages() {
-      if (this.saleRecord.program_id && this.saleRecord.program_id.id) {
-        this.packages = this.allPackages.filter(
-          (pkg) => pkg.program_id === this.saleRecord.program_id.id
-        );
-      } else {
-        this.packages = this.allPackages; // ค่า default ที่คุณต้องการ
-      }
-      this.saleRecord.package_id = []; // รีเซ็ตค่า package_id
-    },
-
-    filterEditPrograms() {
-      if (
-        this.selectedSaleRecord.promotion_type_id &&
-        this.selectedSaleRecord.promotion_type_id.id
-      ) {
-        this.programs = this.allPrograms.filter(
-          (program) =>
-            program.promotion_type_id === this.selectedSaleRecord.promotion_type_id.id
-        );
-      } else {
-        this.programs = this.allPrograms; // หรือค่า default ที่คุณต้องการ
-      }
-    },
-    filterEditPackages() {
-      if (this.selectedSaleRecord.program_id && this.selectedSaleRecord.program_id.id) {
-        this.packages = this.allPackages.filter(
-          (pkg) => pkg.program_id === this.selectedSaleRecord.program_id.id
-        );
-      } else {
-        this.packages = this.allPackages; // ค่า default ที่คุณต้องการ
-      }
-    },
-
-    async showPackageDetails(packageId) {
-      const selectedSaleRecord = this.packages.find(
-        (pkg) => pkg.id === packageId.id
-      ); // เข้าถึง id จาก Proxy
-      if (selectedSaleRecord) {
-        this.packageDetails = selectedSaleRecord;
-        this.isShowingPackageDetails = true;
-      } else {
-        console.error("ไม่พบแพ็คเกจที่เลือก");
-      }
-    },
-    togglePackageDetails(packageId) {
-      if (this.isShowingPackageDetails) {
-        this.resetPackageDetails();
-      } else {
-        this.showPackageDetails(packageId);
-      }
-    },
-    resetPackageDetails() {
-      this.packageDetails = null;
-      this.isShowingPackageDetails = false;
-    },
-
-    async fetchLookupData() {
-      try {
-        const [
-          customersRes,
-          promotionTypesRes,
-          programsRes,
-          packagesRes,
-          packageTypesRes,
-          zoneDeliveryRes,
-          zoneDeliveryTypeRes,
-          sellerNamesRes,
-          paymentTypeRes,
-          additionalTypeRes,
-          deliveryRoundRes,
-          receiveFoodRes,
-          selectFoodRes,
-        ] = await Promise.all([
-          axios.get(`${API_URL}/customers`),
-          axios.get(`${API_URL}/promotion-types`),
-          axios.get(`${API_URL}/programs`),
-          axios.get(`${API_URL}/packages`),
-          axios.get(`${API_URL}/package-types`),
-          axios.get(`${API_URL}/zone-deliveries`),
-          axios.get(`${API_URL}/zone-delivery-types`),
-          axios.get(`${API_URL}/seller-names`),
-          axios.get(`${API_URL}/payment-types`),
-          axios.get(`${API_URL}/additional-types`),
-          axios.get(`${API_URL}/delivery-rounds`),
-          axios.get(`${API_URL}/receive-foods`),
-          axios.get(`${API_URL}/select-foods`),
-        ]);
-
-        this.customers = customersRes.data;
-        this.promotionTypes = promotionTypesRes.data;
-        this.allPrograms = programsRes.data || [];
-        this.programs = this.allPrograms;
-        if (this.saleRecord.promotion_type_id) {
-          this.filterPrograms();
-        }
-
-        this.allPackages = packagesRes.data.filter((packaged) => {
-          if (!packaged.start_date) {
-            packaged.displayLabel = packaged.name;
-            return true;
-          }
-
-          const date = new Date(packaged.start_date);
-          const currentMonth = new Date().getMonth();
-          const startMonth = date.getMonth();
-
-          if (startMonth === currentMonth) {
-            const thaiMonths = [
-              "มกราคม",
-              "กุมภาพันธ์",
-              "มีนาคม",
-              "เมษายน",
-              "พฤษภาคม",
-              "มิถุนายน",
-              "กรกฎาคม",
-              "สิงหาคม",
-              "กันยายน",
-              "ตุลาคม",
-              "พฤศจิกายน",
-              "ธันวาคม",
-            ];
-            const thaiMonth = thaiMonths[date.getMonth()];
-            const thaiYear = date.getFullYear();
-
-            packaged.displayLabel = `${packaged.name} (${thaiMonth} ${thaiYear})`;
-            return true;
-          }
-          return false;
-        });
-        this.packages = this.allPackages;
-        if (this.saleRecord.program_id) {
-          this.filterPackages();
-        }
-
-        this.packageTypes = packageTypesRes.data;
-        this.zoneDeliveries = zoneDeliveryRes.data;
-        this.zoneDeliveryTypes = zoneDeliveryTypeRes.data;
-        this.sellerNames = sellerNamesRes.data;
-        this.paymentTypes = paymentTypeRes.data.data;
-        this.additionalTypes = additionalTypeRes.data;
-
-        this.deliveryRounds = deliveryRoundRes.data;
-        this.receiveFoods = receiveFoodRes.data;
-        this.selectFoods = selectFoodRes.data;
-
-        this.updatePage;
-        //console.log('Fetched payment types:', paymentTypeRes.data);
-        //console.log(this.paymentTypes);
-      } catch (error) {
-        console.error("Error fetching lookup data:", error);
-      }
-    },
-
-    async fetchSaleRecords() {
-      try {
-        const response = await axios.get(`${API_URL}/sale-records`);
-        this.saleRecords = response.data;
-        this.filteredSaleRecords = response.data;
-        this.saleRecords.sort((a, b) => a.id - b.id);
-        this.updatePage();
-      } catch (error) {
-        console.error("Error fetching sale records:", error);
-      }
-    },
-
-    getCustomerName(customerId) {
-      const customer = this.customers.find((c) => c.id === customerId);
-      return customer ? customer.name : "ไม่พบข้อมูล";
-    },
-    getPromotionTypeName(promotionTypeId) {
-      const promotionType = this.promotionTypes.find((c) => c.id === promotionTypeId);
-      return promotionType ? promotionType.name : "ไม่พบข้อมูล";
-    },
-    getProgramName(programId) {
-      const program = this.programs.find((p) => p.id === programId);
-      if (program) {
-        const promotionType = this.promotionTypes.find(
-          (pt) => pt.id === program.promotion_type_id
-        );
-        const promotionTypeName = promotionType
-          ? promotionType.name
-          : "ไม่มีโปรโมชั่น"; // กรณีที่ไม่มีข้อมูล PromotionType
-        return `${program.name} (${promotionTypeName})`; // แสดงชื่อโปรแกรมพร้อมชื่อโปรโมชั่น
-      }
-      return "ไม่พบข้อมูล";
-    },
-    getPackageName(packageId) {
-      if (this.allPackages && Array.isArray(this.allPackages)) {
-        const packaged = this.allPackages.find((p) => p.id === packageId);
-        if (packaged) {
-          if (!packaged.start_date) {
-            return packaged.name;
-          }
-
-          const date = new Date(packaged.start_date);
-          const currentMonth = new Date().getMonth();
-          const startMonth = date.getMonth();
-
-          if (startMonth === currentMonth) {
-            const thaiMonths = [
-              "มกราคม",
-              "กุมภาพันธ์",
-              "มีนาคม",
-              "เมษายน",
-              "พฤษภาคม",
-              "มิถุนายน",
-              "กรกฎาคม",
-              "สิงหาคม",
-              "กันยายน",
-              "ตุลาคม",
-              "พฤศจิกายน",
-              "ธันวาคม",
-            ];
-            const thaiMonth = thaiMonths[date.getMonth()];
-            const thaiYear = date.getFullYear();
-
-            return `${packaged.name} (${thaiMonth} ${thaiYear})`;
-          }
-          return packaged.name;
-        }
-        return "ไม่พบข้อมูล";
-      }
-      return "ข้อมูลแพ็คเกจไม่พร้อมใช้งาน";
-    },
-    getPackageTypeName(packageTypeId) {
-      const packageType = this.packageTypes.find((c) => c.id === packageTypeId);
-      return packageType ? packageType.name : "ไม่พบข้อมูล";
-    },
-    getPaymentTypeName(paymentTypeId) {
-      const payment_type = this.paymentTypes.find((c) => c.id === paymentTypeId);
-      return payment_type ? payment_type.name : null;
-    },
-    getZoneName(zoneDeliveryId) {
-      const zoneDelivery = this.zoneDeliveries.find(
-        (z) => z.id === zoneDeliveryId
-      );
-      return zoneDelivery ? zoneDelivery.name : "ไม่พบข้อมูล";
-    },
-    getSelectFood(selectFoodId) {
-      const selectFood = this.selectFoods.find((z) => z.id === selectFoodId);
-      return selectFood ? selectFood.name : " ";
-    },
-    getReceiveFoodName(receiveFoodId) {
-      const receiveFood = this.receiveFoods.find((z) => z.id === receiveFoodId);
-      return receiveFood ? receiveFood.name : "";
-    },
-    getDeliveryRoundName(deiveryRoundId) {
-      const deliveryRound = this.deliveryRounds.find(
-        (z) => z.id === deiveryRoundId
-      );
-      return deliveryRound ? deliveryRound.name : " ";
-    },
-    getSellerName(sellerId) {
-      const seller = this.sellerNames.find((z) => z.id === sellerId);
-      return seller ? seller.name : " ";
-    },
-    getZonePrice(zoneId) {
-      // สมมติว่า zone_deliveries เป็นอาเรย์หรือออบเจกต์ที่เก็บข้อมูลทั้งหมดของ zone
-      const zone = this.zoneDeliveries.find((zone) => zone.id === zoneId);
-      return zone ? zone.price : 0; // ถ้าไม่พบ zone ให้คืนค่า 0
-    },
-    getCustomerAddress1(customerId) {
-      const customer = this.customers.find((c) => c.id === customerId);
-      return customer ? customer.address_1 : "ไม่พบข้อมูล";
-    },
-    getCustomerAddress2(customerId) {
-      const customer = this.customers.find((c) => c.id === customerId);
-      return customer ? customer.address_2 : "ไม่พบข้อมูล";
-    },
-    getCustomerAddress3(customerId) {
-      const customer = this.customers.find((c) => c.id === customerId);
-      return customer ? customer.address_3 : "ไม่พบข้อมูล";
-    },
-
-    startEditing(saleRecord) {
-      this.isEditing = true;
-      this.editingSaleRecordId = saleRecord.id;
-    },
-
-    saveUpdatedDelivery(saleRecord) {
-      this.updateDelivery(saleRecord);
-      this.isEditing = false;
-      this.editingSaleRecordId = null;
-    },
-
-    cancelEditing() {
-      this.fetchSaleRecords();
-      this.isEditing = false;
-      this.editingSaleRecordId = null;
-
-    },
-
-    async updateDelivery(saleRecord) {
-      try {
-        await axios.put(`${API_URL}/sale-records/${saleRecord.id}/delivery`, {
-          delivery_round: saleRecord.delivery_round || '',
-          deliver: saleRecord.deliver || '',
-          delivery_zone: saleRecord.delivery_zone || '',
-          delivery_date: saleRecord.delivery_date || '' // ✅ เพิ่มค่านี้เข้าไป
-        });
-
-        await this.fetchSaleRecords();
-        this.showSuccessToastNotification("แก้ไขข้อมูลสำเร็จ!");
-      } catch (error) {
-        console.error("เกิดข้อผิดพลาดในการอัปเดตข้อมูลการจัดส่ง:", error);
-        this.showErrorToastNotification("เกิดข้อผิดพลาดในการแก้ไข!");
-      }
-    },
-
-    // getCustomerAddress(customerId, addressType) {
-    //   const customer = this.customers.find((c) => c.id === customerId);
-    //   return customer ? customer[addressType] : "ไม่พบข้อมูล";
-    // },
-
-    // // ฟังก์ชันเลือกประเภทที่อยู่ที่ใช้
-    // getSelectedAddressType(saleRecordId) {
-    //   return this.selectedAddressType[saleRecordId] || "address_1"; // ค่าเริ่มต้นเป็น address_1
-    // },
-
-    // // ฟังก์ชันที่ใช้ในการอัพเดตประเภทที่อยู่ที่เลือก
-    // setSelectedAddressType(saleRecordId, value) {
-    //   this.selectedAddressType[saleRecordId] = value;
-    // },
-    //   getCustomerAddress(customerId, addressType = "address_1") {
-    //     const customer = this.customers.find((c) => c.id === customerId);
-    //     if (!customer) return "ไม่พบข้อมูล";
-
-    //     return customer[addressType] || "ไม่มีข้อมูล";
-    //   },
-    //   getSelectedAddressType(saleRecordId) {
-    //   return this.selectedAddressType[saleRecordId] || "address_1"; // ค่าเริ่มต้น
-    // },
-    // setSelectedAddressType(saleRecordId, value) {
-    //   this.$set(this.selectedAddressType, saleRecordId, value);
-    // },
-
-
-    getCustomerTel(customerId) {
-      const customer = this.customers.find((c) => c.id === customerId);
-      return customer ? customer.tel : "ไม่พบข้อมูล";
-    },
-
-    onViewDetail(saleRecord) {
-      this.selectedSaleRecord = saleRecord;
-      this.isDetailModalOpen = true;
-      this.moreOpenDropdownIndex = null;
-    },
-    closeDetailModal() {
-      this.isDetailModalOpen = false;
-      // this.selectedSaleRecord = null;
-    },
-    formatDetailLabel(key) {
-      const labels = {
-        //customer_id: 'รหัส',
-        seller_name_id: "ผู้ขาย",
-        name: "ชื่อ-สกุลลูกค้า",
-        package_type: "Package Type",
-        promotion_type: "Promotion Type",
-        program: "Program",
-        package: "แพ็กเกจที่ซื้อ ",
-        package_price: "ราคาแพ็กเกจ",
-        promotion_detail: "รายละเอียดโปรโมชัน",
-        other_promotion_detail: "รายละเอียดโปรโมชันเพิ่มเติม(นอกเหนือจากโปรฯ รายเดือนที่ต้องได้รับอนุมัติ)",
-        free_mad: "จำนวนกล่องที่แถม M or A or D",
-        free_dessert: "จำนวนกล่องที่แถม Dessert",
-        free_brittles: "จำนวนกล่องที่แถม Brittles",
-        free_energy_balls: "จำนวนกล่องที่แถม Energy Balls",
-        free_dressing: "จำนวนกล่องที่แถม Dressing",
-        free_yoghurt: "จำนวนกล่องที่แถม Yoghurt",
-        free_granola: "จำนวนกล่องที่แถม Granola",
-        free_credit: "เครดิตที่แถม (บาท)",
-
-        discount: "ส่วนลดเพิ่มเติมจากโปรฯ ประจำเดือน (ถ้ามี)",
-        extra_charge: "Extra Charge (%)",
-        extra_charge_price: "มูลค่า Extra Charge",
-        total_package_price: "มูลค่าแพ็กเกจรวม",
-        receive_food_id: "วิธีการรับอาหาร",
-
-        zone1_id: "In-house Riders (ที่อยู่ 1)",
-        total_zone1_price: "ค่าจัดส่งรวม (ที่อยู่ 1)",
-        zone2_id: "In-house Riders (ที่อยู่ 2)",
-        total_zone2_price: "ค่าจัดส่งรวม (ที่อยู่ 2)",
-        zone3_id: "In-house Riders (ที่อยู่ 3)",
-        total_zone3_price: "ค่าจัดส่งรวม (ที่อยู่ 3)",
-        zone_outsource_id: "Outsource Riders",
-        total_zone_outsource_price: "ค่าจัดส่งรวม Outsource",
-        total_delivery_zone_price: "ค่าจัดส่งรวม In-house Riders",
-        total_delivery_price: "รวมค่าจัดส่งทั้งหมด",
-
-        total_price: "มูลค่าขายรวม",
-        payment_status: "สถานะการชำระเงิน",
-        paid_date: "วันที่ชำระเงิน",
-        payment_type_id: "วิธีการชำระเงิน",
-        receive_date: "วันเริ่มรับอาหารวันแรก",
-        sellect_by: "เลือกอาหารโดย",
-        start_date: "วันเริ่มแพ็กเกจ",
-        expiry_date: "วันหมดอายุแพ็คเกจ",
-        note: "Note รายละเอียดโปรโมชันสำหรับส่งสรุปให้ลูกค้า (ถ้ามี)",
-        package_detail: "ข้อมูลแพ็กเกจ(สำหรับสรุปให้ลูกค้า)",
-        mad: "M or A or D",
-        dessert: "Dessert",
-        brittles: "Brittles",
-        energy_balls: "Energy Balls",
-        dressing: "Dressing",
-        yoghurt: "Yoghurt",
-        granola: "Granola",
-        credit: "Cash Credit ที่ได้รับ",
-
-        delivery_date: "วันที่ต้องการรับอาหาร",
-        select_food_id: "วิธีการเลือกอาหาร",
-      };
-      return labels[key] || key;
-    },
-    getLabelClass(key) {
-      if (key === "total_package_price") {
-        return "text-custom-orange";
-      }
-      return "";
-    },
-    getValueClass() {
-      return "";
-    },
-
-    onViewResultSaleRecord(saleRecord) {
-      this.selectedSaleRecord = saleRecord;
-      this.isResultModalOpen = true;
-      this.moreOpenDropdownIndex = null;
-    },
-    closeResultModal() {
-      this.isResultModalOpen = false;
-      // this.selectedSaleRecord = null;
-    },
-    formatResultLabel(key) {
-      const labels = {
-        name: "🏷 คุณ",
-        package: "▶️ แพ็คเกจ",
-        promotion_detail: "🔥",
-        receive_food: "▶️ อาหารที่ได้รับ",
-        start_date: "▶️ วันรับอาหารวันแรก",
-        sellect_by: "▶️ เลือกอาหารโดย",
-        delivery_date: "▶️ วันที่รับอาหาร",
-        delivery: "▶️ จัดส่ง",
-        package_price: "▶️ ราคาแพ็คเกจ",
-        extra_charge: "▶️ Extra Chrage",
-        discount: "▶️ ส่วนลด",
-        total_delivery_price: "▶️ ค่าจัดส่ง",
-        total_price: "▶️ ยอดชำระ",
-        expiry_date: "▶️ วันหมดอายุแพ็คเกจ",
-        note: "▶️ หมายเหตุ:",
-      };
-      return labels[key] || key;
-    },
-    copyResultModalContent() {
-      let modalText = this.$refs.modalContent.innerText;
-      modalText = modalText.replace(/\n\s*\n/g, "\n");
-
-      if (navigator.clipboard) {
-        navigator.clipboard
-          .writeText(modalText)
-          .then(() => {
-            this.isCopied = true;
-            setTimeout(() => {
-              this.isCopied = false;
-            }, 2000);
-          })
-          .catch((err) => {
-            console.error("ไม่สามารถคัดลอกข้อความ:", err);
-          });
-      } else {
-        const textArea = document.createElement("textarea");
-        textArea.value = modalText;
-        document.body.appendChild(textArea);
-        textArea.select();
-        try {
-          document.execCommand("copy");
-          this.isCopied = true;
-          setTimeout(() => {
-            this.isCopied = false;
-          }, 2000);
-        } catch (err) {
-          console.error("ไม่สามารถคัดลอกข้อความ:", err);
-        } finally {
-          document.body.removeChild(textArea);
-        }
-      }
     },
 
     handleClickOutside(event) {
@@ -1390,18 +917,6 @@ export default {
     },
 
 
-    checkPackageType() {
-      if (
-        this.saleRecord.package_type_id &&
-        (this.saleRecord.package_type_id.name.toLowerCase() === 'additional sales' ||
-          this.saleRecord.package_type_id.name.toLowerCase() === 'consignment')
-      ) {
-        this.clearAdditionalForm();
-      } else {
-        this.clearNotAdditionalForm();
-      }
-    },
-
     showSuccessToastNotification(message) {
       this.toastSuccessMessage = message;
       this.showSuccessToast = true;
@@ -1423,47 +938,60 @@ export default {
         this.showErrorToast = false;
       }, 3000);
     },
-  },
-  watch: {
-    "saleRecord.customer_id"(newCustomerId) {
-      this.fetchCustomerAddress(newCustomerId);
-    },
-    searchQuery() {
-      this.updatePage();
-    },
-    currentPage() {
-      this.updatePage();
-    },
+
+
+
+
   },
   created() {
-    this.filteredSaleRecords = this.saleRecords;
-    this.sortData("id");
+    this.filteredOrders = this.orders;
+    this.sortData('id');
     this.fetchLookupData();
-    this.fetchSaleRecords();
-    this.updatePage();
+    this.fetchOrders(this.selectedDate);
   },
   mounted() {
-    document.addEventListener("click", this.handleClickOutside);
+    document.addEventListener('click', this.handleClickOutside);
     this.fetchLookupData();
-    this.fetchSaleRecords();
-    this.updatePage();
+    this.fetchOrders(this.selectedDate);
+    this.setToday();
+
+
+    this.$nextTick(() => {
+      flatpickr(this.$refs.startDatepicker, {
+        dateFormat: "Y-m-d",
+        todayButton: true,
+        defaultDate: new Date(),
+        onChange: (selectedDates, dateStr) => {
+          this.startDate = dateStr;
+          this.fetchOrdersData();
+        }
+      });
+
+      flatpickr(this.$refs.endDatepicker, {
+        dateFormat: "Y-m-d",
+        todayButton: true,
+        defaultDate: new Date(),
+        onChange: (selectedDates, dateStr) => {
+          this.endDate = dateStr;
+          this.fetchOrdersData();
+        }
+      });
+    });
+
+
   },
   beforeUnmount() {
-    document.removeEventListener("click", this.handleClickOutside);
+    document.removeEventListener('click', this.handleClickOutside);
   },
+
+  watch: {
+  }
 };
 </script>
 
-<style>
+<style scoped>
 .dropdown-up {
   bottom: 100%;
   margin-bottom: 4px;
-}
-
-@media print {
-
-  @page {
-    margin: 10mm;
-  }
 }
 </style>

@@ -338,7 +338,7 @@ export default {
 
         this.isLoading = true;
 
-        axios.post(`${API_URL}/order`, {
+        axios.post(`${API_URL}/order-hhb`, {
           menu_id: menu.menu_id,
           quantity: menu.quantity,
           order_date: this.selectedDate,

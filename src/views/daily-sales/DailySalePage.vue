@@ -1,7 +1,6 @@
 <template>
     <div class="mt-[-20px]">
         <div class="flex items-center space-x-3 py-2">
-            <!-- ปุ่มลูกศรย้อนกลับ -->
             <button @click="changeDate(-1)" class="flex items-center">
                 <span class="material-symbols-outlined text-3xl text-custom-orange hover:text-custom-orange-hover">
                     chevron_backward
@@ -29,6 +28,11 @@
                 class="text-center bg-white rounded-md font-bold border border-gray-200 focus:outline-none focus:ring-2 focus:ring-custom-orange hover:ring-2 hover:ring-custom-orange text-custom-orange hover:text-custom-orange-hover w-[150px]"
                 placeholder="เลือกวันที่สิ้นสุด" />
 
+            <button @click="handlePrint"
+                class="bg-custom-orange text-white px-2 py-2 rounded-md flex items-center space-x-1 hover:bg-custom-orange-hover">
+                <span class="material-symbols-outlined text-white text-xl leading-none">print</span>
+                <span class="text-white text-base leading-none">Print</span>
+            </button>
 
         </div>
 
@@ -168,81 +172,91 @@
 </table>
 </div> -->
 
-        <div class="flex space-x-4">
 
-            <table class="w-full min-w-1/2 table-auto rounded-2xl overflow-hidden mt-4">
-                <thead>
-                    <tr class="bg-purple-500 text-white">
-                        <th class="px-4 py-2 text-left font-bold">ผู้ขาย</th>
-                        <th class="px-4 py-2 text-left font-bold">Package Type</th>
-                        <th class="px-4 py-2 text-left font-bold">ยอดขายรวม</th>
-                        <th class="px-4 py-2 text-left font-bold">ยอดขายรวมก่อน VAT</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <template v-if="filteredSalesBySellerAddit.length === 0">
-                        <tr>
-                            <td colspan="4" class=" bg-white text-center text-gray-500 font-bold">
-                                ไม่มีข้อมูลยอดขาย
-                            </td>
+        <div class="mt-2 flex space-x-4">
+
+            <div class="w-1/2">
+                <h1 class="text-xl font-bold mb-2">Additional Sales</h1>
+                <table class="w-full table-auto rounded-2xl overflow-hidden">
+                    <thead>
+                        <tr class="bg-purple-500 text-white">
+                            <th class="px-4 py-2 text-left font-bold">ผู้ขาย</th>
+                            <th class="px-4 py-2 text-left font-bold">Package Type</th>
+                            <th class="px-4 py-2 text-left font-bold">ยอดขายรวม</th>
+                            <th class="px-4 py-2 text-left font-bold">ยอดขายรวมก่อน VAT</th>
                         </tr>
-                    </template>
+                    </thead>
+                    <tbody>
+                        <template v-if="filteredSalesBySellerAddit.length === 0">
+                            <tr>
+                                <td colspan="4" class="py-10 bg-white text-center text-gray-500 font-bold">
+                                    ไม่มีข้อมูลยอดขาย
+                                </td>
+                            </tr>
+                        </template>
 
-                    <template v-for="(groupedSale, index) in filteredSalesBySellerAddit" :key="index">
-                        <tr v-for="(sale, saleIndex) in groupedSale.sales" :key="saleIndex"
+                        <template v-for="(groupedSale, index) in filteredSalesBySellerAddit" :key="index">
+                            <tr v-for="(sale, saleIndex) in groupedSale.sales" :key="saleIndex"
+                                class=" bg-white relative border-b border-b-gray-200">
+                                <td v-if="saleIndex === 0" class="px-4 py-2 align-top font-bold">
+                                    {{ getSellerName(groupedSale.sellerId) }}
+                                </td>
+                                <td v-else class="px-4 py-2 align-top"></td>
+                                <td class="px-4 py-2 align-top pb-5">{{ getPackageTypeName(sale.package_type_id) }}</td>
+                                <td class="px-4 py-2 align-top">{{ formatPrice(sale.total_sales) }}</td>
+                                <td class="px-4 py-2 align-top">{{ formatPrice(sale.pre_vat) }}</td>
+                            </tr>
+
+                            <!-- แสดงยอดขายรวมทั้งหมด -->
+                            <tr class="bg-purple-100" style="height: 50px;">
+                                <td colspan="4" class="px-4 py-2 text-right">
+                                    <span class="font-bold mr-2">ยอดขายรวมทั้งหมด:</span>
+                                    {{ formatPrice(groupedSale.totalSales) }}
+                                    <span class="ml-4">|</span>
+                                    <span class="font-bold ml-4 mr-2">ยอดขายรวมทั้งหมดก่อน VAT:</span>
+                                    {{ formatPrice(groupedSale.totalPreVat) }}
+                                </td>
+                            </tr>
+                        </template>
+                    </tbody>
+                </table>
+            </div>
+
+
+            <div class="w-1/2">
+                <h1 class="text-xl font-bold mb-2">วิธีการชำระเงิน</h1>
+                <table class="w-full table-auto rounded-2xl overflow-hidden">
+                    <thead>
+                        <tr class="bg-green-500 text-white">
+                            <th class="px-4 py-2 text-left font-bold">วิธีการชำระเงิน</th>
+                            <th class="px-4 py-2 text-left font-bold">ยอดขายรวม</th>
+                            <th class="px-4 py-2 text-left font-bold">ยอดขายรวมก่อน VAT</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="(sale, index) in salesByPaymentType" :key="index"
                             class=" bg-white relative border-b border-b-gray-200">
-                            <td v-if="saleIndex === 0" class="px-4 py-2 align-top font-bold">
-                                {{ getSellerName(groupedSale.sellerId) }}
+                            <td class="px-4 py-2 align-top font-bold pb-5">{{ getPaymentTypeName(sale.payment_type_id)
+                            }}
                             </td>
-                            <td v-else class="px-4 py-2 align-top"></td>
-                            <td class="px-4 py-2 align-top pb-5">{{ getPackageTypeName(sale.package_type_id) }}</td>
-                            <td class="px-4 py-2 align-top">{{ formatPrice(sale.total_sales) }}</td>
-                            <td class="px-4 py-2 align-top">{{ formatPrice(sale.pre_vat) }}</td>
-                        </tr>
-
-                        <!-- แสดงยอดขายรวมทั้งหมด -->
-                        <tr class="bg-purple-100" style="height: 50px;">
-                            <td colspan="4" class="px-4 py-2 text-right">
-                                <span class="font-bold mr-2">ยอดขายรวมทั้งหมด:</span>
-                                {{ formatPrice(groupedSale.totalSales) }}
-                                <span class="ml-4">|</span>
-                                <span class="font-bold ml-4 mr-2">ยอดขายรวมทั้งหมดก่อน VAT:</span>
-                                {{ formatPrice(groupedSale.totalPreVat) }}
+                            <td class="px-4 py-2 align-top">
+                                {{ formatPrice(sale.total_sales) }}
+                            </td>
+                            <td class="px-4 py-2 align-top">
+                                {{ formatPrice(sale.pre_vat) }}
                             </td>
                         </tr>
-                    </template>
-                </tbody>
-            </table>
-
-
-            <table class="w-full min-w-1/2 table-auto rounded-2xl overflow-hidden mt-4">
-                <thead>
-                    <tr class="bg-green-500 text-white">
-                        <th class="px-4 py-2 text-left font-bold">วิธีการชำระเงิน</th>
-                        <th class="px-4 py-2 text-left font-bold">ยอดขายรวม</th>
-                        <th class="px-4 py-2 text-left font-bold">ยอดขายรวมก่อน VAT</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="(sale, index) in salesByPaymentType" :key="index"
-                        class=" bg-white relative border-b border-b-gray-200">
-                        <td class="px-4 py-2 align-top font-bold pb-5">{{ getPaymentTypeName(sale.payment_type_id) }}
-                        </td>
-                        <td class="px-4 py-2 align-top">
-                            {{ formatPrice(sale.total_sales) }}
-                        </td>
-                        <td class="px-4 py-2 align-top">
-                            {{ formatPrice(sale.pre_vat) }}
-                        </td>
-                    </tr>
-                    <tr v-if="salesByPaymentType.length === 0">
-                        <td colspan="3" class="py-10 bg-white text-center text-gray-500 font-bold">
-                            ไม่มีข้อมูลยอดขายตามประเภทการชำระเงิน
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+                        <tr v-if="salesByPaymentType.length === 0">
+                            <td colspan="3" class="py-10 bg-white text-center text-gray-500 font-bold">
+                                ไม่มีข้อมูลยอดขายตามประเภทการชำระเงิน
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
+
+        <h1 class="text-xl font-bold mt-4 mb-2">Package Types</h1>
 
         <table class="min-w-full table-auto rounded-2xl overflow-hidden mt-4">
             <thead>
@@ -302,7 +316,8 @@
 
             </thead>
             <tbody>
-                <tr v-for="(sale, index) in filteredDailySales" :key="index" class="border-b border-b-gray-200 bg-white relative">
+                <tr v-for="(sale, index) in filteredDailySales" :key="index"
+                    class="border-b border-b-gray-200 bg-white relative">
                     <td class="px-4 py-2 align-top pb-5">{{ formatDate(sale.paid_date) }}</td>
                     <td class="px-4 py-2 align-top font-bold text-custom-orange">{{ getCustomerName(sale.customer_id) }}
                     </td>
@@ -332,7 +347,9 @@
                 class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
                 <div class="bg-white rounded-md shadow-lg w-1/2 max-w-3xl h-auto max-h-[800px] flex flex-col">
                     <div class="flex justify-between items-center bg-custom-orange text-white px-4 py-2 rounded-t-md">
-                        <span class="font-bold"><h2>รายละเอียดยอดขายประจำวัน</h2></span>
+                        <span class="font-bold">
+                            <h2>รายละเอียดยอดขายประจำวัน</h2>
+                        </span>
                         <div class="flex space-x-2">
                             <span @click="closeDetailModal"
                                 class="material-symbols-outlined cursor-pointer hover:text-gray-200">
@@ -354,45 +371,104 @@
 
         </table>
 
+        <div ref="componentRef" class="hidden-print p-4 relative">
+            <div class="relative flex justify-between items-center ">
+                <div class="flex flex-col">
+                    <strong class="text-xl">Daily Sales Report</strong>
+                    <span class="text-sm">Date : {{ formattedDate }}</span>
+                </div>
 
 
-        <!-- <div class="rounded-b-2xl flex justify-center items-center space-x-2 bg-white px-2 py-1">
-            <button @click="goToPage(currentPage - 1)" :disabled="currentPage === 1"
-                class="px-3 py-2 rounded-md hover:bg-gray-100 text-custom-orange disabled:opacity-50">
-                <span class="material-symbols-outlined">chevron_left</span>
-            </button>
-
-            <div class="flex items-center space-x-1">
-                <button v-if="totalPagesArray.start > 1" @click="goToPage(1)"
-                    class="px-3 py-2 rounded-md bg-white hover:bg-custom-orange hover:text-white">
-                    1
-                </button>
-                <button v-if="totalPagesArray.start > 2" @click="goToPage(totalPagesArray.start - 1)"
-                    class="px-3 py-2 rounded-md bg-white hover:bg-custom-orange hover:text-white">
-                    ...
-                </button>
-
-                <button v-for="page in totalPagesArray.range" :key="page" @click="goToPage(page)"
-                    :class="['px-3 py-2 rounded-md', { 'bg-custom-orange text-white': currentPage === page, 'bg-white': currentPage !== page }]"
-                    class="cursor-pointer hover:bg-custom-orange hover:text-white">
-                    {{ page }}
-                </button>
-
-                <button v-if="totalPagesArray.end < totalPages - 1" @click="goToPage(totalPagesArray.end + 1)"
-                    class="px-3 py-2 rounded-md bg-white hover:bg-custom-orange hover:text-white">
-                    ...
-                </button>
-                <button v-if="totalPagesArray.end < totalPages" @click="goToPage(totalPages)"
-                    class="px-3 py-2 rounded-md bg-white hover:bg-custom-orange hover:text-white">
-                    {{ totalPages }}
-                </button>
+                <div class="flex items-center space-x-4">
+                    <img src="@/assets/logo_fitfood_full.png" alt="Logo" class="w-48 h-18" />
+                </div>
             </div>
 
-            <button @click="goToPage(currentPage + 1)" :disabled="currentPage === totalPages"
-                class="px-3 py-2 rounded-md hover:bg-gray-100 text-custom-orange disabled:opacity-50">
-                <span class="material-symbols-outlined">chevron_right</span>
-            </button>
-        </div> -->
+            <div class="mt-4 flex space-x-4">
+
+                <div class="w-1/2">
+                    <h1 class="text-xl mb-2">Additional Sales</h1>
+                    <table class="report-content min-w-full table-auto mt-4 p-4">
+                        <thead>
+                            <tr class="bg-gray-100 text-black text-[12px]">
+                                <th class="px-6 py-3 text-left font-bold border-b border-b-black">ผู้ขาย</th>
+                                <th class="px-6 py-3 text-left font-bold border-b border-b-black">Package Type</th>
+                                <th class="px-6 py-3 text-left font-bold border-b border-b-black">ยอดขายรวม</th>
+                                <th class="px-6 py-3 text-left font-bold border-b border-b-black">ยอดขายรวมก่อน VAT</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template v-if="filteredSalesBySellerAddit.length === 0">
+                                <tr>
+                                    <td colspan="4" class="py-10 bg-white text-center text-gray-500 font-bold">
+                                        ไม่มีข้อมูลยอดขาย
+                                    </td>
+                                </tr>
+                            </template>
+
+                            <template v-for="(groupedSale, index) in filteredSalesBySellerAddit" :key="index">
+                                <tr v-for="(sale, saleIndex) in groupedSale.sales" :key="saleIndex"
+                                    class=" bg-white relative border-b border-b-gray-200">
+                                    <td v-if="saleIndex === 0" class="px-6 py-4 text-[12px]  text-black border-b border-b-gray-300">
+                                        {{ getSellerName(groupedSale.sellerId) }}
+                                    </td>
+                                    <td v-else class="px-6 py-4 text-[12px]  text-black border-b border-b-gray-300"></td>
+                                    <td class="px-6 py-4 text-[12px]  text-black border-b border-b-gray-300">{{ getPackageTypeName(sale.package_type_id) }}
+                                    </td>
+                                    <td class="px-6 py-4 text-[12px]  text-black border-b border-b-gray-300">{{ formatPrice(sale.total_sales) }}</td>
+                                    <td class="px-6 py-4 text-[12px]  text-black border-b border-b-gray-300">{{ formatPrice(sale.pre_vat) }}</td>
+                                </tr>
+
+                                <tr class="bg-purple-100" style="height: 50px;">
+                                    <td colspan="4" class="px-4 py-2 text-right text-[12px]">
+                                        <span class="font-bold mr-2">ยอดขายรวมทั้งหมด:</span>
+                                        {{ formatPrice(groupedSale.totalSales) }}
+                                        <span class="ml-4">|</span>
+                                        <span class="font-bold ml-4 mr-2">ยอดขายรวมทั้งหมดก่อน VAT:</span>
+                                        {{ formatPrice(groupedSale.totalPreVat) }}
+                                    </td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+
+
+                <div class="w-1/2">
+                    <h1 class="text-xl font-bold mb-2">วิธีการชำระเงิน</h1>
+                    <table class="report-content min-w-full table-auto mt-4 p-4">
+                        <thead>
+                            <tr class="bg-gray-100 text-black text-[12px]">
+                                <th class="px-6 py-3 text-left font-bold border-b border-b-black">วิธีการชำระเงิน</th>
+                                <th class="px-6 py-3 text-left font-bold border-b border-b-black">ยอดขายรวม</th>
+                                <th class="px-6 py-3 text-left font-bold border-b border-b-black">ยอดขายรวมก่อน VAT</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="(sale, index) in salesByPaymentType" :key="index"
+                                class=" bg-white relative border-b border-b-gray-200">
+                                <td class="px-4 py-2 align-top font-bold pb-5">{{
+                                    getPaymentTypeName(sale.payment_type_id)
+                                    }}
+                                </td>
+                                <td class="px-4 py-2 align-top">
+                                    {{ formatPrice(sale.total_sales) }}
+                                </td>
+                                <td class="px-4 py-2 align-top">
+                                    {{ formatPrice(sale.pre_vat) }}
+                                </td>
+                            </tr>
+                            <tr v-if="salesByPaymentType.length === 0">
+                                <td colspan="3" class="py-10 bg-white text-center text-gray-500 font-bold">
+                                    ไม่มีข้อมูลยอดขายตามประเภทการชำระเงิน
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
 
     </div>
 
@@ -403,9 +479,19 @@
 import axios from 'axios';
 import flatpickr from "flatpickr";
 import "flatpickr/dist/flatpickr.css";
-//import Multiselect from 'vue-multiselect';
+import { useVueToPrint } from "vue-to-print";
+import { ref } from "vue";
 
 export default {
+    setup() {
+        const componentRef = ref();
+        const { handlePrint } = useVueToPrint({
+            content: componentRef,
+            documentTitle: "Delivery Report",
+        });
+
+        return { componentRef, handlePrint };
+    },
     data() {
         return {
             headers: ['Transaction Date', `Customer's Name`, 'Package Type', 'Sales Category', 'Package/Purchase Details', 'Details', 'ยอดขายรวม', 'วิธีการชำระเงิน', 'Sales Rep', ' '],
@@ -744,7 +830,7 @@ export default {
                 this.seller_names = sellerNamesRes.data;
                 this.payment_types = paymentTypeRes.data.data;
                 this.additional_types = AdditionalTypeRes.data;
-await this.fetchDailySales();
+                await this.fetchDailySales();
 
             } catch (error) {
                 console.error("Error fetching lookup data:", error);
@@ -891,7 +977,6 @@ await this.fetchDailySales();
 </script>
 
 <style scoped>
-
 .dropdown-up {
     bottom: 100%;
     margin-bottom: 4px;

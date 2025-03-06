@@ -542,6 +542,13 @@
                   placeholder="กรอก Note รายละเอียดโปรโมชันสำหรับส่งสรุปให้ลูกค้า (ถ้ามี)" rows="3"
                   class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange resize-y"></textarea>
               </div>
+
+              <div class="mb-4">
+              <label for="Transaction_ref" class="block text-gray-700 font-bold">Transaction No. อื่นใน Payslip เดียวกัน (ถ้ามี)</label>
+              <input id="transaction_ref" v-model="saleRecord.transaction_ref"
+                placeholder="กรอก Transaction No. อื่นใน Payslip เดียวกัน (ถ้ามี)"
+                class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange resize-y" />
+            </div>
             </div>
 
             <div class="flex justify-between space-x-4 p-4 bg-white border-t rounded-b-md list-none">
@@ -680,7 +687,7 @@
     <table class="min-w-full table-auto rounded-t-2xl overflow-hidden mt-4">
       <thead>
         <tr class="bg-custom-orange text-white">
-          <th v-for="(header, index) in headers" :key="index" :class="['px-4 py-2 text-left font-bold']"
+          <th v-for="(header, index) in headers" :key="index" :class="['px-4 py-2 text-left text-sm font-bold']"
             :style="{ width: headerWidths[index] }">
             {{ header }}
           </th>
@@ -692,6 +699,9 @@
             class=" bg-white relative border-b border-b-gray-200">
 
             <td class="px-4 py-2 align-top pb-5">{{ (currentPage - 1) * itemsPerPage + index + 1 }}</td>
+            <td class="px-4 py-2 align-top pb-5">
+              {{ saleRecord.transaction }}
+            </td>
             <td class="px-4 py-2 align-top pb-5 font-bold text-custom-orange">
               {{ getCustomerName(saleRecord.customer_id) }}
             </td>
@@ -1038,23 +1048,23 @@
 
 
             <div>
-                  <label for="promotion_type" class="block font-bold text-gray-700">Promotion Type</label>
-                  <multiselect v-model="selectedSaleRecord.promotion_type_id" :options="promotionTypes"
-                    placeholder="เลือก Promotion Type" track-by="id" label="name" />
-                </div>
+              <label for="promotion_type" class="block font-bold text-gray-700">Promotion Type</label>
+              <multiselect v-model="selectedSaleRecord.promotion_type_id" :options="promotionTypes"
+                placeholder="เลือก Promotion Type" track-by="id" label="name" />
+            </div>
 
-                <div>
-                  <label for="program" class="block font-bold text-gray-700">Program</label>
-                  <multiselect v-model="selectedSaleRecord.program_id" :options="filteredPrograms" placeholder="เลือก Program"
-                    track-by="id" label="name" :disabled="!selectedSaleRecord.promotion_type_id ||
-                      !selectedSaleRecord.promotion_type_id.id" />
-                </div>
+            <div>
+              <label for="program" class="block font-bold text-gray-700">Program</label>
+              <multiselect v-model="selectedSaleRecord.program_id" :options="filteredPrograms"
+                placeholder="เลือก Program" track-by="id" label="name" :disabled="!selectedSaleRecord.promotion_type_id ||
+                  !selectedSaleRecord.promotion_type_id.id" />
+            </div>
 
-                <div>
-                  <label for="package" class="block font-bold text-gray-700">Package</label>
-                  <multiselect v-model="selectedSaleRecord.package_id" :options="packages" placeholder="เลือก Package"
-                    track-by="id" label="displayLabel" :disabled="!selectedSaleRecord.program_id || !selectedSaleRecord.program_id.id
-                      " />
+            <div>
+              <label for="package" class="block font-bold text-gray-700">Package</label>
+              <multiselect v-model="selectedSaleRecord.package_id" :options="packages" placeholder="เลือก Package"
+                track-by="id" label="displayLabel" :disabled="!selectedSaleRecord.program_id || !selectedSaleRecord.program_id.id
+                  " />
 
               <button v-if="selectedSaleRecord.package_id && selectedSaleRecord.package_id.id"
                 @click.prevent="togglePackageDetails(selectedSaleRecord.package_id)"
@@ -1421,6 +1431,13 @@
                 placeholder="กรอก Note รายละเอียดโปรโมชันสำหรับส่งสรุปให้ลูกค้า (ถ้ามี)" rows="3"
                 class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange resize-y"></textarea>
             </div>
+
+            <div class="mb-4">
+              <label for="editTransaction_ref" class="block text-gray-700 font-bold">Transaction No. อื่นใน Payslip เดียวกัน (ถ้ามี)</label>
+              <input id="transaction_ref" v-model="selectedSaleRecord.transaction_ref"
+                placeholder="กรอก Transaction No. อื่นใน Payslip เดียวกัน (ถ้ามี)"
+                class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange resize-y" />
+            </div>
           </div>
 
 
@@ -1529,7 +1546,7 @@
 import axios from "axios";
 import Multiselect from "vue-multiselect";
 import { mapActions, mapGetters } from "vuex";
-import { API_URL } from "@/services/api";
+import { API_URL } from "@/services/testapi";
 
 
 export default {
@@ -1540,6 +1557,7 @@ export default {
     return {
       headers: [
         "#",
+        'Transaction No.',
         `Customer's Name`,
         "Package Type",
         "Program",
@@ -1549,69 +1567,70 @@ export default {
         "สถานะการชำระเงิน",
         "",
       ],
-      headerWidths: ["5%", "15%", "10%", "12%", "13%", "15%", "13%", "12%", "5%"],
+      headerWidths: ["5%", "10%", "15%", "8%", "14%", "10%", "10%", "10%", "12%", "5%"],
       saleRecords: [],
 
       searchQuery: "",
       filteredSaleRecords: [],
 
       isAddModalOpen: false,
-      saleRecord: {
-        customer_id: "",
-        promotion_type_id: "",
-        program_id: "",
-        package_id: "",
-        package_type_id: "",
-        seller_name_id: "",
-        delivery: "",
+      saleRecord: {},
+      // saleRecord: {
+      //   customer_id: "",
+      //   promotion_type_id: "",
+      //   program_id: "",
+      //   package_id: "",
+      //   package_type_id: "",
+      //   seller_name_id: "",
+      //   delivery: "",
 
-        package_price: 0,
-        discount: 0,
-        extra_charge: 0,
-        extra_charge_price: '',
-        total_package_price: "",
+      //   package_price: 0,
+      //   discount: 0,
+      //   extra_charge: 0,
+      //   extra_charge_price: '',
+      //   total_package_price: "",
 
-        zone1_id: "",
-        zone1_quantity: 0,
+      //   zone1_id: "",
+      //   zone1_quantity: 0,
 
-        zone2_id: "",
-        zone2_quantity: 0,
+      //   zone2_id: "",
+      //   zone2_quantity: 0,
 
-        zone3_id: "",
-        zone3_quantity: 0,
+      //   zone3_id: "",
+      //   zone3_quantity: 0,
 
-        zone_outsource_id: "",
-        zone_outsource_quantity: 0,
+      //   zone_outsource_id: "",
+      //   zone_outsource_quantity: 0,
 
-        total_delivery_zone_price: "",
-        total_delivery_price: "",
-        payment_status: "unpaid",
-        paid_date: "",
-        payment_type_id: "",
-        start_date: "",
-        expiry_date: "",
-        remaining_days: 0,
+      //   total_delivery_zone_price: "",
+      //   total_delivery_price: "",
+      //   payment_status: "unpaid",
+      //   paid_date: "",
+      //   payment_type_id: "",
+      //   start_date: "",
+      //   expiry_date: "",
+      //   remaining_days: 0,
 
-        additional_type_id: "",
-        add_detail: "",
-        add_price: 0,
+      //   additional_type_id: "",
+      //   add_detail: "",
+      //   add_price: 0,
 
-        receive_food_id: "",
-        select_food_id: "",
-        delivery_round_id: "",
-        note: "",
+      //   receive_food_id: "",
+      //   select_food_id: "",
+      //   delivery_round_id: "",
+      //   note: "",
 
-        free_mad: 0,
-        free_dessert: 0,
-        free_brittles: 0,
-        free_energy_balls: 0,
-        free_dressing: 0,
-        free_yoghurt: 0,
-        free_granola: 0,
+      //   free_mad: 0,
+      //   free_dessert: 0,
+      //   free_brittles: 0,
+      //   free_energy_balls: 0,
+      //   free_dressing: 0,
+      //   free_yoghurt: 0,
+      //   free_granola: 0,
 
-        free_credit: 0,
-        other_promotion_detail: "",
-      },
+      //   free_credit: 0,
+      //   other_promotion_detail: "",
+      // },
       customers: [],
       customerAddress: null,
 
@@ -1650,64 +1669,64 @@ export default {
       itemToDelete: null,
 
       moreOpenDropdownIndex: null,
+      selectedSaleRecord: {},
+      // selectedSaleRecord: {
+      //   id: "",
+      //   customer_id: "",
+      //   promotion_type_id: "",
+      //   program_id: "",
+      //   package_id: "",
+      //   package_type_id: "",
+      //   seller_name_id: "",
+      //   delivery: "",
 
-      selectedSaleRecord: {
-        id: "",
-        customer_id: "",
-        promotion_type_id: "",
-        program_id: "",
-        package_id: "",
-        package_type_id: "",
-        seller_name_id: "",
-        delivery: "",
+      //   package_price: 0,
+      //   discount: 0,
+      //   extra_charge: 0,
+      //   extra_charge_price: 0,
+      //   total_package_price: "",
 
-        package_price: 0,
-        discount: 0,
-        extra_charge: 0,
-        extra_charge_price: 0,
-        total_package_price: "",
+      //   zone1_id: "",
+      //   zone1_quantity: 0,
 
-        zone1_id: "",
-        zone1_quantity: 0,
+      //   zone2_id: "",
+      //   zone2_quantity: 0,
 
-        zone2_id: "",
-        zone2_quantity: 0,
+      //   zone3_id: "",
+      //   zone3_quantity: 0,
 
-        zone3_id: "",
-        zone3_quantity: 0,
+      //   zone_outsource_id: "",
+      //   zone_outsource_quantity: 0,
 
-        zone_outsource_id: "",
-        zone_outsource_quantity: 0,
+      //   total_delivery_zone_price: "",
+      //   total_delivery_price: "",
+      //   payment_status: "unpaid",
+      //   paid_date: "",
+      //   payment_type_id: "",
+      //   start_date: "",
+      //   expiry_date: "",
+      //   remaining_days: 0,
 
-        total_delivery_zone_price: "",
-        total_delivery_price: "",
-        payment_status: "unpaid",
-        paid_date: "",
-        payment_type_id: "",
-        start_date: "",
-        expiry_date: "",
-        remaining_days: 0,
+      //   additional_type_id: "",
+      //   add_detail: "",
+      //   add_price: 0,
 
-        additional_type_id: "",
-        add_detail: "",
-        add_price: 0,
+      //   receive_food_id: "",
+      //   select_food_id: "",
+      //   delivery_round_id: "",
+      //   note: "",
 
-        receive_food_id: "",
-        select_food_id: "",
-        delivery_round_id: "",
-        note: "",
+      //   free_mad: 0,
+      //   free_dessert: 0,
+      //   free_brittles: 0,
+      //   free_energy_balls: 0,
+      //   free_dressing: 0,
+      //   free_yoghurt: 0,
+      //   free_granola: 0,
 
-        free_mad: 0,
-        free_dessert: 0,
-        free_brittles: 0,
-        free_energy_balls: 0,
-        free_dressing: 0,
-        free_yoghurt: 0,
-        free_granola: 0,
-
-        free_credit: 0,
-        other_promotion_detail: "",
-      },
+      //   free_credit: 0,
+      //   other_promotion_detail: "",
+      // },
       isCopied: false,
 
       isEditModalOpen: false,
@@ -1730,7 +1749,6 @@ export default {
   },
   computed: {
     totalPages() {
-      // ใช้ข้อมูลที่กรองแล้วใน filteredSaleRecords1standRenew
       return Math.ceil(this.filteredSaleRecords1standRenew.length / this.itemsPerPage);
     },
     totalPagesArray() {
@@ -1786,6 +1804,8 @@ export default {
         return { name: "", expiry_date: "" };
       }
       return {
+        transaction: this.selectedSaleRecord.transaction || "",
+
         seller_name_id: this.getSellerName(
           this.selectedSaleRecord.seller_name_id
         ),
@@ -1793,7 +1813,6 @@ export default {
         package_type: this.getPackageTypeName(
           this.selectedSaleRecord.package_type_id
         ),
-        // promotion_type: this.selectedSaleRecord.promotionType?.name || "",
         promotion_type: this.getPromotionTypeName(this.selectedSaleRecord.promotion_type_id) || "",
         program: this.getProgramName(this.selectedSaleRecord.program_id),
         package: this.selectedSaleRecord.package?.name || "",
@@ -2120,7 +2139,7 @@ export default {
       const extraCharge = this.computedEditExtraChargePackagePrice;
       return packagePrice + extraCharge - discount;
     },
-   
+
     computedEditZone1Price() {
       if (!this.selectedSaleRecord.zone1_id) {
         return 0; // ถ้าไม่มีการเลือก zone ให้ส่งค่ากลับเป็น 0
@@ -2382,7 +2401,7 @@ export default {
       }
       this.saleRecord.program_id = [];
     },
-    
+
     filterPackages() {
       if (this.saleRecord.program_id && this.saleRecord.program_id.id) {
         this.packages = this.allPackages.filter(
@@ -2470,6 +2489,7 @@ export default {
 
           free_credit: this.saleRecord.free_credit || 0,
           other_promotion_detail: this.saleRecord.other_promotion_detail || null,
+          transaction_ref: this.saleRecord.transaction_ref || null,
         });
 
         this.saleRecords.push(response.data);
@@ -2638,6 +2658,7 @@ export default {
 
             free_credit: this.selectedSaleRecord.free_credit || 0,
             other_promotion_detail: this.selectedSaleRecord.other_promotion_detail || null,
+            transaction_ref: this.selectedSaleRecord.transaction_ref || null,
 
           }
         );
