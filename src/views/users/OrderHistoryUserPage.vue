@@ -1,37 +1,40 @@
 <template>
     <div>
         <!-- ส่วนหัว (Back, Date Navigation, Date Picker) -->
-        <div class="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-3 py-2">
+        <div
+            class="flex flex-wrap items-center justify-between sm:justify-start space-x-2 sm:space-x-3 py-2 text-sm sm:text-base">
             <!-- ปุ่มกลับ -->
             <div @click="$router.back()"
-                class="flex items-center space-x-1 cursor-pointer text-custom-orange hover:text-custom-orange-hover">
+                class="hidden sm:inline-flex items-center space-x-1 cursor-pointer text-custom-orange hover:text-custom-orange-hover">
                 <span class="material-symbols-outlined text-2xl">arrow_back</span>
-                <span class="text font-bold">กลับ</span>
+                <span class=" sm:inline-flex text font-bold">กลับ</span>
             </div>
 
             <!-- ปุ่มลูกศรย้อนกลับ -->
-            <button @click="changeDate(-1)" class="flex items-center">
-                <span class="material-symbols-outlined text-3xl text-custom-orange hover:text-custom-orange-hover">
+            <button @click="changeDate(-1)">
+                <span
+                    class="material-symbols-outlined pt-6 sm:pt-0 sm:text-3xl text-custom-orange hover:text-custom-orange-hover">
                     chevron_backward
                 </span>
             </button>
 
-            <!-- ปุ่มวันนี้ -->
+            <!-- ปุ่มวันนี้ (ซ่อนในมือถือ) -->
             <button @click="setToday"
-                class="flex items-center text-custom-orange hover:underline hover:text-custom-orange">
-                <span class="mr-2 font-bold">วันนี้</span>
+                class="hidden sm:inline-flex items-center text-custom-orange hover:underline hover:text-custom-orange">
+                <span class="font-bold">วันนี้</span>
             </button>
 
             <!-- ปุ่มลูกศรไปข้างหน้า -->
-            <button @click="changeDate(1)" class="flex items-center">
-                <span class="material-symbols-outlined text-3xl text-custom-orange hover:text-custom-orange-hover">
+            <button @click="changeDate(1)">
+                <span
+                    class="material-symbols-outlined pt-6 sm:pt-0 sm:text-3xl text-custom-orange hover:text-custom-orange-hover">
                     chevron_forward
                 </span>
             </button>
 
-            <!-- เลือกวันที่ -->
-            <div class="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-2">
-                <strong class="text-gray-700">เลือกวันที่:</strong>
+            <!-- เลือกวันที่ (ซ่อนในมือถือ) -->
+            <div class="flex-1 sm:flex-none sm:flex sm:items-center space-y-2 sm:space-y-0 sm:space-x-2 mt-2 sm:mt-0">
+                <strong class="hidden text-gray-700">เลือกวันที่:</strong>
                 <input ref="singleDatepicker" type="text" v-model="formattedStartDate"
                     class="text-center bg-white rounded-md font-bold border border-gray-200 focus:outline-none focus:ring-2 focus:ring-custom-orange hover:ring-2 hover:ring-custom-orange text-custom-orange hover:text-custom-orange-hover w-full sm:w-[150px]"
                     placeholder="เลือกวันที่" />
@@ -53,7 +56,7 @@
 
             <!-- Loading State -->
             <div v-if="isLoading"
-                class="mt-4 bg-white rounded-md shadow-lg p-4 border border-gray-100 overflow-y-auto h-[400px] sm:h-[650px]">
+                class="mt-4 bg-white rounded-md shadow-lg p-4 border border-gray-100 overflow-y-auto h-[550px] sm:h-[650px]">
                 <div v-for="n in 5" :key="n" class="border-b border-gray-200 py-4 animate-pulse">
                     <div class="flex justify-between items-center">
                         <div class="bg-gray-100 h-6 w-1/4 rounded-md"></div>
@@ -74,9 +77,10 @@
             <div v-else>
                 <!-- หากมีประวัติการสั่งซื้อ -->
                 <div v-if="orders.length > 0"
-                    class="mt-4 bg-white rounded-md shadow-lg p-4 border border-gray-300 overflow-y-auto h-[400px] sm:h-[650px]">
-                    <div v-for="order in orders" :key="order.order_date" class="border-b border-gray-200 py-4 text-[10px]">
-                        <div class="flex justify-between items-center sm:text-sm">
+                    class="mt-4 bg-white rounded-md shadow-lg p-4 border border-gray-300 overflow-y-auto h-[550px] sm:h-[650px]">
+                    <div v-for="order in orders" :key="order.order_date"
+                        class="border-b border-gray-200 py-4 text-[10px] sm:text-base">
+                        <div class="flex justify-between items-center">
                             <!-- ชื่อเมนู -->
                             <div class="font-semibold flex flex-col space-y-1">
                                 <div>{{ getMenuEngName(order.menu_id) }}</div>
@@ -104,7 +108,7 @@
 
                 <!-- หากไม่มีประวัติการสั่งซื้อ -->
                 <div v-if="orders.length === 0"
-                    class="mt-4 bg-white rounded-md shadow-lg p-4 border border-gray-300 h-[400px] sm:h-[650px] flex justify-center items-center">
+                    class="mt-4 bg-white rounded-md shadow-lg p-4 border border-gray-300 h-[550px] sm:h-[650px] flex justify-center items-center">
                     <div class="flex items-center space-x-1 text-gray-500 font-bold text-center">
                         <span class="material-symbols-outlined text-3xl">history_off</span>
                         <span class="text-sm sm:text-xl">ไม่มีประวัติการสั่งซื้อในวันนี้</span>

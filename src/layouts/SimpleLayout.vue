@@ -6,7 +6,6 @@
         <img src="@/assets/logo_fitfood_full.png" alt="Logo" class="w-24 h-8 sm:w-40 sm:h-12">
       </div>
 
-      <!-- Navigation Links (Hidden on Mobile) -->
       <div v-if="['/premium-health', '/', '/happy-healthy-box'].includes($route.path)"
         class="hidden sm:flex items-center space-x-6 text-black font-bold">
         <router-link to="/premium-health" class="hover:text-custom-orange"
@@ -110,8 +109,20 @@
 
     <main class="flex-1 p-4 px-4 sm:px-32 relative min-h-[calc(100vh-80px)] bg-fixed"
       :class="{ 'bg-gradient-to-r from-custom-orange via-orange-500 to-custom-orange-hover text-black': $route.path === '/register-aff' || $route.path === '/register-hhb' }">
-      <!-- เนื้อหาภายใน -->
-      <!-- เมนูนี้จะแสดงเฉพาะในหน้าที่กำหนด -->
+      
+      <div v-if="['/premium-health', '/', '/happy-healthy-box'].includes($route.path)"
+        class="sm:hidden flex justify-center space-x-6 text-black font-bold mb-4 text-sm">
+        <router-link to="/premium-health" class="hover:text-custom-orange"
+            :class="{ 'text-custom-orange border-b-2 border-custom-orange': $route.path === '/premium-health' || $route.path === '/' }">
+            Premium Health
+        </router-link>
+
+        <router-link to="/happy-healthy-box" class="hover:text-custom-orange"
+            :class="{ 'text-custom-orange border-b-2 border-custom-orange': $route.path === '/happy-healthy-box' }">
+            Happy Healthy Box
+        </router-link>
+    </div>
+      
       <div v-if="$route.path === '/register-aff' || $route.path === '/register-hhb'"
         class="flex flex-row justify-center space-x-4 sm:space-x-6">
         <span v-if="!isUserRegistered" class="cursor-pointer hover:text-gray-700 text-center"
@@ -129,15 +140,15 @@
 
       <div v-if="isOrderHistoryPath"
     class="flex flex-row justify-center space-x-4 sm:space-x-6">
-    <span class="cursor-pointer hover:text-custom-orange text-center"
+    <span class="cursor-pointer hover:text-custom-orange text-center text-sm sm:text-base"
       @click="$router.push(`/order-history-user/${getCustomerID(id)}`)"
-      :class="{ 'border-b-2 border-custom-orange text-custom-orange font-bold': $route.path === `/order-history-user/${getCustomerID(id)}` }">
+      :class="{ 'border-b-2 border-custom-orange text-custom-orange font-bold text-sm sm:text-base  ': $route.path === `/order-history-user/${getCustomerID(id)}` }">
       Absolute FitFood
     </span>
 
-    <span class="cursor-pointer hover:text-custom-orange text-center"
+    <span class="cursor-pointer hover:text-custom-orange text-center text-sm sm:text-base"
       @click="$router.push(`/order-history-hhb-user/${getCustomerHHBID(id)}`)"
-      :class="{ 'border-b-2 border-custom-orange text-custom-orange font-bold': $route.path === `/order-history-hhb-user/${getCustomerHHBID(id)}` }">
+      :class="{ 'border-b-2 border-custom-orange text-custom-orange font-bold text-sm sm:text-base': $route.path === `/order-history-hhb-user/${getCustomerHHBID(id)}` }">
       Happy Healthy Box
     </span>
 </div>

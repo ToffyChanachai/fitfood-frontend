@@ -80,14 +80,14 @@
 
                 <div v-else>
                     <!-- กล่องข้อมูล Absolute FitFood -->
-                    <div v-if="customer_aff" class="relative bg-white shadow-lg p-4 sm:p-8 rounded-md border">
+                    <div v-if="customer_aff" class="relative bg-white shadow-lg p-4 text-sm sm:text-base sm:p-8 rounded-md border">
                         <button @click="onEdit(customer_aff)"
                             class="absolute top-4 right-4 bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 flex items-center space-x-1">
                             <span class="material-symbols-outlined">edit_square</span>
                             <span>แก้ไข</span>
                         </button>
 
-                        <strong class="text-xl text-custom-orange mb-2 block">Abosolute FitFood Profile</strong>
+                        <strong class="sm:text-xl text-custom-orange mb-2 block">Abosolute FitFood Profile</strong>
                         <p><strong>ชื่อ:</strong> {{ customer_aff.name }}</p>
                         <p><strong>Email:</strong> {{ customer_aff.email }}</p>
                         <p><strong>รหัสอ้างอิงที่คุณได้รับจากเจ้าหน้าที่:</strong> {{ customer_aff.customer_id }}</p>
@@ -109,7 +109,7 @@
                     </div>
 
                     <div v-else
-                        class="relative bg-white shadow-lg p-4 sm:p-8 rounded-md border flex flex-col sm:flex-row items-center">
+                        class="relative bg-white shadow-lg p-4 sm:p-8 rounded-md border flex flex-col  sm:flex-row items-center">
                         <strong class="text-xl text-custom-orange mb-2 sm:mb-0 sm:mr-4 block">Abosolute FitFood
                             Profile</strong>
 
@@ -120,14 +120,14 @@
                     </div>
 
                     <!-- กล่องข้อมูล Happy Healthy Box -->
-                    <div v-if="customer_hhb" class="relative bg-white shadow-lg p-4 sm:p-8 rounded-md border mt-4">
+                    <div v-if="customer_hhb" class="relative bg-white shadow-lg p-4 text-sm sm:text-base sm:p-8 rounded-md border mt-4">
                         <button @click="onEditHHB(customer_hhb)"
                             class="absolute top-4 right-4 bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 flex items-center space-x-1">
                             <span class="material-symbols-outlined">edit_square</span>
                             <span>แก้ไข</span>
                         </button>
 
-                        <strong class="text-xl text-custom-orange mb-2 block">Happy Healthy Box Profile</strong>
+                        <strong class="sm:text-xl text-custom-orange mb-2 block">Happy Healthy Box Profile</strong>
                         <p><strong>ชื่อ:</strong> {{ customer_hhb.name }}</p>
                         <p><strong>Email:</strong> {{ customer_hhb.email }}</p>
                         <p><strong>เบอร์โทรศัพท์:</strong> {{ customer_hhb.tel }}</p>
