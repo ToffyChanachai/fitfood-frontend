@@ -192,7 +192,7 @@
 
 <script>
 import axios from 'axios';
-import { API_URL } from "@/services/testapi";
+import { API_URL } from "@/services/api";
 
 export default {
   data() {
