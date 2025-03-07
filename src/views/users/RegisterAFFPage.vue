@@ -1,167 +1,125 @@
 <template>
-    <div class="flex items-center justify-center inset-0">
-        <div class="flex flex-col items-center">
+   <div class="flex items-center justify-center min-h-screen p-4">
+    <div class="bg-gray-100 bg-opacity-50 backdrop-blur-md w-full max-w-md sm:max-w-lg lg:max-w-2xl p-6 rounded-lg shadow-lg border">
+        <h2 class="text-2xl font-bold text-center mb-4 text-gray-700">ลงทะเบียนข้อมูลลูกค้า</h2>
 
-            <div
-                class="bg-gray-100 bg-opacity-50 backdrop-blur-md w-full h-auto max-h-[750px] p-8 rounded-lg shadow-lg border flex flex-col mt-4">
-
-                <h2 class="text-2xl font-bold text-center mb-6 text-gray-700">ลงทะเบียนข้อมูลลูกค้า</h2>
-
-                <p v-if="error" class="text-red-500 text-center mb-4 font-bold">{{ error }}</p>
-                <p v-if="success" class="text-green-500 text-center mb-4 font-bold">{{ success }}</p>
-
-                <div class="p-6 space-y-4 overflow-y-auto flex-grow">
-
-                    <!-- Full Name -->
-                    <div class="flex space-x-4">
-                        <div class="w-1/2">
-                            <label for="firstname" class="block  font-medium text-gray-700">First
-                                Name</label>
-                            <input type="text" v-model="firstname"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange" />
-                        </div>
-                        <div class="w-1/2">
-                            <label for="lastname" class="block  font-medium text-gray-700">Last Name</label>
-                            <input type="text" v-model="lastname"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange" />
-                        </div>
-                    </div>
-
-                    <!-- Email -->
-                    <div>
-                        <label for="email" class="block  font-medium text-gray-700">Email</label>
-                        <input type="email" v-model="email"
-                            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange" />
-                    </div>
-
-                    <div>
-                        <label for="customer_id"
-                            class="block  font-medium text-gray-700">รหัสอ้างอิงที่คุณได้รับจากเจ้าหน้าที่ของเรา</label>
-                        <input type="text" v-model="customer_id"
-                            placeholder="กรอกรหัสอ้างอิงที่คุณได้รับจากเจ้าหน้าที่ของเรา"
-                            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange" />
-                    </div>
-
-                    <!-- Gender (Radio) -->
-                    <div>
-                        <label class="block  font-medium text-gray-700">Gender</label>
-                        <div class="flex space-x-4 text-gray-700">
-                            <label>
-                                <input type="radio" v-model="gender" value="female" class="focus:ring-custom-orange" />
-                                ผู้หญิง / Female
-                            </label>
-                            <label>
-                                <input type="radio" v-model="gender" value="male" class="focus:ring-custom-orange" />
-                                ผู้ชาย / Male
-                            </label>
-                        </div>
-                    </div>
-
-                    <div class="flex space-x-4">
-                        <div class="w-1/2">
-                            <label for="tel" class="block  font-medium text-gray-700">Phone Number</label>
-                            <input type="text" v-model="tel" maxlength="10" placeholder="กรอกหมายเลขโทรศัพท์"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange" />
-                        </div>
-
-                        <div class="w-1/2">
-                            <label for="line_id" class="block  font-medium text-gray-700">Line ID (ถ้ามี)</label>
-                            <input type="text" v-model="line_id" placeholder="กรอก line id"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange" />
-                        </div>
-                    </div>
-
-                    <div>
-                        <label class="block  font-medium text-gray-700">คุณแพ้อาหารชนิดใดหรือไม่?</label>
-                        <div class="flex space-x-4 text-gray-700">
-                            <label>
-                                <input type="radio" v-model="food_allergies" value="ไม่ No"
-                                    class="focus:ring-custom-orange" />
-                                ไม่ / No
-                            </label>
-                            <label>
-                                <input type="radio" v-model="food_allergies" value="ใช่ Yes, "
-                                    class="focus:ring-custom-orange" />
-                                ใช่ / Yes
-                            </label>
-
-                        </div>
-                    </div>
-
-                    <div v-if="food_allergies === 'ใช่ Yes, '">
-                        <label for="food_allergies_detail"
-                            class="block  font-medium text-gray-700">โปรดระบุประเภทอาหารที่คุณมีอาการแพ้ในบรรทัดด้านล่าง</label>
-                        <textarea id="food_allergies_detail" v-model="food_allergies_detail"
-                            placeholder="Enter details here"
-                            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange"
-                            rows="4"></textarea>
-                    </div>
-
-                    <div>
-                        <label for="delivery_date"
-                            class="block  font-medium text-gray-700">โปรดระบุวันที่คุณต้องการรับอาหาร</label>
-                        <input type="text" v-model="delivery_date" placeholder="กรอกโปรดระบุวันที่คุณต้องการรับอาหาร"
-                            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange" />
-                    </div>
-
-                    <div>
-                        <label class="block font-medium text-gray-700">ผู้รับอาหาร?</label>
-                        <div class="flex space-x-4">
-                            <label class="text-gray-700">
-                                <input type="radio" v-model="recipient_mon_to_fri" value="ตัวคุณเอง"
-                                    class="focus:ring-custom-orange custom-radio" />
-                                ตัวคุณเอง
-                            </label>
-                            <label class="text-gray-700">
-                                มีผู้อื่นรับแทน (โปรดระบุชื่อ พร้อมเบอร์โทรติดต่อในบรรทัดด้านล่าง)
-                            </label>
-                        </div>
-                    </div>
-
-                    <div>
-                    <label for="recipient_mon_to_fri" class="block  font-medium text-gray-700">โปรดระบุชื่อ
-                        พร้อมเบอร์โทรติดต่อ</label>
-                    <textarea id="recipient_mon_to_fri" v-model="recipient_mon_to_fri"
-                        placeholder="Enter details here"
-                        class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange"
-                        rows="4"></textarea>
-                    </div>
-
-                    <div>
-                        <label for="note" class="block font-medium text-gray-700">หากมีรายละเอียดอื่นๆ ที่เราควรทราบ โปรดระบุ</label>
-                        <textarea id="note" v-model="note" placeholder="กรอกรายละเอียดอื่นๆ"
-                            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange"
-                            rows="4"></textarea>
-                    </div>
-
-                    <div>
-                        <label for="address_1" class="block  font-medium text-gray-700">ที่อยู่จัดส่ง 1</label>
-                        <textarea id="address" v-model="address_1" placeholder="กรอกที่อยู่การจัดส่ง"
-                            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange"
-                            rows="4"></textarea>
-                    </div>
-
-                    <div>
-                        <label for="address_2" class="block  font-medium text-gray-700">ที่อยู่จัดส่ง 2 (ถ้ามี)</label>
-                        <textarea id="address_2" v-model="address_2" placeholder="กรอกที่อยู่การจัดส่ง"
-                            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange"
-                            rows="4"></textarea>
-                    </div>
-
-                    <div>
-                        <label for="address_3" class="block  font-medium text-gray-700">ที่อยู่จัดส่ง 3 (ถ้ามี)</label>
-                        <textarea id="address_3" v-model="address_3" placeholder="กรอกที่อยู่การจัดส่ง"
-                            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange"
-                            rows="4"></textarea>
-                    </div>
+        <div class="space-y-4">
+            <!-- First Name & Last Name -->
+            <div class="flex flex-col sm:flex-row sm:space-x-4 space-y-4 sm:space-y-0">
+                <div class="w-full sm:w-1/2">
+                    <label class="font-medium text-gray-700">First Name</label>
+                    <input type="text" v-model="firstname"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-custom-orange" />
                 </div>
-                <button @click="addCustomer"
-                    class="mt-4 px-4 py-2 rounded bg-custom-orange text-white hover:bg-custom-orange-hover w-full">
-                    ยืนยัน
-                </button>
+                <div class="w-full sm:w-1/2">
+                    <label class="font-medium text-gray-700">Last Name</label>
+                    <input type="text" v-model="lastname"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-custom-orange" />
+                </div>
             </div>
+
+            <!-- Email -->
+            <div>
+                <label class="font-medium text-gray-700">Email</label>
+                <input type="email" v-model="email"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-custom-orange" />
+            </div>
+
+            <!-- Phone Number & Line ID -->
+            <div class="flex flex-col sm:flex-row sm:space-x-4 space-y-4 sm:space-y-0">
+                <div class="w-full sm:w-1/2">
+                    <label class="font-medium text-gray-700">Phone Number</label>
+                    <input type="text" v-model="tel" maxlength="10"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-custom-orange" />
+                </div>
+                <div class="w-full sm:w-1/2">
+                    <label class="font-medium text-gray-700">Line ID (ถ้ามี)</label>
+                    <input type="text" v-model="line_id"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-custom-orange" />
+                </div>
+            </div>
+
+            <!-- Gender -->
+            <div>
+                <label class="font-medium text-gray-700">Gender</label>
+                <div class="flex space-x-4 text-gray-700">
+                    <label>
+                        <input type="radio" v-model="gender" value="female" class="focus:ring-custom-orange" />
+                        ผู้หญิง / Female
+                    </label>
+                    <label>
+                        <input type="radio" v-model="gender" value="male" class="focus:ring-custom-orange" />
+                        ผู้ชาย / Male
+                    </label>
+                </div>
+            </div>
+
+            <!-- Food Allergies -->
+            <div>
+                <label class="font-medium text-gray-700">คุณแพ้อาหารชนิดใดหรือไม่?</label>
+                <div class="flex space-x-4 text-gray-700">
+                    <label>
+                        <input type="radio" v-model="food_allergies" value="ไม่ No" class="focus:ring-custom-orange" />
+                        ไม่ / No
+                    </label>
+                    <label>
+                        <input type="radio" v-model="food_allergies" value="ใช่ Yes, " class="focus:ring-custom-orange" />
+                        ใช่ / Yes
+                    </label>
+                </div>
+            </div>
+
+            <div v-if="food_allergies === 'ใช่ Yes, '">
+                <label class="font-medium text-gray-700">โปรดระบุประเภทอาหารที่แพ้</label>
+                <textarea v-model="food_allergies_detail"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-custom-orange"
+                    rows="4"></textarea>
+            </div>
+
+            <!-- Delivery Date -->
+            <div>
+                <label class="font-medium text-gray-700">วันที่ต้องการรับอาหาร</label>
+                <input type="text" v-model="delivery_date"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-custom-orange" />
+            </div>
+
+            <!-- Recipient -->
+            <div>
+                <label class="font-medium text-gray-700">ผู้รับอาหาร?</label>
+                <div class="flex space-x-4">
+                    <label class="text-gray-700">
+                        <input type="radio" v-model="recipient_mon_to_fri" value="ตัวคุณเอง" class="focus:ring-custom-orange" />
+                        ตัวคุณเอง
+                    </label>
+                    <label class="text-gray-700">
+                        มีผู้อื่นรับแทน (โปรดระบุชื่อ + เบอร์โทร)
+                    </label>
+                </div>
+            </div>
+
+            <div>
+                <textarea v-model="recipient_mon_to_fri"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-custom-orange"
+                    rows="4"></textarea>
+            </div>
+
+            <!-- Address -->
+            <div>
+                <label class="font-medium text-gray-700">ที่อยู่จัดส่ง</label>
+                <textarea v-model="address_1"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-custom-orange"
+                    rows="4"></textarea>
+            </div>
+
+            <!-- Button -->
+            <button @click="addCustomer"
+                class="mt-4 px-4 py-2 text-sm rounded bg-custom-orange text-white hover:bg-custom-orange-hover w-full">
+                ยืนยัน
+            </button>
         </div>
     </div>
+</div>
+
 
 </template>
 
