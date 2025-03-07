@@ -1,131 +1,122 @@
 <template>
-    <div class="flex items-center justify-center inset-0">
-        <div class="flex flex-col items-center ">
+   <div class="flex items-center justify-center inset-0 p-4">
+    <div class="flex flex-col items-center w-full">
 
-            <div
-                class="bg-gray-100 bg-opacity-50 backdrop-blur-md w-full h-auto max-h-[750px] p-8 rounded-lg shadow-lg border flex flex-col mt-4">
-                <h2 class="text-2xl font-bold text-center mb-6 text-gray-700">ลงทะเบียนข้อมูลลูกค้า</h2>
+        <div class="bg-gray-100 bg-opacity-50 backdrop-blur-md w-full h-auto max-h-[700px] sm:max-h-[750px] p-4 sm:p-8 rounded-lg shadow-lg border flex flex-col mt-2">
 
-                <!-- Error and Success Messages -->
-                <p v-if="error" class="text-red-500 text-center mb-4">{{ error }}</p>
-                <p v-if="success" class="text-green-500 text-center mb-4">{{ success }}</p>
+            <h2 class="text-lg sm:text-2xl font-bold text-center mb-4 sm:mb-6 text-gray-700">ลงทะเบียนข้อมูลลูกค้า</h2>
 
-                <div class="p-6 space-y-4 overflow-y-auto flex-grow">
+            <p v-if="error" class="text-red-500 text-center mb-4 font-bold text-sm sm:text-base">{{ error }}</p>
+            <p v-if="success" class="text-green-500 text-center mb-4 font-bold text-sm sm:text-base">{{ success }}</p>
 
-                    <!-- Full Name -->
-                    <div class="flex space-x-4">
-                        <div class="w-1/2">
-                            <label for="firstname" class="block  font-medium text-gray-700">First
-                                Name</label>
-                            <input type="text" v-model="firstname"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange" />
-                        </div>
-                        <div class="w-1/2">
-                            <label for="lastname" class="block  font-medium text-gray-700">Last Name</label>
-                            <input type="text" v-model="lastname"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange" />
-                        </div>
+            <div class="p-4 sm:p-6 space-y-4 overflow-y-auto flex-grow">
+
+                <!-- Full Name -->
+                <div class="flex flex-col sm:flex-row sm:space-x-4 space-y-4 sm:space-y-0">
+                    <div class="w-full sm:w-1/2">
+                        <label for="firstname" class="block font-medium text-gray-700 text-sm sm:text-base">First Name</label>
+                        <input type="text" v-model="firstname"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange text-sm sm:text-base" />
+                    </div>
+                    <div class="w-full sm:w-1/2">
+                        <label for="lastname" class="block font-medium text-gray-700 text-sm sm:text-base">Last Name</label>
+                        <input type="text" v-model="lastname"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange text-sm sm:text-base" />
+                    </div>
+                </div>
+
+                <!-- Email -->
+                <div>
+                    <label for="email" class="block font-medium text-gray-700 text-sm sm:text-base">Email</label>
+                    <input type="email" v-model="email"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange text-sm sm:text-base" />
+                </div>
+
+                <div>
+                    <label for="customer_id" class="block font-medium text-gray-700 text-sm sm:text-base">รหัสอ้างอิงที่คุณได้รับจากเจ้าหน้าที่ของเรา</label>
+                    <input type="text" v-model="customer_id"
+                        placeholder="กรอกรหัสอ้างอิงที่คุณได้รับจากเจ้าหน้าที่ของเรา"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange text-sm sm:text-base" />
+                </div>
+
+                <div class="flex flex-col sm:flex-row sm:space-x-4 space-y-4 sm:space-y-0">
+                    <div class="w-full sm:w-1/2">
+                        <label for="tel" class="block font-medium text-gray-700 text-sm sm:text-base">Phone Number</label>
+                        <input type="text" v-model="tel" maxlength="10" placeholder="กรอกหมายเลขโทรศัพท์"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange text-sm sm:text-base" />
                     </div>
 
-                    <!-- Email -->
-                    <div>
-                        <label for="email" class="block  font-medium text-gray-700">Email</label>
-                        <input type="email" v-model="email"
-                            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange" />
+                    <div class="w-full sm:w-1/2">
+                        <label for="line_id" class="block font-medium text-gray-700 text-sm sm:text-base">Line ID (ถ้ามี)</label>
+                        <input type="text" v-model="line_id" placeholder="กรอก line id"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange text-sm sm:text-base" />
                     </div>
+                </div>
 
-                    <div>
-                        <label for="customer_id"
-                            class="block  font-medium text-gray-700">รหัสอ้างอิงที่คุณได้รับจากเจ้าหน้าที่ของเรา</label>
-                        <input type="text" v-model="customer_id"
-                            placeholder="กรอกรหัสอ้างอิงที่คุณได้รับจากเจ้าหน้าที่ของเรา"
-                            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange" />
-                    </div>
-
-                    <div class="flex space-x-4">
-                        <div class="w-1/2">
-                            <label for="tel" class="block  font-medium text-gray-700">Phone Number</label>
-                            <input type="text" v-model="tel" maxlength="10" placeholder="กรอกหมายเลขโทรศัพท์"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange" />
-                        </div>
-
-                        <div class="w-1/2">
-                            <label for="line_id" class="block  font-medium text-gray-700">Line ID (ถ้ามี)</label>
-                            <input type="text" v-model="line_id" placeholder="กรอก line id"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange" />
-                        </div>
-                    </div>
-
-                    <div>
-                        <label class="block font-medium text-gray-700">ผู้รับอาหาร?</label>
-                        <div class="flex space-x-4">
+                <div>
+                        <label class="block font-medium text-gray-700 text-sm sm:text-base">ผู้รับอาหาร?</label>
+                        <div class="flex flex-col sm:flex-row sm:space-x-4 space-y-2 sm:space-y-0">
                             <label class="text-gray-700">
                                 <input type="radio" v-model="recipient" value="ตัวคุณเอง"
                                     class="focus:ring-custom-orange custom-radio" />
-                                ตัวคุณเอง
+                                <span class="text-sm sm:text-base"> ตัวคุณเอง</span>
                             </label>
                             <label class="text-gray-700">
-                                มีผู้อื่นรับแทน (โปรดระบุชื่อ พร้อมเบอร์โทรติดต่อในบรรทัดด้านล่าง)
+                                <span class="text-sm sm:text-base">มีผู้อื่นรับแทน (โปรดระบุชื่อ
+                                    พร้อมเบอร์โทรติดต่อในบรรทัดด้านล่าง)</span>
                             </label>
                         </div>
                     </div>
 
-                    <label for="recipient" class="block  font-medium text-gray-700">โปรดระบุชื่อ
-                        พร้อมเบอร์โทรติดต่อ</label>
+                <div>
+                    <label for="recipient" class="block font-medium text-gray-700 text-sm sm:text-base">โปรดระบุชื่อ พร้อมเบอร์โทรติดต่อ</label>
                     <textarea id="recipient" v-model="recipient" placeholder="Enter details here"
-                        class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange text-sm sm:text-base"
                         rows="4"></textarea>
-
-                    <div>
-                        <label for="note" class="block  font-medium text-gray-700">โปรดระบุเบอร์โทรติดต่อสำรอง
-                            หรือรายละเอียดอื่น ๆ ที่เราควรทราบ (ถ้ามี)</label>
-                        <textarea id="note" v-model="note"
-                            placeholder="ระบุเบอร์โทรติดต่อสำรอง หรือรายละเอียดอื่น ๆ ที่เราควรทราบ (ถ้ามี)"
-                            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange"
-                            rows="4"></textarea>
-                    </div>
-
-                    <div>
-                        <label for="address_1" class="block  font-medium text-gray-700">ที่อยู่จัดส่ง 1</label>
-                        <textarea id="address" v-model="address_1" placeholder="กรอกที่อยู่การจัดส่ง"
-                            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange"
-                            rows="4"></textarea>
-                    </div>
-
-                    <div>
-                        <label for="address_2" class="block  font-medium text-gray-700">ที่อยู่จัดส่ง 2
-                            (ถ้ามี)</label>
-                        <textarea id="address_2" v-model="address_2" placeholder="กรอกที่อยู่การจัดส่ง"
-                            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange"
-                            rows="4"></textarea>
-                    </div>
-
-                    <div>
-                        <label for="address_3" class="block  font-medium text-gray-700">ที่อยู่จัดส่ง 3
-                            (ถ้ามี)</label>
-                        <textarea id="address_3" v-model="address_3" placeholder="กรอกที่อยู่การจัดส่ง"
-                            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange"
-                            rows="4"></textarea>
-                    </div>
-
-                    <div>
-                        <label for="nearby_places"
-                            class="block  font-medium text-gray-700">สถานที่ใกล้เคียงหรือจุดสังเกตอื่น ๆ </label>
-                        <textarea id="nearby_places" v-model="nearby_places"
-                            placeholder="กรอกสถานที่ใกล้เคียงหรือจุดสังเกตอื่น ๆ "
-                            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange"
-                            rows="4"></textarea>
-                    </div>
                 </div>
-                <button @click="addCustomer"
-                    class="mt-4 px-4 py-2 rounded bg-custom-orange text-white hover:bg-custom-orange-hover w-full">
-                    ยืนยัน
-                </button>
+
+                <div>
+                    <label for="note" class="block font-medium text-gray-700 text-sm sm:text-base">โปรดระบุเบอร์โทรติดต่อสำรอง หรือรายละเอียดอื่น ๆ ที่เราควรทราบ (ถ้ามี)</label>
+                    <textarea id="note" v-model="note" placeholder="ระบุเบอร์โทรติดต่อสำรอง หรือรายละเอียดอื่น ๆ ที่เราควรทราบ (ถ้ามี)"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange text-sm sm:text-base"
+                        rows="4"></textarea>
+                </div>
+
+                <div>
+                    <label for="address_1" class="block font-medium text-gray-700 text-sm sm:text-base">ที่อยู่จัดส่ง 1</label>
+                    <textarea id="address" v-model="address_1" placeholder="กรอกที่อยู่การจัดส่ง"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange text-sm sm:text-base"
+                        rows="4"></textarea>
+                </div>
+
+                <div>
+                    <label for="address_2" class="block font-medium text-gray-700 text-sm sm:text-base">ที่อยู่จัดส่ง 2 (ถ้ามี)</label>
+                    <textarea id="address_2" v-model="address_2" placeholder="กรอกที่อยู่การจัดส่ง"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange text-sm sm:text-base"
+                        rows="4"></textarea>
+                </div>
+
+                <div>
+                    <label for="address_3" class="block font-medium text-gray-700 text-sm sm:text-base">ที่อยู่จัดส่ง 3 (ถ้ามี)</label>
+                    <textarea id="address_3" v-model="address_3" placeholder="กรอกที่อยู่การจัดส่ง"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange text-sm sm:text-base"
+                        rows="4"></textarea>
+                </div>
+
+                <div>
+                    <label for="nearby_places" class="block font-medium text-gray-700 text-sm sm:text-base">สถานที่ใกล้เคียงหรือจุดสังเกตอื่น ๆ</label>
+                    <textarea id="nearby_places" v-model="nearby_places" placeholder="กรอกสถานที่ใกล้เคียงหรือจุดสังเกตอื่น ๆ"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange text-sm sm:text-base"
+                        rows="4"></textarea>
+                </div>
             </div>
-
-
+            <button @click="addCustomer"
+                class="mt-4 px-4 py-2 rounded bg-custom-orange text-white hover:bg-custom-orange-hover w-full text-sm sm:text-base">
+                ยืนยัน
+            </button>
         </div>
     </div>
+</div>
 
 </template>
 

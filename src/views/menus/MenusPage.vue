@@ -542,7 +542,7 @@ import axios from 'axios';
 import Multiselect from "vue-multiselect";
 import { mapActions, mapGetters } from "vuex";
 import "vue-multiselect/dist/vue-multiselect.min.css";
-import { API_URL } from "@/services/api";
+import { API_URL } from "@/services/testapi";
 
 export default {
     name: "menuPage",

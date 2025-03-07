@@ -1,12 +1,14 @@
 <template>
   <div>
-    <header class="flex justify-between items-center p-4 px-32 bg-white text-white shadow-lg relative">
+    <header class="flex justify-between items-center p-4 sm:px-32 bg-white text-white shadow-lg relative">
+      <!-- Logo Section -->
       <div class="flex justify-center items-center cursor-pointer" @click="goToHome">
-        <img src="@/assets/logo_fitfood_full.png" alt="Logo" class="w-50 h-12">
+        <img src="@/assets/logo_fitfood_full.png" alt="Logo" class="w-24 h-8 sm:w-40 sm:h-12">
       </div>
 
+      <!-- Navigation Links (Hidden on Mobile) -->
       <div v-if="['/premium-health', '/', '/happy-healthy-box'].includes($route.path)"
-        class="flex items-left space-x-6 text-black font-bold">
+        class="hidden sm:flex items-center space-x-6 text-black font-bold">
         <router-link to="/premium-health" class="hover:text-custom-orange"
           :class="{ 'text-custom-orange border-b-2 border-custom-orange': $route.path === '/premium-health' || $route.path === '/' }">
           Premium Health
@@ -16,81 +18,85 @@
           :class="{ 'text-custom-orange border-b-2 border-custom-orange': $route.path === '/happy-healthy-box' }">
           Happy Healthy Box
         </router-link>
-
-        <!-- <router-link to="/low-carb" class="hover:text-custom-orange"
-          :class="{ 'text-custom-orange border-b-2 border-custom-orange': $route.path === '/low-carb' }">
-          Low Carb
-        </router-link>
-
-        <router-link to="/fat-loss" class="hover:text-custom-orange"
-          :class="{ 'text-custom-orange border-b-2 border-custom-orange': $route.path === '/fat-loss' }">
-          Fat Loss
-        </router-link> -->
       </div>
 
-
       <div v-if="isLoggedIn" class="flex items-center space-x-4">
-        <div class="relative flex items-center space-x-4" ref="menuDropdown">
+        <div class="flex items-center space-x-4">
+          <!-- Logged In User -->
+          <div v-if="isLoggedIn" class="relative flex items-center space-x-4" ref="menuDropdown">
+            <!-- Loading State -->
+            <div v-if="isLoading" class="flex items-center space-x-2">
+              <!-- Show Text on Desktop -->
+              <span class="text-black hidden sm:inline">Welcome,</span>
+              <!-- Show Loading Spinner on Mobile -->
+              <div class="sm:hidden">
+                <div class="w-6 h-6 border-2 border-gray-300 border-t-custom-orange rounded-full animate-spin"></div>
+              </div>
+              <!-- Show Loading Bar on Desktop -->
+              <div class="bg-gray-100 animate-pulse h-6 w-32 rounded-md hidden sm:block"></div>
+            </div>
 
-          <div v-if="isLoading" class="flex items-center space-x-2">
-            <span class="text-black">Welcome,</span>
-            <div class="bg-gray-100 animate-pulse h-6 w-32 rounded-md"></div>
-          </div>
-
-          <span v-else>
-            <span @click="toggleMenu" class="cursor-pointer flex items-center space-x-2">
-              <span class="text-black">Welcome, <strong class="text-custom-orange">{{ username }}</strong></span>
-              <span :class="{ 'rotate-180': isMenuOpen }"
-                class="material-symbols-outlined text-black transition-transform duration-300">
-                arrow_drop_down
+            <!-- User Menu -->
+            <span v-else>
+              <span @click="toggleMenu" class="cursor-pointer flex items-center space-x-2">
+                <!-- Show User Icon on Mobile -->
+                <span class="material-symbols-outlined text-black sm:hidden">
+                  account_circle
+                </span>
+                <!-- Show Welcome Text on Desktop -->
+                <span class="text-black hidden sm:inline">Welcome, <strong class="text-custom-orange">{{ username
+                }}</strong></span>
+                <!-- Show Arrow Icon on Desktop -->
+                <span :class="{ 'rotate-180': isMenuOpen }"
+                  class="material-symbols-outlined text-black transition-transform duration-300 hidden sm:inline">
+                  arrow_drop_down
+                </span>
               </span>
             </span>
 
-          </span>
-          <div v-show="isMenuOpen"
-            class="absolute right-0 top-full mt-1 bg-white text-black text-left shadow-lg rounded-md w-72 z-50 border">
-            <ul class="list-none p-0 m-0">
-              <li
-                class="px-4 py-3 cursor-pointer hover:bg-gray-100 hover:text-custom-orange hover:font-bold border-b flex items-center justify-between"
-                @click="goToProfile">
-                <span class="material-symbols-outlined"> person </span>
-                <span>Profile</span>
-              </li>
+            <!-- Dropdown Menu -->
+            <div v-show="isMenuOpen"
+              class="absolute right-0 top-full mt-1 bg-white text-black text-left shadow-lg rounded-md w-72 sm:w-72 z-50 border">
+              <ul class="list-none p-0 m-0">
+                <li
+                  class="px-4 py-3 cursor-pointer hover:bg-gray-100 hover:text-custom-orange hover:font-bold border-b flex items-center justify-between"
+                  @click="goToProfile">
+                  <span class="material-symbols-outlined"> person </span>
+                  <span>Profile</span>
+                </li>
 
-              <li v-if="!(isUserRegistered && isUserRegisteredHHB)"
-                class="px-4 py-3 cursor-pointer hover:bg-gray-100 hover:text-custom-orange hover:font-bold border-b flex items-center justify-between"
-                @click="goToRegister">
-                <span class="material-symbols-outlined"> person_add </span>
-                <span>Register Customer Profile</span>
-              </li>
+                <li v-if="!(isUserRegistered && isUserRegisteredHHB)"
+                  class="px-4 py-3 cursor-pointer hover:bg-gray-100 hover:text-custom-orange hover:font-bold border-b flex items-center justify-between"
+                  @click="goToRegister">
+                  <span class="material-symbols-outlined"> person_add </span>
+                  <span>Register Customer Profile</span>
+                </li>
 
-              <li
-                class="px-4 py-3 cursor-pointer hover:bg-gray-100 hover:text-custom-orange hover:font-bold border-b flex items-center justify-between"
-                @click="goToOrderHistory">
-                <span class="material-symbols-outlined">history</span>
-                <span>Orders History</span>
-              </li>
+                <li
+                  class="px-4 py-3 cursor-pointer hover:bg-gray-100 hover:text-custom-orange hover:font-bold border-b flex items-center justify-between"
+                  @click="goToOrderHistory">
+                  <span class="material-symbols-outlined">history</span>
+                  <span>Orders History</span>
+                </li>
 
-              <li v-if="role === 'admin'"
-                class="px-4 py-3 cursor-pointer hover:bg-gray-100 hover:text-custom-orange hover:font-bold border-b flex items-center justify-between"
-                @click="goToBackend">
-                <span class="material-symbols-outlined"> shield_person </span>
-                <span>Admin Page</span>
-              </li>
+                <li v-if="role === 'admin'"
+                  class="px-4 py-3 cursor-pointer hover:bg-gray-100 hover:text-custom-orange hover:font-bold border-b flex items-center justify-between"
+                  @click="goToBackend">
+                  <span class="material-symbols-outlined"> shield_person </span>
+                  <span>Admin Page</span>
+                </li>
 
-              <li
-                class="px-4 py-3 cursor-pointer hover:bg-gray-100 hover:text-red-500 hover:font-bold hover:rounded-b-md border-b flex items-center justify-between"
-                @click="logout">
-                <span class="material-symbols-outlined"> logout </span>
-                <span>Logout</span>
-              </li>
-            </ul>
+                <li
+                  class="px-4 py-3 cursor-pointer hover:bg-gray-100 hover:text-red-500 hover:font-bold hover:rounded-b-md border-b flex items-center justify-between"
+                  @click="logout">
+                  <span class="material-symbols-outlined"> logout </span>
+                  <span>Logout</span>
+                </li>
+              </ul>
+            </div>
           </div>
-
-
         </div>
       </div>
-
       <div v-else class="flex items-center space-x-2">
         <span class="text-black cursor-pointer flex items-center space-x-2 font-bold hover:text-custom-orange-hover"
           @click="goToLogin">
@@ -100,41 +106,41 @@
           <span>Login</span>
         </span>
       </div>
-
-
     </header>
 
-    <main class="flex-1 p-4 px-32 relative" style="height: calc(100vh - 80px)"
+    <main class="flex-1 p-4 px-4 sm:px-32 relative min-h-[calc(100vh-80px)] bg-fixed"
       :class="{ 'bg-gradient-to-r from-custom-orange via-orange-500 to-custom-orange-hover text-black': $route.path === '/register-aff' || $route.path === '/register-hhb' }">
-
+      <!-- เนื้อหาภายใน -->
       <!-- เมนูนี้จะแสดงเฉพาะในหน้าที่กำหนด -->
       <div v-if="$route.path === '/register-aff' || $route.path === '/register-hhb'"
-        class="flex justify-center space-x-6">
-        <span v-if="!isUserRegistered" class="cursor-pointer hover:text-gray-700" @click="$router.push('/register-aff')"
+        class="flex flex-row justify-center space-x-4 sm:space-x-6">
+        <span v-if="!isUserRegistered" class="cursor-pointer hover:text-gray-700 text-center"
+          @click="$router.push('/register-aff')"
           :class="{ 'border-b-2 border-gray-700 text-gray-700 font-bold': $route.path === '/register-aff' }">
           Absolute FitFood
         </span>
 
-        <span v-if="!isUserRegisteredHHB" class="cursor-pointer hover:text-gray-700"
+        <span v-if="!isUserRegisteredHHB" class="cursor-pointer hover:text-gray-700 text-center"
           @click="$router.push('/register-hhb')"
           :class="{ 'border-b-2 border-gray-700 text-gray-700 font-bold': $route.path === '/register-hhb' }">
           Happy Healthy Box
         </span>
       </div>
 
-      <div v-if="isOrderHistoryPath" class="flex justify-center space-x-6">
-        <span class="cursor-pointer hover:text-custom-orange"
-          @click="$router.push(`/order-history-user/${getCustomerID(id)}`)"
-          :class="{ 'border-b-2 border-custom-orange text-custom-orange font-bold': $route.path === `/order-history-user/${getCustomerID(id)}` }">
-          Absolute FitFood
-        </span>
+      <div v-if="isOrderHistoryPath"
+    class="flex flex-row justify-center space-x-4 sm:space-x-6">
+    <span class="cursor-pointer hover:text-custom-orange text-center"
+      @click="$router.push(`/order-history-user/${getCustomerID(id)}`)"
+      :class="{ 'border-b-2 border-custom-orange text-custom-orange font-bold': $route.path === `/order-history-user/${getCustomerID(id)}` }">
+      Absolute FitFood
+    </span>
 
-        <span class="cursor-pointer hover:text-custom-orange"
-          @click="$router.push(`/order-history-hhb-user/${getCustomerHHBID(id)}`)"
-          :class="{ 'border-b-2 border-custom-orange text-custom-orange font-bold': $route.path === `/order-history-hhb-user/${getCustomerHHBID(id)}` }">
-          Happy Healthy Box
-        </span>
-      </div>
+    <span class="cursor-pointer hover:text-custom-orange text-center"
+      @click="$router.push(`/order-history-hhb-user/${getCustomerHHBID(id)}`)"
+      :class="{ 'border-b-2 border-custom-orange text-custom-orange font-bold': $route.path === `/order-history-hhb-user/${getCustomerHHBID(id)}` }">
+      Happy Healthy Box
+    </span>
+</div>
 
       <router-view></router-view>
     </main>

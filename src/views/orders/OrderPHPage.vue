@@ -126,7 +126,7 @@
             class="p-4 border rounded-lg shadow-md bg-white flex flex-col h-full mb-6">
             <div class="mb-4">
               <img v-if="getMenuImage(menu.menu_id)" :src="`${API_URL}/images/${getMenuImage(menu.menu_id)}`"
-                alt="Menu Image" class="min-h-48 max-h-48 w-full object-cover rounded" @error="handleImageError">
+              alt="Menu Image" class="min-h-48 max-h-48 w-full object-cover rounded">
               <div v-else class="bg-gray-100 w-full h-48 rounded-md flex items-center justify-center">
                 <span class="material-symbols-outlined text-4xl text-gray-500">
                   hide_image
