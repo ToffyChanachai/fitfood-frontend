@@ -379,6 +379,61 @@
                                 rows="4"></textarea>
                         </div>
 
+                        <div>
+                            <label for="delivery_address"
+                                class="block font-medium text-gray-700">เลือกที่อยู่สำหรับจัดส่ง</label>
+                            <select v-model="selectedCustomer.delivery_address"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange">
+                                <option :value="selectedCustomer.address_1" v-if="selectedCustomer.address_1">ที่อยู่ 1:
+                                    {{
+                                        selectedCustomer.address_1 }}
+                                </option>
+                                <option :value="selectedCustomer.address_2" v-if="selectedCustomer.address_2">ที่อยู่ 1:
+                                    {{
+                                        selectedCustomer.address_2 }}
+                                </option>
+                                <option :value="selectedCustomer.address_3" v-if="selectedCustomer.address_3">ที่อยู่ 1:
+                                    {{
+                                        selectedCustomer.address_3 }}
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="mt-4 flex gap-4">
+                            <div class="w-1/2">
+                                <label for="delivery_round" class="block font-medium text-gray-700">รอบการจัดส่ง</label>
+                                <textarea v-model="selectedCustomer.delivery_round"
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange"
+                                    rows="3"></textarea>
+                            </div>
+
+                            <div class="w-1/2">
+                                <label for="deliver" class="block font-medium text-gray-700">ผู้ส่ง</label>
+                                <textarea v-model="selectedCustomer.deliver"
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange"
+                                    rows="3"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 flex gap-4">
+                            <div class="w-1/2">
+                                <label for="delivery_zone"
+                                    class="block font-medium text-gray-700">โซนจัดส่งตามที่อยู่ตาม
+                                    Routing</label>
+                                <textarea v-model="selectedCustomer.delivery_zone"
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange"
+                                    rows="3"></textarea>
+                            </div>
+
+
+                            <div class="w-1/2">
+                                <label for="delivery_time" class="block font-medium text-gray-700">เวลาจัดส่ง</label>
+                                <input type="time" v-model="selectedCustomer.delivery_time"
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange">
+                            </div>
+                        </div>
+
+
 
                     </div>
 
@@ -609,6 +664,18 @@ export default {
                 address_1: this.selectedCustomer.address_1,
                 address_2: this.selectedCustomer.address_2,
                 address_3: this.selectedCustomer.address_3,
+
+                delivery_address: this.selectedCustomer.delivery_address,
+                delivery_round: this.selectedCustomer.delivery_round,
+                deliver: this.selectedCustomer.deliver,
+                delivery_zone: this.selectedCustomer.delivery_zone,
+                delivery_time: this.formattedDeliveryTime(this.selectedCustomer.delivery_time),
+            };
+        },
+        formattedDeliveryTime() {
+            return (time) => {
+                if (!time) return "-"; // กรณีไม่มีข้อมูล
+                return time.slice(0, 5); // ตัดเอาแค่ HH:mm
             };
         },
 
@@ -724,6 +791,12 @@ export default {
                     address_2: this.selectedCustomer.address_2,
                     address_3: this.selectedCustomer.address_3,
                     recipient_mon_to_fri: this.selectedCustomer.recipient_mon_to_fri,
+
+                    delivery_round: this.selectedCustomer.delivery_round,
+                    deliver: this.selectedCustomer.deliver,
+                    delivery_zone: this.selectedCustomer.delivery_zone,
+                    delivery_time: this.selectedCustomer.delivery_time,
+                    delivery_address: this.selectedCustomer.delivery_address,
                 });
 
                 const index = this.customers.findIndex(customer => customer.id === this.selectedCustomer.id);
@@ -783,6 +856,11 @@ export default {
                 address_1: 'ที่อยู่ 1',
                 address_2: 'ที่อยู่ 2',
                 address_3: 'ที่อยู่ 3',
+                delivery_round: "รอบการจัดส่ง",
+                deliver: "ผู้จัดส่ง",
+                delivery_zone: "โซนจัดส่งตามที่อยู่ตาม Routing",
+                delivery_time: "เวลาจัดส่ง",
+                delivery_address: "ที่อยู่จัดส่ง",
             };
             return labels[key] || key;
         },

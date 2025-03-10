@@ -197,40 +197,34 @@
                   getCustomerTel(order.user_id) }}
               </div>
             </td>
-
-            <!-- <td class="px-4 py-2 align-top pb-5">
-              <input v-if="isEditing && editingOrderId === order.id" v-model="order.delivery_time" type="time"
-                class="border px-2 py-1 rounded w-full" />
-              <span v-else>{{ formattedDeliveryTime(order.delivery_time) }}</span>
-            </td> -->
-
+           
             <td class="px-4 py-2 align-top pb-5">
-              <textarea v-if="isEditing && editingOrderId === order.id" v-model="order.delivery_round"
+              <textarea v-if="isEditing && editingOrderId === order.id" v-model="editedDeliveryRound"
                 class="border px-2 py-1 rounded w-full h-24"></textarea>
-              <span v-else>{{ order.delivery_round }}</span>
+              <span v-else>{{ getCustomerDeliveryRound(order.customer_id) }}</span>
             </td>
             <td class="px-4 py-2 align-top pb-5">
-              <textarea v-if="isEditing && editingOrderId === order.id" v-model="order.deliver"
+              <textarea v-if="isEditing && editingOrderId === order.id" v-model="editedDeliver"
                 class="border px-2 py-1 rounded w-full h-24"></textarea>
-              <span v-else>{{ order.deliver }}</span>
+              <span v-else>{{ getCustomerDeliver(order.customer_id) }}</span>
             </td>
             <td class="px-4 py-2 align-top pb-5">
-              <textarea v-if="isEditing && editingOrderId === order.id" v-model="order.delivery_zone"
+              <textarea v-if="isEditing && editingOrderId === order.id" v-model="editedDeliveryZone"
                 class="border px-2 py-1 rounded w-full h-24"></textarea>
-              <span v-else>{{ order.delivery_zone }}</span>
+              <span v-else>{{ getCustomerDeliveryZone(order.customer_id) }}</span>
             </td>
 
             <td class="px-4 py-2 align-top pb-5">
               <select v-if="isEditing && editingOrderId === order.id" v-model="selectedAddresses[order.id]"
                 class="border px-2 py-1 rounded w-full">
-                <option :value="getCustomerAddress1(order.user_id)">
-                  ที่อยู่ 1: {{ getCustomerAddress1(order.user_id) }}
+                <option :value="getCustomerAddress1(order.customer_id)">
+                  ที่อยู่ 1: {{ getCustomerAddress1(order.customer_id) }}
                 </option>
-                <option :value="getCustomerAddress2(order.user_id)">
-                  ที่อยู่ 2: {{ getCustomerAddress2(order.user_id) }}
+                <option :value="getCustomerAddress2(order.customer_id)">
+                  ที่อยู่ 2: {{ getCustomerAddress2(order.customer_id) }}
                 </option>
-                <option :value="getCustomerAddress3(order.user_id)">
-                  ที่อยู่ 3: {{ getCustomerAddress3(order.user_id) }}
+                <option :value="getCustomerAddress3(order.customer_id)">
+                  ที่อยู่ 3: {{ getCustomerAddress3(order.customer_id) }}
                 </option>
               </select>
               <span v-else>{{ selectedAddresses[order.id] || 'เลือกที่อยู่' }}</span>
@@ -452,6 +446,10 @@ export default {
 
       isEditing: false,
       editingOrderId: null,
+      
+      editedDeliveryRound: "",
+      editedDeliver: "",
+      editedDeliveryZone: "",
 
     };
   },
@@ -539,7 +537,12 @@ export default {
     selectedAddresses() {
       let addresses = {};
       this.filteredUniqueOrders.forEach(order => {
-        addresses[order.id] = order.delivery_address || ''; // ถ้าไม่มีค่าให้เป็นค่าว่าง
+        // หาข้อมูลลูกค้าจาก customer_id ในแต่ละ order
+        const customer = this.customers.find(c => c.id === order.customer_id);
+        if (customer) {
+          // ตั้งค่า selectedAddresses ให้เป็นที่อยู่จากลูกค้า
+          addresses[order.id] = customer.delivery_address || ''; // ถ้าไม่มีค่าให้เป็นค่าว่าง
+        }
       });
       return addresses;
     },
@@ -662,6 +665,10 @@ export default {
     startEditing(Order) {
       this.isEditing = true;
       this.editingOrderId = Order.id;
+      this.editedDeliveryRound = this.getCustomerDeliveryRound(Order.customer_id);
+      this.editedDeliveryZone = this.getCustomerDeliveryZone(Order.customer_id);
+      this.editedDeliver = this.getCustomerDeliver(Order.customer_id);
+
     },
 
     saveUpdatedDelivery(Order) {
@@ -677,17 +684,29 @@ export default {
 
     },
 
-    async updateDelivery(Order) {
+    async updateDelivery(order) {
       try {
-        await axios.put(`${API_URL}/orders-hhb/${Order.id}/delivery`, {
-          delivery_round: Order.delivery_round || '',
-          deliver: Order.deliver || '',
-          delivery_zone: Order.delivery_zone || '',
-          delivery_address: this.selectedAddresses[Order.id] || null,  // ✅ เพิ่ม delivery_address
-        });
+        // ตรวจสอบให้แน่ใจว่าเรากำลังใช้ customer_id ที่ถูกต้อง
+        const customer = this.customers.find(c => c.id === order.customer_id);
 
-        await this.fetchOrders();
-        this.showSuccessToastNotification("แก้ไขข้อมูลสำเร็จ!");
+        if (customer) {
+          customer.delivery_round = this.editedDeliveryRound;
+          customer.deliver = this.editedDeliver;
+          customer.delivery_zone = this.editedDeliveryZone;
+
+          await axios.put(`${API_URL}/customers-hhb/${customer.id}`, {
+            delivery_round: customer.delivery_round || '',
+            deliver: customer.deliver || '',
+            delivery_zone: customer.delivery_zone || '',
+            delivery_address: this.selectedAddresses[order.id] || null,
+                    });
+
+          // รีเฟรชข้อมูล orders
+          await this.fetchOrders();
+          this.showSuccessToastNotification("แก้ไขข้อมูลสำเร็จ!");
+        } else {
+          this.showErrorToastNotification("ไม่พบข้อมูลลูกค้า");
+        }
       } catch (error) {
         console.error("เกิดข้อผิดพลาดในการอัปเดตข้อมูลการจัดส่ง:", error);
         this.showErrorToastNotification("เกิดข้อผิดพลาดในการแก้ไข!");
@@ -730,17 +749,30 @@ export default {
       const customer = this.customers.find((c) => c.user_id === customerId);
       return customer ? customer.tel : "ไม่พบข้อมูล";
     },
+
     getCustomerAddress1(customerId) {
-      const customer = this.customers.find((c) => c.user_id === customerId);
+      const customer = this.customers.find((c) => c.id === customerId);
       return customer ? customer.address_1 : "ไม่พบข้อมูล";
     },
     getCustomerAddress2(customerId) {
-      const customer = this.customers.find((c) => c.user_id === customerId);
+      const customer = this.customers.find((c) => c.id === customerId);
       return customer ? customer.address_2 : "ไม่พบข้อมูล";
     },
     getCustomerAddress3(customerId) {
-      const customer = this.customers.find((c) => c.user_id === customerId);
+      const customer = this.customers.find((c) => c.id === customerId);
       return customer ? customer.address_3 : "ไม่พบข้อมูล";
+    },
+    getCustomerDeliveryRound(customerId) {
+      const customer = this.customers.find((c) => c.id === customerId);
+      return customer ? customer.delivery_round : null;
+    },
+    getCustomerDeliver(customerId) {
+      const customer = this.customers.find((c) => c.id === customerId);
+      return customer ? customer.deliver : null;
+    },
+    getCustomerDeliveryZone(customerId) {
+      const customer = this.customers.find((c) => c.id === customerId);
+      return customer ? customer.delivery_zone : null;
     },
 
 
