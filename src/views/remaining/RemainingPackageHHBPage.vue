@@ -255,7 +255,7 @@
               <button @click="openHistoryModal(saleRecord.customer_id)"
                 class="flex items-center space-x-1 text-custom-orange">
                 <span class="material-symbols-outlined text-2xl">history</span>
-                <span class="text-m">ประวัติการสั่งซื้อ</span>
+                <span class="text-m">ประวัติการสั่งรายการอาหาร</span>
               </button>
             </td> -->
 
@@ -263,7 +263,7 @@
                 <router-link :to="`/order-history-hhb/${saleRecord.customer_id}`"
                   class="flex items-center space-x-1 text-custom-orange hover:text-custom-orange-hover">
                   <span class="material-symbols-outlined text-2xl">history</span>
-                  <span class="text-m">ประวัติการสั่งซื้อ</span>
+                  <span class="text-m">ประวัติการสั่งรายการอาหาร</span>
                 </router-link>
               </td>
             </tr>
@@ -376,7 +376,7 @@
         class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
         <div class="bg-white rounded-md shadow-lg w-1/2 max-w-4xl h-auto max-h-[600px] flex flex-col">
           <div class="flex justify-between items-center bg-blue-500 text-white px-4 py-2 rounded-t-md">
-            <span class="font-bold">ประวัติการสั่งซื้อของลูกค้า {{ selectedCustomerId }}</span>
+            <span class="font-bold">ประวัติการสั่งรายการอาหารของลูกค้า {{ selectedCustomerId }}</span>
             <span @click="closeHistoryModal"
               class="material-symbols-outlined cursor-pointer hover:text-gray-200">close</span>
           </div>
@@ -403,7 +403,7 @@
               </tbody>
             </table>
 
-            <div v-else class="text-gray-500 mt-2">ไม่มีประวัติการสั่งซื้อ</div>
+            <div v-else class="text-gray-500 mt-2">ไม่มีประวัติการสั่งรายการอาหาร</div>
           </div>
         </div>
       </div>
@@ -457,7 +457,7 @@
 
 <script>
 import axios from "axios";
-import { API_URL } from "@/services/api";
+import { API_URL } from "@/services/testapi";
 
 export default {
   data() {
@@ -1520,7 +1520,7 @@ export default {
         const response = await axios.get(`${API_URL}/orders/user/${customerId}`);
         this.orderHistory = response.data.orders;
       } catch (error) {
-        console.error("เกิดข้อผิดพลาดในการดึงประวัติการสั่งซื้อ:", error);
+        console.error("เกิดข้อผิดพลาดในการดึงประวัติการสั่งรายการอาหาร:", error);
       } finally {
         this.loadingHistory = false;
       }

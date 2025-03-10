@@ -47,7 +47,7 @@
 
         <div class="mt-4">
             <div class="flex items-center">
-                <h1 class="text-xl font-bold">ประวัติการสั่งซื้อ: </h1>
+                <h1 class="text-xl font-bold">ประวัติการสั่งรายการอาหาร: </h1>
 
                 <h1 v-if="isLoading" class="text-xl font-bold ml-2">
                     <div class="bg-gray-200 animate-pulse h-6 w-48 rounded-md"></div>
@@ -104,7 +104,7 @@
                     class="mt-4 bg-white rounded-md shadow-lg p-4 border border-gray-300 h-[650px] flex justify-center items-center">
                     <div class="flex items-center space-x-1 text-gray-500 font-bold text-center">
                         <span class="material-symbols-outlined text-3xl">history_off</span>
-                        <span class="text-xl">ไม่มีประวัติการสั่งซื้อในวันนี้</span>
+                        <span class="text-xl">ไม่มีประวัติการสั่งรายการอาหารในวันนี้</span>
                     </div>
                 </div>
             </div>
@@ -122,7 +122,7 @@
 import axios from "axios";
 import flatpickr from "flatpickr";
 import "flatpickr/dist/flatpickr.css";
-import { API_URL } from "@/services/api";
+import { API_URL } from "@/services/testapi";
 
 
 export default {
@@ -210,7 +210,7 @@ export default {
                     return dateA - dateB;
                 });
             } catch (error) {
-                // console.error("เกิดข้อผิดพลาดในการดึงประวัติการสั่งซื้อ:", error);
+                // console.error("เกิดข้อผิดพลาดในการดึงประวัติการสั่งรายการอาหาร:", error);
                 this.orders = []; // กรณีมีข้อผิดพลาดให้ตั้งค่าเป็นอาเรย์ว่าง
             } finally {
                 this.isLoading = false;
@@ -289,7 +289,7 @@ export default {
             return menu ? menu.name_english : "ไม่พบข้อมูล";
         },
         getStatusText(status) {
-            return status === "confirm" ? "ยืนยันการสั่งซื้อแล้ว" : "ยังไม่ได้ยืนยันการสั่งซื้อ";
+            return status === "confirm" ? "ยืนยันการสั่งรายการอาหารแล้ว" : "ยังไม่ได้ยืนยันการสั่งรายการอาหาร";
         },
     },
     created() {

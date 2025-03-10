@@ -40,6 +40,12 @@
                 </span>
             </button>
 
+            <div>
+        <label for="month" class="mr-2 font-bold text-gray-700">เลือกเดือน:</label>
+        <input type="month" v-model="selectedMonth" @change="fetchSaleRecords"
+          class="text-center bg-white rounded-md font-bold border border-gray-200 focus:outline-none focus:ring-2 focus:ring-custom-orange hover:ring-2 hover:ring-custom-orange text-custom-orange hover:text-custom-orange-hover w-[150px]" />
+      </div>
+
             <div class="add relative inline-block">
                 <button @click="openAddModal"
                     class="bg-custom-orange text-white px-4 py-2 rounded flex items-center space-x-1 hover:bg-custom-orange-hover">
@@ -582,13 +588,14 @@
                             </div>
 
                             <div class="mb-4">
-                <label for="Transaction_ref" class="block text-gray-700 font-bold">Transaction No. อื่นใน Payslip
-                  เดียวกัน
-                  (ถ้ามี)</label>
-                <input id="transaction_ref" v-model="saleRecord.transaction_ref"
-                  placeholder="กรอก Transaction No. อื่นใน Payslip เดียวกัน (ถ้ามี)"
-                  class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange resize-y" />
-              </div>
+                                <label for="Transaction_ref" class="block text-gray-700 font-bold">Transaction No.
+                                    อื่นใน Payslip
+                                    เดียวกัน
+                                    (ถ้ามี)</label>
+                                <input id="transaction_ref" v-model="saleRecord.transaction_ref"
+                                    placeholder="กรอก Transaction No. อื่นใน Payslip เดียวกัน (ถ้ามี)"
+                                    class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange resize-y" />
+                            </div>
                         </div>
 
                         <div class="flex justify-between space-x-4 p-4 bg-white border-t rounded-b-md list-none">
@@ -730,184 +737,197 @@
                 </tr>
             </thead>
             <tbody>
-                <template v-if="additionalSalesRecords.length > 0">
-                    <tr v-for="(saleRecord, index) in additionalSalesRecords" :key="index"
-                        class=" bg-white relative border-b border-b-gray-200">
+                <tr v-if="isLoading" class="bg-white">
+                    <td colspan="11" class="py-16 text-center">
+                        <div class="flex justify-center items-center space-x-2">
+                            <div class="w-3 h-3 bg-gray-500 rounded-full animate-pulse"></div>
+                            <div class="w-3 h-3 bg-gray-500 rounded-full animate-pulse delay-200"></div>
+                            <div class="w-3 h-3 bg-gray-500 rounded-full animate-pulse delay-400"></div>
+                        </div>
+                    </td>
+                </tr>
 
-                        <td class="px-4 py-2 align-top pb-5">{{ (currentPage - 1) * itemsPerPage + index + 1 }}</td>
-                        <td class="px-4 py-2 align-top pb-5 font-bold text-custom-orange">
-                            {{ getCustomerName(saleRecord.customer_id) }}
-                        </td>
-                        <td class="px-4 py-2 align-top pb-5 font-bold ">
-                            {{ getPackageTypeName(saleRecord.package_type_id) }}
-                        </td>
-                        <td class="px-4 py-2 align-top pb-5">
-                            {{ getSaleTypeName(saleRecord.additional_type_id) }}
-                        </td>
-                        <td class="px-4 py-2 align-top pb-5">
-                            {{ saleRecord.add_detail }}
-                        </td>
-                        <td class="px-4 py-2 align-top pb-5">
-                            {{ formatPrice(saleRecord.total_price) }}
-                        </td>
+                <template v-else>
+                    <template v-if="additionalSalesRecords.length > 0">
+                        <tr v-for="(saleRecord, index) in additionalSalesRecords" :key="index"
+                            class=" bg-white relative border-b border-b-gray-200">
 
-                        <td class="px-4 py-2 align-top font-bold pb-5">
-                            <button @click="openConfirmPaymentModal(saleRecord)"
-                                class="px-4 py-1 rounded-full font-bold focus:outline-none hover:text-gray-200"
-                                :class="getPaymentStatusClass(saleRecord.payment_status)">
-                                {{ getPaymentStatusText(saleRecord.payment_status) }}
-                            </button>
+                            <td class="px-4 py-2 align-top pb-5">{{ (currentPage - 1) * itemsPerPage + index + 1 }}</td>
+                            <td class="px-4 py-2 align-top pb-5 font-bold text-custom-orange">
+                                {{ getCustomerName(saleRecord.customer_id) }}
+                            </td>
+                            <td class="px-4 py-2 align-top pb-5 font-bold ">
+                                {{ getPackageTypeName(saleRecord.package_type_id) }}
+                            </td>
+                            <td class="px-4 py-2 align-top pb-5">
+                                {{ getSaleTypeName(saleRecord.additional_type_id) }}
+                            </td>
+                            <td class="px-4 py-2 align-top pb-5">
+                                {{ saleRecord.add_detail }}
+                            </td>
+                            <td class="px-4 py-2 align-top pb-5">
+                                {{ formatPrice(saleRecord.total_price) }}
+                            </td>
 
-                            <div v-if="isConfirmPaymentModalOpen"
-                                class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-10 z-50">
-                                <div class="absolute top-8 left-1/2 transform -translate-x-1/2 bg-yellow-500 text-white px-8 py-4 flex items-center space-x-4 rounded-lg transition-opacity duration-300 z-60"
-                                    :class="{
-                                        'opacity-100': showErrorToast,
-                                        'opacity-0': !showErrorToast,
-                                    }">
-                                    <span class="material-symbols-outlined text-white">error</span>
-                                    <span>{{ toastErrorMessage }}</span>
-                                    <button @click="showErrorToast = false"
-                                        class="text-white hover:text-gray-200 focus:outline-none">
-                                        <span class="material-symbols-outlined text-xl">close</span>
-                                    </button>
-                                </div>
+                            <td class="px-4 py-2 align-top font-bold pb-5">
+                                <button @click="openConfirmPaymentModal(saleRecord)"
+                                    class="px-4 py-1 rounded-full font-bold focus:outline-none hover:text-gray-200"
+                                    :class="getPaymentStatusClass(saleRecord.payment_status)">
+                                    {{ getPaymentStatusText(saleRecord.payment_status) }}
+                                </button>
 
-                                <div class="bg-white rounded-md w-1/3 max-w-lg">
-                                    <!-- Header -->
-                                    <div :class="{
-                                        'bg-green-500':
-                                            selectedSaleRecord.payment_status === 'unpaid',
-                                        'bg-red-500': selectedSaleRecord.payment_status === 'paid',
-                                    }" class="flex justify-between items-center text-white px-4 py-2 rounded-t-md">
-                                        <span class="font-bold">
-                                            {{
-                                                selectedSaleRecord.payment_status === "paid"
-                                                    ? "เปลี่ยนสถานะเป็นยังไม่ได้ชำระเงิน"
-                                                    : "ยืนยันการชำระเงิน"
-                                            }}
-                                        </span>
-                                        <button @click="closeConfirmPaymentModal"
-                                            class="text-white hover:text-gray-200">
-                                            <span class="material-symbols-outlined">close</span>
+                                <div v-if="isConfirmPaymentModalOpen"
+                                    class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-10 z-50">
+                                    <div class="absolute top-8 left-1/2 transform -translate-x-1/2 bg-yellow-500 text-white px-8 py-4 flex items-center space-x-4 rounded-lg transition-opacity duration-300 z-60"
+                                        :class="{
+                                            'opacity-100': showErrorToast,
+                                            'opacity-0': !showErrorToast,
+                                        }">
+                                        <span class="material-symbols-outlined text-white">error</span>
+                                        <span>{{ toastErrorMessage }}</span>
+                                        <button @click="showErrorToast = false"
+                                            class="text-white hover:text-gray-200 focus:outline-none">
+                                            <span class="material-symbols-outlined text-xl">close</span>
                                         </button>
                                     </div>
 
-                                    <!-- Content -->
-                                    <div class="p-6 space-y-4">
-                                        <p class="text-gray-700">
-                                            {{
-                                                selectedSaleRecord.payment_status === "paid"
-                                                    ? 'คุณต้องการเปลี่ยนสถานะเป็น "ยังไม่ได้ชำระเงิน" หรือไม่?'
-                                                    : "กรุณาเลือกวันที่ชำระเงิน:"
-                                            }}
-                                        </p>
-
-                                        <!-- Date Picker -->
-                                        <div v-if="selectedSaleRecord.payment_status !== 'paid'">
-                                            <input type="date" v-model="selectedPaidDate"
-                                                class="border border-gray-300 rounded px-4 py-2 w-full" />
-                                        </div>
-
-                                        <!-- Payment Type Dropdown -->
-                                        <div v-if="selectedSaleRecord.payment_status !== 'paid'" class="mt-4">
-                                            <label for="payment_types"
-                                                class="block text-gray-700">เลือกประเภทการชำระเงิน:</label>
-                                            <multiselect v-model="selectedSaleRecord.payment_type_id"
-                                                :options="paymentTypes" label="name" track-by="id"
-                                                placeholder="เลือกประเภทการชำระเงิน">
-                                            </multiselect>
-                                        </div>
-                                    </div>
-
-                                    <!-- Footer -->
-                                    <div class="flex justify-end space-x-4 p-4 bg-white border-t rounded-b-md">
-                                        <button @click="closeConfirmPaymentModal"
-                                            class="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400">
-                                            ยกเลิก
-                                        </button>
-                                        <button @click="confirmPayment" :class="{
-                                            'bg-green-500 hover:bg-green-600':
+                                    <div class="bg-white rounded-md w-1/3 max-w-lg">
+                                        <!-- Header -->
+                                        <div :class="{
+                                            'bg-green-500':
                                                 selectedSaleRecord.payment_status === 'unpaid',
-                                            'bg-red-500 hover:bg-red-600':
-                                                selectedSaleRecord.payment_status === 'paid',
-                                        }" class="text-white px-4 py-2 rounded">
-                                            ยืนยัน
-                                        </button>
+                                            'bg-red-500': selectedSaleRecord.payment_status === 'paid',
+                                        }" class="flex justify-between items-center text-white px-4 py-2 rounded-t-md">
+                                            <span class="font-bold">
+                                                {{
+                                                    selectedSaleRecord.payment_status === "paid"
+                                                        ? "เปลี่ยนสถานะเป็นยังไม่ได้ชำระเงิน"
+                                                        : "ยืนยันการชำระเงิน"
+                                                }}
+                                            </span>
+                                            <button @click="closeConfirmPaymentModal"
+                                                class="text-white hover:text-gray-200">
+                                                <span class="material-symbols-outlined">close</span>
+                                            </button>
+                                        </div>
+
+                                        <!-- Content -->
+                                        <div class="p-6 space-y-4">
+                                            <p class="text-gray-700">
+                                                {{
+                                                    selectedSaleRecord.payment_status === "paid"
+                                                        ? 'คุณต้องการเปลี่ยนสถานะเป็น "ยังไม่ได้ชำระเงิน" หรือไม่?'
+                                                        : "กรุณาเลือกวันที่ชำระเงิน:"
+                                                }}
+                                            </p>
+
+                                            <!-- Date Picker -->
+                                            <div v-if="selectedSaleRecord.payment_status !== 'paid'">
+                                                <input type="date" v-model="selectedPaidDate"
+                                                    class="border border-gray-300 rounded px-4 py-2 w-full" />
+                                            </div>
+
+                                            <!-- Payment Type Dropdown -->
+                                            <div v-if="selectedSaleRecord.payment_status !== 'paid'" class="mt-4">
+                                                <label for="payment_types"
+                                                    class="block text-gray-700">เลือกประเภทการชำระเงิน:</label>
+                                                <multiselect v-model="selectedSaleRecord.payment_type_id"
+                                                    :options="paymentTypes" label="name" track-by="id"
+                                                    placeholder="เลือกประเภทการชำระเงิน">
+                                                </multiselect>
+                                            </div>
+                                        </div>
+
+                                        <!-- Footer -->
+                                        <div class="flex justify-end space-x-4 p-4 bg-white border-t rounded-b-md">
+                                            <button @click="closeConfirmPaymentModal"
+                                                class="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400">
+                                                ยกเลิก
+                                            </button>
+                                            <button @click="confirmPayment" :class="{
+                                                'bg-green-500 hover:bg-green-600':
+                                                    selectedSaleRecord.payment_status === 'unpaid',
+                                                'bg-red-500 hover:bg-red-600':
+                                                    selectedSaleRecord.payment_status === 'paid',
+                                            }" class="text-white px-4 py-2 rounded">
+                                                ยืนยัน
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        </td>
+                            </td>
 
-                        <td class="px-4 py-2 text-right  pb-5 relative" ref="moreDropdown">
-                            <button @click="toggleMoreDropdown(index)">
-                                <span class="material-symbols-outlined cursor-pointer">more_vert</span>
-                            </button>
+                            <td class="px-4 py-2 text-right  pb-5 relative" ref="moreDropdown">
+                                <button @click="toggleMoreDropdown(index)">
+                                    <span class="material-symbols-outlined cursor-pointer">more_vert</span>
+                                </button>
 
-                            <div v-if="additionalSalesRecords.length > 4">
-                                <div v-if="moreOpenDropdownIndex === index" :class="moreDropdownPositionClass(index)"
-                                    class="dropdown-menu absolute right-0 text-center bg-white shadow-lg rounded-md z-50 w-40 border border-gray-300">
-                                    <ul class="list-none p-0 m-0">
-                                        <li @click="onViewResultSaleRecord(saleRecord)"
-                                            class="px-4 py-2 cursor-pointer hover:bg-gray-100 text-custom-orange font-bold border-b border-gray-300">
-                                            สรุปยอด
-                                        </li>
-                                        <li @click="onViewDetail(saleRecord)"
-                                            class="px-4 py-2 cursor-pointer hover:bg-gray-100 text-gray-700 border-b border-gray-300">
-                                            ดูรายละเอียด
-                                        </li>
-                                        <li @click="openEditModal(saleRecord)"
-                                            class="px-4 py-2 cursor-pointer hover:bg-gray-100 text-blue-500 border-b border-gray-300">
-                                            แก้ไขข้อมูล
-                                        </li>
-                                        <li @click="confirmDelete(saleRecord.id)"
-                                            class="px-4 py-2 cursor-pointer hover:bg-gray-100 text-red-500 border-b border-gray-300">
-                                            ลบข้อมูล
-                                        </li>
-                                    </ul>
+                                <div v-if="additionalSalesRecords.length > 4">
+                                    <div v-if="moreOpenDropdownIndex === index"
+                                        :class="moreDropdownPositionClass(index)"
+                                        class="dropdown-menu absolute right-0 text-center bg-white shadow-lg rounded-md z-50 w-40 border border-gray-300">
+                                        <ul class="list-none p-0 m-0">
+                                            <li @click="onViewResultSaleRecord(saleRecord)"
+                                                class="px-4 py-2 cursor-pointer hover:bg-gray-100 text-custom-orange font-bold border-b border-gray-300">
+                                                สรุปยอด
+                                            </li>
+                                            <li @click="onViewDetail(saleRecord)"
+                                                class="px-4 py-2 cursor-pointer hover:bg-gray-100 text-gray-700 border-b border-gray-300">
+                                                ดูรายละเอียด
+                                            </li>
+                                            <li @click="openEditModal(saleRecord)"
+                                                class="px-4 py-2 cursor-pointer hover:bg-gray-100 text-blue-500 border-b border-gray-300">
+                                                แก้ไขข้อมูล
+                                            </li>
+                                            <li @click="confirmDelete(saleRecord.id)"
+                                                class="px-4 py-2 cursor-pointer hover:bg-gray-100 text-red-500 border-b border-gray-300">
+                                                ลบข้อมูล
+                                            </li>
+                                        </ul>
+                                    </div>
                                 </div>
-                            </div>
 
-                            <div v-else>
-                                <div v-if="moreOpenDropdownIndex === index"
-                                    class="dropdown-menu absolute right-0 text-center bg-white shadow-lg rounded-md z-50 w-40 border border-gray-300">
-                                    <ul class="list-none p-0 m-0">
-                                        <li @click="onViewResultSaleRecord(saleRecord)"
-                                            class="px-4 py-2 cursor-pointer hover:bg-gray-100 text-custom-orange font-bold border-b border-gray-300">
-                                            สรุปยอด
-                                        </li>
-                                        <li @click="onViewDetail(saleRecord)"
-                                            class="px-4 py-2 cursor-pointer hover:bg-gray-100 text-gray-700 border-b border-gray-300">
-                                            ดูรายละเอียด
-                                        </li>
-                                        <li @click="openEditModal(saleRecord)"
-                                            class="px-4 py-2 cursor-pointer hover:bg-gray-100 text-blue-500 border-b border-gray-300">
-                                            แก้ไขข้อมูล
-                                        </li>
-                                        <li @click="confirmDelete(saleRecord.id)"
-                                            class="px-4 py-2 cursor-pointer hover:bg-gray-100 text-red-500 border-b border-gray-300">
-                                            ลบข้อมูล
-                                        </li>
-                                    </ul>
+                                <div v-else>
+                                    <div v-if="moreOpenDropdownIndex === index"
+                                        class="dropdown-menu absolute right-0 text-center bg-white shadow-lg rounded-md z-50 w-40 border border-gray-300">
+                                        <ul class="list-none p-0 m-0">
+                                            <li @click="onViewResultSaleRecord(saleRecord)"
+                                                class="px-4 py-2 cursor-pointer hover:bg-gray-100 text-custom-orange font-bold border-b border-gray-300">
+                                                สรุปยอด
+                                            </li>
+                                            <li @click="onViewDetail(saleRecord)"
+                                                class="px-4 py-2 cursor-pointer hover:bg-gray-100 text-gray-700 border-b border-gray-300">
+                                                ดูรายละเอียด
+                                            </li>
+                                            <li @click="openEditModal(saleRecord)"
+                                                class="px-4 py-2 cursor-pointer hover:bg-gray-100 text-blue-500 border-b border-gray-300">
+                                                แก้ไขข้อมูล
+                                            </li>
+                                            <li @click="confirmDelete(saleRecord.id)"
+                                                class="px-4 py-2 cursor-pointer hover:bg-gray-100 text-red-500 border-b border-gray-300">
+                                                ลบข้อมูล
+                                            </li>
+                                        </ul>
+                                    </div>
                                 </div>
-                            </div>
-                        </td>
-                    </tr>
-                </template>
+                            </td>
+                        </tr>
+                    </template>
 
-                <template v-if="additionalSalesRecords.length < 6 && additionalSalesRecords.length > 0">
-                    <tr v-for="emptyIndex in (6 - additionalSalesRecords.length)" :key="'empty-' + emptyIndex"
-                        class="bg-white">
-                        <td colspan="8" class="py-16"></td>
-                    </tr>
-                </template>
+                    <template v-if="additionalSalesRecords.length < 6 && additionalSalesRecords.length > 0">
+                        <tr v-for="emptyIndex in (6 - additionalSalesRecords.length)" :key="'empty-' + emptyIndex"
+                            class="bg-white">
+                            <td colspan="8" class="py-16"></td>
+                        </tr>
+                    </template>
 
-                <template v-if="additionalSalesRecords.length === 0">
-                    <tr>
-                        <td colspan="9" class="py-10 bg-white text-center text-gray-500 font-bold">
-                            ไม่พบข้อมูล
-                        </td>
-                    </tr>
+                    <template v-if="additionalSalesRecords.length === 0">
+                        <tr>
+                            <td colspan="9" class="py-10 bg-white text-center text-gray-500 font-bold">
+                                ไม่พบข้อมูล
+                            </td>
+                        </tr>
+                    </template>
                 </template>
             </tbody>
 
@@ -1381,11 +1401,13 @@
                                 class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange resize-y"></textarea>
                         </div>
                         <div class="mb-4">
-              <label for="editTransaction_ref" class="block text-gray-700 font-bold">Transaction No. อื่นใน Payslip เดียวกัน (ถ้ามี)</label>
-              <input id="transaction_ref" v-model="selectedSaleRecord.transaction_ref"
-                placeholder="กรอก Transaction No. อื่นใน Payslip เดียวกัน (ถ้ามี)"
-                class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange resize-y" />
-            </div>
+                            <label for="editTransaction_ref" class="block text-gray-700 font-bold">Transaction No.
+                                อื่นใน
+                                Payslip เดียวกัน (ถ้ามี)</label>
+                            <input id="transaction_ref" v-model="selectedSaleRecord.transaction_ref"
+                                placeholder="กรอก Transaction No. อื่นใน Payslip เดียวกัน (ถ้ามี)"
+                                class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange resize-y" />
+                        </div>
                     </div>
 
 
@@ -1497,6 +1519,7 @@
 import axios from "axios";
 import Multiselect from "vue-multiselect";
 import { mapActions, mapGetters } from "vuex";
+import { API_URL } from "@/services/testapi";
 
 export default {
     components: {
@@ -1512,8 +1535,24 @@ export default {
             filteredSaleRecords: [],
 
             isAddModalOpen: false,
-            saleRecord: {},
+            saleRecord: {
+                free_brittles: 0,
+                free_credit: 0,
+                free_dessert: 0,
+                free_dressing: 0,
+                free_energy_balls: 0,
+                free_granola: 0,
+                free_mad: 0,
+                free_yoghurt: 0,
+                discount: 0,
+                extra_charge: 0,
+                zone1_quantity: 0,
+                zone2_quantity: 0,
+                zone3_quantity: 0,
+                zone_outsource_quantity: 0,
+                add_price: 0,
 
+            },
             customers: [],
             customerAddress: null,
 
@@ -1571,14 +1610,16 @@ export default {
             showFailToast: false,
             showErrorToast: false,
             toastErrorMessage: "",
+
+            selectedMonth: this.getCurrentMonth(),
             isLoading: false,
 
         };
     },
     computed: {
         totalPages() {
-      return Math.ceil(this.additionalSalesRecords.length / this.itemsPerPage);
-    },
+            return Math.ceil(this.additionalSalesRecords.length / this.itemsPerPage);
+        },
         totalPagesArray() {
             const maxVisiblePages = 5;
             const halfVisible = Math.floor(maxVisiblePages / 2);
@@ -2019,6 +2060,12 @@ export default {
             "fetchCustomerAddress",
         ]),
 
+        getCurrentMonth() {
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, "0"); // ทำให้เลขเดือนเป็น 2 หลัก เช่น 01, 02
+      return `${year}-${month}`; // รูปแบบ YYYY-MM
+    },
         resetProgramAndPackage() {
             // รีเซ็ตค่าของ program_id และ package_id เมื่อมีการเลือก promotion_type_id ใหม่หรือยกเลิก
             this.saleRecord.program_id = null;
@@ -2080,26 +2127,26 @@ export default {
             this.updatePage();
         },
         updatePage() {
-      const startIndex = (this.currentPage - 1) * this.itemsPerPage;
-      const endIndex = startIndex + this.itemsPerPage;
+            const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+            const endIndex = startIndex + this.itemsPerPage;
 
-      // ใช้ข้อมูลที่กรองแล้วใน filteredSaleRecords1standRenew
-      this.filteredSaleRecords = this.additionalSalesRecords.slice(startIndex, endIndex);
-    },
+            // ใช้ข้อมูลที่กรองแล้วใน filteredSaleRecords1standRenew
+            this.filteredSaleRecords = this.additionalSalesRecords.slice(startIndex, endIndex);
+        },
 
-    search() {
-      const filtered = this.saleRecords.filter((saleRecord) => {
-        const matchesSearch = this.getCustomerName(
-          saleRecord.customer_id
-        ).toLowerCase().includes(this.searchQuery.toLowerCase());
-        const matchesPackageType = this.selectedPackageType.length === 0 || this.selectedPackageType.includes(saleRecord.package_type_id);
-        return matchesSearch && matchesPackageType;
-      });
+        search() {
+            const filtered = this.saleRecords.filter((saleRecord) => {
+                const matchesSearch = this.getCustomerName(
+                    saleRecord.customer_id
+                ).toLowerCase().includes(this.searchQuery.toLowerCase());
+                const matchesPackageType = this.selectedPackageType.length === 0 || this.selectedPackageType.includes(saleRecord.package_type_id);
+                return matchesSearch && matchesPackageType;
+            });
 
-      this.currentPage = 1;
-      this.additionalSalesRecords = filtered;
-      this.updatePage();
-    },
+            this.currentPage = 1;
+            this.additionalSalesRecords = filtered;
+            this.updatePage();
+        },
         clearSearch() {
             this.searchQuery = "";
             this.search();
@@ -2222,7 +2269,7 @@ export default {
             }
 
             try {
-                const response = await axios.post("http://127.0.0.1:3333/sale-records-hhb", {
+                const response = await axios.post(`${API_URL}/sale-records-hhb`, {
                     customer_id: this.saleRecord.customer_id?.id || null,
                     promotion_type_id: this.saleRecord.promotion_type_id?.id || null,
                     program_id: this.saleRecord.program_id?.id || null,
@@ -2392,7 +2439,7 @@ export default {
 
             try {
                 const response = await axios.put(
-                    `http://127.0.0.1:3333/sale-records-hhb/${this.selectedSaleRecord.id}`,
+                    `${API_URL}/sale-records-hhb/${this.selectedSaleRecord.id}`,
                     {
                         customer_id: this.selectedSaleRecord.customer_id?.id || null,
                         promotion_type_id: this.selectedSaleRecord.promotion_type_id?.id || null,
@@ -2504,19 +2551,19 @@ export default {
                     receiveFoodRes,
                     selectFoodRes,
                 ] = await Promise.all([
-                    axios.get("http://127.0.0.1:3333/customers-hhb"),
-                    axios.get("http://127.0.0.1:3333/promotion-types"),
-                    axios.get("http://127.0.0.1:3333/programs"),
-                    axios.get("http://127.0.0.1:3333/packages"),
-                    axios.get("http://127.0.0.1:3333/package-types"),
-                    axios.get("http://127.0.0.1:3333/zone-deliveries"),
-                    axios.get("http://127.0.0.1:3333/zone-delivery-types"),
-                    axios.get("http://127.0.0.1:3333/seller-names"),
-                    axios.get("http://127.0.0.1:3333/payment-types"),
-                    axios.get("http://127.0.0.1:3333/additional-types"),
-                    axios.get("http://127.0.0.1:3333/delivery-rounds"),
-                    axios.get("http://127.0.0.1:3333/receive-foods"),
-                    axios.get("http://127.0.0.1:3333/select-foods"),
+                    axios.get(`${API_URL}/customers-hhb`),
+                    axios.get(`${API_URL}/promotion-types`),
+                    axios.get(`${API_URL}/programs`),
+                    axios.get(`${API_URL}/packages`),
+                    axios.get(`${API_URL}/package-types`),
+                    axios.get(`${API_URL}/zone-deliveries`),
+                    axios.get(`${API_URL}/zone-delivery-types`),
+                    axios.get(`${API_URL}/seller-names`),
+                    axios.get(`${API_URL}/payment-types`),
+                    axios.get(`${API_URL}/additional-types`),
+                    axios.get(`${API_URL}/delivery-rounds`),
+                    axios.get(`${API_URL}/receive-foods`),
+                    axios.get(`${API_URL}/select-foods`),
                 ]);
 
                 this.customers = customersRes.data;
@@ -2585,20 +2632,28 @@ export default {
         },
 
         async fetchSaleRecords() {
-            this.isLoading = true;
+      this.isLoading = true;
+      try {
+        let url = `${API_URL}/sale-records-hhb`;
 
-            try {
-                const response = await axios.get("http://127.0.0.1:3333/sale-records-hhb");
-                this.saleRecords = response.data;
-                this.filteredSaleRecords = response.data;
-                this.saleRecords.sort((a, b) => a.id - b.id);
-                this.updatePage();
-            } catch (error) {
-                console.error("Error fetching sale records:", error);
-            } finally {
+        if (this.selectedMonth) {
+          url += `?month=${this.selectedMonth}`;
+        }
+
+        const response = await axios.get(url);
+        this.saleRecords = response.data;
+        this.filteredSaleRecords = response.data;
+
+        // เรียงตาม id
+        this.saleRecords.sort((a, b) => a.id - b.id);
+
+        this.updatePage();
+      } catch (error) {
+        console.error("Error fetching sale records:", error);
+      } finally {
         this.isLoading = false;
       }
-        },
+    },
 
         getCustomerName(customerId) {
             const customer = this.customers.find((c) => c.id === customerId);
@@ -2713,7 +2768,7 @@ export default {
         async deleteConfirmed() {
             try {
                 await axios.delete(
-                    `http://127.0.0.1:3333/sale-records-hhb/${this.itemToDelete}`
+                    `${API_URL}/sale-records-hhb/${this.itemToDelete}`
                 );
                 this.saleRecords = this.saleRecords.filter(
                     (item) => item.id !== this.itemToDelete
@@ -2771,7 +2826,7 @@ export default {
                 delivery_date: "วันที่ต้องการรับอาหาร",
                 select_food_id: "วิธีการเลือกอาหาร",
                 transaction_ref: "Transaction No. อื่นใน Payslip เดียวกัน (ถ้ามี)",
-        transaction: "Transaction No.",
+                transaction: "Transaction No.",
             };
             return labels[key] || key;
         },
@@ -3087,7 +3142,7 @@ export default {
                 };
 
                 const response = await axios.put(
-                    `http://127.0.0.1:3333/sale-records-hhb/${this.selectedSaleRecord.id}/payment-status`,
+                    `${API_URL}/sale-records-hhb/${this.selectedSaleRecord.id}/payment-status`,
                     payload
                 );
                 await this.fetchSaleRecords();

@@ -78,7 +78,7 @@
           @click="confirmMultipleOrders"
           class="bg-green-500 hover:bg-green-600 text-white px-2 py-2 rounded-md flex items-center space-x-1 "
           :disabled="selectedOrders.length === 0">
-          ยืนยันการสั่งซื้อที่เลือก ({{ selectedOrders.length }})
+          ยืนยันการสั่งที่เลือก ({{ selectedOrders.length }})
         </button>
 
         <button
@@ -86,7 +86,7 @@
           @click="pendingMultipleOrders"
           class="bg-red-500 hover:bg-red-600 text-white px-2 py-2 rounded-md flex items-center space-x-1"
           :disabled="selectedOrders.length === 0">
-          ยกเลิกยืนยันการสั่งซื้อที่เลือก ({{ selectedOrders.length }})
+          ยกเลิกยืนยันการสั่งที่เลือก ({{ selectedOrders.length }})
         </button>
       </div>
 
@@ -95,6 +95,117 @@
         <span class="material-symbols-outlined">close</span>
         <span class="ml-2">รีเซ็ตตัวกรอง ({{ selectedOrder.length }})</span>
       </button>
+
+      <div class="add relative inline-block">
+        <button @click="openAddModal"
+          class="bg-custom-orange text-white px-2 py-2 rounded-md flex items-center space-x-1 hover:bg-custom-orange-hover">
+          <span class="material-symbols-outlined text-white text-xl leading-none">add</span>
+          <span class="text-white text-base leading-none">เพิ่ม</span>
+        </button>
+
+        <div v-if="isAddModalOpen"
+          class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
+
+
+          <div
+            class="absolute top-8 left-1/2 transform -translate-x-1/2 bg-yellow-500 text-white px-8 py-4 flex items-center space-x-4 rounded-lg shadow-lg transition-opacity duration-300 z-60"
+            :class="{ 'opacity-100': showErrorToast, 'opacity-0': !showErrorToast }">
+            <span class="material-symbols-outlined text-white">error</span>
+            <span>{{ toastErrorMessage }}</span>
+            <button @click="showErrorToast = false" class="text-white hover:text-gray-200 focus:outline-none">
+              <span class="material-symbols-outlined text-xl">close</span>
+            </button>
+          </div>
+
+          <div class="bg-white rounded-md shadow-lg w-1/2 max-w-3xl h-auto max-h-[800px] flex flex-col">
+
+            <!-- Header -->
+            <div class="flex justify-between items-center bg-custom-orange text-white px-4 py-2 rounded-t-md">
+              <h2 class="text-xl font-bold">เพิ่มการสั่งรายการอาหาร</h2>
+              <span @click="closeAddModal"
+                class="material-symbols-outlined cursor-pointer hover:text-gray-200">close</span>
+            </div>
+
+            <!-- Content -->
+            <div class="p-6 space-y-4 ">
+              <div>
+                <label for="promotionType" class="block font-bold text-gray-700">ลูกค้า</label>
+                <multiselect v-model="newOrder.customer_id" :options="customers" :multiple="false" :searchable="true"
+                  :close-on-select="true" placeholder="เลือกประเภทโปรแกรมเมนู" label="name" track-by="id"
+                  class="z-50" />
+              </div>
+
+              <div>
+                <label for="mealType" class="font-bold text-gray-700">ประเภทแพ็คเกจ</label>
+                <multiselect v-model="selectedMenuType" :options="menu_types" :multiple="false" :searchable="true"
+                  :close-on-select="true" placeholder="เลือกประเภทแพ็คเกจ" label="name" track-by="id" />
+              </div>
+
+              <div>
+                <label for="mealType" class="font-bold text-gray-700">ประเภทอาหาร</label>
+                <multiselect v-model="selectedMealType" :options="getFilteredMealType(selectedMenuType)" :multiple="false" :searchable="true"
+                  :close-on-select="true" placeholder="เลือกประเภทอาหาร" label="name" track-by="id" />
+              </div>
+
+              <div>
+                <label for="menu" class="block font-bold text-gray-700">รายการอาหาร</label>
+                <multiselect v-model="newOrder.menu_id" :options="getFilteredMenus(selectedMealType)"
+                  placeholder="เลือกรายการอาหาร" track-by="id" :custom-label="menuLabel" />
+              </div>
+
+              <div class="flex items-center space-x-4">
+                <div>
+                  <label for="menu" class="block font-bold text-gray-700">จำนวน</label>
+                  <div class="flex items-center space-x-2">
+                    <button @click="decreaseQuantity(newOrder)"
+                      class="bg-custom-orange text-white px-3 py-1 rounded hover:bg-custom-orange-hover">-</button>
+
+                    <input type="number" v-model="newOrder.quantity"
+                      class="border px-4 py-2 rounded w-32 text-center input-no-spinner" />
+
+                    <button @click="increaseQuantity(newOrder)"
+                      class="bg-custom-orange text-white px-3 py-1 rounded hover:bg-custom-orange-hover">+</button>
+                  </div>
+
+                </div>
+
+                <div class="flex-1">
+                  <label for="orderDate" class="block font-bold text-gray-700">วันที่สั่งรายการอาหาร</label>
+                  <input v-model="newOrder.order_date" id="orderDate" type="date"
+                    class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange" />
+                </div>
+              </div>
+
+
+              <div>
+                <label for="package_status" class="block font-bold text-gray-700">สถานะการตัดแพ็คเกจ:</label>
+                <select v-model="newOrder.package_status" class="border px-2 py-1 rounded w-full">
+                  <option value="calculate">ตัดแพ็คเกจ</option>
+                  <option value="not_calculate">ไม่ตัดแพ็คเกจ</option>
+                </select>
+              </div>
+
+            </div>
+
+            <!-- Footer -->
+            <div class="flex justify-between space-x-4 p-4 bg-white border-t rounded-b-md list-none">
+              <li @click="resetNewOrder"
+                class="px-4 py-2 cursor-pointer font-bold text-custom-orange text-left hover:underline">
+                <span>รีเซ็ตข้อมูล</span>
+              </li>
+              <div class="flex space-x-2">
+                <button @click="closeAddModal" class="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400 text-gray-700">
+                  ยกเลิก
+                </button>
+                <button @click="addOrder"
+                  class="px-4 py-2 rounded bg-custom-orange text-white hover:bg-custom-orange-hover">
+                  บันทึก
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <div class="sort relative inline-block" ref="sortDropdown">
         <button @click="toggleSortDropdown"
@@ -209,7 +320,7 @@
             <input type="checkbox" @change="toggleSelectAll" :checked="isAllSelected"
               class="w-4 h-4 accent-black focus:ring-0" />
           </th>
-          <th v-for="(header, index) in headers" :key="index" :class="['px-4 py-2 text-left font-bold']"
+          <th v-for="(header, index) in headers" :key="index" :class="['px-4 py-2 font-bold text-center']"
             :style="{ width: headerWidths[index], cursor: 'default', pointerEvents: 'none' }">
             {{ header }}
           </th>
@@ -234,17 +345,16 @@
               <input type="checkbox" v-model="selectedOrders" :value="order"
                 class="w-4 h-4 accent-custom-orange focus:ring-0" />
             </td>
-            <td class="px-4 py-2 align-top pb-5">{{ (currentPage - 1) * itemsPerPage + index + 1 }}</td>
+            <td class="px-4 py-2 align-top pb-5 text-center">{{ (currentPage - 1) * itemsPerPage + index + 1 }}</td>
 
             <td
               class="px-4 py-2 align-top font-bold border-l border-r text-custom-orange pb-5 cursor-pointer hover:text-custom-orange-hover"
-              v-if="shouldDisplayUserName(index, order.user_id)" :rowspan="getRowspan(order.user_id, index)"
-              @click="selectCustomerOrders(order.user_id)">
-              {{ getCustomerName(order.user_id) }}
+              v-if="shouldDisplayUserName(index, order.customer_id)" :rowspan="getRowspan(order.customer_id, index)"
+              @click="selectCustomerOrders(order.customer_id)">
+              {{ getCustomerName(order.customer_id) }}
             </td>
 
-            <!-- <td class="px-4 py-2 align-top pb-5">{{ getCustomerName(order.user_id) }}</td> -->
-            <td class="px-4 py-2 align-top pb-5">{{ formatDate(order.order_date) }}</td>
+            <td class="px-4 py-2 align-top pb-5 text-center">{{ formatDate(order.order_date) }}</td>
             <td class="px-4 py-2 align-top pb-5">{{ getMenuTypeName(order.menu_type_id) }}</td>
 
             <td class="px-4 py-2 align-top pb-5">
@@ -252,7 +362,30 @@
               <div>({{ getMenuName(order.menu_id) }})</div>
             </td>
 
-            <td class="px-4 py-2 align-top pb-5">{{ order.quantity }}</td>
+            <td class="px-4 py-2 align-top pb-5">
+              <div v-if="isEditing && editingOrderId === order.id" class="flex items-center space-x-2">
+                <button @click="decreaseQuantity(order)"
+                  class="bg-custom-orange text-white px-3 py-1 rounded hover:bg-custom-orange-hover">-</button>
+
+                <input type="number" v-model="order.quantity"
+                  class="border px-2 py-1 rounded w-16 text-center input-no-spinner" />
+
+                <button @click="increaseQuantity(order)"
+                  class="bg-custom-orange text-white px-3 py-1 rounded hover:bg-custom-orange-hover">+</button>
+              </div>
+
+              <span v-else class="text-gray-700 flex flex-col items-center">
+                <strong class="text-black">{{ order.quantity }}</strong>
+                <span
+                  :class="{ 'text-green-500': order.package_status === 'calculate', 'text-red-500': order.package_status !== 'calculate' }">
+                  ({{ getPackageStatusText(order.package_status) }})
+                </span>
+              </span>
+
+
+            </td>
+
+
 
             <td class="px-4 py-2 align-top font-bold pb-5">
               <button @click="openConfirmSatatusModal(order)"
@@ -274,8 +407,8 @@
                     <span class="font-bold">
                       {{
                         selectedOrder.status === "paid"
-                          ? "เปลี่ยนสถานะเป็นยังไม่ได้ยืนยันการสั่งซื้อ"
-                          : "ยืนยันการสั่งซื้อ"
+                          ? "เปลี่ยนสถานะเป็นยังไม่ได้ยืนยันการสั่ง"
+                          : "ยืนยันการสั่ง"
                       }}
                     </span>
                     <button @click="closeConfirmStatusModal" class="text-white hover:text-gray-200">
@@ -288,8 +421,8 @@
                     <p class="text-gray-700">
                       {{
                         selectedOrder.status === "confirm"
-                          ? 'คุณต้องการเปลี่ยนสถานะเป็น "ยังไม่ได้ยืนยันการสั่งซื้อ" หรือไม่?'
-                          : "ยืนยันการสั่งซื้อ?"
+                          ? 'คุณต้องการเปลี่ยนสถานะเป็น "ยังไม่ได้ยืนยันการสั่ง" หรือไม่?'
+                          : "ยืนยันการสั่ง?"
                       }}
                     </p>
 
@@ -314,6 +447,34 @@
               </div>
             </td>
 
+            <td class="px-4 py-2 text-right pb-5 relative">
+              <div class="flex justify-end space-x-2">
+                <button v-if="!isEditing || editingOrderId !== order.id" @click="startEditing(order)"
+                  class="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 flex items-center space-x-1">
+                  <span class="material-symbols-outlined">edit_square</span>
+                  <span>แก้ไข</span>
+                </button>
+
+                <button v-if="isEditing && editingOrderId === order.id" @click="saveUpdatedQuantity(order)"
+                  class="bg-custom-orange text-white px-2 py-1 rounded hover:bg-custom-orange-hover flex items-center space-x-1">
+                  <span class="material-symbols-outlined">check</span>
+                  <span>บันทึก</span>
+                </button>
+
+                <button v-if="isEditing && editingOrderId === order.id" @click="cancelEditing"
+                  class="bg-gray-500 text-white px-2 py-1 rounded hover:bg-gray-600 flex items-center space-x-1">
+                  <span class="material-symbols-outlined">close</span>
+                  <span>ยกเลิก</span>
+                </button>
+
+                <button @click="confirmDelete(order.id)"
+                  class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 flex items-center space-x-1">
+                  <span class="material-symbols-outlined">delete</span>
+                  <span>ลบ</span>
+                </button>
+              </div>
+            </td>
+
 
           </tr>
 
@@ -323,6 +484,29 @@
 
         </template>
       </tbody>
+
+      <div v-if="isDeleteModalOpen" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+        <div class="bg-white rounded-lg shadow-md w-1/3">
+          <div class="flex justify-between items-center bg-red-500 text-white px-4 py-2 rounded-t">
+            <h2 class="text-lg font-bold">ยืนยันการลบ</h2>
+            <span @click="closeDeleteModal" class="material-symbols-outlined cursor-pointer hover:text-gray-200">
+              close
+            </span>
+          </div>
+          <div class="p-4">
+            <p>คุณแน่ใจหรือไม่ว่าต้องการลบข้อมูลนี้? การดำเนินการนี้ไม่สามารถย้อนกลับได้</p>
+          </div>
+          <div class="flex justify-end space-x-4 p-4 bg-white border-t rounded-b-md list-none">
+            <button @click="closeDeleteModal" class="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400">
+              ยกเลิก
+            </button>
+            <button @click="deleteConfirmed" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
+              ยืนยัน
+            </button>
+          </div>
+        </div>
+      </div>
+
 
     </table>
 
@@ -375,27 +559,32 @@
 import axios from 'axios';
 import flatpickr from "flatpickr";
 import "flatpickr/dist/flatpickr.css";
-import { API_URL } from "@/services/api";
+import Multiselect from "vue-multiselect";
+import { API_URL } from "@/services/testapi";
 
-//import Multiselect from 'vue-multiselect';
 
 export default {
+  components: {
+    Multiselect
+  },
   data() {
     return {
-      headers: ['#', `Customer's Name`, 'วันที่สั่งซื้อ', 'Packge Type', 'รายการอาหาร', 'จำนวน', 'สถานะ'],
-      headerWidths: ['5%', '20%', '15%', '15%', '20%', '10%', '15%'],
+      headers: ['#', `Customer's Name`, 'วันที่สั่งซื้อ', 'Packge Type', 'รายการอาหาร', 'จำนวน', 'สถานะ', ''],
+      headerWidths: ['5%', '20%', '15%', '15%', '20%', '10%', '15%', '5%'],
       // sortDateDirection: 'asc', // กำหนดทิศทางการเรียงลำดับ (asc หรือ desc)
       sortIcon: 'arrow_downward',
 
       orders: [],
       searchQuery: "",
 
-
+      selectedMealType: "",
+      selectedMenuType: "",
       // filteredOrders: [],
       selectedDate: "",
       customers: [],
       menus: [],
       menu_types: [],
+      meal_types: [],
 
       selectedOrder: [],
       selectedOrders: [],
@@ -424,6 +613,20 @@ export default {
       },
       sortColumn: '',
       isLoading: false,
+
+      isEditing: false,
+      editingOrderId: null,
+      isDeleteModalOpen: false,
+      itemToDelete: null,
+
+      isAddModalOpen: false,
+      newOrder: {
+        menu_id: "",
+        quantity: 0,
+        order_date: "",
+        customer_id: "",
+        package_status: "calculate",
+      },
 
     };
   },
@@ -502,7 +705,9 @@ export default {
         year: "numeric",
       }).format(new Date(this.endDate));
     },
-
+    menuLabel() {
+      return (menu) => `${menu.name_thai} (${menu.name_english || null})`;
+    },
 
   },
   methods: {
@@ -596,10 +801,10 @@ export default {
           const dateB = new Date(b.order_date);
 
           if (dateA.getTime() === dateB.getTime()) {
-            return a.id - b.id; // เรียงจากน้อยไปหามากตาม id
+            return a.id - b.id;
           }
 
-          return dateA - dateB; // เรียงจากน้อยไปหามากตาม order_date
+          return dateA - dateB;
         });
 
 
@@ -613,14 +818,16 @@ export default {
 
     async fetchLookupData() {
       try {
-        const [customersRes, menuRes, menuTypeRes] = await Promise.all([
+        const [customersRes, menuRes, menuTypeRes, mealTypeRes] = await Promise.all([
           axios.get(`${API_URL}/customers`),
           axios.get(`${API_URL}/menus`),
           axios.get(`${API_URL}/menu-types`),
+          axios.get(`${API_URL}/meal-types`),
         ]);
         this.customers = customersRes.data;
         this.menus = menuRes.data;
         this.menu_types = menuTypeRes.data;
+        this.meal_types = mealTypeRes.data;
 
       } catch (error) {
         console.error("Error fetching lookup data:", error);
@@ -636,8 +843,34 @@ export default {
     },
 
     getCustomerName(customerId) {
-      const customer = this.customers.find((c) => c.user_id === customerId);
+      const customer = this.customers.find((c) => c.id === customerId);
       return customer ? customer.name : null;
+    },
+    getFilteredMealType(selectedMenuType) {
+      if (selectedMenuType) {
+        return this.meal_types.filter(
+          (menu) => menu.menu_type_id === selectedMenuType.id
+        );
+      }
+      return this.meal_types.filter((menu) => {
+        const mealType = this.meal_types.find(
+          (item) => item.id === menu.menu_type_id
+        );
+        return mealType && mealType.menuType.id === 1;
+      });
+    },
+    getFilteredMenus(selectedMealType) {
+      if (selectedMealType) {
+        return this.menus.filter(
+          (menu) => menu.meal_type_id === selectedMealType.id
+        );
+      }
+      return this.menus.filter((menu) => {
+        const mealType = this.meal_types.find(
+          (item) => item.id === menu.meal_type_id
+        );
+        return mealType && mealType.menuType.id === 1;
+      });
     },
     getMenuName(menuId) {
       const menu = this.menus.find((c) => c.id === menuId);
@@ -652,7 +885,7 @@ export default {
       return menu ? menu.name : null;
     },
     getStatusText(status) {
-      return status === "confirm" ? "ยืนยันการสั่งซื้อแล้ว" : "ยังไม่ได้ยืนยันการสั่งซื้อ";
+      return status === "confirm" ? "ยืนยันการสั่งแล้ว" : "ยังไม่ได้ยืนยันการสั่ง";
     },
     getStatusClass(status) {
       return status === "confirm"
@@ -685,14 +918,13 @@ export default {
       }
     },
 
-    shouldDisplayUserName(index, userId) {
-      return index === 0 || this.filteredOrders[index - 1].user_id !== userId;
+    shouldDisplayUserName(index, customerId) {
+      return index === 0 || this.filteredOrders[index - 1].customer_id !== customerId;
     },
-    getRowspan(userId, index) {
+    getRowspan(customerId, index) {
       let count = 0;
-      // คำนวณจำนวนแถวที่มี user_id ซ้ำ
       for (let i = index; i < this.filteredOrders.length; i++) {
-        if (this.filteredOrders[i].user_id === userId) {
+        if (this.filteredOrders[i].customer_id === customerId) {
           count++;
         } else {
           break;
@@ -855,8 +1087,8 @@ export default {
       }
     },
 
-    selectCustomerOrders(userId) {
-      const customerOrders = this.filteredOrdersWithoutHappy.filter(order => order.user_id === userId);
+    selectCustomerOrders(customerId) {
+      const customerOrders = this.filteredOrdersWithoutHappy.filter(order => order.customer_id === customerId);
       const isSelected = customerOrders.every(order => this.selectedOrders.includes(order));
 
       if (isSelected) {
@@ -971,6 +1203,118 @@ export default {
       }
     },
 
+    startEditing(Order) {
+      this.isEditing = true;
+      this.editingOrderId = Order.id;
+    },
+
+    saveUpdatedQuantity(Order) {
+      this.updateQuantity(Order);
+      this.isEditing = false;
+      this.editingOrderId = null;
+    },
+
+    cancelEditing() {
+      this.fetchOrders(this.startDate, this.endDate);
+      this.isEditing = false;
+      this.editingOrderId = null;
+    },
+
+    increaseQuantity(order) {
+      order.quantity += 1;
+    },
+    decreaseQuantity(order) {
+      if (order.quantity > 0) {
+        order.quantity -= 1;
+      }
+    },
+
+    async updateQuantity(Order) {
+      try {
+        await axios.put(`${API_URL}/orders/${Order.id}`, {
+          quantity: Order.quantity || 0,
+        });
+
+        await this.fetchOrders();
+        this.showSuccessToastNotification("แก้ไขข้อมูลสำเร็จ!");
+      } catch (error) {
+        console.error("เกิดข้อผิดพลาดในการอัปเดตข้อมูลการจัดส่ง:", error);
+        this.showErrorToastNotification("เกิดข้อผิดพลาดในการแก้ไข!");
+      }
+    },
+
+    confirmDelete(itemId) {
+      this.itemToDelete = itemId;
+      this.isDeleteModalOpen = true;
+    },
+    closeDeleteModal() {
+      this.isDeleteModalOpen = false;
+      this.itemToDelete = null;
+    },
+    async deleteConfirmed() {
+      try {
+        await axios.delete(`${API_URL}/orders/${this.itemToDelete}`);
+        this.orders = this.orders.filter(
+          (item) => item.id !== this.itemToDelete
+        );
+        this.closeDeleteModal();
+        await this.fetchOrders();
+        this.showFailToastNotification("ลบข้อมูลสำเร็จ!");
+      } catch (error) {
+        // console.error("Error deleting item:", error);
+        this.showErrorToastNotification("เกิดข้อผิดพลาดในการลบข้อมูล!");
+      }
+    },
+
+    getPackageStatusText(status) {
+      return status === "calculate" ? "ตัดแพ็คเกจ" : "ไม่ตัดแพ็คเกจ";
+    },
+
+    openAddModal() {
+      this.isAddModalOpen = true;
+    },
+    closeAddModal() {
+      this.isAddModalOpen = false;
+      this.resetNewOrder();
+    },
+    resetNewOrder() {
+      this.newOrder = {
+        menu_id: null,
+        quantity: 0,
+        order_date: "",
+        customer_id: null,
+        package_status: "calculate",
+      };
+      this.selectedMealType = null;
+      this.selectedMenuType = null;
+    },
+    async addOrder() {
+      if (!this.newOrder.customer_id || !this.newOrder.menu_id) {
+        this.showErrorToastNotification("กรุณากรอกข้อมูลให้ครบ!");
+        return;
+      }
+      if (!this.newOrder.order_date) {
+        this.showErrorToastNotification("กรุณาเลือกวันที่สั่งรายการอาหาร!");
+        return;
+      }
+      try {
+        const response = await axios.post(`${API_URL}/orders-add`, {
+          menu_id: this.newOrder.menu_id.id,
+          quantity: this.newOrder.quantity,
+          order_date: this.newOrder.order_date,
+          customer_id: this.newOrder.customer_id.id,
+          package_status: this.newOrder.package_status
+        });
+        this.orders.push(response.data);
+        this.closeAddModal();
+        await this.fetchOrders(this.startDate, this.endDate);
+        this.showSuccessToastNotification("เพิ่มข้อมูลสำเร็จ!");
+      } catch (error) {
+        this.showErrorToastNotification("เกิดข้อผิดพลาดในการเพิ่มข้อมูล!");
+      }
+    },
+
+
 
     showSuccessToastNotification(message) {
       this.toastSuccessMessage = message;
@@ -1049,8 +1393,14 @@ export default {
 </script>
 
 <style scoped>
-.dropdown-up {
-  bottom: 100%;
-  margin-bottom: 4px;
+.input-no-spinner::-webkit-outer-spin-button,
+.input-no-spinner::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.spinner-border {
+  border-top-color: #FFB539;
+  /* เปลี่ยนสีของเส้นด้านบน */
 }
 </style>

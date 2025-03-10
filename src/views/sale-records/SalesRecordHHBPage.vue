@@ -42,6 +42,12 @@
         </span>
       </button>
 
+      <div>
+        <label for="month" class="mr-2 font-bold text-gray-700">เลือกเดือน:</label>
+        <input type="month" v-model="selectedMonth" @change="fetchSaleRecords"
+          class="text-center bg-white rounded-md font-bold border border-gray-200 focus:outline-none focus:ring-2 focus:ring-custom-orange hover:ring-2 hover:ring-custom-orange text-custom-orange hover:text-custom-orange-hover w-[150px]" />
+      </div>
+
       <div class="add relative inline-block">
         <button @click="openAddModal"
           class="bg-custom-orange text-white px-4 py-2 rounded flex items-center space-x-1 hover:bg-custom-orange-hover">
@@ -1474,7 +1480,7 @@
             </div>
           </div>
         </div>
-      </div>  
+      </div>
 
       <div v-if="isDeleteModalOpen"
         class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
@@ -1593,7 +1599,23 @@ export default {
       filteredSaleRecords: [],
 
       isAddModalOpen: false,
-      saleRecord: {},
+      saleRecord: {
+        free_brittles: 0,
+        free_credit: 0,
+        free_dessert: 0,
+        free_dressing: 0,
+        free_energy_balls: 0,
+        free_granola: 0,
+        free_mad: 0,
+        free_yoghurt: 0,
+        discount: 0,
+        extra_charge: 0,
+        zone1_quantity: 0,
+        zone2_quantity: 0,
+        zone3_quantity: 0,
+        zone_outsource_quantity: 0,
+        add_price: 0,
+      }, 
       customers: [],
       customerAddress: null,
 
@@ -1651,7 +1673,7 @@ export default {
       showFailToast: false,
       showErrorToast: false,
       toastErrorMessage: "",
-
+      selectedMonth: this.getCurrentMonth(),
       isLoading: false,
 
     };
@@ -2132,6 +2154,12 @@ export default {
       "fetchCustomerAddress",
     ]),
 
+    getCurrentMonth() {
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, "0"); // ทำให้เลขเดือนเป็น 2 หลัก เช่น 01, 02
+      return `${year}-${month}`; // รูปแบบ YYYY-MM
+    },
     resetProgramAndPackage() {
       this.saleRecord.program_id = null;
       this.saleRecord.package_id = null;
@@ -2727,12 +2755,20 @@ export default {
 
     async fetchSaleRecords() {
       this.isLoading = true;
-
       try {
-        const response = await axios.get(`${API_URL}/sale-records-hhb`);
+        let url = `${API_URL}/sale-records-hhb`;
+
+        if (this.selectedMonth) {
+          url += `?month=${this.selectedMonth}`;
+        }
+
+        const response = await axios.get(url);
         this.saleRecords = response.data;
         this.filteredSaleRecords = response.data;
+
+        // เรียงตาม id
         this.saleRecords.sort((a, b) => a.id - b.id);
+
         this.updatePage();
       } catch (error) {
         console.error("Error fetching sale records:", error);
