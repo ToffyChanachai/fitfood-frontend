@@ -31,16 +31,23 @@
           {{ filteredSaleRecords1standRenew.length }} รายการ</span>
       </div>
 
-      <button v-if="selectedPackageType.length > 0" @click="clearFilter"
+      <button v-if="selectedPackageType.length > 0 || selectedProgram.length > 0 || selectedPromotionType.length > 0" 
+        @click="clearFilter"
         class="px-2 py-2 rounded-md flex items-center space-x-1 text-gray-400 hover:text-custom-orange">
-        <span class="material-symbols-outlined">close</span>
-        <span class="ml-2">
-          รีเซ็ตตัวกรอง
-          <template v-if="selectedPackageType.length > 0">
-            ({{ selectedPackageType.length }})
-          </template>
-        </span>
-      </button>
+  <span class="material-symbols-outlined">close</span>
+  <span class="ml-2">
+    รีเซ็ตตัวกรอง
+    <template v-if="selectedPackageType.length > 0">
+      ({{ selectedPackageType.length }} Package Type)
+    </template>
+    <template v-if="selectedProgram.length > 0">
+      ({{ selectedProgram.length }} Program)
+    </template>
+    <template v-if="selectedPromotionType.length > 0">
+      ({{ selectedPromotionType.length }} Promotion)
+    </template>
+  </span>
+</button>
 
       <div>
         <label for="month" class="mr-2 font-bold text-gray-700">เลือกเดือน:</label>
@@ -522,7 +529,7 @@
 
                 <div class="flex-1">
                   <label for="startDate" class="block font-bold text-gray-700">วันเริ่มแพ็คเกจ</label>
-                  <input v-model="saleRecord.start_date" id="startDate" type="date"
+                  <input v-model="saleRecord.start_package_date" id="startDate" type="date"
                     class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange" />
                 </div>
               </div>
@@ -630,7 +637,16 @@
         <div v-if="isFilterDropdownOpen"
           class="absolute right-0 top-full mt-1 bg-white text-black text-left shadow-lg rounded-md overflow-y-auto z-50 border border-gray-300">
           <div class="p-4 w-[500px] list-none">
-            <h3 class="font-bold mb-2">กรองโดย Package Type</h3>
+            <h3 class="font-bold mb-2">กรองโดย Promotion Type</h3>
+            <div class="grid grid-cols-2 gap-4">
+              <label v-for="type in promotionTypes" :key="type.id" class="flex items-center space-x-2">
+                <input type="checkbox" v-model="selectedPromotionType" :value="type.id"
+                  class="w-5 h-5 border-2 border-gray-400 rounded-full appearance-none checked:bg-custom-orange checked:border-transparent">
+                <span>{{ type.name }}</span>
+              </label>
+            </div>
+
+            <h3 class="font-bold mt-4 mb-2">กรองโดย Package Type</h3>
             <div class="grid grid-cols-3 gap-4">
               <label v-for="type in filteredPackageTypes" :key="type.id" class="flex items-center space-x-2">
                 <input type="checkbox" v-model="selectedPackageType" :value="type.id"
@@ -638,6 +654,16 @@
                 <span>{{ type.name }}</span>
               </label>
             </div>
+
+            <h3 class="font-bold mt-4 mb-2">กรองโดย Program</h3>
+            <div class="space-y-2">
+              <label v-for="type in filteredPrograms" :key="type.id" class="flex items-center space-x-2">
+                <input type="checkbox" v-model="selectedProgram" :value="type.id"
+                  class="w-5 h-5 border-2 border-gray-400 rounded-full appearance-none checked:bg-custom-orange checked:border-transparent">
+                <span>{{ getProgramName(type.id) }}</span>
+              </label>
+            </div>
+
           </div>
           <div class="flex justify-between space-x-4 p-4 bg-white border-t rounded-b-md list-none">
             <li @click="clearFilter"
@@ -1429,7 +1455,7 @@
 
               <div class="flex-1">
                 <label for="editStartDate" class="block font-bold text-gray-700">วันเริ่มแพ็คเกจ</label>
-                <input v-model="selectedSaleRecord.start_date" id="startDate" type="date"
+                <input v-model="selectedSaleRecord.start_package_date" id="startDate" type="date"
                   class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange" />
               </div>
             </div>
@@ -1645,6 +1671,8 @@ export default {
 
       isFilterDropdownOpen: false,
       selectedPackageType: [],
+      selectedProgram: [],
+      selectedPromotionType: [],
       //filteredSaleRecord: [],
 
       isDetailModalOpen: false,
@@ -1714,7 +1742,7 @@ export default {
         package: this.selectedSaleRecord.package.package_detail,
         promotion_detail: this.selectedSaleRecord.package.promotion_detail,
         receive_food: this.totalReceiveFood,
-        start_date: this.formatDate(this.selectedSaleRecord.start_date),
+        start_package_date: this.formatDate(this.selectedSaleRecord.start_package_date),
         sellect_by: this.getSelectFood(this.selectedSaleRecord.select_food_id),
         // delivery_date: this.selectedSaleRecord.customer.delivery_date,
         delivery: this.getDeliveryRoundName(
@@ -1806,9 +1834,9 @@ export default {
         ),
         transaction_ref: this.selectedSaleRecord.transaction_ref || "",
 
-        start_date: this.formatDate(this.selectedSaleRecord.start_date),
+        start_package_date: this.formatDate(this.selectedSaleRecord.start_package_date),
         expiry_date: this.formatDate(this.selectedSaleRecord.expiry_date),
-        receive_date: this.formatDate(this.selectedSaleRecord.start_date),
+        receive_date: this.formatDate(this.selectedSaleRecord.start_package_date),
         note: this.selectedSaleRecord.note || "",
         package_detail: this.selectedSaleRecord.package?.package_detail || "",
 
@@ -1957,7 +1985,11 @@ export default {
             saleRecord.customer_id
           ).toLowerCase().includes(this.searchQuery.toLowerCase());
           const matchesPackageType = this.selectedPackageType.length === 0 || this.selectedPackageType.includes(saleRecord.package_type_id);
-          return matchesSearch && matchesPackageType;
+          const matchesProgram = this.selectedProgram.length === 0 || this.selectedProgram.includes(saleRecord.program_id);
+          const matchesPromotionType = this.selectedPromotionType.length === 0 || this.selectedPromotionType.includes(saleRecord.promotion_type_id);
+
+          return matchesSearch && matchesPackageType && matchesProgram && matchesPromotionType;
+
         });
 
     },
@@ -2233,7 +2265,10 @@ export default {
           saleRecord.customer_id
         ).toLowerCase().includes(this.searchQuery.toLowerCase());
         const matchesPackageType = this.selectedPackageType.length === 0 || this.selectedPackageType.includes(saleRecord.package_type_id);
-        return matchesSearch && matchesPackageType;
+        const matchesProgram = this.selectedProgram.length === 0 || this.selectedProgram.includes(saleRecord.program_id);
+        const matchesPromotionType = this.selectedPromotionType.length === 0 || this.selectedPromotionType.includes(saleRecord.promotion_type_id);
+
+        return matchesSearch && matchesPackageType && matchesProgram && matchesPromotionType;
       });
 
       this.currentPage = 1;
@@ -2290,6 +2325,16 @@ export default {
         this.filteredSaleRecords = this.packageTypes.filter(packageType =>
           this.selectedPackageType.includes(packageType.package_type_id)
         );
+      }
+      if (this.selectedProgram.length > 0) {
+        this.filteredSaleRecords = this.programs.filter(program =>
+          this.selectedProgram.includes(program.program_id)
+        );
+      }
+      if (this.selectedPromotionType.length > 0) {
+        this.filteredSaleRecords = this.promotionTypes.filter(promotionType =>
+          this.selectedPromotionType.includes(promotionType.promotion_type_id)
+        );
       } else {
         this.filteredSaleRecords = this.saleRecords;
       }
@@ -2298,6 +2343,8 @@ export default {
     },
     clearFilter() {
       this.selectedPackageType = [];
+      this.selectedProgram = [];
+      this.selectedPromotionType = [];
       this.filteredSaleRecords = this.saleRecords;
       this.updatePage();
     },
@@ -2398,7 +2445,7 @@ export default {
           payment_status: this.saleRecord.payment_status || "unpaid",
           paid_date: this.saleRecord.paid_date || null,
           payment_type_id: this.saleRecord.payment_type_id?.id || null,
-          start_date: this.saleRecord.start_date || null,
+          start_package_date: this.saleRecord.start_package_date || null,
           zone1_id: this.saleRecord.zone1_id?.id || null,
           zone1_quantity: this.saleRecord.zone1_quantity || 0,
 
@@ -2486,7 +2533,7 @@ export default {
         payment_status: "unpaid",
         paid_date: "",
         payment_type_id: "",
-        start_date: "",
+        start_package_date: "",
         expiry_date: "",
         remaining_days: 0,
 
@@ -2526,7 +2573,7 @@ export default {
 
       this.selectedSaleRecord = {
         ...saleRecord,
-        start_date: formatDate(saleRecord.start_date), // แปลงวันที่ก่อนนำไปใช้
+        start_package_date: formatDate(saleRecord.start_package_date), // แปลงวันที่ก่อนนำไปใช้
         customer_id: this.customers.find(c => c.id === saleRecord.customer_id) || null,
         package_type_id: this.packageTypes.find(p => p.id === saleRecord.package_type_id) || null,
         promotion_type_id: this.promotionTypes.find(p => p.id === saleRecord.promotion_type_id) || null,
@@ -2568,7 +2615,7 @@ export default {
             // payment_status: this.selectedSaleRecord.payment_status || "unpaid",
             // paid_date: this.selectedSaleRecord.paid_date || null,
             // payment_type_id: this.selectedSaleRecord.payment_type_id?.id || null,
-            start_date: this.selectedSaleRecord.start_date || null,
+            start_package_date: this.selectedSaleRecord.start_package_date || null,
             zone1_id: this.selectedSaleRecord.zone1_id?.id || null,
             zone1_quantity: this.selectedSaleRecord.zone1_quantity || 0,
 
@@ -2697,12 +2744,12 @@ export default {
         }
 
         this.allPackages = packagesRes.data.filter((packaged) => {
-          if (!packaged.start_date) {
+          if (!packaged.start_package_date) {
             packaged.displayLabel = packaged.name;
             return true;
           }
 
-          const date = new Date(packaged.start_date);
+          const date = new Date(packaged.start_package_date);
           const currentMonth = new Date().getMonth();
           const startMonth = date.getMonth();
 
@@ -2802,11 +2849,11 @@ export default {
       if (this.allPackages && Array.isArray(this.allPackages)) {
         const packaged = this.allPackages.find((p) => p.id === packageId);
         if (packaged) {
-          if (!packaged.start_date) {
+          if (!packaged.start_package_date) {
             return packaged.name;
           }
 
-          const date = new Date(packaged.start_date);
+          const date = new Date(packaged.start_package_date);
           const currentMonth = new Date().getMonth();
           const startMonth = date.getMonth();
 
@@ -2953,7 +3000,7 @@ export default {
         payment_type_id: "วิธีการชำระเงิน",
         receive_date: "วันเริ่มรับอาหารวันแรก",
         sellect_by: "เลือกอาหารโดย",
-        start_date: "วันเริ่มแพ็กเกจ",
+        start_package_date: "วันเริ่มแพ็กเกจ",
         expiry_date: "วันหมดอายุแพ็คเกจ",
         note: "Note รายละเอียดโปรโมชันสำหรับส่งสรุปให้ลูกค้า (ถ้ามี)",
         package_detail: "ข้อมูลแพ็กเกจ(สำหรับสรุปให้ลูกค้า)",
@@ -2998,7 +3045,7 @@ export default {
         package: "▶️ แพ็คเกจ",
         promotion_detail: "🔥",
         receive_food: "▶️ อาหารที่ได้รับ",
-        start_date: "▶️ วันรับอาหารวันแรก",
+        start_package_date: "▶️ วันรับอาหารวันแรก",
         sellect_by: "▶️ เลือกอาหารโดย",
         delivery_date: "▶️ วันที่รับอาหาร",
         delivery: "▶️ จัดส่ง",

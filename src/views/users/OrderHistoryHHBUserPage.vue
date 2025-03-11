@@ -1,49 +1,57 @@
 <template>
     <div>
 
-        <div
-            class="flex flex-wrap items-center justify-between sm:justify-start space-x-2 sm:space-x-3 py-2 text-sm sm:text-base">
-            <!-- ปุ่มกลับ -->
+        <div class="flex items-center space-x-3 py-2 flex-wrap sm:flex-nowrap">
+            <!-- ปุ่มย้อนกลับ (ซ่อนบนมือถือ) -->
             <div @click="$router.back()"
-                class="hidden sm:inline-flex items-center space-x-1 cursor-pointer text-custom-orange hover:text-custom-orange-hover">
+                class="hidden sm:flex items-center space-x-1 cursor-pointer text-custom-orange hover:text-custom-orange-hover">
                 <span class="material-symbols-outlined text-2xl">arrow_back</span>
-                <span class=" sm:inline-flex text font-bold">กลับ</span>
+                <span class="text font-bold">กลับ</span>
             </div>
 
             <!-- ปุ่มลูกศรย้อนกลับ -->
-            <button @click="changeDate(-1)">
-                <span
-                    class="material-symbols-outlined pt-6 sm:pt-0 sm:text-3xl text-custom-orange hover:text-custom-orange-hover">
-                    chevron_backward
+            <button @click="changeDate(-1)" class="hidden sm:flex items-center">
+                <span class="material-symbols-outlined sm:text-3xl text-xl text-custom-orange hover:text-custom-orange-hover">
+                    chevron_left
                 </span>
             </button>
 
-            <!-- ปุ่มวันนี้ (ซ่อนในมือถือ) -->
             <button @click="setToday"
-                class="hidden sm:inline-flex items-center text-custom-orange hover:underline hover:text-custom-orange">
-                <span class="font-bold">วันนี้</span>
+                class="hidden sm:flex items-center text-custom-orange hover:underline hover:text-custom-orange">
+                <span class="mr-2 font-bold text-sm sm:text-base">วันนี้</span>
             </button>
 
-            <!-- ปุ่มลูกศรไปข้างหน้า -->
-            <button @click="changeDate(1)">
-                <span
-                    class="material-symbols-outlined pt-6 sm:pt-0 sm:text-3xl text-custom-orange hover:text-custom-orange-hover">
-                    chevron_forward
+            <button @click="changeDate(1)" class="hidden sm:flex items-center">
+                <span class="material-symbols-outlined sm:text-3xl text-xl text-custom-orange hover:text-custom-orange-hover">
+                    chevron_right
                 </span>
             </button>
 
-            <!-- เลือกวันที่ (ซ่อนในมือถือ) -->
-            <div class="flex-1 sm:flex-none sm:flex sm:items-center space-y-2 sm:space-y-0 sm:space-x-2 mt-2 sm:mt-0">
-                <strong class="hidden text-gray-700">เลือกวันที่:</strong>
-                <input ref="singleDatepicker" type="text" v-model="formattedStartDate"
-                    class="text-center bg-white rounded-md font-bold border border-gray-200 focus:outline-none focus:ring-2 focus:ring-custom-orange hover:ring-2 hover:ring-custom-orange text-custom-orange hover:text-custom-orange-hover w-full sm:w-[150px]"
-                    placeholder="เลือกวันที่" />
+            <div
+                class="flex flex-wrap sm:flex-nowrap items-center space-x-2 space-y-2 sm:space-x-3 w-full sm:w-auto mt-2 sm:mt-0">
+                <!-- Start Date -->
+                <div class="flex items-center space-x-2 w-full sm:w-auto">
+                    <strong class="text-gray-700 text-sm sm:text-base whitespace-nowrap">Start Date:</strong>
+                    <input ref="startDatepicker" type="text" v-model="formattedStartDate" @input="onStartDateChange"
+                        class="text-center bg-white rounded-md font-bold border border-gray-200 focus:outline-none focus:ring-2 focus:ring-custom-orange hover:ring-2 hover:ring-custom-orange text-custom-orange hover:text-custom-orange-hover w-full sm:w-[150px] flex-grow"
+                        placeholder="เลือกวันที่เริ่มต้น" />
+                </div>
+
+                <!-- End Date -->
+                <div class="flex items-center space-x-2 w-full sm:w-auto flex-nowrap">
+                    <strong class="text-gray-700 text-sm sm:text-base whitespace-nowrap">End Date:</strong>
+                    <input ref="endDatepicker" type="text" v-model="formattedEndDate" @input="onEndDateChange"
+                        class="text-center bg-white rounded-md font-bold border border-gray-200 focus:outline-none focus:ring-2 focus:ring-custom-orange hover:ring-2 hover:ring-custom-orange text-custom-orange hover:text-custom-orange-hover w-full sm:w-[150px] flex-grow"
+                        placeholder="เลือกวันที่สิ้นสุด" />
+                </div>
+
+
             </div>
         </div>
 
         <div class="mt-4">
             <div class="flex items-center">
-                <h1 class="text-sm sm:text-xl font-bold">ประวัติการสั่งซื้อ: </h1>
+                <h1 class="text-sm sm:text-xl font-bold">ประวัติการสั่งรายการอาหาร: </h1>
 
                 <h1 v-if="isLoading" class="text-sm sm:text-xl font-bold ml-2">
                     <div class="bg-gray-100 animate-pulse h-6 w-48 rounded-md"></div>
@@ -74,20 +82,20 @@
 
             <!-- เมื่อโหลดข้อมูลเสร็จ -->
             <div v-else>
-                <!-- หากมีประวัติการสั่งซื้อ -->
+                <!-- หากมีประวัติการสั่งรายการอาหาร -->
                 <div v-if="orders.length > 0"
                     class="mt-4 bg-white rounded-md shadow-lg p-4 border border-gray-300 overflow-y-auto h-[550px] sm:h-[650px]">
                     <div v-for="order in orders" :key="order.order_date"
                         class="border-b border-gray-200 py-4 text-[10px] sm:text-base">
-                        <div class="flex justify-between items-center">
+                        <div class="sm:flex justify-between items-center">
                             <!-- ชื่อเมนู -->
-                            <div class="font-semibold flex flex-col space-y-1">
+                            <div class="font-semibold flex flex-col">
                                 <div>{{ getMenuEngName(order.menu_id) }}</div>
                                 <div>({{ getMenuThaiName(order.menu_id) }})</div>
                             </div>
 
                             <!-- วันที่ -->
-                            <div class="text-gray-600">{{ formattedDate(order.order_date) }}</div>
+                            <div class="text-gray-500">{{ formattedDate(order.order_date) }}</div>
                         </div>
                         <div class="mt-2 text-gray-500">
                             <div class="flex items-center">
@@ -105,12 +113,12 @@
                     </div>
                 </div>
 
-                <!-- หากไม่มีประวัติการสั่งซื้อ -->
+                <!-- หากไม่มีประวัติการสั่งรายการอาหาร -->
                 <div v-if="orders.length === 0"
                     class="mt-4 bg-white rounded-md shadow-lg p-4 border border-gray-300 h-[550px] sm:h-[650px] flex justify-center items-center">
                     <div class="flex items-center space-x-1 text-gray-500 font-bold text-center">
                         <span class="material-symbols-outlined text-3xl">history_off</span>
-                        <span class="text-sm sm:text-xl">ไม่มีประวัติการสั่งซื้อในวันนี้</span>
+                        <span class="text-sm sm:text-xl">ไม่มีประวัติการสั่งรายการอาหาร</span>
                     </div>
                 </div>
             </div>
@@ -128,6 +136,7 @@ import axios from "axios";
 import flatpickr from "flatpickr";
 import "flatpickr/dist/flatpickr.css";
 import { API_URL } from "@/services/api";
+
 
 export default {
     data() {
@@ -207,9 +216,13 @@ export default {
                 const response = await axios.get(`${API_URL}/orders-hhb/user/${this.customerId}`, {
                     params: { start_date: startDate, end_date: endDate },
                 });
-                this.orders = response.data.orders || [];
+                this.orders = response.data.orders;
+                this.orders.sort((a, b) => {
+                    const dateA = new Date(a.order_date);
+                    const dateB = new Date(b.order_date);
+                    return dateA - dateB;
+                });
             } catch (error) {
-                // console.error("เกิดข้อผิดพลาดในการดึงประวัติการสั่งซื้อ:", error);
                 this.orders = []; // กรณีมีข้อผิดพลาดให้ตั้งค่าเป็นอาเรย์ว่าง
             } finally {
                 this.isLoading = false;
@@ -219,8 +232,13 @@ export default {
         onStartDateChange(event) {
             const inputDate = new Date(event.target.value);
             if (!isNaN(inputDate)) {
-                this.startDate = inputDate.toISOString();
-                this.endDate = inputDate.toISOString();
+                this.startDate = inputDate.toISOString(); // เก็บวันที่ในรูปแบบ ISO
+            }
+        },
+        onEndDateChange(event) {
+            const inputDate = new Date(event.target.value);
+            if (!isNaN(inputDate)) {
+                this.endDate = inputDate.toISOString(); // เก็บวันที่ในรูปแบบ ISO
             }
         },
 
@@ -249,6 +267,8 @@ export default {
             }
         },
         async fetchLookupData() {
+            this.isLoading = true;
+
             try {
                 const [
                     customersRes,
@@ -262,10 +282,13 @@ export default {
                 this.menus = menuRes.data;
             } catch (error) {
                 console.error("Error fetching lookup data:", error);
+            } finally {
+                this.isLoading = false;
             }
         },
 
         getCustomerName(customerId) {
+            // แปลง customerId และ id ให้อยู่ในรูปแบบเดียวกัน
             const customer = this.customers.find(c => c.id.toString() === customerId.toString());
             return customer ? customer.name : "ไม่พบข้อมูล";
         },
@@ -278,31 +301,39 @@ export default {
             return menu ? menu.name_english : "ไม่พบข้อมูล";
         },
         getStatusText(status) {
-            return status === "confirm" ? "ยืนยันการสั่งซื้อแล้ว" : "ยังไม่ได้ยืนยันการสั่งซื้อ";
+            return status === "confirm" ? "ยืนยันการสั่งรายการอาหารแล้ว" : "ยังไม่ได้ยืนยันการสั่งรายการอาหาร";
         },
     },
     created() {
-        this.fetchOrders(this.selectedDate);
+        this.fetchOrders(this.startDate, this.endDate);
         this.setToday();
         this.fetchLookupData();
     },
     mounted() {
         // document.addEventListener('click', this.handleClickOutside);
         this.fetchLookupData();
-        this.fetchOrders(this.selectedDate);
+        this.fetchOrders(this.startDate, this.endDate);
         this.setToday();
 
         this.$nextTick(() => {
-            this.fetchOrdersData();
-            flatpickr(this.$refs.singleDatepicker, {
-                // mode: "single",  // โหมดเลือกวันเดียว
-                dateFormat: "Y-m-d",  // รูปแบบวันที่
+            flatpickr(this.$refs.startDatepicker, {
+                dateFormat: "Y-m-d", // รูปแบบวันที่
                 todayButton: true,
-                defaultDate: new Date(),  // กำหนดวันที่เริ่มต้นเป็นวันนี้
+                defaultDate: new Date(),
                 onChange: (selectedDates, dateStr) => {
-                    this.startDate = dateStr;
-                    this.endDate = dateStr;
-                    this.fetchOrdersData();  // ดึงข้อมูลคำสั่งซื้อ
+                    this.startDate = dateStr; // กำหนดค่า startDate
+                    this.fetchOrdersData(); // เรียกฟังก์ชันเมื่อเลือกวันที่
+                }
+            });
+
+            // ใช้ flatpickr กับวันที่สิ้นสุด
+            flatpickr(this.$refs.endDatepicker, {
+                dateFormat: "Y-m-d",
+                todayButton: true,
+                defaultDate: new Date(),
+                onChange: (selectedDates, dateStr) => {
+                    this.endDate = dateStr; // กำหนดค่า endDate
+                    this.fetchOrdersData(); // เรียกฟังก์ชันเมื่อเลือกวันที่
                 }
             });
         });

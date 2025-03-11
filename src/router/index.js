@@ -13,6 +13,9 @@ import RegisterHHB from "@/views/users/RegisterHHBPage.vue";
 import OrderHistoryUser from "@/views/users/OrderHistoryUserPage.vue";
 import OrderHistoryHHBUser from "@/views/users/OrderHistoryHHBUserPage.vue";
 
+import OrderPackageHistoryUser from "@/views/users/OrderPackageHistoryUserPage.vue";
+import OrderPackageHistoryHHBUser from "@/views/users/OrderPackageHistoryHHBUserPage.vue";
+
 import User from "@/views/UserPage.vue";
 
 // import ForgotPassword from '@/views/users/ForgotPasswordPage.vue';
@@ -42,6 +45,12 @@ import Package from "@/views/packages/PakagesPage.vue";
 import PackageType from "@/views/packages/PackageTypesPage.vue";
 import AdditionalTypes from "@/views/packages/AdditionalTypesPage.vue";
 
+import Seller from "@/views/other/SellerPage.vue";
+import SelectFood from "@/views/other/SelectFoodPage.vue";
+
+import ReceiveFood from "@/views/zones/ReceiveFoodPage.vue";
+import DeliveryRound from "@/views/zones/DeliveryRoundPage.vue";
+
 import ZoneDeliveryType from "@/views/zones/ZoneDeliveryTypePage.vue";
 import ZoneDelivery from "@/views/zones/ZoneDeliveryPage.vue";
 
@@ -65,9 +74,11 @@ import KitchenOrderHHB from "@/views/kitchen-orders/KitchenOrderHHBPage.vue";
 
 import RemainingPackage from "@/views/remaining/RemainingPackagePage.vue";
 import OrderHistory from "@/views/remaining/OrderHistoryPage.vue";
+import OrderPackageHistory from "@/views/remaining/OrderPackageHistoryPage.vue";
 
 import RemainingPackageHHB from "@/views/remaining/RemainingPackageHHBPage.vue";
 import OrderHistoryHHB from "@/views/remaining/OrderHistoryHHBPage.vue";
+import OrderPackageHistoryHHB from "@/views/remaining/OrderPackageHistoryHHBPage.vue";
 
 import Delivery from "@/views/deliveries/DeliveryPage.vue";
 import DeliveryHHB from "@/views/deliveries/DeliveryHHBPage.vue";
@@ -77,7 +88,14 @@ import HHB from "@/views/orders/OrderHHBPage.vue";
 import LC from "@/views/orders/OrderLCPage.vue";
 import FL from "@/views/orders/OrderFLPage.vue";
 
+import NotFound from '@/views/NotFoundPage.vue';
 const routes = [
+  { path: '/:pathMatch(.*)*', 
+    name: 'NotFound', 
+    component: NotFound,
+    meta: { title: "Not Found - Absolute FitFood", layout: "BlankLayout" }
+  },
+
   {
     path: "/login",
     name: "login",
@@ -116,24 +134,44 @@ const routes = [
   },
   {
     path: "/order-history-user/:customerId",
-    name: "ประวัติการสั่งซื้อ User",
+    name: "ประวัติการสั่งรายการอาหาร User",
     component: OrderHistoryUser,
     meta: { 
-      title: "ประวัติการสั่งซื้อ - Absolute FitFood",
+      title: "ประวัติการสั่งรายการอาหาร - Absolute FitFood",
       layout: "SimpleLayout",
 
      },
   },
   {
     path: "/order-history-hhb-user/:customerId",
-    name: "ประวัติการสั่งซื้อ User HHB",
+    name: "ประวัติการสั่งรายการอาหาร User HHB",
     component: OrderHistoryHHBUser,
     meta: { 
-      title: "ประวัติการสั่งซื้อ - Absolute FitFood",
+      title: "ประวัติการสั่งรายการอาหาร - Absolute FitFood",
       layout: "SimpleLayout",
 
      },
   },
+
+  {
+    path: "/order-package-history-user/:customerId",
+    name: "ประวัติการสั่งซื้อแพ็คเกจ User",
+    component: OrderPackageHistoryUser,
+    meta: { 
+      title: "ประวัติการสั่งซื้อแพ็คเกจ - Absolute FitFood",
+      layout: "SimpleLayout",
+     },
+  },
+  {
+    path: "/order-package-history-hhb-user/:customerId",
+    name: "ประวัติการสั่งซื้อแพ็คเกจ HHB User",
+    component: OrderPackageHistoryHHBUser,
+    meta: { 
+      title: "ประวัติการสั่งซื้อแพ็คเกจ - Absolute FitFood",
+      layout: "SimpleLayout",
+     },
+  },
+  
 
   {
     path: "/users",
@@ -281,9 +319,15 @@ const routes = [
   },
   {
     path: "/order-history/:customerId",
-    name: "ประวัติการสั่งซื้อ",
+    name: "ประวัติการสั่งรายการอาหาร",
     component: OrderHistory,
-    meta: { title: "ประวัติการสั่งซื้อ - Absolute FitFood" },
+    meta: { title: "ประวัติการสั่งรายการอาหาร - Absolute FitFood" },
+  },
+  {
+    path: "/order-package-history/:customerId",
+    name: "ประวัติการสั่งซื้อแพ็คเกจ",
+    component: OrderPackageHistory,
+    meta: { title: "ประวัติการสั่งซื้อแพ็คเกจ - Absolute FitFood" },
   },
 
   {
@@ -294,9 +338,15 @@ const routes = [
   },
   {
     path: "/order-history-hhb/:customerId",
-    name: "ประวัติการสั่งซื้อ HHB",
+    name: "ประวัติการสั่งรายการอาหาร HHB",
     component: OrderHistoryHHB,
-    meta: { title: "ประวัติการสั่งซื้อ - Absolute FitFood" },
+    meta: { title: "ประวัติการสั่งรายการอาหาร - Absolute FitFood" },
+  },
+  {
+    path: "/order-package-history-hhb/:customerId",
+    name: "ประวัติการสั่งซื้อแพ็คเกจ HHB",
+    component: OrderPackageHistoryHHB,
+    meta: { title: "ประวัติการสั่งซื้อแพ็คเกจ HHB - Absolute FitFood" },
   },
 
   {
@@ -376,6 +426,33 @@ const routes = [
     name: "ข้อมูล Sales Type (Additional Sales)",
     component: AdditionalTypes,
     meta: { title: "ข้อมูล Sales Type (Additional Sales) - Absolute FitFood" },
+  },
+
+  {
+    path: "/sellers",
+    name: "ข้อมูลผู้ขาย",
+    component: Seller,
+    meta: { title: "ข้อมูลผู้ขาย - Absolute FitFood" },
+  },
+  {
+    path: "/select-foods",
+    name: "ข้อมูลวิธีการการเลือกอาหาร",
+    component: SelectFood,
+    meta: { title: "ข้อมูลวิธีการการเลือกอาหาร - Absolute FitFood" },
+  },
+
+  {
+    path: "/receive-foods",
+    name: "ข้อมูลวิธีการรับอาหาร",
+    component: ReceiveFood,
+    meta: { title: "ข้อมูลวิธีการรับอาหาร - Absolute FitFood" },
+  },
+
+  {
+    path: "/delivery-rounds",
+    name: "ข้อมูลรอบการจัดส่งอาหาร",
+    component: DeliveryRound,
+    meta: { title: "ข้อมูลรอบการจัดส่งอาหาร - Absolute FitFood" },
   },
 
   {

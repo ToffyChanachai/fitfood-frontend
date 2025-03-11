@@ -259,12 +259,54 @@
               </button>
             </td> -->
 
-              <td class="px-4 py-2 align-top pb-5">
+              <!-- <td class="px-4 py-2 align-top pb-5">
                 <router-link :to="`/order-history-hhb/${saleRecord.customer_id}`"
                   class="flex items-center space-x-1 text-custom-orange hover:text-custom-orange-hover">
                   <span class="material-symbols-outlined text-2xl">history</span>
                   <span class="text-m">ประวัติการสั่งรายการอาหาร</span>
                 </router-link>
+              </td> -->
+
+              <td class="px-4 py-2 text-right relative" ref="moreDropdown">
+                <button @click="toggleMoreDropdown(index)">
+                  <span class="material-symbols-outlined cursor-pointer">more_vert</span>
+                </button>
+
+                <div v-if="filteredSaleRecords1standRenew.length > 4">
+                  <div v-if="moreOpenDropdownIndex === index" :class="moreDropdownPositionClass(index)"
+                    class="dropdown-menu absolute right-0 text-center bg-white shadow-lg rounded-md z-50 w-72 border border-gray-300">
+                    <ul class="list-none p-0 m-0">
+                      <li @click="onViewHistory(saleRecord)"
+                      class="px-4 py-2 cursor-pointer hover:bg-gray-100 hover:text-custom-orange hover:font-bold border-b flex items-center justify-between">
+                        <span class="material-symbols-outlined text-2xl">history</span>
+                        ประวัติการสั่งรายการอาหาร
+                      </li>
+                      <li @click="onViewPackageHistory(saleRecord)"
+                      class="px-4 py-2 cursor-pointer hover:bg-gray-100 hover:text-custom-orange hover:font-bold border-b flex items-center justify-between">
+                        <span class="material-symbols-outlined text-2xl">history</span>
+                        <span class="text-right">ประวัติการสั่งซื้อแพ็คเกจ</span>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div v-else>
+                  <div v-if="moreOpenDropdownIndex === index"
+                    class="dropdown-menu absolute right-0 text-center bg-white shadow-lg rounded-md z-50 w-72 border border-gray-300">
+                    <ul class="list-none p-0 m-0">
+                      <li @click="onViewHistory(saleRecord)"
+                      class="px-4 py-2 cursor-pointer hover:bg-gray-100 hover:text-custom-orange hover:font-bold border-b flex items-center justify-between">
+                        <span class="material-symbols-outlined text-2xl">history</span>
+                        ประวัติการสั่งรายการอาหาร
+                      </li>
+                      <li @click="onViewPackageHistory(saleRecord)"
+                      class="px-4 py-2 cursor-pointer hover:bg-gray-100 hover:text-custom-orange hover:font-bold border-b flex items-center justify-between">
+                      <span class="material-symbols-outlined text-2xl">history</span>
+                        <span class="text-right">ประวัติการสั่งซื้อแพ็คเกจ</span>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
               </td>
             </tr>
           </template>
@@ -1369,85 +1411,15 @@ export default {
       return zone ? zone.price : 0; // ถ้าไม่พบ zone ให้คืนค่า 0
     },
 
-    onViewDetail(saleRecord) {
+    onViewHistory(saleRecord) {
       this.selectedSaleRecord = saleRecord;
-      this.isDetailModalOpen = true;
       this.moreOpenDropdownIndex = null;
+      this.$router.push(`/order-history-hhb/${saleRecord.customer_id}`);
     },
-    closeDetailModal() {
-      this.isDetailModalOpen = false;
-      // this.selectedSaleRecord = null;
-    },
-    formatDetailLabel(key) {
-      const labels = {
-        //customer_id: 'รหัส',
-        seller_name_id: "ผู้ขาย",
-        name: "ชื่อ-สกุลลูกค้า",
-        package_type: "Package Type",
-        promotion_type: "Promotion Type",
-        program: "Program",
-        package: "แพ็กเกจที่ซื้อ ",
-        package_price: "ราคาแพ็กเกจ",
-        promotion_detail: "รายละเอียดโปรโมชัน",
-        other_promotion_detail: "รายละเอียดโปรโมชันเพิ่มเติม(นอกเหนือจากโปรฯ รายเดือนที่ต้องได้รับอนุมัติ)",
-        free_mad: "จำนวนกล่องที่แถม M or A or D",
-        free_dessert: "จำนวนกล่องที่แถม Dessert",
-        free_brittles: "จำนวนกล่องที่แถม Brittles",
-        free_energy_balls: "จำนวนกล่องที่แถม Energy Balls",
-        free_dressing: "จำนวนกล่องที่แถม Dressing",
-        free_yoghurt: "จำนวนกล่องที่แถม Yoghurt",
-        free_granola: "จำนวนกล่องที่แถม Granola",
-        free_credit: "เครดิตที่แถม (บาท)",
-
-        discount: "ส่วนลดเพิ่มเติมจากโปรฯ ประจำเดือน (ถ้ามี)",
-        extra_charge: "Extra Charge (%)",
-        extra_charge_price: "มูลค่า Extra Charge",
-        total_package_price: "มูลค่าแพ็กเกจรวม",
-        receive_food_id: "วิธีการรับอาหาร",
-
-        zone1_id: "In-house Riders (ที่อยู่ 1)",
-        total_zone1_price: "ค่าจัดส่งรวม (ที่อยู่ 1)",
-        zone2_id: "In-house Riders (ที่อยู่ 2)",
-        total_zone2_price: "ค่าจัดส่งรวม (ที่อยู่ 2)",
-        zone3_id: "In-house Riders (ที่อยู่ 3)",
-        total_zone3_price: "ค่าจัดส่งรวม (ที่อยู่ 3)",
-        zone_outsource_id: "Outsource Riders",
-        total_zone_outsource_price: "ค่าจัดส่งรวม Outsource",
-        total_delivery_zone_price: "ค่าจัดส่งรวม In-house Riders",
-        total_delivery_price: "รวมค่าจัดส่งทั้งหมด",
-
-        total_price: "มูลค่าขายรวม",
-        payment_status: "สถานะการชำระเงิน",
-        paid_date: "วันที่ชำระเงิน",
-        payment_type_id: "วิธีการชำระเงิน",
-        receive_date: "วันเริ่มรับอาหารวันแรก",
-        sellect_by: "เลือกอาหารโดย",
-        start_date: "วันเริ่มแพ็กเกจ",
-        expiry_date: "วันหมดอายุแพ็คเกจ",
-        note: "Note รายละเอียดโปรโมชันสำหรับส่งสรุปให้ลูกค้า (ถ้ามี)",
-        package_detail: "ข้อมูลแพ็กเกจ(สำหรับสรุปให้ลูกค้า)",
-        mad: "M or A or D",
-        dessert: "Dessert",
-        brittles: "Brittles",
-        energy_balls: "Energy Balls",
-        dressing: "Dressing",
-        yoghurt: "Yoghurt",
-        granola: "Granola",
-        credit: "Cash Credit ที่ได้รับ",
-
-        delivery_date: "วันที่ต้องการรับอาหาร",
-        select_food_id: "วิธีการเลือกอาหาร",
-      };
-      return labels[key] || key;
-    },
-    getLabelClass(key) {
-      if (key === "total_package_price") {
-        return "text-custom-orange";
-      }
-      return "";
-    },
-    getValueClass() {
-      return "";
+    onViewPackageHistory(saleRecord) {
+      this.selectedSaleRecord = saleRecord;
+      this.moreOpenDropdownIndex = null;
+      this.$router.push(`/order-package-history-hhb/${saleRecord.customer_id}`);
     },
 
     handleClickOutside(event) {

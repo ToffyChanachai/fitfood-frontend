@@ -137,103 +137,114 @@
             </tr>
         </thead>
         <tbody>
-            <template v-if="filteredUser.length > 0">
-                <tr v-for="(user, index) in filteredUser" :key="index"
-                    class=" bg-white relative border-b border-b-gray-200">
-                    <td class="px-4 py-2 align-top pb-5">{{ (currentPage - 1) * itemsPerPage + index + 1 }}</td>
-                    <td class="px-4 py-2 align-top font-bold text-custom-orange pb-5">{{ user.username }}</td>
-                    <td class="px-4 py-2 align-top pb-5">{{ user.email }}</td>
+            <tr v-if="isLoading" class="bg-white">
+                <td colspan="10" class="py-16 text-center">
+                    <div class="flex justify-center items-center space-x-2">
+                        <div class="w-3 h-3 bg-gray-500 rounded-full animate-pulse"></div>
+                        <div class="w-3 h-3 bg-gray-500 rounded-full animate-pulse delay-200"></div>
+                        <div class="w-3 h-3 bg-gray-500 rounded-full animate-pulse delay-400"></div>
+                    </div>
+                </td>
+            </tr>
 
-                    <td class="px-4 py-2 align-top font-bold pb-5">
-                        <button @click="openChangeRoleModal(user)"
-                            class="px-4 py-1 rounded-full font-bold focus:outline-none hover:text-gray-200"
-                            :class="getRoleClass(user.role)">
-                            {{ getRoleText(user.role) }}
-                        </button>
+            <template v-else>
+                <template v-if="filteredUser.length > 0">
+                    <tr v-for="(user, index) in filteredUser" :key="index"
+                        class=" bg-white relative border-b border-b-gray-200">
+                        <td class="px-4 py-2 align-top pb-5">{{ (currentPage - 1) * itemsPerPage + index + 1 }}</td>
+                        <td class="px-4 py-2 align-top font-bold text-custom-orange pb-5">{{ user.username }}</td>
+                        <td class="px-4 py-2 align-top pb-5">{{ user.email }}</td>
 
-                        <div v-if="isChangeRoleModalOpen"
-                            class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-10 z-50">
+                        <td class="px-4 py-2 align-top font-bold pb-5">
+                            <button @click="openChangeRoleModal(user)"
+                                class="px-4 py-1 rounded-full font-bold focus:outline-none hover:text-gray-200"
+                                :class="getRoleClass(user.role)">
+                                {{ getRoleText(user.role) }}
+                            </button>
 
-                            <div class="absolute top-8 left-1/2 transform -translate-x-1/2 bg-yellow-500 text-white px-8 py-4 flex items-center space-x-4 rounded-lg transition-opacity duration-300 z-60"
-                                :class="{
-                                    'opacity-100': showErrorToast,
-                                    'opacity-0': !showErrorToast,
-                                }">
-                                <span class="material-symbols-outlined text-white">error</span>
-                                <span>{{ toastErrorMessage }}</span>
-                                <button @click="showErrorToast = false"
-                                    class="text-white hover:text-gray-200 focus:outline-none">
-                                    <span class="material-symbols-outlined text-xl">close</span>
+                            <div v-if="isChangeRoleModalOpen"
+                                class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-10 z-50">
+
+                                <div class="absolute top-8 left-1/2 transform -translate-x-1/2 bg-yellow-500 text-white px-8 py-4 flex items-center space-x-4 rounded-lg transition-opacity duration-300 z-60"
+                                    :class="{
+                                        'opacity-100': showErrorToast,
+                                        'opacity-0': !showErrorToast,
+                                    }">
+                                    <span class="material-symbols-outlined text-white">error</span>
+                                    <span>{{ toastErrorMessage }}</span>
+                                    <button @click="showErrorToast = false"
+                                        class="text-white hover:text-gray-200 focus:outline-none">
+                                        <span class="material-symbols-outlined text-xl">close</span>
+                                    </button>
+                                </div>
+
+                                <div class="bg-white rounded-md w-1/3 max-w-lg">
+                                    <div :class="{
+                                        'bg-green-500':
+                                            selectedUserRole.role === 'admin',
+                                        'bg-yellow-500': selectedUserRole.role === 'customer',
+                                    }" class="flex justify-between items-center text-white px-4 py-2 rounded-t-md">
+                                        <span class="font-bold">
+                                            {{
+                                                selectedUserRole.role === "customer"
+                                                    ? `เปลี่ยน Role เป็น "แอดมิน"`
+                                                    : `เปลี่ยน Role เป็น "ผู้ใช้งานทั่วไป"`
+                                            }}
+                                        </span>
+                                        <button @click="closeChangeRoleModal" class="text-white hover:text-gray-200">
+                                            <span class="material-symbols-outlined">close</span>
+                                        </button>
+                                    </div>
+
+                                    <div class="p-6 space-y-4">
+                                        <p class="text-gray-700">
+                                            {{
+                                                selectedUserRole.role === "customer"
+                                                    ? 'คุณต้องการเปลี่ยน Role เป็น "แอดมิน" หรือไม่?'
+                                                    : 'คุณต้องการเปลี่ยน Role เป็น "ผู้ใช้งานทั่วไป" หรือไม่?'
+                                            }}
+                                        </p>
+                                    </div>
+
+                                    <div class="flex justify-end space-x-4 p-4 bg-white border-t rounded-b-md">
+                                        <button @click="closeChangeRoleModal"
+                                            class="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400">
+                                            ยกเลิก
+                                        </button>
+                                        <button @click="confirmPayment" :class="{
+                                            'bg-green-500 hover:bg-green-600':
+                                                selectedUserRole.role === 'admin',
+                                            'bg-yellow-500 hover:bg-yellow-600':
+                                                selectedUserRole.role === 'customer',
+                                        }" class="text-white px-4 py-2 rounded">
+                                            ยืนยัน
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+
+                        <td class="px-4 py-2 align-top text-right pb-5">
+                            <div class="flex justify-end space-x-2">
+                                <button @click="confirmDelete(user.id)"
+                                    class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 flex items-center space-x-1">
+                                    <span class="material-symbols-outlined">delete</span>
+                                    <span>ลบ</span>
                                 </button>
                             </div>
 
-                            <div class="bg-white rounded-md w-1/3 max-w-lg">
-                                <div :class="{
-                                    'bg-green-500':
-                                        selectedUserRole.role === 'admin',
-                                    'bg-yellow-500': selectedUserRole.role === 'customer',
-                                }" class="flex justify-between items-center text-white px-4 py-2 rounded-t-md">
-                                    <span class="font-bold">
-                                        {{
-                                            selectedUserRole.role === "customer"
-                                                ? `เปลี่ยน Role เป็น "แอดมิน"`
-                                                : `เปลี่ยน Role เป็น "ผู้ใช้งานทั่วไป"`
-                                        }}
-                                    </span>
-                                    <button @click="closeChangeRoleModal" class="text-white hover:text-gray-200">
-                                        <span class="material-symbols-outlined">close</span>
-                                    </button>
-                                </div>
+                        </td>
+                    </tr>
+                </template>
 
-                                <div class="p-6 space-y-4">
-                                    <p class="text-gray-700">
-                                        {{
-                                            selectedUserRole.role === "customer"
-                                                ? 'คุณต้องการเปลี่ยน Role เป็น "แอดมิน" หรือไม่?'
-                                                : 'คุณต้องการเปลี่ยน Role เป็น "ผู้ใช้งานทั่วไป" หรือไม่?'
-                                        }}
-                                    </p>
-                                </div>
-
-                                <div class="flex justify-end space-x-4 p-4 bg-white border-t rounded-b-md">
-                                    <button @click="closeChangeRoleModal"
-                                        class="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400">
-                                        ยกเลิก
-                                    </button>
-                                    <button @click="confirmPayment" :class="{
-                                        'bg-green-500 hover:bg-green-600':
-                                            selectedUserRole.role === 'admin',
-                                        'bg-yellow-500 hover:bg-yellow-600':
-                                            selectedUserRole.role === 'customer',
-                                    }" class="text-white px-4 py-2 rounded">
-                                        ยืนยัน
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </td>
-
-                    <td class="px-4 py-2 align-top text-right pb-5">
-                        <div class="flex justify-end space-x-2">
-                            <button @click="confirmDelete(user.id)"
-                                class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 flex items-center space-x-1">
-                                <span class="material-symbols-outlined">delete</span>
-                                <span>ลบ</span>
-                            </button>
-                        </div>
-
-                    </td>
-                </tr>
+                <template v-if="filteredUser.length === 0">
+                    <tr>
+                        <td colspan="5" class="py-10 bg-white text-center text-gray-500 font-bold">
+                            ไม่พบข้อมูล
+                        </td>
+                    </tr>
+                </template>
             </template>
-
-            <template v-if="filteredUser.length === 0">
-                <tr>
-                    <td colspan="5" class="py-10 bg-white text-center text-gray-500 font-bold">
-                        ไม่พบข้อมูล
-                    </td>
-                </tr>
-            </template>
-
         </tbody>
 
         <div v-if="isDeleteModalOpen"
@@ -316,6 +327,7 @@
 
 <script>
 import axios from "axios";
+import { API_URL } from "@/services/api";
 
 export default {
     name: "UserPage",
@@ -417,12 +429,16 @@ export default {
     },
     methods: {
         async fetchUsers() {
+            this.isLoading = true;
+
             try {
-                const response = await axios.get('http://127.0.0.1:3333/users');
+                const response = await axios.get(`${API_URL}/users`);
                 this.users = response.data;
                 this.users.sort((a, b) => a.id - b.id);
             } catch (error) {
                 // console.error("Error fetching users:", error);
+            } finally {
+                this.isLoading = false;
             }
         },
         goToPage(page) {
@@ -488,7 +504,7 @@ export default {
         async deleteConfirmed() {
             try {
                 await axios.delete(
-                    `http://127.0.0.1:3333/users/${this.itemToDelete}`
+                    `${API_URL}/users/${this.itemToDelete}`
                 );
                 this.users = this.users.filter((item) => item.id !== this.itemToDelete);
                 this.closeDeleteModal();
@@ -518,7 +534,7 @@ export default {
 
                 // ส่ง request ไปยัง backend
                 const response = await axios.put(
-                    `http://127.0.0.1:3333/users/${this.selectedUserRole.id}/role`,
+                    `${API_URL}/users/${this.selectedUserRole.id}/role`,
                     { role: newRole }
                 );
 

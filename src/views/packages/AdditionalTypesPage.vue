@@ -145,6 +145,17 @@
                 </tr>
             </thead>
             <tbody>
+                <tr v-if="isLoading" class="bg-white">
+                    <td colspan="10" class="py-16 text-center">
+                        <div class="flex justify-center items-center space-x-2">
+                            <div class="w-3 h-3 bg-gray-500 rounded-full animate-pulse"></div>
+                            <div class="w-3 h-3 bg-gray-500 rounded-full animate-pulse delay-200"></div>
+                            <div class="w-3 h-3 bg-gray-500 rounded-full animate-pulse delay-400"></div>
+                        </div>
+                    </td>
+                </tr>
+
+                <template v-else>
                 <tr v-for="(additional_type, index) in filteredAdditionalType" :key="index"
                     class=" bg-white relative border-b border-b-gray-200">
                     <td class="px-4 py-2 align-top pb-5">{{ (currentPage - 1) * itemsPerPage + index + 1 }}</td>
@@ -172,6 +183,7 @@
                         ไม่พบข้อมูล
                     </td>
                 </tr>
+            </template>
             </tbody>
 
             <div v-if="isEditModalOpen"
@@ -301,6 +313,7 @@
 
 <script>
 import axios from 'axios';
+import { API_URL } from "@/services/api";
 
 export default {
     name: "AdditionalTypePage",
@@ -340,6 +353,7 @@ export default {
             showFailToast: false,
             showErrorToast: false,
             toastErrorMessage: "",
+            isLoading: false,
 
         };
     },
@@ -387,12 +401,16 @@ export default {
     },
     methods: {
         async fetchAdditionalTypes() {
+            this.isLoading = true;
+
             try {
-                const response = await axios.get('http://127.0.0.1:3333/additional-types');
+                const response = await axios.get(`${API_URL}/additional-types`);
                 this.additional_types = response.data;
                 this.additional_types.sort((a, b) => a.id - b.id);
             } catch (error) {
                 // console.error("Error fetching promotion_type:", error);
+            } finally {
+                this.isLoading = false;
             }
         },
         search() {
@@ -457,7 +475,7 @@ export default {
         },
         async saveChanges() {
             try {
-                await axios.put(`http://127.0.0.1:3333/additional-types/${this.selectedAdditionalType.id}`, {
+                await axios.put(`${API_URL}/additional-types/${this.selectedAdditionalType.id}`, {
                     name: this.selectedAdditionalType.name,
                 });
                 const index = this.additional_types.findIndex(pt => pt.id === this.selectedAdditionalType.id);
@@ -486,7 +504,7 @@ export default {
         },
         async deleteConfirmed() {
             try {
-                await axios.delete(`http://127.0.0.1:3333/additional-types/${this.itemToDelete}`);
+                await axios.delete(`${API_URL}/additional-types/${this.itemToDelete}`);
                 this.additional_types = this.additional_types.filter(
                     (item) => item.id !== this.itemToDelete
                 );
@@ -512,7 +530,7 @@ export default {
                 return;
             }
             try {
-                const response = await axios.post('http://127.0.0.1:3333/additional-types', this.newPromotionType);
+                const response = await axios.post(`${API_URL}/additional-types`, this.newPromotionType);
                 this.additional_types.push(response.data);
                 await this.fetchAdditionalTypes();
                 this.showSuccessToastNotification("เพิ่มข้อมูลสำเร็จ!");

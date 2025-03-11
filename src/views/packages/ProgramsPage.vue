@@ -201,6 +201,17 @@
                 </tr>
             </thead>
             <tbody>
+                <tr v-if="isLoading" class="bg-white">
+                    <td colspan="10" class="py-16 text-center">
+                        <div class="flex justify-center items-center space-x-2">
+                            <div class="w-3 h-3 bg-gray-500 rounded-full animate-pulse"></div>
+                            <div class="w-3 h-3 bg-gray-500 rounded-full animate-pulse delay-200"></div>
+                            <div class="w-3 h-3 bg-gray-500 rounded-full animate-pulse delay-400"></div>
+                        </div>
+                    </td>
+                </tr>
+
+                <template v-else>
                 <tr v-for="(program, index) in filteredProgram" :key="index"
                     class=" bg-white relative border-b border-b-gray-200">
                     <td class="px-4 py-2 align-top pb-5">{{ (currentPage - 1) * itemsPerPage + index + 1 }}</td>
@@ -229,6 +240,7 @@
                         ไม่พบข้อมูล
                     </td>
                 </tr>
+            </template>
             </tbody>
 
             <div v-if="isEditModalOpen"
@@ -365,6 +377,7 @@
 import axios from 'axios';
 import Multiselect from "vue-multiselect";
 import { mapActions, mapGetters } from "vuex";
+import { API_URL } from "@/services/api";
 
 
 export default {
@@ -413,6 +426,8 @@ export default {
             showFailToast: false,
             showErrorToast: false,
             toastErrorMessage: "",
+            isLoading: false,
+
         };
     },
     components: {
@@ -468,12 +483,16 @@ export default {
         ...mapActions(["fetchPrograms", "fetchPromotionTypes"]),
 
         async fetchPrograms() {
+            this.isLoading = true;
+
             try {
-                const response = await axios.get('http://127.0.0.1:3333/programs');
+                const response = await axios.get(`${API_URL}/programs`);
                 this.programs = response.data;
                 this.programs.sort((a, b) => a.id - b.id);
             } catch (error) {
                 console.error("Error fetching program:", error);
+            } finally {
+                this.isLoading = false;
             }
         },
         search() {
@@ -570,7 +589,7 @@ export default {
                     return;
                 }
 
-                const response = await axios.put(`http://127.0.0.1:3333/programs/${this.selectedProgram.id}`, {
+                const response = await axios.put(`${API_URL}/programs/${this.selectedProgram.id}`, {
                     name: this.selectedProgram.name,
                     promotion_type_id: this.selectedProgram.promotion_type_id.id,
                 });
@@ -603,7 +622,7 @@ export default {
         },
         async deleteConfirmed() {
             try {
-                await axios.delete(`http://127.0.0.1:3333/programs/${this.itemToDelete}`);
+                await axios.delete(`${API_URL}/programs/${this.itemToDelete}`);
                 this.programs = this.programs.filter(
                     (item) => item.id !== this.itemToDelete
                 );
@@ -634,7 +653,7 @@ export default {
                 return;
             }
             try {
-                const response = await axios.post('http://127.0.0.1:3333/programs', {
+                const response = await axios.post(`${API_URL}/programs`, {
                     name: this.newProgram.name,
                     promotion_type_id: this.newProgram.promotion_type_id.id,
                 });

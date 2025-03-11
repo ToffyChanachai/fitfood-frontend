@@ -89,7 +89,7 @@
                             </li>
                             <li class="hover:bg-custom-orange-hover">
                                 <router-link to="/zone-deliveries" class=" py-2 px-4 flex items-center space-x-2">
-                                    <span v-if="isExpanded">ข้อมูลโซนการจัดส่ง</span>
+                                    <span v-if="isExpanded">ข้อมูลการจัดส่ง</span>
                                 </router-link>
                             </li>
                             <li class="hover:bg-custom-orange-hover">
@@ -98,10 +98,16 @@
                                 </router-link>
                             </li>
                             <li class="hover:bg-custom-orange-hover">
+                                <router-link to="/sellers" class=" py-2 px-4 flex items-center space-x-2">
+                                    <span v-if="isExpanded">ข้อมูลผู้ขาย</span>
+                                </router-link>
+                            </li>
+                            <li class="hover:bg-custom-orange-hover">
                                 <router-link to="/users" class=" py-2 px-4 flex items-center space-x-2">
                                     <span v-if="isExpanded">ข้อมูลผู้ใช้งาน</span>
                                 </router-link>
                             </li>
+
                         </ul>
                     </li>
                 </ul>
@@ -111,8 +117,8 @@
                 <!-- Profile Picture and Username -->
                 <div class="flex items-center space-x-2">
                     <div class="relative w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center text-white text-lg font-bold flex-shrink-0 cursor-pointer"
-                    @click="goToProfile">
-                        <img v-if="userProfileImage" :src="userProfileImage" alt="User Profile" 
+                        @click="goToProfile">
+                        <img v-if="userProfileImage" :src="userProfileImage" alt="User Profile"
                             class="w-full h-full rounded-full object-cover border-2 border-white">
                         <span v-else class="uppercase">{{ username.charAt(0) }}</span>
                     </div>
@@ -120,7 +126,8 @@
                     <!-- Username and Profile Info when sidebar is expanded -->
                     <div v-if="isExpanded" class="flex flex-col items-start">
                         <strong class="text-white ml-2 cursor-default">{{ username }}</strong>
-                        <p class="text-white text-sm ml-2 hover:underline cursor-pointer" @click="goToProfile">View Profile</p>
+                        <p class="text-white text-sm ml-2 hover:underline cursor-pointer" @click="goToProfile">View
+                            Profile</p>
                     </div>
                 </div>
 
@@ -210,7 +217,7 @@
                 </router-link>
             </div>
 
-            <div v-if="$route.path === '/zone-deliveries' || $route.path === '/zone-delivery-types'"
+            <div v-if="$route.path === '/zone-deliveries' || $route.path === '/zone-delivery-types' || $route.path === '/receive-foods' || $route.path === '/delivery-rounds'"
                 class="mt-4 p-4 flex items-left space-x-6 text-m font-bold">
                 <router-link to="/zone-deliveries" class="hover:text-custom-orange"
                     :class="{ 'text-custom-orange border-b-2 border-custom-orange': $route.path === '/' || $route.path === '/zone-deliveries' }">
@@ -219,6 +226,14 @@
                 <router-link to="/zone-delivery-types" class="hover:text-custom-orange"
                     :class="{ 'text-custom-orange border-b-2 border-custom-orange': $route.path === '/zone-delivery-types' }">
                     ข้อมูลประเภทโซนการจัดส่ง
+                </router-link>
+                <router-link to="/delivery-rounds" class="hover:text-custom-orange"
+                    :class="{ 'text-custom-orange border-b-2 border-custom-orange': $route.path === '/delivery-rounds' }">
+                    ข้อมูลรอบการจัดส่งอาหาร
+                </router-link>
+                <router-link to="/receive-foods" class="hover:text-custom-orange"
+                    :class="{ 'text-custom-orange border-b-2 border-custom-orange': $route.path === '/receive-foods' }">
+                    ข้อมูลวิธีการรับอาหาร
                 </router-link>
             </div>
 
@@ -327,6 +342,18 @@
                 <router-link to="/remaining-packages-hhb" class="hover:text-custom-orange"
                     :class="{ 'text-custom-orange border-b-2 border-custom-orange': $route.path === '/remaining-packages-hhb' }">
                     Happy Healthy Box
+                </router-link>
+            </div>
+
+            <div v-if="$route.path === '/sellers' || $route.path === '/select-foods'"
+                class="mt-4 p-4 flex items-left space-x-6 text-m font-bold">
+                <router-link to="sellers" class="hover:text-custom-orange"
+                    :class="{ 'text-custom-orange border-b-2 border-custom-orange': $route.path === '/' || $route.path === '/sellers' }">
+                    ข้อมูลผู้ขาย
+                </router-link>
+                <router-link to="/select-foods" class="hover:text-custom-orange"
+                    :class="{ 'text-custom-orange border-b-2 border-custom-orange': $route.path === '/select-foods' }">
+                    ข้อมูลวิธีการการเลือกอาหาร
                 </router-link>
             </div>
 
@@ -442,7 +469,10 @@ export default {
                 case "แพ็คเกจคงเหลือของลูกค้า":
                     this.pageIcon = "deployed_code_history";
                     break;
-                case "ประวัติการสั่งซื้อ":
+                case "ประวัติการสั่งรายการอาหาร":
+                    this.pageIcon = "history";
+                    break;
+                case "ประวัติการสั่งซื้อแพ็คเกจ":
                     this.pageIcon = "history";
                     break;
 
@@ -450,11 +480,14 @@ export default {
                     this.pageIcon = "deployed_code_history";
                     this.pageTitle = "แพ็คเกจคงเหลือของลูกค้า";
                     break;
-                case "ประวัติการสั่งซื้อ HHB":
+                case "ประวัติการสั่งรายการอาหาร HHB":
                     this.pageIcon = "history";
-                    this.pageTitle = "ประวัติการสั่งซื้อ";
+                    this.pageTitle = "ประวัติการสั่งรายการอาหาร";
                     break;
-
+                case "ประวัติการสั่งซื้อแพ็คเกจ HHB":
+                    this.pageIcon = "history";
+                    this.pageTitle = "ประวัติการสั่งซื้อแพ็คเกจ";
+                    break;
 
                 default:
                     this.pageIcon = ""; // ไอคอนเริ่มต้น

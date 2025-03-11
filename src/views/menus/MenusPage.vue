@@ -290,53 +290,65 @@
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="(menu, index) in filteredMenu" :key="index"
-                    class=" bg-white relative border-b border-b-gray-200">
-                    <td class="px-4 py-2 align-top pb-5">{{ (currentPage - 1) * itemsPerPage + index + 1 }}</td>
-                    <!-- <td class="px-4 py-2 align-top text-center">
+                <tr v-if="isLoading" class="bg-white">
+                    <td colspan="10" class="py-16 text-center">
+                        <div class="flex justify-center items-center space-x-2">
+                            <div class="w-3 h-3 bg-gray-500 rounded-full animate-pulse"></div>
+                            <div class="w-3 h-3 bg-gray-500 rounded-full animate-pulse delay-200"></div>
+                            <div class="w-3 h-3 bg-gray-500 rounded-full animate-pulse delay-400"></div>
+                        </div>
+                    </td>
+                </tr>
+
+                <template v-else>
+                    <tr v-for="(menu, index) in filteredMenu" :key="index"
+                        class=" bg-white relative border-b border-b-gray-200">
+                        <td class="px-4 py-2 align-top pb-5">{{ (currentPage - 1) * itemsPerPage + index + 1 }}</td>
+                        <!-- <td class="px-4 py-2 align-top text-center">
                         <img v-if="menu.image" :src="`${API_URL}/images/${menu.image}`" alt="Menu Image"
                             class="w-16 h-16 object-cover rounded">
                         <span v-else>ไม่มีรูปภาพ</span>
                     </td> -->
 
-                    <td class="px-4 py-2 align-top font-bold text-custom-orange pb-5">{{ menu.name_english }}</td>
-                    <td class="px-4 py-2 align-top font-bold pb-5">{{ menu.name_thai }}</td>
-                    <td class="px-4 py-2 align-top pb-5">
-                        {{ getMealTypeName(menu.meal_type_id) }}
-                        <span v-if="menu.mealType && menu.mealType.menuType">
-                            ({{ menu.mealType.menuType.name }})
-                        </span>
-                        <span v-else>
-                            (ไม่มีข้อมูล)
-                        </span>
-                    </td>
-                    <td class="px-4 py-2 align-top pb-5">{{ menu.cal }}</td>
-                    <td class="px-4 py-2 align-top pb-5">{{ menu.protein }}</td>
-                    <td class="px-4 py-2 align-top pb-5">{{ menu.fat }}</td>
-                    <td class="px-4 py-2 align-top pb-5">{{ menu.carb }}</td>
-                    <td class="px-4 py-2 align-top text-right pb-5">
-                        <div class="flex justify-end space-x-2">
-                            <button @click="openEditModal(menu)"
-                                class="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 flex items-center space-x-1">
-                                <span class="material-symbols-outlined">edit_square</span>
-                                <span>แก้ไข</span>
-                            </button>
-                            <button @click="confirmDelete(menu.id)"
-                                class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 flex items-center space-x-1">
-                                <span class="material-symbols-outlined">delete</span>
-                                <span>ลบ</span>
-                            </button>
+                        <td class="px-4 py-2 align-top font-bold text-custom-orange pb-5">{{ menu.name_english }}</td>
+                        <td class="px-4 py-2 align-top font-bold pb-5">{{ menu.name_thai }}</td>
+                        <td class="px-4 py-2 align-top pb-5">
+                            {{ getMealTypeName(menu.meal_type_id) }}
+                            <span v-if="menu.mealType && menu.mealType.menuType">
+                                ({{ menu.mealType.menuType.name }})
+                            </span>
+                            <span v-else>
+                                (ไม่มีข้อมูล)
+                            </span>
+                        </td>
+                        <td class="px-4 py-2 align-top pb-5">{{ menu.cal }}</td>
+                        <td class="px-4 py-2 align-top pb-5">{{ menu.protein }}</td>
+                        <td class="px-4 py-2 align-top pb-5">{{ menu.fat }}</td>
+                        <td class="px-4 py-2 align-top pb-5">{{ menu.carb }}</td>
+                        <td class="px-4 py-2 align-top text-right pb-5">
+                            <div class="flex justify-end space-x-2">
+                                <button @click="openEditModal(menu)"
+                                    class="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 flex items-center space-x-1">
+                                    <span class="material-symbols-outlined">edit_square</span>
+                                    <span>แก้ไข</span>
+                                </button>
+                                <button @click="confirmDelete(menu.id)"
+                                    class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 flex items-center space-x-1">
+                                    <span class="material-symbols-outlined">delete</span>
+                                    <span>ลบ</span>
+                                </button>
 
-                        </div>
+                            </div>
 
-                    </td>
-                </tr>
+                        </td>
+                    </tr>
 
-                <tr v-if="filteredMenu.length === 0">
-                    <td colspan="10" class="py-10 bg-white text-center text-gray-500 font-bold">
-                        ไม่พบข้อมูล
-                    </td>
-                </tr>
+                    <tr v-if="filteredMenu.length === 0">
+                        <td colspan="10" class="py-10 bg-white text-center text-gray-500 font-bold">
+                            ไม่พบข้อมูล
+                        </td>
+                    </tr>
+                </template>
             </tbody>
 
             <div v-if="isEditModalOpen"
@@ -366,8 +378,8 @@
                             <label for="editImage" class="block text-gray-700 font-bold">เลือกรูปภาพ</label>
                             <div v-if="selectedMenu.image || previewImage" class="mb-2 flex items-center space-x-4">
                                 <!-- ใช้ object-contain เพื่อให้รูปภาพพอดีกับขนาด -->
-                                <img :src="previewImage || `${API_URL}/images/${selectedMenu.image}`"
-                                    alt="Menu Image" class="max-w-48 max-h-48 object-contain rounded border">
+                                <img :src="previewImage || `${API_URL}/images/${selectedMenu.image}`" alt="Menu Image"
+                                    class="max-w-48 max-h-48 object-contain rounded border">
 
                                 <input id="editImage" type="file" @change="onFileChange"
                                     class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange" />
@@ -542,7 +554,7 @@ import axios from 'axios';
 import Multiselect from "vue-multiselect";
 import { mapActions, mapGetters } from "vuex";
 import "vue-multiselect/dist/vue-multiselect.min.css";
-import { API_URL } from "@/services/testapi";
+import { API_URL } from "@/services/api";
 
 export default {
     name: "menuPage",
@@ -609,6 +621,9 @@ export default {
             itemToDelete: null,
 
             selectAllMenuTypeState: {},
+
+            isLoading: false,
+
         };
     },
     components: {
@@ -676,12 +691,16 @@ export default {
         ...mapActions(["fetchMealTypes", "fetchMenus"]),
 
         async fetchMenus() {
+            this.isLoading = true;
+
             try {
                 const response = await axios.get(`${API_URL}/menus`);
                 this.menus = response.data;
                 this.menus.sort((a, b) => a.id - b.id);
             } catch (error) {
                 // console.error("Error fetching menu:", error);
+            } finally {
+                this.isLoading = false;
             }
         },
         search() {

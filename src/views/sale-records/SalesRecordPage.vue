@@ -531,7 +531,7 @@
 
                 <div class="flex-1">
                   <label for="startDate" class="block font-bold text-gray-700">วันเริ่มแพ็คเกจ</label>
-                  <input v-model="saleRecord.start_date" id="startDate" type="date"
+                  <input v-model="saleRecord.start_package_date" id="startDate" type="date"
                     class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange" />
                 </div>
               </div>
@@ -1454,7 +1454,7 @@
 
               <div class="flex-1">
                 <label for="editStartDate" class="block font-bold text-gray-700">วันเริ่มแพ็คเกจ</label>
-                <input v-model="selectedSaleRecord.start_date" id="startDate" type="date"
+                <input v-model="selectedSaleRecord.start_package_date" id="startDate" type="date"
                   class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange" />
               </div>
             </div>
@@ -1745,7 +1745,7 @@ export default {
         package: this.selectedSaleRecord.package.package_detail,
         promotion_detail: this.selectedSaleRecord.package.promotion_detail,
         receive_food: this.totalReceiveFood,
-        start_date: this.formatDate(this.selectedSaleRecord.start_date),
+        start_package_date: this.formatDate(this.selectedSaleRecord.start_package_date),
         sellect_by: this.getSelectFood(this.selectedSaleRecord.select_food_id),
         delivery_date: this.selectedSaleRecord.customer.delivery_date,
         delivery: this.getDeliveryRoundName(
@@ -1834,9 +1834,9 @@ export default {
           this.selectedSaleRecord.payment_type_id
         ),
         transaction_ref: this.selectedSaleRecord.transaction_ref || "",
-        start_date: this.formatDate(this.selectedSaleRecord.start_date),
+        start_package_date: this.formatDate(this.selectedSaleRecord.start_package_date),
         expiry_date: this.formatDate(this.selectedSaleRecord.expiry_date),
-        receive_date: this.formatDate(this.selectedSaleRecord.start_date),
+        receive_date: this.formatDate(this.selectedSaleRecord.start_package_date),
         note: this.selectedSaleRecord.note || "",
         package_detail: this.selectedSaleRecord.package?.package_detail || "",
 
@@ -2427,7 +2427,15 @@ export default {
     },
     async addSaleRecord() {
       if (!this.saleRecord.customer_id) {
-        this.showErrorToastNotification("กรุณากรอกข้อมูลให้ครบถ้วน!");
+        this.showErrorToastNotification("กรุณาเลือกลูกค้า!");
+        return;
+      }
+      if (!this.saleRecord.package_type_id) {
+        this.showErrorToastNotification("กรุณาเลือก Package Type!");
+        return;
+      }
+      if (!this.saleRecord.additional_type_id && this.saleRecord.package_id && !this.saleRecord.start_package_date) {
+        this.showErrorToastNotification("กรุณาเลือกวันเริ่มต้นแพ็คเกจ!");
         return;
       }
 
@@ -2444,7 +2452,7 @@ export default {
           payment_status: this.saleRecord.payment_status || "unpaid",
           paid_date: this.saleRecord.paid_date || null,
           payment_type_id: this.saleRecord.payment_type_id?.id || null,
-          start_date: this.saleRecord.start_date || null,
+          start_package_date: this.saleRecord.start_package_date || null,
           zone1_id: this.saleRecord.zone1_id?.id || null,
           zone1_quantity: this.saleRecord.zone1_quantity || 0,
 
@@ -2531,7 +2539,7 @@ export default {
         payment_status: "unpaid",
         paid_date: "",
         payment_type_id: "",
-        start_date: "",
+        start_package_date: "",
         expiry_date: "",
         remaining_days: 0,
 
@@ -2571,7 +2579,7 @@ export default {
 
       this.selectedSaleRecord = {
         ...saleRecord,
-        start_date: formatDate(saleRecord.start_date), // แปลงวันที่ก่อนนำไปใช้
+        start_package_date: formatDate(saleRecord.start_package_date), // แปลงวันที่ก่อนนำไปใช้
         customer_id: this.customers.find(c => c.id === saleRecord.customer_id) || null,
         package_type_id: this.packageTypes.find(p => p.id === saleRecord.package_type_id) || null,
         promotion_type_id: this.promotionTypes.find(p => p.id === saleRecord.promotion_type_id) || null,
@@ -2613,7 +2621,7 @@ export default {
             // payment_status: this.selectedSaleRecord.payment_status || "unpaid",
             // paid_date: this.selectedSaleRecord.paid_date || null,
             // payment_type_id: this.selectedSaleRecord.payment_type_id?.id || null,
-            start_date: this.selectedSaleRecord.start_date || null,
+            start_package_date: this.selectedSaleRecord.start_package_date || null,
             zone1_id: this.selectedSaleRecord.zone1_id?.id || null,
             zone1_quantity: this.selectedSaleRecord.zone1_quantity || 0,
 
@@ -2742,12 +2750,12 @@ export default {
         }
 
         this.allPackages = packagesRes.data.filter((packaged) => {
-          if (!packaged.start_date) {
+          if (!packaged.start_package_date) {
             packaged.displayLabel = packaged.name;
             return true;
           }
 
-          const date = new Date(packaged.start_date);
+          const date = new Date(packaged.start_package_date);
           const currentMonth = new Date().getMonth();
           const startMonth = date.getMonth();
 
@@ -2848,11 +2856,11 @@ export default {
       if (this.allPackages && Array.isArray(this.allPackages)) {
         const packaged = this.allPackages.find((p) => p.id === packageId);
         if (packaged) {
-          if (!packaged.start_date) {
+          if (!packaged.start_package_date) {
             return packaged.name;
           }
 
-          const date = new Date(packaged.start_date);
+          const date = new Date(packaged.start_package_date);
           const currentMonth = new Date().getMonth();
           const startMonth = date.getMonth();
 
@@ -2999,7 +3007,7 @@ export default {
         payment_type_id: "วิธีการชำระเงิน",
         receive_date: "วันเริ่มรับอาหารวันแรก",
         sellect_by: "เลือกอาหารโดย",
-        start_date: "วันเริ่มแพ็กเกจ",
+        start_package_date: "วันเริ่มแพ็กเกจ",
         expiry_date: "วันหมดอายุแพ็คเกจ",
         note: "Note รายละเอียดโปรโมชันสำหรับส่งสรุปให้ลูกค้า (ถ้ามี)",
         package_detail: "ข้อมูลแพ็กเกจ(สำหรับสรุปให้ลูกค้า)",
@@ -3044,7 +3052,7 @@ export default {
         package: "▶️ แพ็คเกจ",
         promotion_detail: "🔥",
         receive_food: "▶️ อาหารที่ได้รับ",
-        start_date: "▶️ วันรับอาหารวันแรก",
+        start_package_date: "▶️ วันรับอาหารวันแรก",
         sellect_by: "▶️ เลือกอาหารโดย",
         delivery_date: "▶️ วันที่รับอาหาร",
         delivery: "▶️ จัดส่ง",

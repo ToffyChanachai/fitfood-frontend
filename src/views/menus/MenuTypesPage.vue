@@ -144,32 +144,44 @@
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="(menu_type, index) in filteredMenuType" :key="index"
-                    class=" bg-white relative border-b border-b-gray-200">
-                    <td class="px-4 py-2 align-top pb-5">{{ (currentPage - 1) * itemsPerPage + index + 1 }}</td>
-                    <td class="px-4 py-2 align-top font-bold text-custom-orange pb-5">{{ menu_type.name }}</td>
-                    <td class="px-4 py-2 align-top text-right pb-5">
-                        <div class="flex justify-end space-x-2">
-                            <button @click="openEditModal(menu_type)"
-                                class="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 flex items-center space-x-1">
-                                <span class="material-symbols-outlined">edit_square</span>
-                                <span>แก้ไข</span>
-                            </button>
-                            <button @click="confirmDelete(menu_type.id)"
-                                class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 flex items-center space-x-1">
-                                <span class="material-symbols-outlined">delete</span>
-                                <span>ลบ</span>
-                            </button>
+                <tr v-if="isLoading" class="bg-white">
+                    <td colspan="10" class="py-16 text-center">
+                        <div class="flex justify-center items-center space-x-2">
+                            <div class="w-3 h-3 bg-gray-500 rounded-full animate-pulse"></div>
+                            <div class="w-3 h-3 bg-gray-500 rounded-full animate-pulse delay-200"></div>
+                            <div class="w-3 h-3 bg-gray-500 rounded-full animate-pulse delay-400"></div>
                         </div>
-
                     </td>
                 </tr>
 
-                <tr v-if="filteredMenuType.length === 0">
-                    <td colspan="6" class="py-20 bg-white text-center text-gray-500 font-bold">
-                        ไม่พบข้อมูลที่ค้นหา
-                    </td>
-                </tr>
+                <template v-else>
+                    <tr v-for="(menu_type, index) in filteredMenuType" :key="index"
+                        class=" bg-white relative border-b border-b-gray-200">
+                        <td class="px-4 py-2 align-top pb-5">{{ (currentPage - 1) * itemsPerPage + index + 1 }}</td>
+                        <td class="px-4 py-2 align-top font-bold text-custom-orange pb-5">{{ menu_type.name }}</td>
+                        <td class="px-4 py-2 align-top text-right pb-5">
+                            <div class="flex justify-end space-x-2">
+                                <button @click="openEditModal(menu_type)"
+                                    class="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 flex items-center space-x-1">
+                                    <span class="material-symbols-outlined">edit_square</span>
+                                    <span>แก้ไข</span>
+                                </button>
+                                <button @click="confirmDelete(menu_type.id)"
+                                    class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 flex items-center space-x-1">
+                                    <span class="material-symbols-outlined">delete</span>
+                                    <span>ลบ</span>
+                                </button>
+                            </div>
+
+                        </td>
+                    </tr>
+
+                    <tr v-if="filteredMenuType.length === 0">
+                        <td colspan="6" class="py-20 bg-white text-center text-gray-500 font-bold">
+                            ไม่พบข้อมูลที่ค้นหา
+                        </td>
+                    </tr>
+                </template>
             </tbody>
 
             <div v-if="isEditModalOpen"
@@ -340,6 +352,7 @@ export default {
 
             isDeleteModalOpen: false, // สถานะการแสดง Modal
             itemToDelete: null,
+            isLoading: false,
 
         };
     },
@@ -387,12 +400,16 @@ export default {
     },
     methods: {
         async fetchMenuTypes() {
+            this.isLoading = true;
+
             try {
-                const response = await axios.get('${API_URL}/menu-types');
+                const response = await axios.get(`${API_URL}/menu-types`);
                 this.menu_types = response.data;
                 this.menu_types.sort((a, b) => a.id - b.id);
             } catch (error) {
                 // console.error("Error fetching menu_type:", error);
+            } finally {
+                this.isLoading = false;
             }
         },
         search() {
@@ -505,7 +522,7 @@ export default {
                 return;
             }
             try {
-                const response = await axios.post('${API_URL}/menu-types', this.newMenuType);
+                const response = await axios.post(`${API_URL}/menu-types`, this.newMenuType);
                 this.menu_types.push(response.data);
                 await this.fetchMenuTypes();
                 this.closeAddModal();

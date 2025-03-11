@@ -22,8 +22,8 @@
         <div class="flex space-x-2 items-center relative">
             <div class="mt-4 px-4 flex items-center space-x-1 mr-auto ">
                 <!-- <span class="material-symbols-outlined text-2xl text-gray-700">person</span> -->
-                <span class="text-m text-gray-700">จำนวนประเภท Package Type ทั้งหมด: </span>
-                <span class="text-m text-custom-orange font-bold"> {{ package_types.length }} รายการ</span>
+                <span class="text-m text-gray-700">จำนวนวิธีการการเลือกอาหารทั้งหมด: </span>
+                <span class="text-m text-custom-orange font-bold"> {{ promotion_types.length }} รายการ</span>
             </div>
 
             <div class="add relative inline-block">
@@ -50,7 +50,7 @@
                         <div
                             class="flex justify-between items-center bg-custom-orange text-white px-4 py-2 rounded-t-md">
                             <div class="flex-1 flex items-left">
-                                <span class="text-xl font-bold">เพิ่ม Package Type</span>
+                                <span class="font-bold">เพิ่มวิธีการการเลือกอาหาร</span>
                             </div>
                             <div class="flex space-x-2">
                                 <span @click="closeAddModal"
@@ -61,8 +61,8 @@
                         </div>
                         <div class="p-6 space-y-4 overflow-y-auto flex-grow">
                             <div class="mb-4">
-                                <label for="name" class="block text-gray-700">ชื่อ Package Type</label>
-                                <input type="text" id="name" v-model="newPackageType.name"
+                                <label for="name" class="block text-gray-700">ชื่อ</label>
+                                <input type="text" id="name" v-model="newPromotionType.name"
                                     class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-custom-orange" />
                             </div>
                         </div>
@@ -110,7 +110,7 @@
                         </li>
                         <li @click="clearSort"
                             class="px-4 py-2 cursor-pointer font-bold text-custom-orange text-right border-t hover:underline">
-                            <span>รีเซ็ตจัดเรียง</span>
+                            <span>รีเซ็ตข้อมูล</span>
                         </li>
                     </ul>
                 </div>
@@ -153,38 +153,39 @@
                 </tr>
 
                 <template v-else>
-                    <tr v-for="(promotion_type, index) in filteredPackageType" :key="index"
-                        class=" bg-white relative border-b border-b-gray-200">
-                        <td class="px-4 py-2 align-top pb-5">{{ (currentPage - 1) * itemsPerPage + index + 1 }}</td>
-                        <td class="px-4 py-2 align-top font-bold text-custom-orange pb-5">{{ promotion_type.name }}</td>
-                        <td class="px-4 py-2 align-top text-right pb-5">
-                            <div class="flex justify-end space-x-2">
-                                <button @click="openEditModal(promotion_type)"
-                                    class="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 flex items-center space-x-1">
-                                    <span class="material-symbols-outlined">edit_square</span>
-                                    <span>แก้ไข</span>
-                                </button>
-                                <button @click="confirmDelete(promotion_type.id)"
-                                    class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 flex items-center space-x-1">
-                                    <span class="material-symbols-outlined">delete</span>
-                                    <span>ลบ</span>
-                                </button>
+                <tr v-for="(promotion_type, index) in filteredPromotionType" :key="index"
+                    class=" bg-white relative border-b border-b-gray-200">
+                    <td class="px-4 py-2 align-top pb-5">{{ (currentPage - 1) * itemsPerPage + index + 1 }}</td>
+                    <td class="px-4 py-2 align-top font-bold text-custom-orange pb-5">{{ promotion_type.name }}</td>
+                    <td class="px-4 py-2 align-top text-right pb-5">
+                        <div class="flex justify-end space-x-2">
+                            <button @click="openEditModal(promotion_type)"
+                                class="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 flex items-center space-x-1">
+                                <span class="material-symbols-outlined">edit_square</span>
+                                <span>แก้ไข</span>
+                            </button>
+                            <button @click="confirmDelete(promotion_type.id)"
+                                class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 flex items-center space-x-1">
+                                <span class="material-symbols-outlined">delete</span>
+                                <span>ลบ</span>
+                            </button>
 
-                            </div>
+                        </div>
 
-                        </td>
-                    </tr>
+                    </td>
+                </tr>
 
-                    <tr v-if="filteredPackageType.length === 0">
-                        <td colspan="6" class="py-10 bg-white text-center text-gray-500 font-bold">
-                            ไม่พบข้อมูล
-                        </td>
-                    </tr>
-                </template>
+                <tr v-if="filteredPromotionType.length === 0">
+                    <td colspan="6" class="py-10 bg-white text-center text-gray-500 font-bold">
+                        ไม่พบข้อมูล
+                    </td>
+                </tr>
+            </template>
             </tbody>
 
             <div v-if="isEditModalOpen"
                 class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
+
 
                 <div class="absolute top-8 left-1/2 transform -translate-x-1/2 bg-yellow-500 text-white px-8 py-4 flex items-center space-x-4 rounded-lg shadow-lg transition-opacity duration-300 z-60"
                     :class="{ 'opacity-100': showErrorToast, 'opacity-0': !showErrorToast }">
@@ -197,7 +198,7 @@
 
                 <div class="bg-white rounded-md shadow-lg w-1/2 max-w-3xl h-auto max-h-[800px] flex flex-col">
                     <div class="flex justify-between items-center bg-custom-orange text-white px-4 py-2 rounded-t-md">
-                        <span class="font-bold">แก้ไข Package Type</span>
+                        <span class="font-bold">แก้ไขวิธีการการเลือกอาหาร</span>
                         <div class="flex space-x-2">
                             <span @click="closeEditModal"
                                 class="material-symbols-outlined cursor-pointer hover:text-gray-200">
@@ -208,7 +209,7 @@
                     <div class="p-6 space-y-4 overflow-y-auto flex-grow">
                         <div class="mb-4">
                             <label for="editName" class="block text-gray-700 font-medium">ชื่อ</label>
-                            <input v-model="selectedPackageType.name" id="editName" type="text"
+                            <input v-model="selectedPromotionType.name" id="editName" type="text"
                                 class="border rounded px-4 py-2 w-full">
                         </div>
                     </div>
@@ -225,9 +226,9 @@
                         </div>
                     </div>
                 </div>
+
             </div>
 
-            <!-- Modal ยืนยันการลบ -->
             <div v-if="isDeleteModalOpen"
                 class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
 
@@ -262,7 +263,6 @@
                     </div>
                 </div>
             </div>
-
 
         </table>
 
@@ -312,7 +312,6 @@
 import axios from 'axios';
 import { API_URL } from "@/services/api";
 
-
 export default {
     name: "PromotionTypePage",
     data() {
@@ -321,7 +320,6 @@ export default {
             headerWidths: ['10%', '85%', '5%'],
 
             searchQuery: "",
-
             isSortDropdownOpen: false,
             sortDirection: {
                 id: 1,
@@ -329,15 +327,15 @@ export default {
             },
             sortColumn: '',
 
-            package_types: [],
+            promotion_types: [],
             currentPage: 1,
             itemsPerPage: 10,
 
-            selectedPackageType: {},
+            selectedPromotionType: {},
             isEditModalOpen: false,
 
             isAddModalOpen: false,
-            newPackageType: {
+            newPromotionType: {
                 name: '',
             },
 
@@ -356,8 +354,8 @@ export default {
     },
     computed: {
         totalPages() {
-            const filtered = this.package_types.filter(package_type => {
-                const name = package_type.name || '';
+            const filtered = this.promotion_types.filter(promotion_type => {
+                const name = promotion_type.name || '';
                 return name.toLowerCase().includes(this.searchQuery.toLowerCase());
             });
             return Math.ceil(filtered.length / this.itemsPerPage);
@@ -385,9 +383,9 @@ export default {
                 range: Array.from({ length: end - start + 1 }, (_, i) => start + i),
             };
         },
-        filteredPackageType() {
-            const filtered = this.package_types.filter(package_type => {
-                const name = package_type.name || '';
+        filteredPromotionType() {
+            const filtered = this.promotion_types.filter(promotion_type => {
+                const name = promotion_type.name || '';
                 return name.toLowerCase().includes(this.searchQuery.toLowerCase());
             });
             const startIndex = (this.currentPage - 1) * this.itemsPerPage;
@@ -397,13 +395,13 @@ export default {
         },
     },
     methods: {
-        async fetchPackageTypes() {
+        async fetchPromotionTypes() {
             this.isLoading = true;
 
             try {
-                const response = await axios.get(`${API_URL}/package-types`);
-                this.package_types = response.data;
-                this.package_types.sort((a, b) => a.id - b.id);
+                const response = await axios.get(`${API_URL}/select-foods`);
+                this.promotion_types = response.data;
+                this.promotion_types.sort((a, b) => a.id - b.id);
             } catch (error) {
                 // console.error("Error fetching promotion_type:", error);
             } finally {
@@ -422,6 +420,7 @@ export default {
             if (page < 1 || page > this.totalPages) return;
             this.currentPage = page;
         },
+
         toggleSortDropdown() {
             this.isSortDropdownOpen = !this.isSortDropdownOpen;
         },
@@ -433,7 +432,7 @@ export default {
                 this.sortDirection[column] = 1;
             }
 
-            this.package_types.sort((a, b) => {
+            this.promotion_types.sort((a, b) => {
                 const aValue = a[column];
                 const bValue = b[column];
                 if (aValue < bValue) return -this.sortDirection[column];
@@ -446,7 +445,7 @@ export default {
         clearSort() {
             this.sortColumn = 'id';
             this.sortDirection.id = 1;
-            this.package_types.sort((a, b) => a.id - b.id);
+            this.promotion_types.sort((a, b) => a.id - b.id);
             this.currentPage = 1;
         },
 
@@ -457,28 +456,28 @@ export default {
         },
 
         openEditModal(promotionType) {
-            this.selectedPackageType = { ...promotionType };
+            this.selectedPromotionType = { ...promotionType };
             this.isEditModalOpen = true;
         },
         async saveChanges() {
             try {
-                await axios.put(`${API_URL}/package-types/${this.selectedPackageType.id}`, {
-                    name: this.selectedPackageType.name,
+                await axios.put(`${API_URL}/select-foods/${this.selectedPromotionType.id}`, {
+                    name: this.selectedPromotionType.name,
                 });
-                const index = this.package_types.findIndex(pt => pt.id === this.selectedPackageType.id);
+                const index = this.promotion_types.findIndex(pt => pt.id === this.selectedPromotionType.id);
                 if (index !== -1) {
-                    this.package_types[index] = { ...this.selectedPackageType };
-                    await this.fetchPackageTypes();
-                    this.showSuccessToastNotification("แก้ไขข้อมูลสำเร็จ!");
+                    this.promotion_types[index] = { ...this.selectedPromotionType };
                 }
                 this.isEditModalOpen = false;
+                await this.fetchPromotionTypes();
+                this.showSuccessToastNotification("แก้ไขข้อมูลสำเร็จ!");
             } catch (error) {
                 this.showErrorToastNotification("เกิดข้อผิดพลาดในการแก้ไขข้อมูล!");
             }
         },
         closeEditModal() {
             this.isEditModalOpen = false;
-            this.selectedPackageType = {};
+            this.selectedPromotionType = {};
         },
 
         confirmDelete(itemId) {
@@ -491,12 +490,12 @@ export default {
         },
         async deleteConfirmed() {
             try {
-                await axios.delete(`${API_URL}/package-types/${this.itemToDelete}`);
-                this.package_types = this.package_types.filter(
+                await axios.delete(`${API_URL}/select-foods/${this.itemToDelete}`);
+                this.promotion_types = this.promotion_types.filter(
                     (item) => item.id !== this.itemToDelete
                 );
                 this.closeDeleteModal();
-                await this.fetchPackageTypes();
+                await this.fetchPromotionTypes();
                 this.showFailToastNotification("ลบข้อมูลสำเร็จ!");
             } catch (error) {
                 this.showErrorToastNotification("เกิดข้อผิดพลาดในการลบข้อมูล!");
@@ -505,25 +504,24 @@ export default {
 
         openAddModal() {
             this.isAddModalOpen = true;
-            this.newPackageType = { name: '' };
+            this.newPromotionType = { name: '' };
         },
         closeAddModal() {
             this.isAddModalOpen = false;
         },
         async addPromotionType() {
-            if (!this.newPackageType.name.trim()) {
+            if (!this.newPromotionType.name.trim()) {
                 this.showErrorToastNotification("กรุณากรอกชื่อ!");
                 return;
             }
             try {
-                const response = await axios.post(`${API_URL}/package-types`, this.newPackageType);
-                this.package_types.push(response.data);
-                this.closeAddModal();
+                const response = await axios.post(`${API_URL}/select-foods`, this.newPromotionType);
+                this.promotion_types.push(response.data);
+                await this.fetchPromotionTypes();
                 this.showSuccessToastNotification("เพิ่มข้อมูลสำเร็จ!");
-                await this.fetchPackageTypes();
+                this.closeAddModal();
             } catch (error) {
-                console.error('Error adding promotion type:', error);
-                alert('เกิดข้อผิดพลาดในการเพิ่มข้อมูล');
+                this.showErrorToastNotification("เกิดข้อผิดพลาดในการเพิ่มข้อมูล!");
             }
         },
 
@@ -551,11 +549,11 @@ export default {
     },
     created() {
         this.sortData('id');
-        this.fetchPackageTypes();
+        this.fetchPromotionTypes();
     },
     mounted() {
         document.addEventListener('click', this.handleClickOutside);
-        this.fetchPackageTypes();
+        this.fetchPromotionTypes();
     },
     beforeUnmount() {
         document.removeEventListener('click', this.handleClickOutside);
@@ -566,4 +564,6 @@ export default {
 </script>
 
 
-<style scoped></style>
+<style scoped>
+
+</style>

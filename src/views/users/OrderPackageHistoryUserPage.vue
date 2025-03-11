@@ -49,10 +49,10 @@
         </div>
 
 
-        <!-- ส่วนประวัติการสั่งรายการอาหาร -->
+        <!-- ส่วนประวัติการสั่งซื้อแพ็คเกจ -->
         <div class="mt-4">
             <div class="flex items-center">
-                <h1 class="text-sm sm:text-xl font-bold">ประวัติการสั่งรายการอาหาร: </h1>
+                <h1 class="text-sm sm:text-xl font-bold">ประวัติการสั่งซื้อแพ็คเกจ: </h1>
 
                 <h1 v-if="isLoading" class="text-sm sm:text-xl font-bold ml-2">
                     <div class="bg-gray-100 animate-pulse h-6 w-48 rounded-md"></div>
@@ -83,43 +83,78 @@
 
             <!-- เมื่อโหลดข้อมูลเสร็จ -->
             <div v-else>
-                <!-- หากมีประวัติการสั่งรายการอาหาร -->
-                <div v-if="orders.length > 0"
+                <!-- หากมีประวัติการสั่งซื้อแพ็คเกจ -->
+                <div v-if="saleRecords.length > 0"
                     class="mt-4 bg-white rounded-md shadow-lg p-4 border border-gray-300 overflow-y-auto h-[550px] sm:h-[650px]">
-                    <div v-for="order in orders" :key="order.order_date"
+                    <div v-for="saleRecord in saleRecords" :key="saleRecord.start_package_date"
                         class="border-b border-gray-200 py-4 text-[10px] sm:text-base">
                         <div class="sm:flex justify-between items-center">
-                            <!-- ชื่อเมนู -->
-                            <div class="font-semibold flex flex-col">
-                                <div>{{ getMenuEngName(order.menu_id) }}</div>
-                                <div>({{ getMenuThaiName(order.menu_id) }})</div>
-                            </div>
+                            <div class="font-bold">{{ getPackageName(saleRecord.package_id) }}</div>
 
                             <!-- วันที่ -->
-                            <div class="text-gray-500">{{ formattedDate(order.order_date) }}</div>
+                            <div class="text-gray-500">วันเริ่มแพ็กเกจ: {{ formattedDate(saleRecord.start_package_date) }}</div>
                         </div>
-                        <div class="mt-2 text-gray-500">
+                        <div class="mt-2 text-gray-500 space-y-2">
                             <div class="flex items-center">
-                                <p>จำนวน:</p>
-                                <strong class="ml-2 text-black">{{ order.quantity }}</strong>
+                                <p>Program:</p>
+                                <strong class="ml-2 font-medium text-black">{{ getProgramName(saleRecord.program_id)
+                                }}</strong>
                             </div>
+
                             <div class="flex items-center">
-                                <p>สถานะ: </p>
-                                <div :class="{ 'text-yellow-500 font-bold': order.status === 'pending', 'text-green-500 font-bold': order.status === 'confirm' }"
+                                <p>ราคารวมทั้งหมด:</p>
+                                <strong class="ml-2 font-medium text-black">{{ formatPrice(saleRecord.total_price) }}</strong>
+
+                                <p class="ml-4">ราคาแพ็กเกจ:</p>
+                                <strong class="ml-2 font-medium text-black">{{ formatPrice(saleRecord.total_package_price) }}</strong>
+
+                                <p class="ml-4">ราคาค่าจัดส่ง:</p>
+                                <strong class="ml-2 font-medium text-black">{{ formatPrice(saleRecord.total_delivery_price) }}</strong>
+                            </div>
+
+                            <div class="flex items-center">
+                                <p>สถานะการชำระเงิน: </p>
+                                <div :class="{ 'text-red-500 font-medium': saleRecord.payment_status === 'unpaid', 'text-green-500 font-medium': saleRecord.payment_status === 'paid' }"
                                     class="ml-2">
-                                    {{ getStatusText(order.status) }}
+                                    {{ getStatusText(saleRecord.payment_status) }}
                                 </div>
+                                <p class="ml-4">วันที่ชำระเงิน: </p>
+                                <span class="ml-2 font-medium text-black">{{ formattedDate(saleRecord.paid_date) || '-' }}</span>
+                            </div>
+
+                            <div class="flex items-center">
+                                <p>วันหมดอายุแพ็กเกจ: </p>
+                                <span class="ml-2 font-medium text-black">{{ formattedDate(saleRecord.expiry_date)
+                                }}</span>
+                                <p class="ml-4">วันคงเหลือของแพ็กเกจ: </p>
+                                <span v-if="saleRecord.remaining_days < 0" class="text-red-500 ml-2 font-medium">
+                                    หมดอายุ
+                                </span>
+                                <span v-else class="ml-2 font-medium text-black"> {{ saleRecord.remaining_days }} วัน
+                                </span>
+                            </div>
+
+                            <div class="flex items-center">
+                                <p>Total boxes: </p>
+                                <span class="ml-2 font-medium text-black">{{ saleRecord.total_boxes_show
+                                }} กล่อง</span>
+                                <p class="ml-4">Total boxes (เหลือ): </p>
+                                <span v-if="saleRecord.total_boxes <= 0" class="text-red-500 font-medium ml-2">
+                                    {{ saleRecord.total_boxes }} กล่อง
+                                </span>
+                                <span v-else class="ml-2 font-medium text-black"> {{ saleRecord.total_boxes }} กล่อง</span>
+
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- หากไม่มีประวัติการสั่งรายการอาหาร -->
-                <div v-if="orders.length === 0"
+                <!-- หากไม่มีประวัติการสั่งซื้อแพ็คเกจ -->
+                <div v-if="saleRecords.length === 0"
                     class="mt-4 bg-white rounded-md shadow-lg p-4 border border-gray-300 h-[550px] sm:h-[650px] flex justify-center items-center">
                     <div class="flex items-center space-x-1 text-gray-500 font-bold text-center">
                         <span class="material-symbols-outlined text-3xl">history_off</span>
-                        <span class="text-sm sm:text-xl">ไม่มีประวัติการสั่งรายการอาหาร</span>
+                        <span class="text-sm sm:text-xl">ไม่มีประวัติการสั่งซื้อแพ็คเกจ</span>
                     </div>
                 </div>
             </div>
@@ -138,9 +173,10 @@ export default {
     data() {
         return {
             customerId: this.$route.params.customerId, // ดึง customer_id จาก URL
-            orders: [],
+            saleRecords: [],
             customers: [],
-            menus: [],
+            packages: [],
+            programs: [],
             isLoading: false,
             startDate: '', // วันที่เริ่มต้น
             endDate: '',
@@ -166,33 +202,33 @@ export default {
                 year: "numeric",
             }).format(new Date(this.endDate));
         },
-        groupedOrders() {
-            const groupedByDate = this.orders.reduce((acc, order) => {
-                if (!acc[order.order_date]) {
-                    acc[order.order_date] = [];
-                }
+        // groupedsaleRecords() {
+        //     const groupedByDate = this.saleRecords.reduce((acc, order) => {
+        //         if (!acc[order.start_date]) {
+        //             acc[order.start_date] = [];
+        //         }
 
-                const existingOrder = acc[order.order_date].find(item => item.menu_id === order.menu_id);
-                if (existingOrder) {
-                    existingOrder.quantity += order.quantity;
-                } else {
-                    acc[order.order_date].push({
-                        menu_id: order.menu_id,
-                        quantity: order.quantity,
-                        menu_name: this.getMenuThaiName(order.menu_id),
-                        menu_eng_name: this.getMenuEngName(order.menu_id),
-                        order_date: order.order_date,
-                        status: order.status,
-                        menu_type_id: order.menu_type_id,
-                    });
-                }
+        //         const existingOrder = acc[order.start_date].find(item => item.menu_id === order.menu_id);
+        //         if (existingOrder) {
+        //             existingOrder.quantity += order.quantity;
+        //         } else {
+        //             acc[order.start_date].push({
+        //                 menu_id: order.menu_id,
+        //                 quantity: order.quantity,
+        //                 menu_name: this.getMenuThaiName(order.menu_id),
+        //                 menu_eng_name: this.getMenuEngName(order.menu_id),
+        //                 start_date: order.start_date,
+        //                 status: order.status,
+        //                 menu_type_id: order.menu_type_id,
+        //             });
+        //         }
 
-                return acc;
-            }, {});
+        //         return acc;
+        //     }, {});
 
-            // แปลง object เป็น array
-            return Object.keys(groupedByDate).flatMap(order_date => groupedByDate[order_date]);
-        },
+        //     // แปลง object เป็น array
+        //     return Object.keys(groupedByDate).flatMap(order_date => groupedByDate[order_date]);
+        // },
 
     },
     methods: {
@@ -205,21 +241,24 @@ export default {
                 year: "numeric",
             }).format(date);
         },
+        formatPrice(price) {
+      return "฿" + new Intl.NumberFormat("th-TH").format(price);
+    },
 
-        async fetchOrders(startDate, endDate) {
+        async fetchSaleRecords(startDate, endDate) {
             this.isLoading = true;
             try {
-                const response = await axios.get(`${API_URL}/orders/user/${this.customerId}`, {
+                const response = await axios.get(`${API_URL}/sale-records/user/${this.customerId}`, {
                     params: { start_date: startDate, end_date: endDate },
                 });
-                this.orders = response.data.orders;
-                this.orders.sort((a, b) => {
-                    const dateA = new Date(a.order_date);
-                    const dateB = new Date(b.order_date);
+                this.saleRecords = response.data.saleRecords;
+                this.saleRecords.sort((a, b) => {
+                    const dateA = new Date(a.start_package_date);
+                    const dateB = new Date(b.start_package_date);
                     return dateA - dateB;
                 });
             } catch (error) {
-                this.orders = []; // กรณีมีข้อผิดพลาดให้ตั้งค่าเป็นอาเรย์ว่าง
+                this.saleRecords = [];
             } finally {
                 this.isLoading = false;
             }
@@ -247,19 +286,19 @@ export default {
             endDate.setDate(endDate.getDate() + offset); // เลื่อนวันตาม offset
             this.endDate = endDate.toISOString().split('T')[0]; // แปลงวันที่ใหม่เป็นรูปแบบ Y-m-d
 
-            this.fetchOrdersData(); // เรียกฟังก์ชันหลังจากเลื่อนวันที่
+            this.fetchSaleRecordsData(); // เรียกฟังก์ชันหลังจากเลื่อนวันที่
         },
 
         setToday() {
             const today = new Date().toISOString().split('T')[0]; // ค่าของวันที่วันนี้
             this.startDate = today;  // กำหนด startDate เป็นวันนี้
             this.endDate = today;    // กำหนด endDate เป็นวันนี้
-            this.fetchOrdersData();   // เรียกฟังก์ชันหลังจากตั้งค่า startDate และ endDate
+            this.fetchSaleRecordsData();   // เรียกฟังก์ชันหลังจากตั้งค่า startDate และ endDate
         },
 
-        fetchOrdersData() {
+        fetchSaleRecordsData() {
             if (this.startDate && this.endDate) {
-                this.fetchOrders(this.startDate, this.endDate);
+                this.fetchSaleRecords(this.startDate, this.endDate);
             }
         },
         async fetchLookupData() {
@@ -268,14 +307,18 @@ export default {
             try {
                 const [
                     customersRes,
-                    menuRes,
+                    packageRes,
+                    programRes,
                 ] = await Promise.all([
                     axios.get(`${API_URL}/customers`),
-                    axios.get(`${API_URL}/menus`),
+                    axios.get(`${API_URL}/packages`),
+                    axios.get(`${API_URL}/programs`),
                 ]);
 
                 this.customers = customersRes.data;
-                this.menus = menuRes.data;
+                this.packages = packageRes.data;
+                this.programs = programRes.data;
+
             } catch (error) {
                 console.error("Error fetching lookup data:", error);
             } finally {
@@ -288,27 +331,27 @@ export default {
             const customer = this.customers.find(c => c.id.toString() === customerId.toString());
             return customer ? customer.name : "ไม่พบข้อมูล";
         },
-        getMenuThaiName(menuId) {
-            const menu = this.menus.find((c) => c.id === menuId);
-            return menu ? menu.name_thai : "ไม่พบข้อมูล";
+        getPackageName(packageId) {
+            const packaged = this.packages.find((c) => c.id === packageId);
+            return packaged ? packaged.package_detail : "ไม่พบข้อมูล";
         },
-        getMenuEngName(menuId) {
-            const menu = this.menus.find((c) => c.id === menuId);
-            return menu ? menu.name_english : "ไม่พบข้อมูล";
+        getProgramName(programId) {
+            const program = this.programs.find((c) => c.id === programId);
+            return program ? program.name : "ไม่พบข้อมูล";
         },
         getStatusText(status) {
-            return status === "confirm" ? "ยืนยันการสั่งรายการอาหารแล้ว" : "ยังไม่ได้ยืนยันการสั่งรายการอาหาร";
+            return status === "paid" ? "ชำระเงินแล้ว" : "ยังไม่ได้ชำระเงิน";
         },
     },
     created() {
-        this.fetchOrders(this.startDate, this.endDate);
+        this.fetchSaleRecords(this.startDate, this.endDate);
         this.setToday();
         this.fetchLookupData();
     },
     mounted() {
         // document.addEventListener('click', this.handleClickOutside);
         this.fetchLookupData();
-        this.fetchOrders(this.startDate, this.endDate);
+        this.fetchSaleRecords(this.startDate, this.endDate);
         this.setToday();
 
         this.$nextTick(() => {
@@ -318,7 +361,7 @@ export default {
                 defaultDate: new Date(),
                 onChange: (selectedDates, dateStr) => {
                     this.startDate = dateStr; // กำหนดค่า startDate
-                    this.fetchOrdersData(); // เรียกฟังก์ชันเมื่อเลือกวันที่
+                    this.fetchSaleRecordsData(); // เรียกฟังก์ชันเมื่อเลือกวันที่
                 }
             });
 
@@ -329,7 +372,7 @@ export default {
                 defaultDate: new Date(),
                 onChange: (selectedDates, dateStr) => {
                     this.endDate = dateStr; // กำหนดค่า endDate
-                    this.fetchOrdersData(); // เรียกฟังก์ชันเมื่อเลือกวันที่
+                    this.fetchSaleRecordsData(); // เรียกฟังก์ชันเมื่อเลือกวันที่
                 }
             });
         });

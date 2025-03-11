@@ -2,9 +2,10 @@
   <div>
     <header class="flex justify-between items-center p-4 sm:px-32 bg-white text-white shadow-lg relative">
       <!-- Logo Section -->
-      <div class="flex justify-center items-center cursor-pointer" @click="goToHome">
+      <router-link to="/premium-health" class="flex justify-center items-center cursor-pointer">
         <img src="@/assets/logo_fitfood_full.png" alt="Logo" class="w-24 h-8 sm:w-40 sm:h-12">
-      </div>
+      </router-link>
+
 
       <div v-if="['/premium-health', '/', '/happy-healthy-box'].includes($route.path)"
         class="hidden sm:flex items-center space-x-6 text-black font-bold">
@@ -45,7 +46,6 @@
                 <!-- Show Welcome Text on Desktop -->
                 <span class="text-black hidden sm:inline">Welcome, <strong class="text-custom-orange">{{ username
                 }}</strong></span>
-                <!-- Show Arrow Icon on Desktop -->
                 <span :class="{ 'rotate-180': isMenuOpen }"
                   class="material-symbols-outlined text-black transition-transform duration-300 hidden sm:inline">
                   arrow_drop_down
@@ -57,12 +57,13 @@
             <div v-show="isMenuOpen"
               class="absolute right-0 top-full mt-1 bg-white text-black text-left shadow-lg rounded-md w-72 sm:w-72 z-50 border">
               <ul class="list-none p-0 m-0">
-                <li
-                  class="px-4 py-3 cursor-pointer hover:bg-gray-100 hover:text-custom-orange hover:font-bold border-b flex items-center justify-between"
-                  @click="goToProfile">
+                <router-link to="/profile" @click="closeMenu"
+                  class="px-4 py-3 cursor-pointer hover:bg-gray-100 hover:text-custom-orange hover:font-bold border-b flex items-center justify-between">
                   <span class="material-symbols-outlined"> person </span>
                   <span>Profile</span>
-                </li>
+                </router-link>
+
+
 
                 <li v-if="!(isUserRegistered && isUserRegisteredHHB)"
                   class="px-4 py-3 cursor-pointer hover:bg-gray-100 hover:text-custom-orange hover:font-bold border-b flex items-center justify-between"
@@ -71,19 +72,25 @@
                   <span>Register Customer Profile</span>
                 </li>
 
-                <li
-                  class="px-4 py-3 cursor-pointer hover:bg-gray-100 hover:text-custom-orange hover:font-bold border-b flex items-center justify-between"
-                  @click="goToOrderHistory">
+                <router-link :to="`/order-history-user/${getCustomerID(id)}`" @click="isMenuOpen = false"
+                  class="px-4 py-3 cursor-pointer hover:bg-gray-100 hover:text-custom-orange hover:font-bold border-b flex items-center justify-between">
                   <span class="material-symbols-outlined">history</span>
-                  <span>Orders History</span>
-                </li>
+                  <span>ประวัติการสั่งรายการอาหาร</span>
+                </router-link>
 
-                <li v-if="role === 'admin'"
-                  class="px-4 py-3 cursor-pointer hover:bg-gray-100 hover:text-custom-orange hover:font-bold border-b flex items-center justify-between"
-                  @click="goToBackend">
+                <router-link :to="`/order-package-history-user/${getCustomerID(id)}`" @click="isMenuOpen = false"
+                  class="px-4 py-3 cursor-pointer hover:bg-gray-100 hover:text-custom-orange hover:font-bold border-b flex items-center justify-between">
+                  <span class="material-symbols-outlined">history</span>
+                  <span>ประวัติการสั่งซื้อแพ็คเกจ</span>
+                </router-link>
+
+
+                <router-link v-if="role === 'admin'" to="/master" @click="isMenuOpen = false"
+                  class="px-4 py-3 cursor-pointer hover:bg-gray-100 hover:text-custom-orange hover:font-bold border-b flex items-center justify-between">
                   <span class="material-symbols-outlined"> shield_person </span>
                   <span>Admin Page</span>
-                </li>
+                </router-link>
+
 
                 <li
                   class="px-4 py-3 cursor-pointer hover:bg-gray-100 hover:text-red-500 hover:font-bold hover:rounded-b-md border-b flex items-center justify-between"
@@ -109,20 +116,20 @@
 
     <main class="flex-1 p-4 px-4 sm:px-32 relative min-h-[calc(100vh-80px)] bg-fixed"
       :class="{ 'bg-gradient-to-r from-custom-orange via-orange-500 to-custom-orange-hover text-black': $route.path === '/register-aff' || $route.path === '/register-hhb' }">
-      
+
       <div v-if="['/premium-health', '/', '/happy-healthy-box'].includes($route.path)"
         class="sm:hidden flex justify-center space-x-6 text-black font-bold mb-4 text-sm">
         <router-link to="/premium-health" class="hover:text-custom-orange"
-            :class="{ 'text-custom-orange border-b-2 border-custom-orange': $route.path === '/premium-health' || $route.path === '/' }">
-            Premium Health
+          :class="{ 'text-custom-orange border-b-2 border-custom-orange': $route.path === '/premium-health' || $route.path === '/' }">
+          Premium Health
         </router-link>
 
         <router-link to="/happy-healthy-box" class="hover:text-custom-orange"
-            :class="{ 'text-custom-orange border-b-2 border-custom-orange': $route.path === '/happy-healthy-box' }">
-            Happy Healthy Box
+          :class="{ 'text-custom-orange border-b-2 border-custom-orange': $route.path === '/happy-healthy-box' }">
+          Happy Healthy Box
         </router-link>
-    </div>
-      
+      </div>
+
       <div v-if="$route.path === '/register-aff' || $route.path === '/register-hhb'"
         class="flex flex-row justify-center space-x-4 sm:space-x-6">
         <span v-if="!isUserRegistered" class="cursor-pointer hover:text-gray-700 text-center"
@@ -138,20 +145,33 @@
         </span>
       </div>
 
-      <div v-if="isOrderHistoryPath"
-    class="flex flex-row justify-center space-x-4 sm:space-x-6">
-    <span class="cursor-pointer hover:text-custom-orange text-center text-sm sm:text-base"
-      @click="$router.push(`/order-history-user/${getCustomerID(id)}`)"
-      :class="{ 'border-b-2 border-custom-orange text-custom-orange font-bold text-sm sm:text-base  ': $route.path === `/order-history-user/${getCustomerID(id)}` }">
-      Absolute FitFood
-    </span>
+      <div v-if="isOrderHistoryPath" class="flex flex-row justify-center space-x-4 sm:space-x-6">
+        <span class="cursor-pointer hover:text-custom-orange text-center text-sm sm:text-base"
+          @click="$router.push(`/order-history-user/${getCustomerID(id)}`)"
+          :class="{ 'border-b-2 border-custom-orange text-custom-orange font-bold text-sm sm:text-base  ': $route.path === `/order-history-user/${getCustomerID(id)}` }">
+          Absolute FitFood
+        </span>
 
-    <span class="cursor-pointer hover:text-custom-orange text-center text-sm sm:text-base"
-      @click="$router.push(`/order-history-hhb-user/${getCustomerHHBID(id)}`)"
-      :class="{ 'border-b-2 border-custom-orange text-custom-orange font-bold text-sm sm:text-base': $route.path === `/order-history-hhb-user/${getCustomerHHBID(id)}` }">
-      Happy Healthy Box
-    </span>
-</div>
+        <span class="cursor-pointer hover:text-custom-orange text-center text-sm sm:text-base"
+          @click="$router.push(`/order-history-hhb-user/${getCustomerHHBID(id)}`)"
+          :class="{ 'border-b-2 border-custom-orange text-custom-orange font-bold text-sm sm:text-base': $route.path === `/order-history-hhb-user/${getCustomerHHBID(id)}` }">
+          Happy Healthy Box
+        </span>
+      </div>
+
+      <div v-if="isOrderPackageHistoryPath" class="flex flex-row justify-center space-x-4 sm:space-x-6">
+        <span class="cursor-pointer hover:text-custom-orange text-center text-sm sm:text-base"
+          @click="$router.push(`/order-package-history-user/${getCustomerID(id)}`)"
+          :class="{ 'border-b-2 border-custom-orange text-custom-orange font-bold text-sm sm:text-base  ': $route.path === `/order-package-history-user/${getCustomerID(id)}` }">
+          Absolute FitFood
+        </span>
+
+        <span class="cursor-pointer hover:text-custom-orange text-center text-sm sm:text-base"
+          @click="$router.push(`/order-package-history-hhb-user/${getCustomerHHBID(id)}`)"
+          :class="{ 'border-b-2 border-custom-orange text-custom-orange font-bold text-sm sm:text-base': $route.path === `/order-package-history-hhb-user/${getCustomerHHBID(id)}` }">
+          Happy Healthy Box
+        </span>
+      </div>
 
       <router-view></router-view>
     </main>
@@ -267,6 +287,9 @@ export default {
       this.$router.push('/');
       window.location.reload();
     },
+    closeMenu() {
+      this.isMenuOpen = false;
+    },
 
     handleClickOutside(event) {
       if (this.$refs.menuDropdown && !this.$refs.menuDropdown.contains(event.target)) {
@@ -274,13 +297,13 @@ export default {
       }
     },
 
-    checkIfAdmin() {
-      if (this.role === 'admin') {
-        console.log("User is an admin.");
-      } else {
-        console.log("User is not an admin.");
-      }
-    },
+    // checkIfAdmin() {
+    //   if (this.role === 'admin') {
+    //     console.log("User is an admin.");
+    //   } else {
+    //     console.log("User is not an admin.");
+    //   }
+    // },
 
     getCustomerID(customerId) {
       const customer = this.customers.find((c) => c.user_id === customerId);
@@ -337,6 +360,12 @@ export default {
       return (
         this.$route.path === `/order-history-user/${this.getCustomerID(this.id)}` ||
         this.$route.path === `/order-history-hhb-user/${this.getCustomerHHBID(this.id)}`
+      );
+    },
+    isOrderPackageHistoryPath() {
+      return (
+        this.$route.path === `/order-package-history-user/${this.getCustomerID(this.id)}` ||
+        this.$route.path === `/order-package-history-hhb-user/${this.getCustomerHHBID(this.id)}`
       );
     }
   },

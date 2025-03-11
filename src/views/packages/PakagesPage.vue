@@ -371,6 +371,17 @@
                 </tr>
             </thead>
             <tbody>
+                <tr v-if="isLoading" class="bg-white">
+                    <td colspan="10" class="py-16 text-center">
+                        <div class="flex justify-center items-center space-x-2">
+                            <div class="w-3 h-3 bg-gray-500 rounded-full animate-pulse"></div>
+                            <div class="w-3 h-3 bg-gray-500 rounded-full animate-pulse delay-200"></div>
+                            <div class="w-3 h-3 bg-gray-500 rounded-full animate-pulse delay-400"></div>
+                        </div>
+                    </td>
+                </tr>
+
+                <template v-else>
                 <tr v-for="(packaged, index) in filteredPackage" :key="index"
                     class=" bg-white relative border-b border-b-gray-200">
                     <td class="px-4 py-2 align-top pb-5">{{ (currentPage - 1) * itemsPerPage + index + 1 }}</td>
@@ -409,6 +420,7 @@
                         ไม่พบข้อมูล
                     </td>
                 </tr>
+            </template>
             </tbody>
 
             <div v-if="isDetailModalOpen"
@@ -800,6 +812,7 @@ export default {
             showFailToast: false,
             showErrorToast: false,
             toastErrorMessage: "",
+            isLoading: false,
 
         };
     },
@@ -936,6 +949,8 @@ export default {
         },
 
         async fetchPackages() {
+            this.isLoading = true;
+
             try {
                 const response = await axios.get(`${API_URL}/packages`);
                 this.packages = response.data;
@@ -943,6 +958,8 @@ export default {
 
             } catch (error) {
                 console.error("Error fetching program:", error);
+            } finally {
+                this.isLoading = false;
             }
         },
         search() {

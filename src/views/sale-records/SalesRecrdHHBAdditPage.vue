@@ -29,16 +29,20 @@
                     {{ additionalSalesRecords.length }} รายการ</span>
             </div>
 
-            <button v-if="selectedPackageType.length > 0" @click="clearFilter"
-                class="px-2 py-2 rounded-md flex items-center space-x-1 text-gray-400 hover:text-custom-orange">
-                <span class="material-symbols-outlined">close</span>
-                <span class="ml-2">
-                    รีเซ็ตตัวกรอง
-                    <template v-if="selectedPackageType.length > 0">
-                        ({{ selectedPackageType.length }})
-                    </template>
-                </span>
-            </button>
+            <button v-if="selectedPackageType.length > 0 || selectedAddType.length > 0" 
+        @click="clearFilter"
+        class="px-2 py-2 rounded-md flex items-center space-x-1 text-gray-400 hover:text-custom-orange">
+  <span class="material-symbols-outlined">close</span>
+  <span class="ml-2">
+    รีเซ็ตตัวกรอง
+    <template v-if="selectedPackageType.length > 0">
+      ({{ selectedPackageType.length }} Sales Type)
+    </template>
+    <template v-if="selectedAddType.length > 0">
+      ({{ selectedAddType.length }} ประเภทรายการ)
+    </template>
+  </span>
+</button>
 
             <div>
         <label for="month" class="mr-2 font-bold text-gray-700">เลือกเดือน:</label>
@@ -558,7 +562,7 @@
 
                                 <div class="flex-1">
                                     <label for="startDate" class="block font-bold text-gray-700">วันเริ่มแพ็คเกจ</label>
-                                    <input v-model="saleRecord.start_date" id="startDate" type="date"
+                                    <input v-model="saleRecord.start_package_date" id="startDate" type="date"
                                         class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange" />
                                 </div>
                             </div>
@@ -659,46 +663,56 @@
             </div>
 
             <div class="filter relative inline-block" ref="filterDropdown">
-                <button @click="toggleFiltterDropdown"
-                    class="bg-custom-orange text-white px-2 py-2 rounded-md flex items-center space-x-1 hover:bg-custom-orange-hover">
-                    <span class="material-symbols-outlined text-white text-xl leading-none">filter_alt</span>
-                    <span class="text-white text-base leading-none">ตัวกรอง</span>
-                    <span :class="{ 'rotate-180': isFilterDropdownOpen }"
-                        class="material-symbols-outlined text-white text-xl leading-none items-right ml-auto duration-300">arrow_drop_down</span>
-                </button>
+        <button @click="toggleFiltterDropdown"
+          class="bg-custom-orange text-white px-2 py-2 rounded-md flex items-center space-x-1 hover:bg-custom-orange-hover">
+          <span class="material-symbols-outlined text-white text-xl leading-none">filter_alt</span>
+          <span class="text-white text-base leading-none">ตัวกรอง</span>
+          <span :class="{ 'rotate-180': isFilterDropdownOpen }"
+            class="material-symbols-outlined text-white text-xl leading-none items-right ml-auto duration-300">arrow_drop_down</span>
+        </button>
 
-                <div v-if="isFilterDropdownOpen"
-                    class="absolute right-0 top-full mt-1 bg-white text-black text-left shadow-lg rounded-md overflow-y-auto z-50 border border-gray-300">
-                    <div class="p-4 w-[500px] list-none">
-                        <h3 class="font-bold mb-2">กรองโดย Package Type</h3>
-                        <div class="grid grid-cols-2 gap-4">
-                            <label v-for="type in filteredPackageTypes" :key="type.id"
-                                class="flex items-center space-x-2">
-                                <input type="checkbox" v-model="selectedPackageType" :value="type.id"
-                                    class="w-5 h-5 border-2 border-gray-400 rounded-full appearance-none checked:bg-custom-orange checked:border-transparent">
-                                <span>{{ type.name }}</span>
-                            </label>
-                        </div>
-                    </div>
-                    <div class="flex justify-between space-x-4 p-4 bg-white border-t rounded-b-md list-none">
-                        <li @click="clearFilter"
-                            class="px-4 py-2 cursor-pointer font-bold text-custom-orange text-left hover:underline">
-                            <span>รีเซ็ตตัวกรอง</span>
-                        </li>
+        <div v-if="isFilterDropdownOpen"
+          class="absolute right-0 top-full mt-1 bg-white text-black text-left shadow-lg rounded-md overflow-y-auto z-50 border border-gray-300">
+          <div class="p-4 w-[500px] list-none">
 
-                        <div class="flex space-x-2">
-                            <button @click="toggleFiltterDropdown"
-                                class="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400 text-gray-700">
-                                ยกเลิก
-                            </button>
-                            <button @click="applyFilter"
-                                class="bg-custom-orange hover:bg-custom-orange-hover text-white px-4 py-2 rounded-md">
-                                ใช้ตัวกรอง
-                            </button>
-                        </div>
-                    </div>
-                </div>
+            <h3 class="font-bold mb-2">กรองโดย Sales Type</h3>
+            <div class="grid grid-cols-2 gap-4">
+              <label v-for="type in filteredPackageTypes" :key="type.id" class="flex items-center space-x-2">
+                <input type="checkbox" v-model="selectedPackageType" :value="type.id"
+                  class="w-5 h-5 border-2 border-gray-400 rounded-full appearance-none checked:bg-custom-orange checked:border-transparent">
+                <span>{{ type.name }}</span>
+              </label>
             </div>
+
+            <h3 class="font-bold mt-4 mb-2">กรองโดยประเภทรายการ</h3>
+            <div class="space-y-2">
+              <label v-for="type in filteredAdditionalTypes" :key="type.id" class="flex items-center space-x-2">
+                <input type="checkbox" v-model="selectedAddType" :value="type.id"
+                  class="w-5 h-5 border-2 border-gray-400 rounded-full appearance-none checked:bg-custom-orange checked:border-transparent">
+                <span>{{ type.name }}</span>
+              </label>
+            </div>
+
+          </div>
+          <div class="flex justify-between space-x-4 p-4 bg-white border-t rounded-b-md list-none">
+            <li @click="clearFilter"
+              class="px-4 py-2 cursor-pointer font-bold text-custom-orange text-left hover:underline">
+              <span>รีเซ็ตตัวกรอง</span>
+            </li>
+
+            <div class="flex space-x-2">
+              <button @click="toggleFiltterDropdown"
+                class="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400 text-gray-700">
+                ยกเลิก
+              </button>
+              <button @click="applyFilter"
+                class="bg-custom-orange hover:bg-custom-orange-hover text-white px-4 py-2 rounded-md">
+                ใช้ตัวกรอง
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
 
             <div class="flex w-[250px] relative">
                 <input type="text" v-model="searchQuery" placeholder="ค้นหา..."
@@ -753,6 +767,10 @@
                             class=" bg-white relative border-b border-b-gray-200">
 
                             <td class="px-4 py-2 align-top pb-5">{{ (currentPage - 1) * itemsPerPage + index + 1 }}</td>
+                            <td class="px-4 py-2 align-top pb-5">
+                                {{ saleRecord.transaction }}
+                            </td>
+
                             <td class="px-4 py-2 align-top pb-5 font-bold text-custom-orange">
                                 {{ getCustomerName(saleRecord.customer_id) }}
                             </td>
@@ -917,18 +935,19 @@
                     <template v-if="additionalSalesRecords.length < 6 && additionalSalesRecords.length > 0">
                         <tr v-for="emptyIndex in (6 - additionalSalesRecords.length)" :key="'empty-' + emptyIndex"
                             class="bg-white">
-                            <td colspan="8" class="py-16"></td>
+                            <td colspan="10" class="py-16"></td>
                         </tr>
                     </template>
 
                     <template v-if="additionalSalesRecords.length === 0">
                         <tr>
-                            <td colspan="9" class="py-10 bg-white text-center text-gray-500 font-bold">
+                            <td colspan="10" class="py-10 bg-white text-center text-gray-500 font-bold">
                                 ไม่พบข้อมูล
                             </td>
                         </tr>
                     </template>
                 </template>
+                
             </tbody>
 
             <div v-if="isResultModalOpen"
@@ -1372,7 +1391,7 @@
 
                             <div class="flex-1">
                                 <label for="editStartDate" class="block font-bold text-gray-700">วันเริ่มแพ็คเกจ</label>
-                                <input v-model="selectedSaleRecord.start_date" id="startDate" type="date"
+                                <input v-model="selectedSaleRecord.start_package_date" id="startDate" type="date"
                                     class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange" />
                             </div>
                         </div>
@@ -1527,8 +1546,10 @@ export default {
     },
     data() {
         return {
-            headers: ['#', `Customer's Name`, 'Sales Type', 'ประเภทรายการ', 'รายละเอียดการขาย', 'มูลค่าขายรวม', 'สถานะการชำระเงิน', ''],
-            headerWidths: ['5%', '15%', '15%', '15%', '25%', '10%', '15%', '5%'],
+            headers: ['#',
+                'Transaction No.',
+                `Customer's Name`, 'Sales Type', 'ประเภทรายการ', 'รายละเอียดการขาย', 'มูลค่าขายรวม', 'สถานะการชำระเงิน', ''],
+            headerWidths: ['5%', '10%', '15%', '10%', '15%', '20%', '10%', '15%', '5%'],
             saleRecords: [],
 
             searchQuery: "",
@@ -1582,6 +1603,7 @@ export default {
 
             isFilterDropdownOpen: false,
             selectedPackageType: [],
+      selectedAddType: [],
             //filteredSaleRecord: [],
 
             isDetailModalOpen: false,
@@ -1653,7 +1675,7 @@ export default {
                 // package: this.selectedSaleRecord.package.package_detail,
                 // promotion_detail: this.selectedSaleRecord.package.promotion_detail,
                 // receive_food: this.totalReceiveFood,
-                // start_date: this.formatDate(this.selectedSaleRecord.start_date),
+                // start_package_date: this.formatDate(this.selectedSaleRecord.start_package_date),
                 sellect_by: this.getSelectFood(this.selectedSaleRecord.select_food_id),
                 // delivery_date: this.selectedSaleRecord.customer.delivery_date,
                 delivery: this.getDeliveryRoundName(
@@ -1729,9 +1751,9 @@ export default {
                 ),
                 transaction_ref: this.selectedSaleRecord.transaction_ref || "",
 
-                // start_date: this.formatDate(this.selectedSaleRecord.start_date),
+                // start_package_date: this.formatDate(this.selectedSaleRecord.start_package_date),
                 // expiry_date: this.formatDate(this.selectedSaleRecord.expiry_date),
-                // receive_date: this.formatDate(this.selectedSaleRecord.start_date),
+                // receive_date: this.formatDate(this.selectedSaleRecord.start_package_date),
                 note: this.selectedSaleRecord.note || "",
                 // package_detail: this.selectedSaleRecord.package?.package_detail || "",
                 delivery_date: this.selectedSaleRecord.customer?.delivery_date || "",
@@ -1864,7 +1886,10 @@ export default {
                         saleRecord.customer_id
                     ).toLowerCase().includes(this.searchQuery.toLowerCase());
                     const matchesPackageType = this.selectedPackageType.length === 0 || this.selectedPackageType.includes(saleRecord.package_type_id);
-                    return matchesSearch && matchesPackageType;
+                    const matchesAddType = this.selectedAddType.length === 0 || this.selectedAddType.includes(saleRecord.additional_type_id);
+
+          return matchesSearch && matchesPackageType && matchesAddType;
+
                 });
 
         },
@@ -2140,8 +2165,10 @@ export default {
                     saleRecord.customer_id
                 ).toLowerCase().includes(this.searchQuery.toLowerCase());
                 const matchesPackageType = this.selectedPackageType.length === 0 || this.selectedPackageType.includes(saleRecord.package_type_id);
-                return matchesSearch && matchesPackageType;
-            });
+        const matchesAddType = this.selectedAddType.length === 0 || this.selectedAddType.includes(saleRecord.additional_type_id);
+
+        return matchesSearch && matchesPackageType && matchesAddType;
+    });
 
             this.currentPage = 1;
             this.additionalSalesRecords = filtered;
@@ -2193,21 +2220,30 @@ export default {
             this.isFilterDropdownOpen = !this.isFilterDropdownOpen;
         },
         applyFilter() {
-            if (this.selectedPackageType.length > 0) {
-                this.filteredSaleRecords = this.packageTypes.filter(packageType =>
-                    this.selectedPackageType.includes(packageType.package_type_id)
-                );
-            } else {
-                this.filteredSaleRecords = this.saleRecords;
-            }
-            this.isFilterDropdownOpen = false;
-            this.updatePage();
-        },
-        clearFilter() {
-            this.selectedPackageType = [];
-            this.filteredSaleRecords = this.saleRecords;
-            this.updatePage();
-        },
+      if (this.selectedPackageType.length > 0) {
+        this.filteredSaleRecords = this.packageTypes.filter(packageType =>
+          this.selectedPackageType.includes(packageType.package_type_id)
+        );
+      }
+      if (this.selectedAddType.length > 0) {
+        this.filteredSaleRecords = this.additionalTypes.filter(program =>
+          this.selectedAddType.includes(program.additional_type_id)
+        );
+      }
+      else {
+        this.filteredSaleRecords = this.saleRecords;
+      }
+      this.isFilterDropdownOpen = false;
+      this.updatePage();
+    },
+    clearFilter() {
+      this.selectedPackageType = [];
+      this.selectedAddType = [];
+      this.selectedPromotionType = [];
+      this.filteredSaleRecords = this.saleRecords;
+      this.updatePage();
+    },
+
 
         toggleMoreDropdown(index) {
             this.moreOpenDropdownIndex =
@@ -2281,7 +2317,7 @@ export default {
                     payment_status: this.saleRecord.payment_status || "unpaid",
                     paid_date: this.saleRecord.paid_date || null,
                     payment_type_id: this.saleRecord.payment_type_id?.id || null,
-                    start_date: this.saleRecord.start_date || null,
+                    start_package_date: this.saleRecord.start_package_date || null,
                     zone1_id: this.saleRecord.zone1_id?.id || null,
                     zone1_quantity: this.saleRecord.zone1_quantity || 0,
 
@@ -2369,7 +2405,7 @@ export default {
                 payment_status: "unpaid",
                 paid_date: "",
                 payment_type_id: "",
-                start_date: "",
+                start_package_date: "",
                 expiry_date: "",
                 remaining_days: 0,
 
@@ -2408,7 +2444,7 @@ export default {
 
             this.selectedSaleRecord = {
                 ...saleRecord,
-                start_date: formatDate(saleRecord.start_date), // แปลงวันที่ก่อนนำไปใช้
+                start_package_date: formatDate(saleRecord.start_package_date), // แปลงวันที่ก่อนนำไปใช้
                 customer_id: this.customers.find(c => c.id === saleRecord.customer_id) || null,
                 package_type_id: this.packageTypes.find(p => p.id === saleRecord.package_type_id) || null,
                 promotion_type_id: this.promotionTypes.find(p => p.id === saleRecord.promotion_type_id) || null,
@@ -2449,7 +2485,7 @@ export default {
                         seller_name_id: this.selectedSaleRecord.seller_name_id?.id || null,
                         discount: this.selectedSaleRecord.discount || 0,
                         extra_charge: this.selectedSaleRecord.extra_charge || 0,
-                        start_date: this.selectedSaleRecord.start_date || null,
+                        start_package_date: this.selectedSaleRecord.start_package_date || null,
                         zone1_id: this.selectedSaleRecord.zone1_id?.id || null,
                         zone1_quantity: this.selectedSaleRecord.zone1_quantity || 0,
 
@@ -2575,12 +2611,12 @@ export default {
                 }
 
                 this.allPackages = packagesRes.data.filter((packaged) => {
-                    if (!packaged.start_date) {
+                    if (!packaged.start_package_date) {
                         packaged.displayLabel = packaged.name;
                         return true;
                     }
 
-                    const date = new Date(packaged.start_date);
+                    const date = new Date(packaged.start_package_date);
                     const currentMonth = new Date().getMonth();
                     const startMonth = date.getMonth();
 
@@ -2680,11 +2716,11 @@ export default {
             if (this.allPackages && Array.isArray(this.allPackages)) {
                 const packaged = this.allPackages.find((p) => p.id === packageId);
                 if (packaged) {
-                    if (!packaged.start_date) {
+                    if (!packaged.start_package_date) {
                         return packaged.name;
                     }
 
-                    const date = new Date(packaged.start_date);
+                    const date = new Date(packaged.start_package_date);
                     const currentMonth = new Date().getMonth();
                     const startMonth = date.getMonth();
 
