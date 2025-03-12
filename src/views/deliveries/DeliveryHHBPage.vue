@@ -348,9 +348,9 @@
             <td class="px-6 py-4 text-[12px] border-b border-b-gray-300">{{ order.deliver }}</td>
             <td class="px-6 py-4 text-[12px] border-b border-b-gray-300">{{ order.delivery_zone }}</td>
 
-            <span v-if="selectedAddresses[order.id]">
+            <template  v-if="selectedAddresses[order.id]">
               <td class="px-6 py-4 text-[12px]">{{ selectedAddresses[order.id] }}</td>
-            </span>
+            </template >
 
 
           </tr>
