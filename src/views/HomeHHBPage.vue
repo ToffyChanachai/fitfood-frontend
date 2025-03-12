@@ -35,7 +35,12 @@
 
         <!-- Text Section -->
         <div class="text-center">
-          <p class="text-3xl font-bold text-custom-orange">{{ formatPrice(allTotalSales) }}</p>
+          <div v-if="isLoading" class="flex mb-2">
+                        <div class="bg-gray-100 animate-pulse h-6 w-32 rounded-md"></div>
+                    </div>
+          <div v-else>
+            <p class="text-3xl font-bold text-custom-orange">{{ formatPrice(allTotalSales) }}</p>
+          </div>
           <p class="text-sm text-gray-600 mt-4">ยอดขายทั้งหมด</p>
         </div>
       </div>
@@ -48,7 +53,12 @@
         </div>
 
         <div class="text-center">
-          <p class="text-3xl font-bold text-custom-orange">{{ formatPrice(totalSales) }}</p>
+          <div v-if="isLoading" class="flex mb-2">
+                        <div class="bg-gray-100 animate-pulse h-6 w-48 rounded-md"></div>
+                    </div>
+          <div v-else>
+            <p class="text-3xl font-bold text-custom-orange">{{ formatPrice(totalSales) }}</p>
+          </div>
           <p class="text-sm text-gray-600 mt-4">ยอดประจำวันที่ <strong>{{ formatDate(endDate) }}</strong></p>
         </div>
       </div>
@@ -61,7 +71,12 @@
         </div>
 
         <div class="text-center">
+          <div v-if="isLoading" class="flex mb-2">
+                        <div class="bg-gray-100 animate-pulse h-6 w-32 rounded-md"></div>
+                    </div>
+          <div v-else>
           <p class="text-3xl font-bold text-custom-orange">{{ formatNumber(customers.length) }}</p>
+          </div>
           <p class="text-sm text-gray-600 mt-4">ลูกค้าทั้งหมด (AFF)</p>
         </div>
       </div>
@@ -203,95 +218,107 @@
         </tr>
       </thead>
       <tbody>
-        <template v-if="filteredSaleRecords1standRenew.length > 0">
-          <tr v-for="(saleRecord, index) in filteredSaleRecords" :key="index"
-            class=" bg-white relative border-b border-b-gray-200">
+        <tr v-if="isLoading" class="bg-white">
+                    <td colspan="11" class="py-16 text-center">
+                        <div class="flex justify-center items-center space-x-2">
+                        <div class="w-3 h-3 bg-gray-500 rounded-full animate-pulse"></div>
+                        <div class="w-3 h-3 bg-gray-500 rounded-full animate-pulse delay-200"></div>
+                        <div class="w-3 h-3 bg-gray-500 rounded-full animate-pulse delay-400"></div>
+                        </div>
+                    </td>
+                </tr>
 
-            <td class="px-4 py-2 align-top pb-5">{{ (currentPage - 1) * itemsPerPage + index + 1 }}</td>
+        <template v-else>
+          <template v-if="filteredSaleRecords1standRenew.length > 0">
+            <tr v-for="(saleRecord, index) in filteredSaleRecords" :key="index"
+              class=" bg-white relative border-b border-b-gray-200">
 
-            <td class="px-4 py-2 align-top pb-5">
-              {{ formatDate(saleRecord.paid_date) }}
-            </td>
+              <td class="px-4 py-2 align-top pb-5">{{ (currentPage - 1) * itemsPerPage + index + 1 }}</td>
 
-            <td class="px-4 py-2 align-top pb-5 font-bold text-custom-orange">
-              {{ getCustomerName(saleRecord.customer_id) }}
-            </td>
+              <td class="px-4 py-2 align-top pb-5">
+                {{ formatDate(saleRecord.paid_date) }}
+              </td>
 
-            <td class="px-4 py-2 align-top pb-5">
-              {{ getPackageName(saleRecord.package_id) }}
-            </td>
+              <td class="px-4 py-2 align-top pb-5 font-bold text-custom-orange">
+                {{ getCustomerName(saleRecord.customer_id) }}
+              </td>
 
-            <td class="px-4 py-2 align-top pb-5">
-              {{ formatDate(saleRecord.start_date) }}
-            </td>
+              <td class="px-4 py-2 align-top pb-5">
+                {{ getPackageName(saleRecord.package_id) }}
+              </td>
 
-            <td class="px-4 py-2 align-top pb-5">
-              {{ formatDate(saleRecord.expiry_date) }}
-            </td>
+              <td class="px-4 py-2 align-top pb-5">
+                {{ formatDate(saleRecord.start_date) }}
+              </td>
 
-            <td class="px-4 py-2 align-top pb-5">
-              <span v-if="saleRecord.remaining_days <= 0" class="text-red-500 font-bold">
-                หมดอายุ
-              </span>
-              <span v-else> {{ saleRecord.remaining_days }} วัน </span>
-            </td>
+              <td class="px-4 py-2 align-top pb-5">
+                {{ formatDate(saleRecord.expiry_date) }}
+              </td>
 
-            <td class="px-4 py-2 align-top pb-5">
-              {{ saleRecord.total_boxes_show }}
-            </td>
+              <td class="px-4 py-2 align-top pb-5">
+                <span v-if="saleRecord.remaining_days <= 0" class="text-red-500 font-bold">
+                  หมดอายุ
+                </span>
+                <span v-else> {{ saleRecord.remaining_days }} วัน </span>
+              </td>
 
-            <td class="px-4 py-2 align-top pb-5">
-              <span v-if="saleRecord.total_boxes <= 0" class="text-red-500 font-bold">
-                {{ saleRecord.total_boxes }}
-              </span>
-              <span v-else> {{ saleRecord.total_boxes }} </span>
-            </td>
+              <td class="px-4 py-2 align-top pb-5">
+                {{ saleRecord.total_boxes_show }}
+              </td>
 
-            <td class="px-4 py-2 text-right  pb-5 relative" ref="moreDropdown">
-              <button @click="toggleMoreDropdown(index)">
-                <span class="material-symbols-outlined cursor-pointer">more_vert</span>
-              </button>
+              <td class="px-4 py-2 align-top pb-5">
+                <span v-if="saleRecord.total_boxes <= 0" class="text-red-500 font-bold">
+                  {{ saleRecord.total_boxes }}
+                </span>
+                <span v-else> {{ saleRecord.total_boxes }} </span>
+              </td>
 
-              <div v-if="filteredSaleRecords1standRenew.length > 4">
-                <div v-if="moreOpenDropdownIndex === index" :class="moreDropdownPositionClass(index)"
-                  class="dropdown-menu absolute right-0 text-center bg-white shadow-lg rounded-md z-50 w-40 border border-gray-300">
-                  <ul class="list-none p-0 m-0">
-                    <li @click="onViewDetail(saleRecord)"
-                      class="px-4 py-2 cursor-pointer hover:bg-gray-100 text-gray-700 border-b border-gray-300">
-                      ดูรายละเอียด
-                    </li>
-                  </ul>
+              <td class="px-4 py-2 text-right  pb-5 relative" ref="moreDropdown">
+                <button @click="toggleMoreDropdown(index)">
+                  <span class="material-symbols-outlined cursor-pointer">more_vert</span>
+                </button>
+
+                <div v-if="filteredSaleRecords1standRenew.length > 4">
+                  <div v-if="moreOpenDropdownIndex === index" :class="moreDropdownPositionClass(index)"
+                    class="dropdown-menu absolute right-0 text-center bg-white shadow-lg rounded-md z-50 w-40 border border-gray-300">
+                    <ul class="list-none p-0 m-0">
+                      <li @click="onViewDetail(saleRecord)"
+                        class="px-4 py-2 cursor-pointer hover:bg-gray-100 text-gray-700 border-b border-gray-300">
+                        ดูรายละเอียด
+                      </li>
+                    </ul>
+                  </div>
                 </div>
-              </div>
 
-              <div v-else>
-                <div v-if="moreOpenDropdownIndex === index"
-                  class="dropdown-menu absolute right-0 text-center bg-white shadow-lg rounded-md z-50 w-40 border border-gray-300">
-                  <ul class="list-none p-0 m-0">
-                    <li @click="onViewDetail(saleRecord)"
-                      class="px-4 py-2 cursor-pointer hover:bg-gray-100 text-gray-700 border-b border-gray-300">
-                      ดูรายละเอียด
-                    </li>
-                  </ul>
+                <div v-else>
+                  <div v-if="moreOpenDropdownIndex === index"
+                    class="dropdown-menu absolute right-0 text-center bg-white shadow-lg rounded-md z-50 w-40 border border-gray-300">
+                    <ul class="list-none p-0 m-0">
+                      <li @click="onViewDetail(saleRecord)"
+                        class="px-4 py-2 cursor-pointer hover:bg-gray-100 text-gray-700 border-b border-gray-300">
+                        ดูรายละเอียด
+                      </li>
+                    </ul>
+                  </div>
                 </div>
-              </div>
-            </td>
-          </tr>
-        </template>
+              </td>
+            </tr>
+          </template>
 
-        <template v-if="filteredSaleRecords1standRenew.length < 6 && filteredSaleRecords1standRenew.length > 0">
-          <tr v-for="emptyIndex in (6 - filteredSaleRecords1standRenew.length)" :key="'empty-' + emptyIndex"
-            class="bg-white">
-            <td colspan="10" class="py-16"></td>
-          </tr>
-        </template>
+          <template v-if="filteredSaleRecords1standRenew.length < 6 && filteredSaleRecords1standRenew.length > 0">
+            <tr v-for="emptyIndex in (6 - filteredSaleRecords1standRenew.length)" :key="'empty-' + emptyIndex"
+              class="bg-white">
+              <td colspan="10" class="py-16"></td>
+            </tr>
+          </template>
 
-        <template v-if="filteredSaleRecords1standRenew.length === 0">
-          <tr>
-            <td colspan="10" class="py-10 bg-white text-center text-gray-500 font-bold">
-              ไม่พบข้อมูล
-            </td>
-          </tr>
+          <template v-if="filteredSaleRecords1standRenew.length === 0">
+            <tr>
+              <td colspan="10" class="py-10 bg-white text-center text-gray-500 font-bold">
+                ไม่พบข้อมูล
+              </td>
+            </tr>
+          </template>
         </template>
       </tbody>
 
@@ -369,6 +396,7 @@
 <script>
 import axios from "axios";
 import { mapActions, mapGetters } from "vuex";
+import { API_URL } from "@/services/api";
 
 export default {
   data() {
@@ -555,6 +583,9 @@ export default {
       showFailToast: false,
       showErrorToast: false,
       toastErrorMessage: "",
+
+      isLoading: false,
+
     };
   },
   computed: {
@@ -931,19 +962,19 @@ export default {
           receiveFoodRes,
           selectFoodRes,
         ] = await Promise.all([
-          axios.get("http://127.0.0.1:3333/customers-hhb"),
-          axios.get("http://127.0.0.1:3333/promotion-types"),
-          axios.get("http://127.0.0.1:3333/programs"),
-          axios.get("http://127.0.0.1:3333/packages"),
-          axios.get("http://127.0.0.1:3333/package-types"),
-          axios.get("http://127.0.0.1:3333/zone-deliveries"),
-          axios.get("http://127.0.0.1:3333/zone-delivery-types"),
-          axios.get("http://127.0.0.1:3333/seller-names"),
-          axios.get("http://127.0.0.1:3333/payment-types"),
-          axios.get("http://127.0.0.1:3333/additional-types"),
-          axios.get("http://127.0.0.1:3333/delivery-rounds"),
-          axios.get("http://127.0.0.1:3333/receive-foods"),
-          axios.get("http://127.0.0.1:3333/select-foods"),
+          axios.get(`${API_URL}/customers-hhb`),
+          axios.get(`${API_URL}/promotion-types`),
+          axios.get(`${API_URL}/programs`),
+          axios.get(`${API_URL}/packages`),
+          axios.get(`${API_URL}/package-types`),
+          axios.get(`${API_URL}/zone-deliveries`),
+          axios.get(`${API_URL}/zone-delivery-types`),
+          axios.get(`${API_URL}/seller-names`),
+          axios.get(`${API_URL}/payment-types`),
+          axios.get(`${API_URL}/additional-types`),
+          axios.get(`${API_URL}/delivery-rounds`),
+          axios.get(`${API_URL}/receive-foods`),
+          axios.get(`${API_URL}/select-foods`),
         ]);
 
         this.customers = customersRes.data;
@@ -1012,20 +1043,26 @@ export default {
     },
 
     async fetchSaleRecords() {
+      this.isLoading = true;
+
       try {
-        const response = await axios.get("http://127.0.0.1:3333/sale-records-hhb");
+        const response = await axios.get(`${API_URL}/sale-records-hhb`);
         this.saleRecords = response.data;
         this.filteredSaleRecords = response.data;
         this.saleRecords.sort((a, b) => a.id - b.id);
         this.updatePage();
       } catch (error) {
         console.error("Error fetching sale records:", error);
+      } finally {
+                this.isLoading = false;
       }
     },
 
     async fetchAllDailySales() {
+      this.isLoading = true;
+
       try {
-        const response = await axios.get('http://127.0.0.1:3333/sales-hhb/all-daily', {
+        const response = await axios.get(`${API_URL}/sales-hhb/all-daily`, {
         });
 
         this.allDailySales = response.data.data.allDailySales;
@@ -1037,11 +1074,15 @@ export default {
 
       } catch (error) {
         console.error('Error fetching sales data in range:', error);
+      } finally {
+                this.isLoading = false;
       }
     },
     async fetchDailySales(startDate, endDate) {
+      this.isLoading = true;
+
       try {
-        const response = await axios.get('http://127.0.0.1:3333/sales-hhb/daily', {
+        const response = await axios.get(`${API_URL}/sales-hhb/daily`, {
           params: { startDate, endDate },
         });
 
@@ -1050,6 +1091,8 @@ export default {
 
       } catch (error) {
         console.error('Error fetching sales data in range:', error);
+      } finally {
+                this.isLoading = false;
       }
     },
     formatNumber(number) {
