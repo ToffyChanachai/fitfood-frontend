@@ -45,7 +45,7 @@
                 </span>
                 <!-- Show Welcome Text on Desktop -->
                 <span class="text-black hidden sm:inline">Welcome, <strong class="text-custom-orange">{{ username
-                }}</strong></span>
+                    }}</strong></span>
                 <span :class="{ 'rotate-180': isMenuOpen }"
                   class="material-symbols-outlined text-black transition-transform duration-300 hidden sm:inline">
                   arrow_drop_down
@@ -114,8 +114,10 @@
       </div>
     </header>
 
-    <main class="flex-1 p-4 px-4 sm:px-32 relative min-h-[calc(100vh-80px)] bg-fixed"
-      :class="{ 'bg-gradient-to-r from-custom-orange via-orange-500 to-custom-orange-hover text-black': $route.path === '/register-aff' || $route.path === '/register-hhb' }">
+    <main class="flex-1 p-4 px-4 sm:px-32 relative min-h-[calc(100vh-80px)] bg-fixed" :class="{
+      'bg-gradient-to-r from-custom-orange via-orange-500 to-custom-orange-hover text-black': $route.path === '/register-aff',
+      'bg-gradient-to-r from-green-400 via-green-500 to-green-600 text-black': $route.path === '/register-hhb'
+    }">
 
       <div v-if="['/premium-health', '/', '/happy-healthy-box'].includes($route.path)"
         class="sm:hidden flex justify-center space-x-6 text-black font-bold mb-4 text-sm">

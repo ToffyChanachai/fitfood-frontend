@@ -111,7 +111,7 @@
                 </div>
             </div>
             <button @click="addCustomer"
-                class="mt-4 px-4 py-2 rounded bg-custom-orange text-white hover:bg-custom-orange-hover w-full text-sm sm:text-base">
+                class="mt-4 px-4 py-2 rounded bg-green-500 text-white hover:bg-green-700 w-full text-sm sm:text-base">
                 ยืนยัน
             </button>
         </div>
