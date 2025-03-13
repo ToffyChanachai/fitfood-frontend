@@ -235,6 +235,7 @@ export default {
       isLoggedIn: false,
       showModal: false,  // สำหรับการแสดง/ซ่อน modal
       isUserRegistered: false,
+      API_URL,
 
     };
   },

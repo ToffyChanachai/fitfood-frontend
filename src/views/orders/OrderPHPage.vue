@@ -1,7 +1,7 @@
 <template>
 
   <div v-if="showSuccessToast"
-  class="fixed top-4 left-1/2 transform -translate-x-1/2 sm:left-auto sm:transform-none sm:right-8 bg-green-500 text-white px-6 sm:px-8 py-3 sm:py-4 flex items-center space-x-3 sm:space-x-4 rounded-lg shadow-lg transition-opacity duration-300 z-50 max-w-[90%] w-full sm:w-auto"
+    class="fixed top-4 left-1/2 transform -translate-x-1/2 sm:left-auto sm:transform-none sm:right-8 bg-green-500 text-white px-6 sm:px-8 py-3 sm:py-4 flex items-center space-x-3 sm:space-x-4 rounded-lg shadow-lg transition-opacity duration-300 z-50 max-w-[90%] w-full sm:w-auto"
     :class="{ 'opacity-100': showSuccessToast, 'opacity-0': !showSuccessToast }">
     <span class="material-symbols-outlined text-white text-lg sm:text-xl">cancel</span>
     <span class="text-sm sm:text-base">{{ toastSuccessMessage }}</span>
@@ -11,7 +11,7 @@
   </div>
 
   <div v-if="showFailToast"
-  class="fixed top-4 left-1/2 transform -translate-x-1/2 sm:left-auto sm:transform-none sm:right-8 bg-red-500 text-white px-6 sm:px-8 py-3 sm:py-4 flex items-center space-x-3 sm:space-x-4 rounded-lg shadow-lg transition-opacity duration-300 z-50 max-w-[90%] w-full sm:w-auto"
+    class="fixed top-4 left-1/2 transform -translate-x-1/2 sm:left-auto sm:transform-none sm:right-8 bg-red-500 text-white px-6 sm:px-8 py-3 sm:py-4 flex items-center space-x-3 sm:space-x-4 rounded-lg shadow-lg transition-opacity duration-300 z-50 max-w-[90%] w-full sm:w-auto"
     :class="{ 'opacity-100': showFailToast, 'opacity-0': !showFailToast }">
     <span class="material-symbols-outlined text-white text-lg sm:text-xl">cancel</span>
     <span class="text-sm sm:text-base">{{ toastFailMessage }}</span>
@@ -236,6 +236,7 @@ export default {
       isLoggedIn: false,
       showModal: false,  // สำหรับการแสดง/ซ่อน modal
       isUserRegistered: false,
+      API_URL,
 
     };
   },
@@ -255,9 +256,9 @@ export default {
     }
   },
   methods: {
-    handleImageError(event) {
-      console.error("Image load error", event);
-    },
+    // handleImageError(event) {
+    //   console.error("Image load error", event);
+    // },
 
     getTodayDate() {
       const today = new Date();
@@ -439,9 +440,9 @@ export default {
     },
 
     redirectToRegister() {
-    this.showModal = false;
-    this.$router.push('/register-aff');  // ไปที่หน้าลงทะเบียน
-  },
+      this.showModal = false;
+      this.$router.push('/register-aff');  // ไปที่หน้าลงทะเบียน
+    },
 
 
     showSuccessToastNotification(message) {
