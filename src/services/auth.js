@@ -1,6 +1,7 @@
 // src/services/AuthService.js
 import axios from "axios";
-const API_URL = "https://fitfood-backend.onrender.com"; 
+// const API_URL = "https://fitfood-backend.onrender.com"; 
+const API_URL = "http://127.0.0.1:3333"; 
 axios.defaults.withCredentials = true;
 
 export default {
@@ -76,24 +77,26 @@ export default {
     }
   },
 
-  async changePassword(oldPassword, newPassword) {
-    try {
-      const response = await axios.put(
-        `${API_URL}/users/update-password`,
-        { oldPassword, newPassword },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
-      return response.data; // จะได้ข้อความสำเร็จจาก API
-    } catch (error) {
-      console.error(
-        "Error changing password:",
-        error.response ? error.response.data : error.message
-      );
-      throw error.response ? error.response.data : error.message;
-    }
-  },
+  // async forgotPassword(email) {
+  //   try {
+  //     const response = await axios.post(`${API_URL}/forgot-password`, {
+  //       email,
+  //     });
+  //     return response.data;
+  //   } catch (error) {
+  //     throw error.response ? error.response.data : error.message;
+  //   }
+  // },
+
+  // // ฟังก์ชันสำหรับรีเซ็ตรหัสผ่าน
+  // async resetPassword(token, password) {
+  //   try {
+  //     const response = await axios.post(`${API_URL}/reset-password/${token}`, {
+  //       password,
+  //     });
+  //     return response.data;
+  //   } catch (error) {
+  //     throw error.response ? error.response.data : error.message;
+  //   }
+  // }
 };
