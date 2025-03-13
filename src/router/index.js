@@ -34,8 +34,8 @@ import DailySaleHHB from "../views/daily-sales/DailySaleHHBPage.vue";
 
 import Customers from "../views/customers/CustomersPage.vue";
 import Test from "../views/TestPage.vue";
-import Test2 from "../views/Test2Page.vue";
-import Test3 from "@/views/test3Page.vue";
+// import Test2 from "../views/Test2Page.vue";
+// import Test3 from "@/views/test3Page.vue";
 
 import CustomersHHB from "@/views/customers/CustomersHHB.vue";
 
@@ -177,8 +177,12 @@ const routes = [
     path: "/users",
     name: "ข้อมูลผู้ใช้งาน",
     component: User,
-    meta: { title: "ข้อมูลผู้ใช้งาน  - Absolute FitFood" },
+    meta: { 
+      title: "ข้อมูลผู้ใช้งาน  - Absolute FitFood",
+      requiresAdmin: true,
+    },
   },
+  
   // { path: '/forgot-password',
   //   name: 'forgot-password',
   //   component: ForgotPassword,
@@ -191,13 +195,19 @@ const routes = [
     path: "/master",
     name: "Home",
     component: Home,
-    meta: { title: "หน้าแรก - Absolute FitFood" },
+    meta: { 
+      title: "หน้าแรก - Absolute FitFood",
+      requiresAdmin: true,
+     },
   },
   {
     path: "/master-hhb",
     name: "Home HHB",
     component: HomeHHB,
-    meta: { title: "หน้าแรก - Absolute FitFood" },
+    meta: { 
+      title: "หน้าแรก - Absolute FitFood",
+      requiresAdmin: true,
+    },
   },
   {
     path: "/customers",
@@ -212,63 +222,93 @@ const routes = [
     path: "/customers-hhb",
     name: "ข้อมูลลูกค้าHHB",
     component: CustomersHHB,
-    meta: { title: "ข้อมูลลูกค้า - Absolute FitFood" },
+    meta: { 
+      title: "ข้อมูลลูกค้า - Absolute FitFood",
+      requiresAdmin: true,
+    },
   },
   {
     path: "/sale-records",
     name: "บันทึกการขาย",
     component: SalesRecord,
-    meta: { title: "บันทึกการขาย - Absolute FitFood" },
+    meta: { 
+      title: "บันทึกการขาย - Absolute FitFood",
+      requiresAdmin: true,
+     },
   },
   {
     path: "/sale-records-additional",
     name: "บันทึกการขาย Additional",
     component: SalesRecordAddit,
-    meta: { title: "บันทึกการขาย - Absolute FitFood" },
+    meta: { 
+      title: "บันทึกการขาย - Absolute FitFood",
+      requiresAdmin: true,
+    },
   },
   {
     path: "/sale-records-hhb",
     name: "บันทึกการขาย HHB",
     component: SalesRecordHHB,
-    meta: { title: "บันทึกการขาย - Absolute FitFood" },
+    meta: { 
+      title: "บันทึกการขาย - Absolute FitFood",
+      requiresAdmin: true,
+     },
   },
   {
     path: "/sale-records-additional-hhb",
     name: "บันทึกการขาย Additional HHB",
     component: SalesRecordAdditHHB,
-    meta: { title: "บันทึกการขาย - Absolute FitFood" },
+    meta: { 
+      title: "บันทึกการขาย - Absolute FitFood",
+      requiresAdmin: true,
+     },
   },
 
   {
     path: "/daily-sale",
     name: "ยอดขายประจำวัน",
     component: DailySale,
-    meta: { title: "ยอดขายประจำวัน - Absolute FitFood" },
+    meta: { 
+      title: "ยอดขายประจำวัน - Absolute FitFood",
+      requiresAdmin: true,
+    },
   },
   {
     path: "/daily-sale-hhb",
     name: "ยอดขายประจำวัน HHB",
     component: DailySaleHHB,
-    meta: { title: "ยอดขายประจำวัน Happy Healthy Box - Absolute FitFood" },
+    meta: { 
+      title: "ยอดขายประจำวัน Happy Healthy Box - Absolute FitFood",
+      requiresAdmin: true,
+    },
   },
 
   {
     path: "/setup-menu-ph",
     name: "Setup Menu Premium Health",
     component: SetupMenuPH,
-    meta: { title: "Setup Menu Premium Health - Absolute FitFood" },
+    meta: { 
+      title: "Setup Menu Premium Health - Absolute FitFood",
+      requiresAdmin: true,
+     },
   },
   {
     path: "/setup-menu-hhb",
     name: "Setup Menu Happy Healthy Box",
     component: SetupMenuHHB,
-    meta: { title: "Setup Menu Happy Healthy Box - Absolute FitFood" },
+    meta: { 
+      title: "Setup Menu Happy Healthy Box - Absolute FitFood",
+      requiresAdmin: true,
+    },
   },
   {
     path: "/setup-menu-lc",
     name: "Setup Menu Low Carb",
     component: SetupMenuLC,
-    meta: { title: "Setup Menu Low Carb - Absolute FitFood" },
+    meta: { 
+      title: "Setup Menu Low Carb - Absolute FitFood",
+      requiresAdmin: true,
+     },
   },
   {
     path: "/setup-menu-fl",
@@ -283,207 +323,298 @@ const routes = [
     path: "/setup-menu-bpd",
     name: "Setup Menu โรคความดัน",
     component: SetupMenuBPD,
-    meta: { title: "Setup Menu โรคความดัน - Absolute FitFood" },
+    meta: { 
+      title: "Setup Menu โรคความดัน - Absolute FitFood",
+      requiresAdmin: true,
+    },
   },
   {
     path: "/setup-menu-diabete",
     name: "Setup Menu โรคเบาหวาน",
     component: SetupMenuDiabete,
-    meta: { title: "Setup Menu โรคเบาหวาน - Absolute FitFood" },
+    meta: { 
+      title: "Setup Menu โรคเบาหวาน - Absolute FitFood",
+      requiresAdmin: true,
+     },
   },
   {
     path: "/setup-menu-fat-disease",
     name: "Setup Menu โรคไขมัน",
     component: SetupMenuFatDisease,
-    meta: { title: "Setup Menu โรคไขมัน - Absolute FitFood" },
+    meta: { 
+      title: "Setup Menu โรคไขมัน - Absolute FitFood",
+      requiresAdmin: true,
+    },
   },
 
   {
     path: "/result-orders",
     name: "รายการอาหารประจำวันของลูกค้า",
     component: ResultOrder,
-    meta: { title: "รายการอาหารประจำวันของลูกค้า - Absolute FitFood" },
+    meta: { 
+      title: "รายการอาหารประจำวันของลูกค้า - Absolute FitFood",
+      requiresAdmin: true,
+     },
   },
   {
     path: "/result-orders-hhb",
     name: "รายการอาหารประจำวันของลูกค้า HHB",
     component: ResultOrderHHB,
-    meta: { title: "รายการอาหารประจำวันของลูกค้า - Absolute FitFood" },
+    meta: { 
+      title: "รายการอาหารประจำวันของลูกค้า - Absolute FitFood",
+      requiresAdmin: true,
+    },
   },
 
   {
     path: "/remaining-packages",
     name: "แพ็คเกจคงเหลือของลูกค้า",
     component: RemainingPackage,
-    meta: { title: "แพ็คเกจคงเหลือของลูกค้า - Absolute FitFood" },
+    meta: { 
+      title: "แพ็คเกจคงเหลือของลูกค้า - Absolute FitFood",
+      requiresAdmin: true,
+    },
   },
   {
     path: "/order-history/:customerId",
     name: "ประวัติการสั่งรายการอาหาร",
     component: OrderHistory,
-    meta: { title: "ประวัติการสั่งรายการอาหาร - Absolute FitFood" },
+    meta: { 
+      title: "ประวัติการสั่งรายการอาหาร - Absolute FitFood",
+      requiresAdmin: true,
+    },
   },
   {
     path: "/order-package-history/:customerId",
     name: "ประวัติการสั่งซื้อแพ็คเกจ",
     component: OrderPackageHistory,
-    meta: { title: "ประวัติการสั่งซื้อแพ็คเกจ - Absolute FitFood" },
+    meta: { 
+      title: "ประวัติการสั่งซื้อแพ็คเกจ - Absolute FitFood",
+      requiresAdmin: true,
+    },
   },
 
   {
     path: "/remaining-packages-hhb",
     name: "แพ็คเกจคงเหลือของลูกค้า HHB",
     component: RemainingPackageHHB,
-    meta: { title: "แพ็คเกจคงเหลือของลูกค้า - Absolute FitFood" },
+    meta: { 
+      title: "แพ็คเกจคงเหลือของลูกค้า - Absolute FitFood",
+      requiresAdmin: true,
+    },
   },
   {
     path: "/order-history-hhb/:customerId",
     name: "ประวัติการสั่งรายการอาหาร HHB",
     component: OrderHistoryHHB,
-    meta: { title: "ประวัติการสั่งรายการอาหาร - Absolute FitFood" },
+    meta: { 
+      title: "ประวัติการสั่งรายการอาหาร - Absolute FitFood",
+      requiresAdmin: true,
+    },
   },
   {
     path: "/order-package-history-hhb/:customerId",
     name: "ประวัติการสั่งซื้อแพ็คเกจ HHB",
     component: OrderPackageHistoryHHB,
-    meta: { title: "ประวัติการสั่งซื้อแพ็คเกจ HHB - Absolute FitFood" },
+    meta: { 
+      title: "ประวัติการสั่งซื้อแพ็คเกจ HHB - Absolute FitFood",
+      requiresAdmin: true,
+    },
   },
 
   {
     path: "/kitchen-orders",
     name: "Kitchen Orders",
     component: KitchenOrder,
-    meta: { title: "Kitchen Orders - Absolute FitFood" },
+    meta: { 
+      title: "Kitchen Orders - Absolute FitFood",
+      requiresAdmin: true,
+    },
   },
   {
     path: "/kitchen-orders-hhb",
     name: "Kitchen Orders HHB",
     component: KitchenOrderHHB,
-    meta: { title: "Kitchen Orders - Absolute FitFood" },
+    meta: { 
+      title: "Kitchen Orders - Absolute FitFood",
+      requiresAdmin: true,
+    },
   },
 
   {
     path: "/delivery",
     name: "การจัดส่งอาหารประจำวัน",
     component: Delivery,
-    meta: { title: "การจัดส่งอาหารประจำวัน - Absolute FitFood" },
+    meta: { 
+      title: "การจัดส่งอาหารประจำวัน - Absolute FitFood",
+      requiresAdmin: true,
+    },
   },
   {
     path: "/delivery-hhb",
     name: "การจัดส่งอาหารประจำวัน HHB",
     component: DeliveryHHB,
-    meta: { title: "การจัดส่งอาหารประจำวัน - Absolute FitFood" },
+    meta: { 
+      title: "การจัดส่งอาหารประจำวัน - Absolute FitFood",
+      requiresAdmin: true,
+    },
   },
 
   {
     path: "/test",
     name: "test",
     component: Test,
-    meta: { title: "test - Absolute FitFood" },
-  },
-  {
-    path: "/test2",
-    name: "test2",
-    component: Test2,
-    meta: {
-      title: "test2 - Absolute FitFood",
-      layout: "SimpleLayout", // ใช้ SimpleLayout สำหรับ test2
+    meta: { 
+      title: "test - Absolute FitFood",
+      requiresAdmin: true,
     },
   },
-  {
-    path: "/test3",
-    name: "test3",
-    component: Test3,
-    meta: { title: "test3 - Absolute FitFood", layout: "SimpleLayout" },
-  },
+  
+  // {
+  //   path: "/test2",
+  //   name: "test2",
+  //   component: Test2,
+  //   meta: {
+  //     title: "test2 - Absolute FitFood",
+  //     layout: "SimpleLayout", // ใช้ SimpleLayout สำหรับ test2
+  //   },
+  // },
+  // {
+  //   path: "/test3",
+  //   name: "test3",
+  //   component: Test3,
+  //   meta: { title: "test3 - Absolute FitFood", layout: "SimpleLayout" },
+  // },
 
   {
     path: "/promotion-types",
     name: "ข้อมูลประเภทโปรโมชั่น",
     component: PromotionTypesPage,
-    meta: { title: "Promotion Types - Absolute FitFood" },
+    meta: { 
+      title: "Promotion Types - Absolute FitFood",
+      requiresAdmin: true,
+    },
   },
   {
     path: "/programs",
     name: "ข้อมูลโปรแกรม",
     component: Program,
-    meta: { title: "ข้อมูลโปรแกรม - Absolute FitFood" },
+    meta: { 
+      title: "ข้อมูลโปรแกรม - Absolute FitFood",
+      requiresAdmin: true,
+     },
   },
   {
     path: "/packages",
     name: "ข้อมูลแพ็คเกจ",
     component: Package,
-    meta: { title: "ข้อมูลแพ็คเกจ - Absolute FitFood" },
+    meta: { 
+      title: "ข้อมูลแพ็คเกจ - Absolute FitFood",
+      requiresAdmin: true,
+     },
   },
   {
     path: "/package-types",
     name: "ข้อมูลประเภทแพ็คเกจ",
     component: PackageType,
-    meta: { title: "ข้อมูลประเภทแพ็คเกจ - Absolute FitFood" },
+    meta: { 
+      title: "ข้อมูลประเภทแพ็คเกจ - Absolute FitFood",
+      requiresAdmin: true,
+    },
   },
   {
     path: "/additional-types",
     name: "ข้อมูล Sales Type (Additional Sales)",
     component: AdditionalTypes,
-    meta: { title: "ข้อมูล Sales Type (Additional Sales) - Absolute FitFood" },
+    meta: { 
+      title: "ข้อมูล Sales Type (Additional Sales) - Absolute FitFood",
+      requiresAdmin: true,
+    },
   },
 
   {
     path: "/sellers",
     name: "ข้อมูลผู้ขาย",
     component: Seller,
-    meta: { title: "ข้อมูลผู้ขาย - Absolute FitFood" },
+    meta: { 
+      title: "ข้อมูลผู้ขาย - Absolute FitFood",
+      requiresAdmin: true,
+    },
   },
   {
     path: "/select-foods",
     name: "ข้อมูลวิธีการการเลือกอาหาร",
     component: SelectFood,
-    meta: { title: "ข้อมูลวิธีการการเลือกอาหาร - Absolute FitFood" },
+    meta: { 
+      title: "ข้อมูลวิธีการการเลือกอาหาร - Absolute FitFood",
+      requiresAdmin: true,
+    },
   },
 
   {
     path: "/receive-foods",
     name: "ข้อมูลวิธีการรับอาหาร",
     component: ReceiveFood,
-    meta: { title: "ข้อมูลวิธีการรับอาหาร - Absolute FitFood" },
+    meta: { 
+      title: "ข้อมูลวิธีการรับอาหาร - Absolute FitFood",
+      requiresAdmin: true,
+    },
   },
 
   {
     path: "/delivery-rounds",
     name: "ข้อมูลรอบการจัดส่งอาหาร",
     component: DeliveryRound,
-    meta: { title: "ข้อมูลรอบการจัดส่งอาหาร - Absolute FitFood" },
+    meta: { 
+      title: "ข้อมูลรอบการจัดส่งอาหาร - Absolute FitFood",
+      requiresAdmin: true,
+    },
   },
 
   {
     path: "/zone-delivery-types",
     name: "ข้อมูลประเภทโซนการจัดส่ง",
     component: ZoneDeliveryType,
-    meta: { title: "ข้อมูลประเภทโซนการจัดส่ง - Absolute FitFood" },
+    meta: { 
+      title: "ข้อมูลประเภทโซนการจัดส่ง - Absolute FitFood",
+      requiresAdmin: true,
+    },
   },
   {
     path: "/zone-deliveries",
     name: "ข้อมูลโซนการจัดส่ง",
     component: ZoneDelivery,
-    meta: { title: "ข้อมูลโซนการจัดส่ง - Absolute FitFood" },
+    meta: { 
+      title: "ข้อมูลโซนการจัดส่ง - Absolute FitFood",
+      requiresAdmin: true,
+    },
   },
   {
     path: "/menu-types",
     name: "ข้อมูลโปรแกรมเมนู",
     component: MenuType,
-    meta: { title: "ข้อมูลโปรแกรมเมนู - Absolute FitFood" },
+    meta: { 
+      title: "ข้อมูลโปรแกรมเมนู - Absolute FitFood",
+      requiresAdmin: true,
+    },
   },
   {
     path: "/meal-types",
     name: "ข้อมูลประเภทเมนู",
     component: MealType,
-    meta: { title: "ข้อมูลประเภทเมนู - Absolute FitFood" },
+    meta: { 
+      title: "ข้อมูลประเภทเมนู - Absolute FitFood",
+      requiresAdmin: true,
+    },
   },
   {
     path: "/menus",
     name: "ข้อมูลเมนู",
     component: Menu,
-    meta: { title: "ข้อมูลเมนู - Absolute FitFood" },
+    meta: { 
+      title: "ข้อมูลเมนู - Absolute FitFood",
+      requiresAdmin: true,
+    },
   },
 
   {
@@ -505,6 +636,7 @@ const routes = [
       layout: "SimpleLayout",
     },
   },
+
   {
     path: "/low-carb",
     name: "low carb",

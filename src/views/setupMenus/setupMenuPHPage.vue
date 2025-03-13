@@ -582,7 +582,7 @@
 import axios from "axios";
 import flatpickr from "flatpickr";
 import Multiselect from "vue-multiselect";
-import { API_URL } from "@/services/testapi";
+import { API_URL } from "@/services/api";
 
 // import "flatpickr/dist/flatpickr.min.css";
 

@@ -122,7 +122,7 @@
 import axios from "axios";
 import flatpickr from "flatpickr";
 import "flatpickr/dist/flatpickr.css";
-import { API_URL } from "@/services/testapi";
+import { API_URL } from "@/services/api";
 
 
 export default {

@@ -1557,7 +1557,7 @@
 import axios from "axios";
 import Multiselect from "vue-multiselect";
 import { mapActions, mapGetters } from "vuex";
-import { API_URL } from "@/services/testapi";
+import { API_URL } from "@/services/api";
 
 export default {
     components: {
