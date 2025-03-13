@@ -345,7 +345,7 @@
                 </router-link>
             </div>
 
-            <div v-if="$route.path === '/sellers' || $route.path === '/select-foods'"
+            <div v-if="$route.path === '/sellers' || $route.path === '/select-foods' || $route.path === '/payment-types'"
                 class="mt-4 p-4 flex items-left space-x-6 text-m font-bold">
                 <router-link to="sellers" class="hover:text-custom-orange"
                     :class="{ 'text-custom-orange border-b-2 border-custom-orange': $route.path === '/' || $route.path === '/sellers' }">
@@ -354,6 +354,10 @@
                 <router-link to="/select-foods" class="hover:text-custom-orange"
                     :class="{ 'text-custom-orange border-b-2 border-custom-orange': $route.path === '/select-foods' }">
                     ข้อมูลวิธีการการเลือกอาหาร
+                </router-link>
+                <router-link to="/payment-types" class="hover:text-custom-orange"
+                    :class="{ 'text-custom-orange border-b-2 border-custom-orange': $route.path === '/payment-types' }">
+                    ข้อมูลประเภทการชำระเงิน
                 </router-link>
             </div>
 

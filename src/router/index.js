@@ -47,6 +47,7 @@ import AdditionalTypes from "@/views/packages/AdditionalTypesPage.vue";
 
 import Seller from "@/views/other/SellerPage.vue";
 import SelectFood from "@/views/other/SelectFoodPage.vue";
+import PaymentType from "@/views/other/PaymentTypePage.vue";
 
 import ReceiveFood from "@/views/zones/ReceiveFoodPage.vue";
 import DeliveryRound from "@/views/zones/DeliveryRoundPage.vue";
@@ -547,6 +548,15 @@ const routes = [
     component: SelectFood,
     meta: { 
       title: "ข้อมูลวิธีการการเลือกอาหาร - Absolute FitFood",
+      requiresAdmin: true,
+    },
+  },
+  {
+    path: "/payment-types",
+    name: "ข้อมูลประเภทการชำระเงิน",
+    component: PaymentType,
+    meta: { 
+      title: "ข้อมูลประเภทการชำระเงิน - Absolute FitFood",
       requiresAdmin: true,
     },
   },

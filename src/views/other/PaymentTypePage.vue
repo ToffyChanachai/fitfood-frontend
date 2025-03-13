@@ -17,12 +17,12 @@
         </button>
     </div>
 
-    <div>
+    <div class="mt-[-20px]">
 
         <div class="flex space-x-2 items-center relative">
             <div class="mt-4 px-4 flex items-center space-x-1 mr-auto ">
                 <!-- <span class="material-symbols-outlined text-2xl text-gray-700">person</span> -->
-                <span class="text-m text-gray-700">จำนวนผู้ขายทั้งหมด: </span>
+                <span class="text-m text-gray-700">จำนวนวิธีการการเลือกอาหารทั้งหมด: </span>
                 <span class="text-m text-custom-orange font-bold"> {{ promotion_types.length }} รายการ</span>
             </div>
 
@@ -50,7 +50,7 @@
                         <div
                             class="flex justify-between items-center bg-custom-orange text-white px-4 py-2 rounded-t-md">
                             <div class="flex-1 flex items-left">
-                                <span class="font-bold">เพิ่มผู้ขาย</span>
+                                <span class="font-bold">เพิ่มวิธีการการเลือกอาหาร</span>
                             </div>
                             <div class="flex space-x-2">
                                 <span @click="closeAddModal"
@@ -156,7 +156,7 @@
                 <tr v-for="(promotion_type, index) in filteredPromotionType" :key="index"
                     class=" bg-white relative border-b border-b-gray-200">
                     <td class="px-4 py-2 align-top pb-5">{{ (currentPage - 1) * itemsPerPage + index + 1 }}</td>
-                    <td class="px-4 py-2 align-top font-bold text-black pb-5">{{ promotion_type.name }}</td>
+                    <td class="px-4 py-2 align-top font-bold text-custom-orange pb-5">{{ promotion_type.name }}</td>
                     <td class="px-4 py-2 align-top text-right pb-5">
                         <div class="flex justify-end space-x-2">
                             <button @click="openEditModal(promotion_type)"
@@ -198,7 +198,7 @@
 
                 <div class="bg-white rounded-md shadow-lg w-1/2 max-w-3xl h-auto max-h-[800px] flex flex-col">
                     <div class="flex justify-between items-center bg-custom-orange text-white px-4 py-2 rounded-t-md">
-                        <span class="font-bold">แก้ไขผู้ขาย</span>
+                        <span class="font-bold">แก้ไขวิธีการการเลือกอาหาร</span>
                         <div class="flex space-x-2">
                             <span @click="closeEditModal"
                                 class="material-symbols-outlined cursor-pointer hover:text-gray-200">
