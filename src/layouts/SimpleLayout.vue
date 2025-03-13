@@ -72,13 +72,13 @@
                   <span>Register Customer Profile</span>
                 </li>
 
-                <router-link :to="`/order-history-user/${getCustomerID(id)}`" @click="isMenuOpen = false"
+                <router-link :to="`/order-history`" @click="isMenuOpen = false"
                   class="px-4 py-3 cursor-pointer hover:bg-gray-100 hover:text-custom-orange hover:font-bold border-b flex items-center justify-between">
                   <span class="material-symbols-outlined">history</span>
                   <span>ประวัติการสั่งรายการอาหาร</span>
                 </router-link>
 
-                <router-link :to="`/order-package-history-user/${getCustomerID(id)}`" @click="isMenuOpen = false"
+                <router-link :to="`/order-package-history`" @click="isMenuOpen = false"
                   class="px-4 py-3 cursor-pointer hover:bg-gray-100 hover:text-custom-orange hover:font-bold border-b flex items-center justify-between">
                   <span class="material-symbols-outlined">history</span>
                   <span>ประวัติการสั่งซื้อแพ็คเกจ</span>
@@ -147,28 +147,28 @@
 
       <div v-if="isOrderHistoryPath" class="flex flex-row justify-center space-x-4 sm:space-x-6">
         <span class="cursor-pointer hover:text-custom-orange text-center text-sm sm:text-base"
-          @click="$router.push(`/order-history-user/${getCustomerID(id)}`)"
-          :class="{ 'border-b-2 border-custom-orange text-custom-orange font-bold text-sm sm:text-base  ': $route.path === `/order-history-user/${getCustomerID(id)}` }">
+          @click="$router.push(`/order-history`)"
+          :class="{ 'border-b-2 border-custom-orange text-custom-orange font-bold text-sm sm:text-base  ': $route.path === `/order-history` }">
           Absolute FitFood
         </span>
 
         <span class="cursor-pointer hover:text-custom-orange text-center text-sm sm:text-base"
-          @click="$router.push(`/order-history-hhb-user/${getCustomerHHBID(id)}`)"
-          :class="{ 'border-b-2 border-custom-orange text-custom-orange font-bold text-sm sm:text-base': $route.path === `/order-history-hhb-user/${getCustomerHHBID(id)}` }">
+          @click="$router.push(`/order-history-hhb`)"
+          :class="{ 'border-b-2 border-custom-orange text-custom-orange font-bold text-sm sm:text-base': $route.path === `/order-history-hhb` }">
           Happy Healthy Box
         </span>
       </div>
 
       <div v-if="isOrderPackageHistoryPath" class="flex flex-row justify-center space-x-4 sm:space-x-6">
         <span class="cursor-pointer hover:text-custom-orange text-center text-sm sm:text-base"
-          @click="$router.push(`/order-package-history-user/${getCustomerID(id)}`)"
-          :class="{ 'border-b-2 border-custom-orange text-custom-orange font-bold text-sm sm:text-base  ': $route.path === `/order-package-history-user/${getCustomerID(id)}` }">
+          @click="$router.push(`/order-package-history`)"
+          :class="{ 'border-b-2 border-custom-orange text-custom-orange font-bold text-sm sm:text-base  ': $route.path === `/order-package-history` }">
           Absolute FitFood
         </span>
 
         <span class="cursor-pointer hover:text-custom-orange text-center text-sm sm:text-base"
-          @click="$router.push(`/order-package-history-hhb-user/${getCustomerHHBID(id)}`)"
-          :class="{ 'border-b-2 border-custom-orange text-custom-orange font-bold text-sm sm:text-base': $route.path === `/order-package-history-hhb-user/${getCustomerHHBID(id)}` }">
+          @click="$router.push(`/order-package-history-hhb`)"
+          :class="{ 'border-b-2 border-custom-orange text-custom-orange font-bold text-sm sm:text-base': $route.path === `/order-package-history-hhb` }">
           Happy Healthy Box
         </span>
       </div>
@@ -358,14 +358,14 @@ export default {
     },
     isOrderHistoryPath() {
       return (
-        this.$route.path === `/order-history-user/${this.getCustomerID(this.id)}` ||
-        this.$route.path === `/order-history-hhb-user/${this.getCustomerHHBID(this.id)}`
+        this.$route.path === `/order-history` ||
+        this.$route.path === `/order-history-hhb`
       );
     },
     isOrderPackageHistoryPath() {
       return (
-        this.$route.path === `/order-package-history-user/${this.getCustomerID(this.id)}` ||
-        this.$route.path === `/order-package-history-hhb-user/${this.getCustomerHHBID(this.id)}`
+        this.$route.path === `/order-package-history` ||
+        this.$route.path === `/order-package-history-hhb`
       );
     }
   },

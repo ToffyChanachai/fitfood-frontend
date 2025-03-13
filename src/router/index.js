@@ -133,7 +133,7 @@ const routes = [
     },
   },
   {
-    path: "/order-history-user/:customerId",
+    path: "/order-history",
     name: "ประวัติการสั่งรายการอาหาร User",
     component: OrderHistoryUser,
     meta: { 
@@ -143,7 +143,7 @@ const routes = [
      },
   },
   {
-    path: "/order-history-hhb-user/:customerId",
+    path: "/order-history-hhb",
     name: "ประวัติการสั่งรายการอาหาร User HHB",
     component: OrderHistoryHHBUser,
     meta: { 
@@ -154,7 +154,7 @@ const routes = [
   },
 
   {
-    path: "/order-package-history-user/:customerId",
+    path: "/order-package-history",
     name: "ประวัติการสั่งซื้อแพ็คเกจ User",
     component: OrderPackageHistoryUser,
     meta: { 
@@ -163,7 +163,7 @@ const routes = [
      },
   },
   {
-    path: "/order-package-history-hhb-user/:customerId",
+    path: "/order-package-history-hhb",
     name: "ประวัติการสั่งซื้อแพ็คเกจ HHB User",
     component: OrderPackageHistoryHHBUser,
     meta: { 

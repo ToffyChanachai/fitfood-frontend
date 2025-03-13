@@ -770,7 +770,7 @@ export default {
         async deleteConfirmed() {
             try {
                 await axios.delete(
-                    `http://127.0.0.1:3333/customers-hhb/${this.itemToDelete}`
+                    `${API_URL}/customers-hhb/${this.itemToDelete}`
                 );
                 this.customers = this.customers.filter((item) => item.id !== this.itemToDelete);
                 this.closeDeleteModal();

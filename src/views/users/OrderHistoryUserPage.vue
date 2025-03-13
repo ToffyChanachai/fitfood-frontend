@@ -10,7 +10,8 @@
 
             <!-- ปุ่มลูกศรย้อนกลับ -->
             <button @click="changeDate(-1)" class="hidden sm:flex items-center">
-                <span class="material-symbols-outlined sm:text-3xl text-xl text-custom-orange hover:text-custom-orange-hover">
+                <span
+                    class="material-symbols-outlined sm:text-3xl text-xl text-custom-orange hover:text-custom-orange-hover">
                     chevron_left
                 </span>
             </button>
@@ -21,7 +22,8 @@
             </button>
 
             <button @click="changeDate(1)" class="hidden sm:flex items-center">
-                <span class="material-symbols-outlined sm:text-3xl text-xl text-custom-orange hover:text-custom-orange-hover">
+                <span
+                    class="material-symbols-outlined sm:text-3xl text-xl text-custom-orange hover:text-custom-orange-hover">
                     chevron_right
                 </span>
             </button>
@@ -58,7 +60,7 @@
                     <div class="bg-gray-100 animate-pulse h-6 w-48 rounded-md"></div>
                 </h1>
                 <h1 v-else class="text-sm sm:text-xl text-custom-orange font-bold ml-2">
-                    {{ getCustomerName(customerId) }}
+                    {{ getCustomerName(user.id) }}
                 </h1>
             </div>
 
@@ -132,12 +134,13 @@ import axios from "axios";
 import flatpickr from "flatpickr";
 import "flatpickr/dist/flatpickr.css";
 import { API_URL } from "@/services/api";
+import AuthService from '@/services/auth';
 
 
 export default {
     data() {
         return {
-            customerId: this.$route.params.customerId, // ดึง customer_id จาก URL
+            user: {},
             orders: [],
             customers: [],
             menus: [],
@@ -196,6 +199,19 @@ export default {
 
     },
     methods: {
+        async fetchProfile() {
+            this.isLoading = true;
+            try {
+                this.user = await AuthService.getProfile();
+            } catch (err) {
+                this.error = err.message || 'Failed to fetch profile';
+            }
+            finally {
+                this.isLoading = false;
+            }
+
+        },
+
         formattedDate(dateStr) {
             if (!dateStr) return "";
             const date = new Date(dateStr);
@@ -209,8 +225,11 @@ export default {
         async fetchOrders(startDate, endDate) {
             this.isLoading = true;
             try {
-                const response = await axios.get(`${API_URL}/orders/user/${this.customerId}`, {
+                const response = await axios.get(`${API_URL}/orders`, {
                     params: { start_date: startDate, end_date: endDate },
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem("token")}`, // หรือ Vuex store ถ้าใช้
+                    },
                 });
                 this.orders = response.data.orders;
                 this.orders.sort((a, b) => {
@@ -284,8 +303,7 @@ export default {
         },
 
         getCustomerName(customerId) {
-            // แปลง customerId และ id ให้อยู่ในรูปแบบเดียวกัน
-            const customer = this.customers.find(c => c.id.toString() === customerId.toString());
+            const customer = this.customers.find(c => c.user_id === customerId);
             return customer ? customer.name : "ไม่พบข้อมูล";
         },
         getMenuThaiName(menuId) {
@@ -304,10 +322,13 @@ export default {
         this.fetchOrders(this.startDate, this.endDate);
         this.setToday();
         this.fetchLookupData();
+        this.fetchProfile();
+
     },
     mounted() {
         // document.addEventListener('click', this.handleClickOutside);
         this.fetchLookupData();
+        this.fetchProfile();
         this.fetchOrders(this.startDate, this.endDate);
         this.setToday();
 

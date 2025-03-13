@@ -38,7 +38,7 @@
                 </div>
 
                 <!-- End Date -->
-                <div class="flex items-center space-x-2 w-full sm:w-auto flex-nowrap">
+                <div class="flex items-center space-x-2 w-full sm:w-auto  flex-nowrap">
                     <strong class="text-gray-700 text-sm sm:text-base whitespace-nowrap">End Date:</strong>
                     <input ref="endDatepicker" type="text" v-model="formattedEndDate" @input="onEndDateChange"
                         class="text-center bg-white rounded-md font-bold border border-gray-200 focus:outline-none focus:ring-2 focus:ring-custom-orange hover:ring-2 hover:ring-custom-orange text-custom-orange hover:text-custom-orange-hover w-full sm:w-[150px] flex-grow"
@@ -51,13 +51,13 @@
 
         <div class="mt-4">
             <div class="flex items-center">
-                <h1 class="text-sm sm:text-xl font-bold">ประวัติการสั่งรายการอาหาร: </h1>
+                <h1 class="text-[12px] sm:text-xl font-bold">ประวัติการสั่งรายการอาหาร: </h1>
 
                 <h1 v-if="isLoading" class="text-sm sm:text-xl font-bold ml-2">
                     <div class="bg-gray-100 animate-pulse h-6 w-48 rounded-md"></div>
                 </h1>
-                <h1 v-else class="text-sm sm:text-xl text-custom-orange font-bold ml-2">
-                    {{ getCustomerName(customerId) }}
+                <h1 v-else class="text-[12px] sm:text-xl text-custom-orange font-bold ml-2">
+                    {{ getCustomerName(user.id) }}
                 </h1>
             </div>
 
@@ -136,12 +136,13 @@ import axios from "axios";
 import flatpickr from "flatpickr";
 import "flatpickr/dist/flatpickr.css";
 import { API_URL } from "@/services/api";
+import AuthService from '@/services/auth';
 
 
 export default {
     data() {
         return {
-            customerId: this.$route.params.customerId, // ดึง customer_id จาก URL
+            user: {},
             orders: [],
             customers: [],
             menus: [],
@@ -209,12 +210,26 @@ export default {
                 year: "numeric",
             }).format(date);
         },
+        async fetchProfile() {
+            this.isLoading = true;
+            try {
+                this.user = await AuthService.getProfile();
+            } catch (err) {
+                this.error = err.message || 'Failed to fetch profile';
+            }
+            finally {
+                this.isLoading = false;
+            }
 
+        },
         async fetchOrders(startDate, endDate) {
             this.isLoading = true;
             try {
-                const response = await axios.get(`${API_URL}/orders-hhb/user/${this.customerId}`, {
+                const response = await axios.get(`${API_URL}/orders-hhb`, {
                     params: { start_date: startDate, end_date: endDate },
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem("token")}`, // หรือ Vuex store ถ้าใช้
+                    },
                 });
                 this.orders = response.data.orders;
                 this.orders.sort((a, b) => {
@@ -288,8 +303,7 @@ export default {
         },
 
         getCustomerName(customerId) {
-            // แปลง customerId และ id ให้อยู่ในรูปแบบเดียวกัน
-            const customer = this.customers.find(c => c.id.toString() === customerId.toString());
+            const customer = this.customers.find(c => c.user_id === customerId);
             return customer ? customer.name : "ไม่พบข้อมูล";
         },
         getMenuThaiName(menuId) {
@@ -308,11 +322,14 @@ export default {
         this.fetchOrders(this.startDate, this.endDate);
         this.setToday();
         this.fetchLookupData();
+        this.fetchProfile();
+
     },
     mounted() {
         // document.addEventListener('click', this.handleClickOutside);
         this.fetchLookupData();
         this.fetchOrders(this.startDate, this.endDate);
+        this.fetchProfile();
         this.setToday();
 
         this.$nextTick(() => {

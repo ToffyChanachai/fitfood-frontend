@@ -52,13 +52,13 @@
         <!-- ส่วนประวัติการสั่งซื้อแพ็คเกจ -->
         <div class="mt-4">
             <div class="flex items-center">
-                <h1 class="text-sm sm:text-xl font-bold">ประวัติการสั่งซื้อแพ็คเกจ: </h1>
+                <h1 class="text-[12px] sm:text-xl font-bold">ประวัติการสั่งซื้อแพ็คเกจ: </h1>
 
                 <h1 v-if="isLoading" class="text-sm sm:text-xl font-bold ml-2">
                     <div class="bg-gray-100 animate-pulse h-6 w-48 rounded-md"></div>
                 </h1>
-                <h1 v-else class="text-sm sm:text-xl text-custom-orange font-bold ml-2">
-                    {{ getCustomerName(customerId) }}
+                <h1 v-else class="text-[12px] sm:text-xl text-custom-orange font-bold ml-2">
+                    {{ getCustomerName(user.id) }}
                 </h1>
             </div>
 
@@ -87,7 +87,7 @@
                 <div v-if="saleRecords.length > 0"
                     class="mt-4 bg-white rounded-md shadow-lg p-4 border border-gray-300 overflow-y-auto h-[550px] sm:h-[650px]">
                     <div v-for="saleRecord in saleRecords" :key="saleRecord.start_package_date"
-                        class="border-b border-gray-200 py-4 text-[10px] sm:text-base">
+                        class="border-b border-gray-200 py-4 text-[8px] sm:text-base">
                         <div class="sm:flex justify-between items-center">
                             <div class="font-bold">{{ getPackageName(saleRecord.package_id) }}</div>
 
@@ -167,12 +167,13 @@ import axios from "axios";
 import flatpickr from "flatpickr";
 import "flatpickr/dist/flatpickr.css";
 import { API_URL } from "@/services/api";
+import AuthService from '@/services/auth';
 
 
 export default {
     data() {
         return {
-            customerId: this.$route.params.customerId, // ดึง customer_id จาก URL
+            user: {},
             saleRecords: [],
             customers: [],
             packages: [],
@@ -245,11 +246,27 @@ export default {
       return "฿" + new Intl.NumberFormat("th-TH").format(price);
     },
 
+    async fetchProfile() {
+            this.isLoading = true;
+            try {
+                this.user = await AuthService.getProfile();
+            } catch (err) {
+                this.error = err.message || 'Failed to fetch profile';
+            }
+            finally {
+                this.isLoading = false;
+            }
+
+        },
+
         async fetchSaleRecords(startDate, endDate) {
             this.isLoading = true;
             try {
-                const response = await axios.get(`${API_URL}/sale-records-hhb/user/${this.customerId}`, {
+                const response = await axios.get(`${API_URL}/sale-records-hhb-user`, {
                     params: { start_date: startDate, end_date: endDate },
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem("token")}`, // หรือ Vuex store ถ้าใช้
+                    },
                 });
                 this.saleRecords = response.data.saleRecords;
                 this.saleRecords.sort((a, b) => {
@@ -327,8 +344,7 @@ export default {
         },
 
         getCustomerName(customerId) {
-            // แปลง customerId และ id ให้อยู่ในรูปแบบเดียวกัน
-            const customer = this.customers.find(c => c.id.toString() === customerId.toString());
+            const customer = this.customers.find(c => c.user_id === customerId);
             return customer ? customer.name : "ไม่พบข้อมูล";
         },
         getPackageName(packageId) {
@@ -346,6 +362,7 @@ export default {
     created() {
         this.fetchSaleRecords(this.startDate, this.endDate);
         this.setToday();
+        this.fetchProfile();
         this.fetchLookupData();
     },
     mounted() {
@@ -353,6 +370,8 @@ export default {
         this.fetchLookupData();
         this.fetchSaleRecords(this.startDate, this.endDate);
         this.setToday();
+        this.fetchProfile();
+
 
         this.$nextTick(() => {
             flatpickr(this.$refs.startDatepicker, {

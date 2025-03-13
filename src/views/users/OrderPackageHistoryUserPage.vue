@@ -10,7 +10,8 @@
 
             <!-- ปุ่มลูกศรย้อนกลับ -->
             <button @click="changeDate(-1)" class="hidden sm:flex items-center">
-                <span class="material-symbols-outlined sm:text-3xl text-xl text-custom-orange hover:text-custom-orange-hover">
+                <span
+                    class="material-symbols-outlined sm:text-3xl text-xl text-custom-orange hover:text-custom-orange-hover">
                     chevron_left
                 </span>
             </button>
@@ -21,7 +22,8 @@
             </button>
 
             <button @click="changeDate(1)" class="hidden sm:flex items-center">
-                <span class="material-symbols-outlined sm:text-3xl text-xl text-custom-orange hover:text-custom-orange-hover">
+                <span
+                    class="material-symbols-outlined sm:text-3xl text-xl text-custom-orange hover:text-custom-orange-hover">
                     chevron_right
                 </span>
             </button>
@@ -52,13 +54,13 @@
         <!-- ส่วนประวัติการสั่งซื้อแพ็คเกจ -->
         <div class="mt-4">
             <div class="flex items-center">
-                <h1 class="text-sm sm:text-xl font-bold">ประวัติการสั่งซื้อแพ็คเกจ: </h1>
+                <h1 class="text-[12px] sm:text-xl font-bold">ประวัติการสั่งซื้อแพ็คเกจ: </h1>
 
                 <h1 v-if="isLoading" class="text-sm sm:text-xl font-bold ml-2">
                     <div class="bg-gray-100 animate-pulse h-6 w-48 rounded-md"></div>
                 </h1>
-                <h1 v-else class="text-sm sm:text-xl text-custom-orange font-bold ml-2">
-                    {{ getCustomerName(customerId) }}
+                <h1 v-else class="text-[12px] sm:text-xl text-custom-orange font-bold ml-2">
+                    {{ getCustomerName(user.id) }}
                 </h1>
             </div>
 
@@ -87,29 +89,33 @@
                 <div v-if="saleRecords.length > 0"
                     class="mt-4 bg-white rounded-md shadow-lg p-4 border border-gray-300 overflow-y-auto h-[550px] sm:h-[650px]">
                     <div v-for="saleRecord in saleRecords" :key="saleRecord.start_package_date"
-                        class="border-b border-gray-200 py-4 text-[10px] sm:text-base">
+                        class="border-b border-gray-200 py-4 text-[8px] sm:text-base">
                         <div class="sm:flex justify-between items-center">
                             <div class="font-bold">{{ getPackageName(saleRecord.package_id) }}</div>
 
                             <!-- วันที่ -->
-                            <div class="text-gray-500">วันเริ่มแพ็กเกจ: {{ formattedDate(saleRecord.start_package_date) }}</div>
+                            <div class="text-gray-500">วันเริ่มแพ็กเกจ: {{ formattedDate(saleRecord.start_package_date)
+                                }}</div>
                         </div>
                         <div class="mt-2 text-gray-500 space-y-2">
                             <div class="flex items-center">
                                 <p>Program:</p>
                                 <strong class="ml-2 font-medium text-black">{{ getProgramName(saleRecord.program_id)
-                                }}</strong>
+                                    }}</strong>
                             </div>
 
                             <div class="flex items-center">
                                 <p>ราคารวมทั้งหมด:</p>
-                                <strong class="ml-2 font-medium text-black">{{ formatPrice(saleRecord.total_price) }}</strong>
+                                <strong class="ml-2 font-medium text-black">{{ formatPrice(saleRecord.total_price)
+                                    }}</strong>
 
                                 <p class="ml-4">ราคาแพ็กเกจ:</p>
-                                <strong class="ml-2 font-medium text-black">{{ formatPrice(saleRecord.total_package_price) }}</strong>
+                                <strong class="ml-2 font-medium text-black">{{
+                                    formatPrice(saleRecord.total_package_price) }}</strong>
 
                                 <p class="ml-4">ราคาค่าจัดส่ง:</p>
-                                <strong class="ml-2 font-medium text-black">{{ formatPrice(saleRecord.total_delivery_price) }}</strong>
+                                <strong class="ml-2 font-medium text-black">{{
+                                    formatPrice(saleRecord.total_delivery_price) }}</strong>
                             </div>
 
                             <div class="flex items-center">
@@ -119,13 +125,14 @@
                                     {{ getStatusText(saleRecord.payment_status) }}
                                 </div>
                                 <p class="ml-4">วันที่ชำระเงิน: </p>
-                                <span class="ml-2 font-medium text-black">{{ formattedDate(saleRecord.paid_date) || '-' }}</span>
+                                <span class="ml-2 font-medium text-black">{{ formattedDate(saleRecord.paid_date) || '-'
+                                    }}</span>
                             </div>
 
                             <div class="flex items-center">
                                 <p>วันหมดอายุแพ็กเกจ: </p>
                                 <span class="ml-2 font-medium text-black">{{ formattedDate(saleRecord.expiry_date)
-                                }}</span>
+                                    }}</span>
                                 <p class="ml-4">วันคงเหลือของแพ็กเกจ: </p>
                                 <span v-if="saleRecord.remaining_days < 0" class="text-red-500 ml-2 font-medium">
                                     หมดอายุ
@@ -137,12 +144,13 @@
                             <div class="flex items-center">
                                 <p>Total boxes: </p>
                                 <span class="ml-2 font-medium text-black">{{ saleRecord.total_boxes_show
-                                }} กล่อง</span>
+                                    }} กล่อง</span>
                                 <p class="ml-4">Total boxes (เหลือ): </p>
                                 <span v-if="saleRecord.total_boxes <= 0" class="text-red-500 font-medium ml-2">
                                     {{ saleRecord.total_boxes }} กล่อง
                                 </span>
-                                <span v-else class="ml-2 font-medium text-black"> {{ saleRecord.total_boxes }} กล่อง</span>
+                                <span v-else class="ml-2 font-medium text-black"> {{ saleRecord.total_boxes }}
+                                    กล่อง</span>
 
                             </div>
                         </div>
@@ -167,12 +175,13 @@ import axios from "axios";
 import flatpickr from "flatpickr";
 import "flatpickr/dist/flatpickr.css";
 import { API_URL } from "@/services/api";
+import AuthService from '@/services/auth';
 
 
 export default {
     data() {
         return {
-            customerId: this.$route.params.customerId, // ดึง customer_id จาก URL
+            user: {},
             saleRecords: [],
             customers: [],
             packages: [],
@@ -202,33 +211,6 @@ export default {
                 year: "numeric",
             }).format(new Date(this.endDate));
         },
-        // groupedsaleRecords() {
-        //     const groupedByDate = this.saleRecords.reduce((acc, order) => {
-        //         if (!acc[order.start_date]) {
-        //             acc[order.start_date] = [];
-        //         }
-
-        //         const existingOrder = acc[order.start_date].find(item => item.menu_id === order.menu_id);
-        //         if (existingOrder) {
-        //             existingOrder.quantity += order.quantity;
-        //         } else {
-        //             acc[order.start_date].push({
-        //                 menu_id: order.menu_id,
-        //                 quantity: order.quantity,
-        //                 menu_name: this.getMenuThaiName(order.menu_id),
-        //                 menu_eng_name: this.getMenuEngName(order.menu_id),
-        //                 start_date: order.start_date,
-        //                 status: order.status,
-        //                 menu_type_id: order.menu_type_id,
-        //             });
-        //         }
-
-        //         return acc;
-        //     }, {});
-
-        //     // แปลง object เป็น array
-        //     return Object.keys(groupedByDate).flatMap(order_date => groupedByDate[order_date]);
-        // },
 
     },
     methods: {
@@ -242,14 +224,28 @@ export default {
             }).format(date);
         },
         formatPrice(price) {
-      return "฿" + new Intl.NumberFormat("th-TH").format(price);
-    },
+            return "฿" + new Intl.NumberFormat("th-TH").format(price);
+        },
+        async fetchProfile() {
+            this.isLoading = true;
+            try {
+                this.user = await AuthService.getProfile();
+            } catch (err) {
+                this.error = err.message || 'Failed to fetch profile';
+            }
+            finally {
+                this.isLoading = false;
+            }
 
+        },
         async fetchSaleRecords(startDate, endDate) {
             this.isLoading = true;
             try {
-                const response = await axios.get(`${API_URL}/sale-records/user/${this.customerId}`, {
+                const response = await axios.get(`${API_URL}/sale-records-user`, {
                     params: { start_date: startDate, end_date: endDate },
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem("token")}`, // หรือ Vuex store ถ้าใช้
+                    },
                 });
                 this.saleRecords = response.data.saleRecords;
                 this.saleRecords.sort((a, b) => {
@@ -327,8 +323,7 @@ export default {
         },
 
         getCustomerName(customerId) {
-            // แปลง customerId และ id ให้อยู่ในรูปแบบเดียวกัน
-            const customer = this.customers.find(c => c.id.toString() === customerId.toString());
+            const customer = this.customers.find(c => c.user_id === customerId);
             return customer ? customer.name : "ไม่พบข้อมูล";
         },
         getPackageName(packageId) {
@@ -346,11 +341,13 @@ export default {
     created() {
         this.fetchSaleRecords(this.startDate, this.endDate);
         this.setToday();
+        this.fetchProfile();
         this.fetchLookupData();
     },
     mounted() {
         // document.addEventListener('click', this.handleClickOutside);
         this.fetchLookupData();
+        this.fetchProfile();
         this.fetchSaleRecords(this.startDate, this.endDate);
         this.setToday();
 
