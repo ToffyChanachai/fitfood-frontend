@@ -623,6 +623,7 @@ export default {
             selectAllMenuTypeState: {},
 
             isLoading: false,
+            API_URL,
 
         };
     },
