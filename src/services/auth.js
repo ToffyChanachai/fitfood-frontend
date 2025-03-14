@@ -31,7 +31,7 @@ export default {
       const token = response.data.token;
 
       if (!token) {
-        throw new Error("Token is undefined or invalid");
+        throw new Error("invalid Password");
       }
 
       localStorage.setItem("token", token);

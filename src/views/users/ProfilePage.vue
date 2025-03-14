@@ -63,11 +63,6 @@
                         class="w-full border text-red-500 font-bold py-2 rounded-md mt-2 hover:bg-gray-100 transition-colors">
                         Logout
                     </button>
-
-                    <button @click="openChangePasswordModal"
-                        class="w-full border py-2 rounded-md mt-2 hover:bg-gray-100 transition-colors">
-                        Change Password
-                    </button>
                 </div>
             </div>
 

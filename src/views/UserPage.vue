@@ -287,6 +287,7 @@
         </div>
 
     </table>
+
     <div class="rounded-b-2xl flex justify-center items-center space-x-2 bg-white px-2 py-1">
         <button @click="goToPage(currentPage - 1)" :disabled="currentPage === 1"
             class="px-3 py-2 rounded-md hover:bg-gray-100 text-custom-orange disabled:opacity-50">
@@ -504,6 +505,7 @@ export default {
         },
         async deleteConfirmed() {
             try {
+                console.log(`กำลังลบผู้ใช้ด้วย ID: ${this.itemToDelete}`);
                 await axios.delete(
                     `${API_URL}/users/${this.itemToDelete}`
                 );
