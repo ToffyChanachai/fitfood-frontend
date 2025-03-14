@@ -153,6 +153,7 @@
                         class=" bg-white relative border-b border-b-gray-200">
                         <td class="px-4 py-2 align-top pb-5">{{ (currentPage - 1) * itemsPerPage + index + 1 }}</td>
                         <td class="px-4 py-2 align-top font-bold text-custom-orange pb-5">{{ user.username }}</td>
+                        <td class="px-4 py-2 align-top pb-5">{{ user.firstname }} {{ user.lastname }}</td>
                         <td class="px-4 py-2 align-top pb-5">{{ user.email }}</td>
 
                         <td class="px-4 py-2 align-top font-bold pb-5">
@@ -333,8 +334,8 @@ export default {
     name: "UserPage",
     data() {
         return {
-            headers: ['#', 'Username', 'Email', 'Role', ""],
-            headerWidths: ['10%', '20%', '40%', '15%', '15%'],
+            headers: ['#', 'Username', "ชื่อ", 'Email', 'Role', ""],
+            headerWidths: ['10%', '20%', '20%', '20%', '15%', '15%'],
 
             searchQuery: "",
             isFilterDropdownOpen: false,

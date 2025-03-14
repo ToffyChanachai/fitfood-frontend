@@ -34,9 +34,9 @@
             </div>
 
             <!-- Forgot Password -->
-            <router-link to="/forgot-password" class="text-sm text-custom-orange hover:underline">
+            <!-- <router-link to="/forgot-password" class="text-sm text-custom-orange hover:underline">
               Forgot Password?
-            </router-link>
+            </router-link> -->
           </div>
 
 

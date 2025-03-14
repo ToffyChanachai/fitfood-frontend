@@ -627,7 +627,7 @@ export default {
   computed: {
     filteredMealTypes() {
       return this.meal_types.filter(
-        (item) => item.menuType && item.menuType.id === 14
+        (item) => item.menuType && item.menuType.id === 17
       );
     },
     // filteredMenus() {
@@ -902,7 +902,7 @@ export default {
         const mealType = this.meal_types.find(
           (item) => item.id === menu.meal_type_id
         );
-        return mealType && mealType.menuType.id === 14;
+        return mealType && mealType.menuType.id === 17;
       });
     },
     getMenuEnglishName(menuId) {
