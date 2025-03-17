@@ -917,7 +917,7 @@
           <template v-if="filteredSaleRecords1standRenew.length < 6 && filteredSaleRecords1standRenew.length > 0">
             <tr v-for="emptyIndex in (6 - filteredSaleRecords1standRenew.length)" :key="'empty-' + emptyIndex"
               class="bg-white">
-              <td colspan="9" class="py-16"></td>
+              <td colspan="10" class="py-16"></td>
             </tr>
           </template>
 
@@ -2740,7 +2740,6 @@ export default {
           axios.get(`${API_URL}/receive-foods`),
           axios.get(`${API_URL}/select-foods`),
         ]);
-
         this.customers = customersRes.data;
         this.promotionTypes = promotionTypesRes.data;
         this.allPrograms = programsRes.data || [];
@@ -2791,7 +2790,7 @@ export default {
         this.zoneDeliveries = zoneDeliveryRes.data;
         this.zoneDeliveryTypes = zoneDeliveryTypeRes.data;
         this.sellerNames = sellerNamesRes.data;
-        this.paymentTypes = paymentTypeRes.data.data;
+        this.paymentTypes = paymentTypeRes.data;
         this.additionalTypes = additionalTypeRes.data;
 
         this.deliveryRounds = deliveryRoundRes.data;

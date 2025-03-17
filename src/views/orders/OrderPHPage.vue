@@ -1,7 +1,7 @@
 <template>
 
-  <div v-if="showSuccessToast"
-    class="fixed top-4 left-1/2 transform -translate-x-1/2 sm:left-auto sm:transform-none sm:right-8 bg-green-500 text-white px-6 sm:px-8 py-3 sm:py-4 flex items-center space-x-3 sm:space-x-4 rounded-lg shadow-lg transition-opacity duration-300 z-50 max-w-[90%] w-full sm:w-auto"
+<div v-if="showSuccessToast"
+  class="fixed top-4 left-1/2 transform -translate-x-1/2 sm:left-auto sm:transform-none sm:right-8 bg-green-500 text-white px-6 sm:px-8 py-3 sm:py-4 flex items-center space-x-3 sm:space-x-4 rounded-lg shadow-lg transition-opacity duration-300 z-50 max-w-[90%] w-full sm:w-auto"
     :class="{ 'opacity-100': showSuccessToast, 'opacity-0': !showSuccessToast }">
     <span class="material-symbols-outlined text-white text-lg sm:text-xl">cancel</span>
     <span class="text-sm sm:text-base">{{ toastSuccessMessage }}</span>
@@ -11,7 +11,7 @@
   </div>
 
   <div v-if="showFailToast"
-    class="fixed top-4 left-1/2 transform -translate-x-1/2 sm:left-auto sm:transform-none sm:right-8 bg-red-500 text-white px-6 sm:px-8 py-3 sm:py-4 flex items-center space-x-3 sm:space-x-4 rounded-lg shadow-lg transition-opacity duration-300 z-50 max-w-[90%] w-full sm:w-auto"
+  class="fixed top-4 left-1/2 transform -translate-x-1/2 sm:left-auto sm:transform-none sm:right-8 bg-red-500 text-white px-6 sm:px-8 py-3 sm:py-4 flex items-center space-x-3 sm:space-x-4 rounded-lg shadow-lg transition-opacity duration-300 z-50 max-w-[90%] w-full sm:w-auto"
     :class="{ 'opacity-100': showFailToast, 'opacity-0': !showFailToast }">
     <span class="material-symbols-outlined text-white text-lg sm:text-xl">cancel</span>
     <span class="text-sm sm:text-base">{{ toastFailMessage }}</span>
@@ -29,7 +29,6 @@
       <span class="material-symbols-outlined text-lg sm:text-xl">close</span>
     </button>
   </div>
-
 
   <h1 class="mt-4 font-bold text-custom-orange text-lg sm:text-2xl mb-4 text-center">Premium Health</h1>
 
@@ -185,16 +184,16 @@
         <div v-if="showModal"
           class="fixed top-0 left-0 w-full h-full bg-gray-800 bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div
-            class="bg-gradient-to-r from-custom-orange via-orange-500 to-custom-orange-hover p-4 sm:p-6 rounded-lg w-full max-w-[90%] sm:w-1/3 text-center border">
+            class="bg-gradient-to-r from-green-600 via-green-500 to-green-600 p-4 sm:p-6 rounded-lg w-full max-w-[90%] sm:w-1/3 text-center border">
             <h2 class="text-lg sm:text-xl font-bold text-white">
-              You need to register AFF customer profile first!
+              You need to register HHB customer profile first!
             </h2>
             <p class="mt-3 sm:mt-4 text-sm sm:text-base">
-              กรุณากรอกข้อมูลการลงทะเบียนข้อมูลลูกค้า AFF ของท่านให้ครบถ้วนเพื่อดำเนินการสั่งรายการอาหาร
+              กรุณากรอกข้อมูลการลงทะเบียนข้อมูลลูกค้า HHB ของท่านให้ครบถ้วนเพื่อดำเนินการสั่งรายการอาหาร
             </p>
             <div class="mt-4 flex flex-col sm:flex-row justify-center sm:space-x-2 space-y-2 sm:space-y-0">
               <button @click="redirectToRegister"
-                class="bg-custom-orange text-white px-4 py-2 rounded-md hover:bg-custom-orange-hover drop-shadow-md w-full sm:w-auto">
+                class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 drop-shadow-md w-full sm:w-auto">
                 Go to Registration
               </button>
               <button @click="showModal = false"
@@ -256,9 +255,9 @@ export default {
     }
   },
   methods: {
-    // handleImageError(event) {
-    //   console.error("Image load error", event);
-    // },
+    handleImageError(event) {
+      console.error("Image load error", event);
+    },
 
     getTodayDate() {
       const today = new Date();
@@ -408,7 +407,7 @@ export default {
 
           this.isLoading = true;
 
-          axios.post(`${API_URL}/order-hhb`, {
+          axios.post(`${API_URL}/order`, {
             menu_id: menu.menu_id,
             quantity: menu.quantity,
             order_date: this.selectedDate,
@@ -440,9 +439,9 @@ export default {
     },
 
     redirectToRegister() {
-      this.showModal = false;
-      this.$router.push('/register-aff');  // ไปที่หน้าลงทะเบียน
-    },
+    this.showModal = false;
+    this.$router.push('/register-hhb');  // ไปที่หน้าลงทะเบียน
+  },
 
 
     showSuccessToastNotification(message) {
