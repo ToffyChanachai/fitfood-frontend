@@ -891,7 +891,7 @@ export default {
                 this.package_types = packageTypesRes.data;
                 this.zoneDeliveries = zoneDeliveryRes.data;
                 this.seller_names = sellerNamesRes.data;
-                this.payment_types = paymentTypeRes.data.data;
+                this.payment_types = paymentTypeRes.data;
                 this.additional_types = AdditionalTypeRes.data;
 await this.fetchDailySales();
 
