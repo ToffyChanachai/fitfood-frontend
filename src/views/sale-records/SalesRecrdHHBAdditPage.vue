@@ -2652,7 +2652,7 @@ export default {
                 this.zoneDeliveries = zoneDeliveryRes.data;
                 this.zoneDeliveryTypes = zoneDeliveryTypeRes.data;
                 this.sellerNames = sellerNamesRes.data;
-                this.paymentTypes = paymentTypeRes.data.data;
+                this.paymentTypes = paymentTypeRes.data;
                 this.additionalTypes = additionalTypeRes.data;
 
                 this.deliveryRounds = deliveryRoundRes.data;
