@@ -248,7 +248,7 @@
               </td>
 
               <td class="px-4 py-2 align-top pb-5">
-                {{ formatDate(saleRecord.start_date) }}
+                {{ formatDate(saleRecord.start_package_date) }}
               </td>
 
               <td class="px-4 py-2 align-top pb-5">
@@ -451,7 +451,7 @@ export default {
         payment_status: "unpaid",
         paid_date: "",
         payment_type_id: "",
-        start_date: "",
+        start_package_date: "",
         expiry_date: "",
         remaining_days: 0,
 
@@ -542,7 +542,7 @@ export default {
         payment_status: "unpaid",
         paid_date: "",
         payment_type_id: "",
-        start_date: "",
+        start_package_date: "",
         expiry_date: "",
         remaining_days: 0,
 
@@ -625,7 +625,7 @@ export default {
         total_price: this.formatPrice(this.selectedSaleRecord.total_price),
         delivery_date: this.selectedSaleRecord.customer?.delivery_date || "",
         food_allergies: (this.formatFoodAllergies(this.selectedSaleRecord.customer?.food_allergies) || "") + "\n" + (this.selectedSaleRecord.customer?.note || ""),
-        start_date: this.formatDate(this.selectedSaleRecord.start_date),
+        start_package_date: this.formatDate(this.selectedSaleRecord.start_package_date),
         expiry_date: this.formatDate(this.selectedSaleRecord.expiry_date),
         total_days: this.selectedSaleRecord.package?.total_days || "",
         boxes_per_day: this.selectedSaleRecord.package?.boxes_per_day || "",
@@ -986,12 +986,12 @@ export default {
         }
 
         this.allPackages = packagesRes.data.filter((packaged) => {
-          if (!packaged.start_date) {
+          if (!packaged.start_package_date) {
             packaged.displayLabel = packaged.name;
             return true;
           }
 
-          const date = new Date(packaged.start_date);
+          const date = new Date(packaged.start_package_date);
           const currentMonth = new Date().getMonth();
           const startMonth = date.getMonth();
 
@@ -1132,11 +1132,11 @@ export default {
       if (this.allPackages && Array.isArray(this.allPackages)) {
         const packaged = this.allPackages.find((p) => p.id === packageId);
         if (packaged) {
-          if (!packaged.start_date) {
+          if (!packaged.start_package_date) {
             return packaged.name;
           }
 
-          const date = new Date(packaged.start_date);
+          const date = new Date(packaged.start_package_date);
           const currentMonth = new Date().getMonth();
           const startMonth = date.getMonth();
 
@@ -1228,7 +1228,7 @@ export default {
         total_price: "มูลค่าขายรวม",
         delivery_date: "วันที่ต้องการรับอาหาร",
         food_allergies: "Allergies /Special Requests",
-        start_date: "วันเริ่มแพ็กเกจ",
+        start_package_date: "วันเริ่มแพ็กเกจ",
         expiry_date: "วันหมดอายุแพ็คเกจ",
         total_days: "Total days",
         boxes_per_day: "Box per Day",
