@@ -225,7 +225,7 @@ export default {
         async fetchOrders(startDate, endDate) {
             this.isLoading = true;
             try {
-                const response = await axios.get(`${API_URL}/orders`, {
+                const response = await axios.get(`${API_URL}/orders-user`, {
                     params: { start_date: startDate, end_date: endDate },
                     headers: {
                         Authorization: `Bearer ${localStorage.getItem("token")}`, // หรือ Vuex store ถ้าใช้
