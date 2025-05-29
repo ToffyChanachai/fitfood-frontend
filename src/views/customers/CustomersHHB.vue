@@ -76,19 +76,21 @@
 
         </div>
 
-        <table class="min-w-full table-auto rounded-t-2xl overflow-hidden mt-4">
-            <thead>
-                <tr class="bg-custom-orange text-white">
-                    <th v-for="(header, index) in headers" :key="index" :class="['px-4 py-2 text-left font-bold']"
-                        :style="{ width: headerWidths[index] }">
-                        {{ header }}
-                    </th>
-                </tr>
-            </thead>
+        <div class="max-h-[640px] overflow-y-auto rounded-t-2xl mt-4">
+            <table class="min-w-[5000px] table-auto">
+                <thead class="sticky top-0 bg-custom-orange text-white z-10">
+                    <tr>
+                        <th v-for="(header, index) in headers" :key="index" :class="['px-4 py-2 text-left font-bold whitespace-nowrap']"
+                            :style="{ width: headerWidths[index] }">
+                            {{ header }}
+                        </th>
+                    </tr>
+                </thead>
+
             <tbody>
                 <tr v-if="isLoading" class="bg-white">
-                    <td colspan="7" class="py-16 text-center">
-                        <div class="flex justify-center items-center space-x-2">
+                    <td colspan="15" class="py-16 text-center">
+                        <div class="flex ml-[900px] justify-left items-center space-x-2">
                             <div class="w-3 h-3 bg-gray-500 rounded-full animate-pulse"></div>
                             <div class="w-3 h-3 bg-gray-500 rounded-full animate-pulse delay-200"></div>
                             <div class="w-3 h-3 bg-gray-500 rounded-full animate-pulse delay-400"></div>
@@ -111,9 +113,22 @@
                             <div class="flex items-center">
                                 <span class="material-symbols-outlined mr-1 text-xl">phone</span>{{ customer.tel }}
                             </div>
+                            <div class="flex items-center">
+                                <strong class="font-semibold">Line ID:</strong> <p class="ml-2">{{ customer.line_id }}</p>
+                            </div>
                         </td>
+                        <td class="px-4 py-2 align-top pb-5">{{ customer.recipient }}</td>
+                        <td class="px-4 py-2 align-top pb-5">{{ customer.note }}</td>
                         <td class="px-4 py-2 align-top pb-5">{{ customer.address_1 }}</td>
+                        <td class="px-4 py-2 align-top pb-5">{{ customer.address_2 }}</td>
+                        <td class="px-4 py-2 align-top pb-5">{{ customer.address_3 }}</td>
                         <td class="px-4 py-2 align-top pb-5">{{ customer.nearby_places }}</td>
+
+                        <td class="px-4 py-2 align-top pb-5">{{ customer.delivery_round }}</td>
+                        <td class="px-4 py-2 align-top pb-5">{{ customer.deliver }}</td>
+                        <td class="px-4 py-2 align-top pb-5">{{ customer.delivery_zone }}</td>
+                        <td class="px-4 py-2 align-top pb-5">{{ customer.delivery_address }}</td>
+
 
                         <td class="px-4 py-2 text-right relative" ref="moreDropdown">
                             <button @click="toggleMoreDropdown(index)">
@@ -124,10 +139,10 @@
                                 <div v-if="moreOpenDropdownIndex === index" :class="moreDropdownPositionClass(index)"
                                     class="dropdown-menu absolute right-0 text-center bg-white shadow-lg rounded-md z-50 w-40 border border-gray-300">
                                     <ul class="list-none p-0 m-0">
-                                        <li @click="onViewDetails(customer)"
+                                        <!-- <li @click="onViewDetails(customer)"
                                             class="px-4 py-2 cursor-pointer hover:bg-gray-100 text-gray-700 border-b border-gray-300">
                                             ดูรายละเอียด
-                                        </li>
+                                        </li> -->
                                         <li @click="onEdit(customer)"
                                             class="px-4 py-2 cursor-pointer hover:bg-gray-100 text-blue-500 border-b border-gray-300">
                                             แก้ไขข้อมูล
@@ -144,10 +159,10 @@
                                 <div v-if="moreOpenDropdownIndex === index"
                                     class="dropdown-menu absolute right-0 text-center bg-white shadow-lg rounded-md z-50 w-40 border border-gray-300">
                                     <ul class="list-none p-0 m-0">
-                                        <li @click="onViewDetails(customer)"
+                                        <!-- <li @click="onViewDetails(customer)"
                                             class="px-4 py-2 cursor-pointer hover:bg-gray-100 text-gray-700 border-b border-gray-300">
                                             ดูรายละเอียด
-                                        </li>
+                                        </li> -->
                                         <li @click="onEdit(customer)"
                                             class="px-4 py-2 cursor-pointer hover:bg-gray-100 text-blue-500 border-b border-gray-300">
                                             แก้ไขข้อมูล
@@ -167,17 +182,18 @@
                 <template v-if="filteredCustomers.length < 6 && filteredCustomers.length > 0">
                     <tr v-for="emptyIndex in (6 - filteredCustomers.length)" :key="'empty-' + emptyIndex"
                         class="bg-white">
-                        <td colspan="7" class="py-16"></td>
+                        <td colspan="15" class="py-16"></td>
                     </tr>
                 </template>
 
                 <template v-if="filteredCustomers.length === 0">
                     <tr>
-                        <td colspan="7" class="py-10 bg-white text-center text-gray-500 font-bold">
+                        <td colspan="15" class="py-10 bg-white text-center text-gray-500 font-bold">
                             ไม่พบข้อมูล
                         </td>
                     </tr>
                 </template>
+
                 </template>
 
             </tbody>
@@ -432,6 +448,7 @@
             </div>
 
         </table>
+        </div>
 
         <div class="rounded-b-2xl flex justify-center items-center space-x-2 bg-white px-2 py-1">
             <button @click="goToPage(currentPage - 1)" :disabled="currentPage === 1"
@@ -482,8 +499,8 @@ export default {
     name: "AFF Customers",
     data() {
         return {
-            headers: ['#', 'ชื่อ', 'รหัสอ้างอิง', 'ช่องทางการติดต่อ', 'ที่อยู่', 'สถานที่ใกล้เคียง', ""],
-            headerWidths: ['5%', '20%', '10%', '15%', '30%', '15%', '5%'],
+            headers: ['#', 'ชื่อ', 'รหัสอ้างอิง', 'ช่องทางการติดต่อ', 'ผู้รับอาหาร', 'รายละเอียดอื่นๆ', 'ที่อยู่ 1', 'ที่อยู่ 2', 'ที่อยู่ 3', 'สถานที่ใกล้เคียง', 'รอบการจัดส่ง', 'ผู้จัดส่ง', 'โซนจัดส่งที่อยู่ตาม Rounting', 'ที่อยู่จัดส่ง',  ""],
+            headerWidths: ['150px', '500px', '200px', '200px', '500px', '500px', '700px', '700px', '700px', '550px', '550px', '550px', '550px', '700px', '50px'],
 
             searchQuery: "",
 

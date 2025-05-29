@@ -2,7 +2,7 @@
   <div
     class="flex items-center justify-center min-h-screen fixed inset-0 bg-gradient-to-r from-custom-orange to-custom-orange-hover">
 
-    <div class="flex flex-col items-center">
+    <div class="flex flex-col items-center w-full">
 
       <!-- Modal โลโก้ -->
       <div class="w-full max-w-md bg-white px-4 py-3 rounded-t-lg shadow-lg flex justify-center items-center relative">
@@ -19,11 +19,31 @@
 
         <p v-if="error" class="mb-4 text-red-500 text-center font-bold">{{ error }}</p>
 
-        <form @submit.prevent="login" class="space-y-4">
+        <form @submit.prevent="login" class="space-y-4 w-full">
           <input type="text" v-model="identifier" placeholder="Email or Username" required
             class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange" />
-          <input type="password" v-model="password" placeholder="Password" required
-            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange" />
+
+          <div class="relative w-full">
+            <!-- ช่องใส่รหัสผ่าน -->
+            <input
+              :type="showPassword ? 'text' : 'password'"
+              v-model="password"
+              placeholder="Password"
+              required
+              class="w-full px-4 py-2 pr-12 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange"
+            />
+
+            <!-- ปุ่มแสดง/ซ่อนรหัสผ่าน -->
+            <button
+              type="button"
+              @click="togglePassword"
+              class="absolute inset-y-0 right-0 flex items-center px-3 text-gray-500"
+            >
+              <span class="material-symbols-outlined text-base">
+                {{ showPassword ? 'visibility' : 'visibility_off' }}
+              </span>
+            </button>
+          </div>
 
           <div class="flex items-center justify-between">
             <!-- Remember Me -->
@@ -70,7 +90,8 @@ export default {
       identifier: localStorage.getItem('rememberedIdentifier') || '', // ดึง email จาก localStorage
       password: localStorage.getItem('rememberedPassword') || '', // ดึง password จาก localStorage
       rememberMe: localStorage.getItem('rememberMe') === 'true', // ถ้าเคยติ๊ก remember
-      error: null
+      error: null,
+      showPassword: false,
     };
   },
   methods: {
@@ -94,7 +115,10 @@ export default {
     },
     goToRegister() {
       this.$router.push('/register'); // ไปหน้าสมัครสมาชิก
-    }
+    },
+        togglePassword() {
+      this.showPassword = !this.showPassword;
+    },
   }
 };
 </script>

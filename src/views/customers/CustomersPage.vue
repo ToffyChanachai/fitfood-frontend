@@ -75,423 +75,440 @@
             </div>
 
         </div>
-        <table class="min-w-full table-auto rounded-t-2xl overflow-hidden mt-4">
-            <thead>
-                <tr class="bg-custom-orange text-white">
-                    <th v-for="(header, index) in headers" :key="index" :class="['px-4 py-2 text-left font-bold']"
-                        :style="{ width: headerWidths[index] }">
-                        {{ header }}
-                    </th>
-                </tr>
-            </thead>
+                
+        <div class="max-h-[640px] overflow-y-auto rounded-t-2xl mt-4">
+            <table class="min-w-[5000px] table-auto">
+                <thead class="sticky top-0 bg-custom-orange text-white z-10">
+                    <tr>
+                        <th v-for="(header, index) in headers" :key="index" :class="['px-4 py-2 text-left font-bold whitespace-nowrap']"
+                            :style="{ width: headerWidths[index] }">
+                            {{ header }}
+                        </th>
+                    </tr>
+                </thead>
 
-            <tbody>
-                <tr v-if="isLoading" class="bg-white">
-                    <td colspan="7" class="py-16 text-center">
-                        <div class="flex justify-center items-center space-x-2">
-                            <div class="w-3 h-3 bg-gray-500 rounded-full animate-pulse"></div>
-                            <div class="w-3 h-3 bg-gray-500 rounded-full animate-pulse delay-200"></div>
-                            <div class="w-3 h-3 bg-gray-500 rounded-full animate-pulse delay-400"></div>
-                        </div>
-                    </td>
-                </tr>
+                <tbody>
+                    <tr v-if="isLoading" class="bg-white">
+                        <td colspan="17" class="py-16 text-center">
+                            <div class="flex ml-[900px] justify-left items-center space-x-2">
+                                <div class="w-3 h-3 bg-gray-500 rounded-full animate-pulse"></div>
+                                <div class="w-3 h-3 bg-gray-500 rounded-full animate-pulse delay-200"></div>
+                                <div class="w-3 h-3 bg-gray-500 rounded-full animate-pulse delay-400"></div>
+                            </div>
+                        </td>
+                    </tr>
 
-                <template v-else>
-                    <template v-if="filteredCustomers.length > 0">
-                        <tr v-for="(customer, index) in filteredCustomers" :key="index"
-                            class=" bg-white relative border-b border-b-gray-200">
-                            <td class="px-4 py-2 align-top pb-5">{{ (currentPage - 1) * itemsPerPage + index + 1 }}</td>
-                            <td class="px-4 py-2 align-top font-bold text-custom-orange pb-5">{{ customer.name }}</td>
-                            <td class="px-4 py-2 align-top pb-5">{{ customer.customer_id }}</td>
-                            <td class="px-4 py-2 align-top pb-5">
-                                <div class="flex items-center">
-                                    <span class="material-symbols-outlined mr-1 text-xl">mail</span>{{ customer.email
-                                    }}
-                                </div>
-                                <div class="flex items-center">
-                                    <span class="material-symbols-outlined mr-1 text-xl">phone</span>{{ customer.tel }}
-                                </div>
-                            </td>
-                            <td class="px-4 py-2 align-top pb-5">{{ customer.address_1 }}</td>
-                            <td class="px-4 py-2 align-top pb-5">
-                                {{ formatFoodAllergies(customer.food_allergies) }}
-                                <span v-if="customer.food_allergies_detail">
-                                    {{ customer.food_allergies_detail }}
+                    <template v-else>
+                        <template v-if="filteredCustomers.length > 0">
+                            <tr v-for="(customer, index) in filteredCustomers" :key="index"
+                                class=" bg-white relative border-b border-b-gray-200">
+                                <td class="px-4 py-2 align-top pb-5">{{ (currentPage - 1) * itemsPerPage + index + 1 }}</td>
+                                <td class="px-4 py-2 align-top font-bold text-custom-orange pb-5">{{ customer.name }}</td>
+                                <td class="px-4 py-2 align-top pb-5">{{ customer.customer_id }}</td>
+                                <td class="px-4 py-2 align-top pb-5">
+                                    <div class="flex items-center">
+                                        <span class="material-symbols-outlined text-xl" :class="customer.gender === 'male' ? 'text-blue-500' : 'text-pink-500'">
+                                            {{ customer.gender === 'male' ? 'male' : 'female' }}
+                                        </span>
+                                        {{ customer.gender === 'male' ? 'ผู้ชาย' : 'ผู้หญิง' }}
+                                    </div>
+                                </td>
+                                <td class="px-4 py-2 align-top pb-5">
+                                    <div class="flex items-center">
+                                        <span class="material-symbols-outlined mr-1 text-xl">mail</span>{{ customer.email
+                                        }}
+                                    </div>
+                                    <div class="flex items-center">
+                                        <span class="material-symbols-outlined mr-1 text-xl">phone</span>{{ customer.tel }}
+                                    </div>
+                                    <div class="flex items-center">
+                                        <strong class="font-semibold">Line ID:</strong> <p class="ml-2">{{ customer.line_id }}</p>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-2 align-top pb-5">
+                                    {{ formatFoodAllergies(customer.food_allergies) }}
+                                    <span v-if="customer.food_allergies_detail">
+                                        {{ customer.food_allergies_detail }}
+                                    </span>
+                                </td>                            
+                                <td class="px-4 py-2 align-top pb-5">{{ customer.delivery_date }}</td>
+                                <td class="px-4 py-2 align-top pb-5">{{ customer.recipient_mon_to_fri }}</td>
+                                <td class="px-4 py-2 align-top pb-5">{{ customer.note }}</td>
+                                <td class="px-4 py-2 align-top pb-5">{{ customer.address_1 }}</td>
+                                <td class="px-4 py-2 align-top pb-5">{{ customer.address_1 }}</td>
+                                <td class="px-4 py-2 align-top pb-5">{{ customer.address_1 }}</td>
+                                <td class="px-4 py-2 align-top pb-5">{{ formattedDeliveryTime(customer.delivery_time) }}</td>
+                                <td class="px-4 py-2 align-top pb-5">{{ customer.delivery_round }}</td>
+                                <td class="px-4 py-2 align-top pb-5">{{ customer.deliver }}</td>
+                                <td class="px-4 py-2 align-top pb-5">{{ customer.delivery_zone }}</td>
+                                <td class="px-4 py-2 align-top pb-5">{{ customer.delivery_address }}</td>
+
+
+                                <td class="px-4 py-2 text-right relative" ref="moreDropdown">
+                                    <button @click="toggleMoreDropdown(index)">
+                                        <span class="material-symbols-outlined cursor-pointer">more_vert</span>
+                                    </button>
+
+                                    <div v-if="filteredCustomers.length > 4">
+                                        <div v-if="moreOpenDropdownIndex === index"
+                                            :class="moreDropdownPositionClass(index)"
+                                            class="dropdown-menu absolute right-0 text-center bg-white shadow-lg rounded-md z-50 w-40 border border-gray-300">
+                                            <ul class="list-none p-0 m-0">
+                                                <li @click="onEdit(customer)"
+                                                    class="px-4 py-2 cursor-pointer hover:bg-gray-100 text-blue-500 border-b border-gray-300">
+                                                    แก้ไขข้อมูล
+                                                </li>
+                                                <li @click="confirmDelete(customer.id)"
+                                                    class="px-4 py-2 cursor-pointer hover:bg-gray-100 text-red-500 border-b border-gray-300">
+                                                    ลบข้อมูล
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+
+                                    <div v-else>
+                                        <div v-if="moreOpenDropdownIndex === index"
+                                            class="dropdown-menu absolute right-0 text-center bg-white shadow-lg rounded-md z-50 w-40 border border-gray-300">
+                                            <ul class="list-none p-0 m-0">
+                                                <li @click="onEdit(customer)"
+                                                    class="px-4 py-2 cursor-pointer hover:bg-gray-100 text-blue-500 border-b border-gray-300">
+                                                    แก้ไขข้อมูล
+                                                </li>
+                                                <li @click="confirmDelete(customer.id)"
+                                                    class="px-4 py-2 cursor-pointer hover:bg-gray-100 text-red-500 border-b border-gray-300">
+                                                    ลบข้อมูล
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </td>
+
+                            </tr>
+                        </template>
+
+                        <template v-if="filteredCustomers.length < 6 && filteredCustomers.length > 0">
+                            <tr v-for="emptyIndex in (6 - filteredCustomers.length)" :key="'empty-' + emptyIndex"
+                                class="bg-white">
+                                <td colspan="18" class="py-16"></td>
+                            </tr>
+                        </template>
+
+                        <template v-if="filteredCustomers.length === 0">
+                            <tr>
+                                <td colspan="18" class="py-10 bg-white text-center text-gray-500 font-bold">
+                                    ไม่พบข้อมูล
+                                </td>
+                            </tr>
+                        </template>
+                    </template>
+
+
+                </tbody>
+
+                <div v-if="isDetailModalOpen"
+                    class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
+                    <div class="bg-white rounded-md shadow-lg w-1/2 max-w-3xl h-auto max-h-[800px] flex flex-col">
+                        <div class="flex justify-between items-center bg-custom-orange text-white px-4 py-2 rounded-t-md">
+                            <span class="font-bold">
+                                <h2>รายละเอียดลูกค้า</h2>
+                            </span>
+                            <div class="flex space-x-2">
+                                <span @click="closeDetailModal"
+                                    class="material-symbols-outlined cursor-pointer hover:text-gray-200">
+                                    close
                                 </span>
-                            </td>
+                            </div>
+                        </div>
 
-                            <td class="px-4 py-2 text-right relative" ref="moreDropdown">
-                                <button @click="toggleMoreDropdown(index)">
-                                    <span class="material-symbols-outlined cursor-pointer">more_vert</span>
+                        <div class="pb-2 pt-2 overflow-y-auto flex-grow">
+                            <div v-for="(value, key, index) in filteredDetailsCustomer" :key="key"
+                                :class="index % 2 === 0 ? 'bg-white rounded-none' : 'bg-gray-100 rounded-none'"
+                                class="p-2 rounded-md">
+                                <p class="pl-3 pr-3">
+                                    <strong class="mr-2">{{ formatLabel(key) }}</strong>
+                                    <span :style="{
+                                        whiteSpace: key === 'note' ? 'pre-wrap' : 'normal',
+                                        display: 'inline-block',
+                                        width: '100%'
+                                    }">{{ value }}</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div v-if="isEditModalOpen"
+                    class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
+                    <div class="bg-white rounded-md shadow-lg w-1/2 max-w-3xl h-auto max-h-[800px] flex flex-col">
+                        <div class="flex justify-between items-center bg-custom-orange text-white px-4 py-2 rounded-t-md">
+                            <span class="font-bold">แก้ไขข้อมูลลูกค้า</span>
+                            <div class="flex space-x-2">
+                                <span @click="closeEditModal"
+                                    class="material-symbols-outlined cursor-pointer hover:text-gray-200">
+                                    close </span>
+                            </div>
+                        </div>
+                        <div class="p-6 space-y-4 overflow-y-auto flex-grow">
+                            <div class="mb-4">
+                                <label for="editCustomerName" class="block text-gray-700 font-medium">ชื่อ</label>
+                                <input v-model="selectedCustomer.name" id="editCustomerName" type="text"
+                                    class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange">
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="editCustomerEmail" class="block text-gray-700 font-medium">อีเมล</label>
+                                <input v-model="selectedCustomer.email" id="editCustomerEmail" type="email"
+                                    class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange">
+                            </div>
+
+                            <div>
+                                <label for="customer_id"
+                                    class="block  font-medium text-gray-700">รหัสอ้างอิงที่คุณได้รับจากเจ้าหน้าที่ของเรา</label>
+                                <input type="text" v-model="selectedCustomer.customer_id"
+                                    placeholder="กรอกรหัสอ้างอิงที่คุณได้รับจากเจ้าหน้าที่ของเรา"
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange" />
+                            </div>
+
+                            <div>
+                                <label class="block  font-medium text-gray-700">เพศ</label>
+                                <div class="flex space-x-4">
+                                    <label>
+                                        <input type="radio" v-model="selectedCustomer.gender" value="female"
+                                            class="focus:ring-custom-orange" />
+                                        ผู้หญิง / Female
+                                    </label>
+                                    <label>
+                                        <input type="radio" v-model="selectedCustomer.gender" value="male"
+                                            class="focus:ring-custom-orange" />
+                                        ผู้ชาย / Male
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="flex space-x-4">
+                                <div class="w-1/2">
+                                    <label for="tel" class="block  font-medium text-gray-700">เบอร์โทรศัพท์</label>
+                                    <input type="text" v-model="selectedCustomer.tel" maxlength="10"
+                                        placeholder="กรอกหมายเลขโทรศัพท์"
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange" />
+                                </div>
+
+                                <div class="w-1/2">
+                                    <label for="line_id" class="block  font-medium text-gray-700">Line ID
+                                        (ถ้ามี)</label>
+                                    <input type="text" v-model="selectedCustomer.line_id" placeholder="กรอก line id"
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange" />
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block  font-medium text-gray-700">คุณแพ้อาหารชนิดใดหรือไม่?</label>
+                                <div class="flex space-x-4">
+                                    <label>
+                                        <input type="radio" v-model="selectedCustomer.food_allergies" value="No"
+                                            @change="selectedCustomer.food_allergies_detail = null" />
+
+                                        ไม่ / No
+                                    </label>
+                                    <label>
+                                        <input type="radio" v-model="selectedCustomer.food_allergies" value="Yes"
+                                            class="focus:ring-custom-orange" />
+                                        ใช่ / Yes
+                                    </label>
+
+                                </div>
+                            </div>
+
+                            <div v-if="selectedCustomer.food_allergies === 'Yes'">
+                                <label for="food_allergies_detail"
+                                    class="block  font-medium text-gray-700">โปรดระบุประเภทอาหารที่คุณมีอาการแพ้ในบรรทัดด้านล่าง</label>
+                                <textarea id="food_allergies_detail" v-model="selectedCustomer.food_allergies_detail"
+                                    placeholder="Enter details here"
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange"
+                                    rows="4"></textarea>
+                            </div>
+
+                            <div>
+                                <label for="delivery_date"
+                                    class="block  font-medium text-gray-700">โปรดระบุวันที่คุณต้องการรับอาหาร</label>
+                                <input type="text" v-model="selectedCustomer.delivery_date"
+                                    placeholder="กรอกโปรดระบุวันที่คุณต้องการรับอาหาร"
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange" />
+                            </div>
+
+                            <div>
+                                <label class="block font-medium text-gray-700">ผู้รับอาหาร?</label>
+                                <div class="flex space-x-4">
+                                    <label class="text-gray-700">
+                                        <input type="radio" v-model="selectedCustomer.recipient_mon_to_fri"
+                                            value="ตัวคุณเอง" class="focus:ring-custom-orange custom-radio" />
+                                        ตัวคุณเอง
+                                    </label>
+                                    <label class="text-gray-700">
+                                        มีผู้อื่นรับแทน (โปรดระบุชื่อ พร้อมเบอร์โทรติดต่อในบรรทัดด้านล่าง)
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label for="recipient_mon_to_fri" class="block  font-medium text-gray-700">โปรดระบุชื่อ
+                                    พร้อมเบอร์โทรติดต่อ</label>
+                                <textarea id="recipient_mon_to_fri" v-model="selectedCustomer.recipient_mon_to_fri"
+                                    placeholder="Enter details here"
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange"
+                                    rows="4"></textarea>
+                            </div>
+
+                            <div>
+                                <label for="note" class="block font-medium text-gray-700">หากมีรายละเอียดอื่นๆ
+                                    ที่เราควรทราบ
+                                    โปรดระบุ</label>
+                                <textarea id="note" v-model="selectedCustomer.note" placeholder="กรอกรายละเอียดอื่นๆ"
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange"
+                                    rows="4"></textarea>
+                            </div>
+
+                            <div>
+                                <label for="address_1" class="block  font-medium text-gray-700">ที่อยู่จัดส่ง 1</label>
+                                <textarea id="address" v-model="selectedCustomer.address_1"
+                                    placeholder="กรอกที่อยู่การจัดส่ง"
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange"
+                                    rows="4"></textarea>
+                            </div>
+
+                            <div>
+                                <label for="address_2" class="block  font-medium text-gray-700">ที่อยู่จัดส่ง 2
+                                    (ถ้ามี)</label>
+                                <textarea id="address_2" v-model="selectedCustomer.address_2"
+                                    placeholder="กรอกที่อยู่การจัดส่ง"
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange"
+                                    rows="4"></textarea>
+                            </div>
+
+                            <div>
+                                <label for="address_3" class="block  font-medium text-gray-700">ที่อยู่จัดส่ง 3
+                                    (ถ้ามี)</label>
+                                <textarea id="address_3" v-model="selectedCustomer.address_3"
+                                    placeholder="กรอกที่อยู่การจัดส่ง"
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange"
+                                    rows="4"></textarea>
+                            </div>
+
+                            <div>
+                                <label for="delivery_address"
+                                    class="block font-medium text-gray-700">เลือกที่อยู่สำหรับจัดส่ง</label>
+                                <select v-model="selectedCustomer.delivery_address"
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange">
+                                    <option :value="selectedCustomer.address_1" v-if="selectedCustomer.address_1">ที่อยู่ 1:
+                                        {{
+                                            selectedCustomer.address_1 }}
+                                    </option>
+                                    <option :value="selectedCustomer.address_2" v-if="selectedCustomer.address_2">ที่อยู่ 1:
+                                        {{
+                                            selectedCustomer.address_2 }}
+                                    </option>
+                                    <option :value="selectedCustomer.address_3" v-if="selectedCustomer.address_3">ที่อยู่ 1:
+                                        {{
+                                            selectedCustomer.address_3 }}
+                                    </option>
+                                </select>
+                            </div>
+
+                            <div class="mt-4 flex gap-4">
+                                <div class="w-1/2">
+                                    <label for="delivery_round" class="block font-medium text-gray-700">รอบการจัดส่ง</label>
+                                    <textarea v-model="selectedCustomer.delivery_round"
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange"
+                                        rows="3"></textarea>
+                                </div>
+
+                                <div class="w-1/2">
+                                    <label for="deliver" class="block font-medium text-gray-700">ผู้ส่ง</label>
+                                    <textarea v-model="selectedCustomer.deliver"
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange"
+                                        rows="3"></textarea>
+                                </div>
+                            </div>
+
+                            <div class="mt-4 flex gap-4">
+                                <div class="w-1/2">
+                                    <label for="delivery_zone"
+                                        class="block font-medium text-gray-700">โซนจัดส่งตามที่อยู่ตาม
+                                        Routing</label>
+                                    <textarea v-model="selectedCustomer.delivery_zone"
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange"
+                                        rows="3"></textarea>
+                                </div>
+
+
+                                <div class="w-1/2">
+                                    <label for="delivery_time" class="block font-medium text-gray-700">เวลาจัดส่ง</label>
+                                    <input type="time" v-model="selectedCustomer.delivery_time"
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange">
+                                </div>
+                            </div>
+
+
+
+                        </div>
+
+                        <!-- Footer (with buttons) -->
+                        <div class="flex justify-end space-x-4 p-4 bg-white border-t rounded-b-md list-none">
+                            <div class="flex space-x-2">
+                                <button @click="closeEditModal"
+                                    class="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400">
+                                    ยกเลิก
                                 </button>
+                                <button @click="saveChanges"
+                                    class="bg-custom-orange text-white px-2 py-1 rounded hover:bg-custom-orange-hover flex items-center space-x-30">
+                                    บันทึก
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-                                <div v-if="filteredCustomers.length > 4">
-                                    <div v-if="moreOpenDropdownIndex === index"
-                                        :class="moreDropdownPositionClass(index)"
-                                        class="dropdown-menu absolute right-0 text-center bg-white shadow-lg rounded-md z-50 w-40 border border-gray-300">
-                                        <ul class="list-none p-0 m-0">
-                                            <li @click="onViewDetails(customer)"
-                                                class="px-4 py-2 cursor-pointer hover:bg-gray-100 text-gray-700 border-b border-gray-300">
-                                                ดูรายละเอียด
-                                            </li>
-                                            <li @click="onEdit(customer)"
-                                                class="px-4 py-2 cursor-pointer hover:bg-gray-100 text-blue-500 border-b border-gray-300">
-                                                แก้ไขข้อมูล
-                                            </li>
-                                            <li @click="confirmDelete(customer.id)"
-                                                class="px-4 py-2 cursor-pointer hover:bg-gray-100 text-red-500 border-b border-gray-300">
-                                                ลบข้อมูล
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
+                <div v-if="isDeleteModalOpen"
+                    class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
+                    <div class="absolute top-8 left-1/2 transform -translate-x-1/2 bg-yellow-500 text-white px-8 py-4 flex items-center space-x-4 rounded-lg shadow-lg transition-opacity duration-300 z-60"
+                        :class="{ 'opacity-100': showErrorToast, 'opacity-0': !showErrorToast }">
+                        <span class="material-symbols-outlined text-white">error</span>
+                        <span>{{ toastErrorMessage }}</span>
+                        <button @click="showErrorToast = false" class="text-white hover:text-gray-200 focus:outline-none">
+                            <span class="material-symbols-outlined text-xl">close</span>
+                        </button>
+                    </div>
 
-                                <div v-else>
-                                    <div v-if="moreOpenDropdownIndex === index"
-                                        class="dropdown-menu absolute right-0 text-center bg-white shadow-lg rounded-md z-50 w-40 border border-gray-300">
-                                        <ul class="list-none p-0 m-0">
-                                            <li @click="onViewDetails(customer)"
-                                                class="px-4 py-2 cursor-pointer hover:bg-gray-100 text-gray-700 border-b border-gray-300">
-                                                ดูรายละเอียด
-                                            </li>
-                                            <li @click="onEdit(customer)"
-                                                class="px-4 py-2 cursor-pointer hover:bg-gray-100 text-blue-500 border-b border-gray-300">
-                                                แก้ไขข้อมูล
-                                            </li>
-                                            <li @click="confirmDelete(customer.id)"
-                                                class="px-4 py-2 cursor-pointer hover:bg-gray-100 text-red-500 border-b border-gray-300">
-                                                ลบข้อมูล
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </td>
-
-                        </tr>
-                    </template>
-
-                    <template v-if="filteredCustomers.length < 6 && filteredCustomers.length > 0">
-                        <tr v-for="emptyIndex in (6 - filteredCustomers.length)" :key="'empty-' + emptyIndex"
-                            class="bg-white">
-                            <td colspan="7" class="py-16"></td>
-                        </tr>
-                    </template>
-
-                    <template v-if="filteredCustomers.length === 0">
-                        <tr>
-                            <td colspan="7" class="py-10 bg-white text-center text-gray-500 font-bold">
-                                ไม่พบข้อมูล
-                            </td>
-                        </tr>
-                    </template>
-                </template>
-
-
-            </tbody>
-
-            <div v-if="isDetailModalOpen"
-                class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
-                <div class="bg-white rounded-md shadow-lg w-1/2 max-w-3xl h-auto max-h-[800px] flex flex-col">
-                    <div class="flex justify-between items-center bg-custom-orange text-white px-4 py-2 rounded-t-md">
-                        <span class="font-bold">
-                            <h2>รายละเอียดลูกค้า</h2>
-                        </span>
-                        <div class="flex space-x-2">
-                            <span @click="closeDetailModal"
+                    <div class="bg-white rounded-lg shadow-md w-1/3">
+                        <div class="flex justify-between items-center bg-red-500 text-white px-4 py-2 rounded-t">
+                            <h2 class="text-lg font-bold">ยืนยันการลบ</h2>
+                            <span @click="closeDeleteModal"
                                 class="material-symbols-outlined cursor-pointer hover:text-gray-200">
                                 close
                             </span>
                         </div>
-                    </div>
-
-                    <div class="pb-2 pt-2 overflow-y-auto flex-grow">
-                        <div v-for="(value, key, index) in filteredDetailsCustomer" :key="key"
-                            :class="index % 2 === 0 ? 'bg-white rounded-none' : 'bg-gray-100 rounded-none'"
-                            class="p-2 rounded-md">
-                            <p class="pl-3 pr-3">
-                                <strong class="mr-2">{{ formatLabel(key) }}</strong>
-                                <span :style="{
-                                    whiteSpace: key === 'note' ? 'pre-wrap' : 'normal',
-                                    display: 'inline-block',
-                                    width: '100%'
-                                }">{{ value }}</span>
+                        <div class="p-4">
+                            <p>
+                                คุณแน่ใจหรือไม่ว่าต้องการลบข้อมูลนี้?
+                                การดำเนินการนี้ไม่สามารถย้อนกลับได้
                             </p>
                         </div>
-                    </div>
-                </div>
-            </div>
 
-
-            <div v-if="isEditModalOpen"
-                class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
-                <div class="bg-white rounded-md shadow-lg w-1/2 max-w-3xl h-auto max-h-[800px] flex flex-col">
-                    <div class="flex justify-between items-center bg-custom-orange text-white px-4 py-2 rounded-t-md">
-                        <span class="font-bold">แก้ไขข้อมูลลูกค้า</span>
-                        <div class="flex space-x-2">
-                            <span @click="closeEditModal"
-                                class="material-symbols-outlined cursor-pointer hover:text-gray-200">
-                                close </span>
-                        </div>
-                    </div>
-                    <div class="p-6 space-y-4 overflow-y-auto flex-grow">
-                        <div class="mb-4">
-                            <label for="editCustomerName" class="block text-gray-700 font-medium">ชื่อ</label>
-                            <input v-model="selectedCustomer.name" id="editCustomerName" type="text"
-                                class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange">
-                        </div>
-
-                        <div class="mb-4">
-                            <label for="editCustomerEmail" class="block text-gray-700 font-medium">อีเมล</label>
-                            <input v-model="selectedCustomer.email" id="editCustomerEmail" type="email"
-                                class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange">
-                        </div>
-
-                        <div>
-                            <label for="customer_id"
-                                class="block  font-medium text-gray-700">รหัสอ้างอิงที่คุณได้รับจากเจ้าหน้าที่ของเรา</label>
-                            <input type="text" v-model="selectedCustomer.customer_id"
-                                placeholder="กรอกรหัสอ้างอิงที่คุณได้รับจากเจ้าหน้าที่ของเรา"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange" />
-                        </div>
-
-                        <div>
-                            <label class="block  font-medium text-gray-700">เพศ</label>
-                            <div class="flex space-x-4">
-                                <label>
-                                    <input type="radio" v-model="selectedCustomer.gender" value="female"
-                                        class="focus:ring-custom-orange" />
-                                    ผู้หญิง / Female
-                                </label>
-                                <label>
-                                    <input type="radio" v-model="selectedCustomer.gender" value="male"
-                                        class="focus:ring-custom-orange" />
-                                    ผู้ชาย / Male
-                                </label>
-                            </div>
-                        </div>
-
-                        <div class="flex space-x-4">
-                            <div class="w-1/2">
-                                <label for="tel" class="block  font-medium text-gray-700">เบอร์โทรศัพท์</label>
-                                <input type="text" v-model="selectedCustomer.tel" maxlength="10"
-                                    placeholder="กรอกหมายเลขโทรศัพท์"
-                                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange" />
-                            </div>
-
-                            <div class="w-1/2">
-                                <label for="line_id" class="block  font-medium text-gray-700">Line ID
-                                    (ถ้ามี)</label>
-                                <input type="text" v-model="selectedCustomer.line_id" placeholder="กรอก line id"
-                                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange" />
-                            </div>
-                        </div>
-
-                        <div>
-                            <label class="block  font-medium text-gray-700">คุณแพ้อาหารชนิดใดหรือไม่?</label>
-                            <div class="flex space-x-4">
-                                <label>
-                                    <input type="radio" v-model="selectedCustomer.food_allergies" value="No"
-                                        @change="selectedCustomer.food_allergies_detail = null" />
-
-                                    ไม่ / No
-                                </label>
-                                <label>
-                                    <input type="radio" v-model="selectedCustomer.food_allergies" value="Yes"
-                                        class="focus:ring-custom-orange" />
-                                    ใช่ / Yes
-                                </label>
-
-                            </div>
-                        </div>
-
-                        <div v-if="selectedCustomer.food_allergies === 'Yes'">
-                            <label for="food_allergies_detail"
-                                class="block  font-medium text-gray-700">โปรดระบุประเภทอาหารที่คุณมีอาการแพ้ในบรรทัดด้านล่าง</label>
-                            <textarea id="food_allergies_detail" v-model="selectedCustomer.food_allergies_detail"
-                                placeholder="Enter details here"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange"
-                                rows="4"></textarea>
-                        </div>
-
-                        <div>
-                            <label for="delivery_date"
-                                class="block  font-medium text-gray-700">โปรดระบุวันที่คุณต้องการรับอาหาร</label>
-                            <input type="text" v-model="selectedCustomer.delivery_date"
-                                placeholder="กรอกโปรดระบุวันที่คุณต้องการรับอาหาร"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange" />
-                        </div>
-
-                        <div>
-                            <label class="block font-medium text-gray-700">ผู้รับอาหาร?</label>
-                            <div class="flex space-x-4">
-                                <label class="text-gray-700">
-                                    <input type="radio" v-model="selectedCustomer.recipient_mon_to_fri"
-                                        value="ตัวคุณเอง" class="focus:ring-custom-orange custom-radio" />
-                                    ตัวคุณเอง
-                                </label>
-                                <label class="text-gray-700">
-                                    มีผู้อื่นรับแทน (โปรดระบุชื่อ พร้อมเบอร์โทรติดต่อในบรรทัดด้านล่าง)
-                                </label>
-                            </div>
-                        </div>
-
-                        <div>
-                            <label for="recipient_mon_to_fri" class="block  font-medium text-gray-700">โปรดระบุชื่อ
-                                พร้อมเบอร์โทรติดต่อ</label>
-                            <textarea id="recipient_mon_to_fri" v-model="selectedCustomer.recipient_mon_to_fri"
-                                placeholder="Enter details here"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange"
-                                rows="4"></textarea>
-                        </div>
-
-                        <div>
-                            <label for="note" class="block font-medium text-gray-700">หากมีรายละเอียดอื่นๆ
-                                ที่เราควรทราบ
-                                โปรดระบุ</label>
-                            <textarea id="note" v-model="selectedCustomer.note" placeholder="กรอกรายละเอียดอื่นๆ"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange"
-                                rows="4"></textarea>
-                        </div>
-
-                        <div>
-                            <label for="address_1" class="block  font-medium text-gray-700">ที่อยู่จัดส่ง 1</label>
-                            <textarea id="address" v-model="selectedCustomer.address_1"
-                                placeholder="กรอกที่อยู่การจัดส่ง"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange"
-                                rows="4"></textarea>
-                        </div>
-
-                        <div>
-                            <label for="address_2" class="block  font-medium text-gray-700">ที่อยู่จัดส่ง 2
-                                (ถ้ามี)</label>
-                            <textarea id="address_2" v-model="selectedCustomer.address_2"
-                                placeholder="กรอกที่อยู่การจัดส่ง"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange"
-                                rows="4"></textarea>
-                        </div>
-
-                        <div>
-                            <label for="address_3" class="block  font-medium text-gray-700">ที่อยู่จัดส่ง 3
-                                (ถ้ามี)</label>
-                            <textarea id="address_3" v-model="selectedCustomer.address_3"
-                                placeholder="กรอกที่อยู่การจัดส่ง"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange"
-                                rows="4"></textarea>
-                        </div>
-
-                        <div>
-                            <label for="delivery_address"
-                                class="block font-medium text-gray-700">เลือกที่อยู่สำหรับจัดส่ง</label>
-                            <select v-model="selectedCustomer.delivery_address"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange">
-                                <option :value="selectedCustomer.address_1" v-if="selectedCustomer.address_1">ที่อยู่ 1:
-                                    {{
-                                        selectedCustomer.address_1 }}
-                                </option>
-                                <option :value="selectedCustomer.address_2" v-if="selectedCustomer.address_2">ที่อยู่ 1:
-                                    {{
-                                        selectedCustomer.address_2 }}
-                                </option>
-                                <option :value="selectedCustomer.address_3" v-if="selectedCustomer.address_3">ที่อยู่ 1:
-                                    {{
-                                        selectedCustomer.address_3 }}
-                                </option>
-                            </select>
-                        </div>
-
-                        <div class="mt-4 flex gap-4">
-                            <div class="w-1/2">
-                                <label for="delivery_round" class="block font-medium text-gray-700">รอบการจัดส่ง</label>
-                                <textarea v-model="selectedCustomer.delivery_round"
-                                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange"
-                                    rows="3"></textarea>
-                            </div>
-
-                            <div class="w-1/2">
-                                <label for="deliver" class="block font-medium text-gray-700">ผู้ส่ง</label>
-                                <textarea v-model="selectedCustomer.deliver"
-                                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange"
-                                    rows="3"></textarea>
-                            </div>
-                        </div>
-
-                        <div class="mt-4 flex gap-4">
-                            <div class="w-1/2">
-                                <label for="delivery_zone"
-                                    class="block font-medium text-gray-700">โซนจัดส่งตามที่อยู่ตาม
-                                    Routing</label>
-                                <textarea v-model="selectedCustomer.delivery_zone"
-                                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange"
-                                    rows="3"></textarea>
-                            </div>
-
-
-                            <div class="w-1/2">
-                                <label for="delivery_time" class="block font-medium text-gray-700">เวลาจัดส่ง</label>
-                                <input type="time" v-model="selectedCustomer.delivery_time"
-                                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-orange">
-                            </div>
-                        </div>
-
-
-
-                    </div>
-
-                    <!-- Footer (with buttons) -->
-                    <div class="flex justify-end space-x-4 p-4 bg-white border-t rounded-b-md list-none">
-                        <div class="flex space-x-2">
-                            <button @click="closeEditModal"
-                                class="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400">
+                        <div class="flex justify-end space-x-2 p-4 border-t">
+                            <button @click="closeDeleteModal" class="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400">
                                 ยกเลิก
                             </button>
-                            <button @click="saveChanges"
-                                class="bg-custom-orange text-white px-2 py-1 rounded hover:bg-custom-orange-hover flex items-center space-x-30">
-                                บันทึก
+                            <button @click="deleteConfirmed"
+                                class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
+                                ยืนยัน
                             </button>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <div v-if="isDeleteModalOpen"
-                class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
-                <div class="absolute top-8 left-1/2 transform -translate-x-1/2 bg-yellow-500 text-white px-8 py-4 flex items-center space-x-4 rounded-lg shadow-lg transition-opacity duration-300 z-60"
-                    :class="{ 'opacity-100': showErrorToast, 'opacity-0': !showErrorToast }">
-                    <span class="material-symbols-outlined text-white">error</span>
-                    <span>{{ toastErrorMessage }}</span>
-                    <button @click="showErrorToast = false" class="text-white hover:text-gray-200 focus:outline-none">
-                        <span class="material-symbols-outlined text-xl">close</span>
-                    </button>
-                </div>
-
-                <div class="bg-white rounded-lg shadow-md w-1/3">
-                    <div class="flex justify-between items-center bg-red-500 text-white px-4 py-2 rounded-t">
-                        <h2 class="text-lg font-bold">ยืนยันการลบ</h2>
-                        <span @click="closeDeleteModal"
-                            class="material-symbols-outlined cursor-pointer hover:text-gray-200">
-                            close
-                        </span>
-                    </div>
-                    <div class="p-4">
-                        <p>
-                            คุณแน่ใจหรือไม่ว่าต้องการลบข้อมูลนี้?
-                            การดำเนินการนี้ไม่สามารถย้อนกลับได้
-                        </p>
-                    </div>
-
-                    <div class="flex justify-end space-x-2 p-4 border-t">
-                        <button @click="closeDeleteModal" class="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400">
-                            ยกเลิก
-                        </button>
-                        <button @click="deleteConfirmed"
-                            class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
-                            ยืนยัน
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-        </table>
+            </table>
+        </div>
 
         <div class="rounded-b-2xl flex justify-center items-center space-x-2 bg-white px-2 py-1">
             <button @click="goToPage(currentPage - 1)" :disabled="currentPage === 1"
@@ -543,8 +560,9 @@ export default {
     name: "AFF Customers",
     data() {
         return {
-            headers: ['#', 'ชื่อ', 'รหัสอ้างอิง', 'ช่องทางการติดต่อ', 'ที่อยู่', 'ข้อมูลแพ้อาหาร', ""],
-            headerWidths: ['5%', '20%', '10%', '15%', '30%', '15%', '5%'],
+            headers: ['#', 'ชื่อ', 'รหัสอ้างอิง', 'เพศ', 'ช่องทางการติดต่อ', 'ข้อมูลแพ้อาหาร', 'วันที่ต้องการรับอาหาร', 'ผู้รับอาหาร', 'รายละเอียดอื่นๆ', 'ที่อยู่ 1', 'ที่อยู่ 2', 'ที่อยู่ 3', 'เวลาจัดส่ง', 'รอบการจัดส่ง', 'ผู้จัดส่ง', 'โซนจัดส่งที่อยู่ตาม Rounting', 'ที่อยู่จัดส่ง',  ""],
+            headerWidths: ['150px', '500px', '200px', '150px', '200px', '700px', '500px', '500px', '700px', '700px', '700px', '700px', '300px', '550px', '550px', '550px', '700px', '50px'],
+
 
             searchQuery: "",
 

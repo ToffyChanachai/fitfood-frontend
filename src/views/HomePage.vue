@@ -208,145 +208,143 @@
 
     </div>
 
-    <table class="min-w-full table-auto rounded-t-2xl overflow-hidden mt-4">
-      <thead>
-        <tr class="bg-custom-orange text-white">
-          <th v-for="(header, index) in headers" :key="index" :class="['px-4 py-2 text-left font-bold']"
-            :style="{ width: headerWidths[index] }">
-            {{ header }}
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-if="isLoading" class="bg-white">
-                    <td colspan="11" class="py-16 text-center">
-                        <div class="flex justify-center items-center space-x-2">
-                        <div class="w-3 h-3 bg-gray-500 rounded-full animate-pulse"></div>
-                        <div class="w-3 h-3 bg-gray-500 rounded-full animate-pulse delay-200"></div>
-                        <div class="w-3 h-3 bg-gray-500 rounded-full animate-pulse delay-400"></div>
-                        </div>
-                    </td>
-                </tr>
-
-        <template v-else>
-          <template v-if="filteredSaleRecords1standRenew.length > 0">
-            <tr v-for="(saleRecord, index) in filteredSaleRecords" :key="index"
-              class=" bg-white relative border-b border-b-gray-200">
-
-              <td class="px-4 py-2 align-top pb-5">{{ (currentPage - 1) * itemsPerPage + index + 1 }}</td>
-
-              <td class="px-4 py-2 align-top pb-5">
-                {{ formatDate(saleRecord.paid_date) }}
-              </td>
-
-              <td class="px-4 py-2 align-top pb-5 font-bold text-custom-orange">
-                {{ getCustomerName(saleRecord.customer_id) }}
-              </td>
-
-              <td class="px-4 py-2 align-top pb-5">
-                {{ getPackageName(saleRecord.package_id) }}
-              </td>
-
-              <td class="px-4 py-2 align-top pb-5">
-                {{ formatDate(saleRecord.start_package_date) }}
-              </td>
-
-              <td class="px-4 py-2 align-top pb-5">
-                {{ formatDate(saleRecord.expiry_date) }}
-              </td>
-
-              <td class="px-4 py-2 align-top pb-5">
-                <span v-if="saleRecord.remaining_days <= 0" class="text-red-500 font-bold">
-                  หมดอายุ
-                </span>
-                <span v-else> {{ saleRecord.remaining_days }} วัน </span>
-              </td>
-
-              <td class="px-4 py-2 align-top pb-5">
-                {{ saleRecord.total_boxes_show }}
-              </td>
-
-              <td class="px-4 py-2 align-top pb-5">
-                <span v-if="saleRecord.total_boxes <= 0" class="text-red-500 font-bold">
-                  {{ saleRecord.total_boxes }}
-                </span>
-                <span v-else> {{ saleRecord.total_boxes }} </span>
-              </td>
-
-              <td class="px-4 py-2 text-right  pb-5 relative" ref="moreDropdown">
-                <button @click="toggleMoreDropdown(index)">
-                  <span class="material-symbols-outlined cursor-pointer">more_vert</span>
-                </button>
-
-                <div v-if="filteredSaleRecords1standRenew.length > 4">
-                  <div v-if="moreOpenDropdownIndex === index" :class="moreDropdownPositionClass(index)"
-                    class="dropdown-menu absolute right-0 text-center bg-white shadow-lg rounded-md z-50 w-40 border border-gray-300">
-                    <ul class="list-none p-0 m-0">
-                      <li @click="onViewDetail(saleRecord)"
-                        class="px-4 py-2 cursor-pointer hover:bg-gray-100 text-gray-700 border-b border-gray-300">
-                        ดูรายละเอียด
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-
-                <div v-else>
-                  <div v-if="moreOpenDropdownIndex === index"
-                    class="dropdown-menu absolute right-0 text-center bg-white shadow-lg rounded-md z-50 w-40 border border-gray-300">
-                    <ul class="list-none p-0 m-0">
-                      <li @click="onViewDetail(saleRecord)"
-                        class="px-4 py-2 cursor-pointer hover:bg-gray-100 text-gray-700 border-b border-gray-300">
-                        ดูรายละเอียด
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              </td>
-            </tr>
-          </template>
-
-          <template v-if="filteredSaleRecords1standRenew.length < 6 && filteredSaleRecords1standRenew.length > 0">
-            <tr v-for="emptyIndex in (6 - filteredSaleRecords1standRenew.length)" :key="'empty-' + emptyIndex"
-              class="bg-white">
-              <td colspan="10" class="py-16"></td>
-            </tr>
-          </template>
-
-          <template v-if="filteredSaleRecords1standRenew.length === 0">
+    <div class="max-h-[540px] overflow-y-auto rounded-t-2xl mt-4">
+        <table class="min-w-[3000px] table-auto">
+          <thead class="sticky top-0 bg-custom-orange text-white z-10">
             <tr>
-              <td colspan="10" class="py-10 bg-white text-center text-gray-500 font-bold">
-                ไม่พบข้อมูล
-              </td>
+              <th v-for="(header, index) in headers" :key="index" :class="['px-4 py-2 text-left font-bold whitespace-nowrap']"
+                :style="{ width: headerWidths[index] }">
+                {{ header }}
+              </th>
             </tr>
-          </template>
-      </template>
-      </tbody>
+          </thead>
+          <tbody>
+          <tr v-if="isLoading" class="bg-white">
+                      <td colspan="15" class="py-16 text-center">
+                          <div class="flex justify-center items-center space-x-2">
+                          <div class="w-3 h-3 bg-gray-500 rounded-full animate-pulse"></div>
+                          <div class="w-3 h-3 bg-gray-500 rounded-full animate-pulse delay-200"></div>
+                          <div class="w-3 h-3 bg-gray-500 rounded-full animate-pulse delay-400"></div>
+                          </div>
+                      </td>
+          </tr>
 
-      <div v-if="isDetailModalOpen"
-        class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
-        <div class="bg-white rounded-md shadow-lg w-1/2 max-w-6xl h-auto max-h-[800px] flex flex-col">
-          <div class="flex justify-between items-center bg-custom-orange text-white px-4 py-2 rounded-t-md">
-            <span class="font-bold">รายละเอียด</span>
-            <div class="flex space-x-2">
-              <span @click="closeDetailModal" class="material-symbols-outlined cursor-pointer hover:text-gray-200">
-                close
-              </span>
+          <template v-else>
+            <template v-if="filteredSaleRecords1standRenew.length > 0">
+              <tr v-for="(saleRecord, index) in filteredSaleRecords" :key="index"
+                class=" bg-white relative border-b border-b-gray-200">
+
+                <td class="px-4 py-2 align-top pb-5">{{ (currentPage - 1) * itemsPerPage + index + 1 }}</td>
+
+                <td class="px-4 py-2 align-top pb-5">
+                  {{ formatDate(saleRecord.paid_date) }}
+                </td>
+
+                <td class="px-4 py-2 align-top pb-5 font-bold text-custom-orange">
+                  {{ getCustomerName(saleRecord.customer_id) }}
+                </td>
+
+                <td class="px-4 py-2 align-top pb-5">
+                  {{ getPackageName(saleRecord.package_id) }}
+                </td>
+
+                <td class="px-4 py-2 align-top pb-5">
+                  {{ formatPrice(saleRecord.total_price) }}
+                </td>
+
+                <td class="px-4 py-2 align-top pb-5">
+                  {{ getDeliveryDate(saleRecord.customer_id) }}
+                </td>
+
+                <td class="px-4 py-2 align-top pb-5">
+                  {{ formatFoodAllergies(getFoodAllergie(saleRecord.customer_id)) }}
+                </td>
+
+                <td class="px-4 py-2 align-top pb-5">
+                  {{ formatDate(saleRecord.start_package_date) }}
+                </td>
+
+                <td class="px-4 py-2 align-top pb-5">
+                  {{ formatDate(saleRecord.expiry_date) }}
+                </td>
+
+                <td class="px-4 py-2 align-top pb-5">
+                  <span v-if="saleRecord.remaining_days <= 0" class="text-red-500 font-bold">
+                    หมดอายุ
+                  </span>
+                  <span v-else> {{ saleRecord.remaining_days }} วัน </span>
+                </td>
+
+                <td class="px-4 py-2 align-top pb-5">
+                  {{ getTotalDay(saleRecord.package_id) }}
+                </td>
+
+                <td class="px-4 py-2 align-top pb-5">
+                  {{ getBoxperDay(saleRecord.package_id) }}
+                </td>
+
+                <td class="px-4 py-2 align-top pb-5">
+                  {{ saleRecord.total_boxes_show }}
+                </td>
+
+                <td class="px-4 py-2 align-top pb-5">
+                  <span v-if="saleRecord.total_boxes <= 0" class="text-red-500 font-bold">
+                    {{ saleRecord.total_boxes }}
+                  </span>
+                  <span v-else> {{ saleRecord.total_boxes }} </span>
+                </td>
+
+                <td class="px-4 py-2 align-top pb-5">
+                  {{ saleRecord.credit }}
+                </td>
+
+
+              </tr>
+            </template>
+
+            <template v-if="filteredSaleRecords1standRenew.length < 6 && filteredSaleRecords1standRenew.length > 0">
+              <tr v-for="emptyIndex in (6 - filteredSaleRecords1standRenew.length)" :key="'empty-' + emptyIndex"
+                class="bg-white">
+                <td colspan="15" class="py-16"></td>
+              </tr>
+            </template>
+
+            <template v-if="filteredSaleRecords1standRenew.length === 0">
+              <tr>
+                <td colspan="15" class="py-10 bg-white text-center text-gray-500 font-bold">
+                  ไม่พบข้อมูล
+                </td>
+              </tr>
+            </template>
+        </template>
+        </tbody>
+
+        <div v-if="isDetailModalOpen"
+          class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
+          <div class="bg-white rounded-md shadow-lg w-1/2 max-w-6xl h-auto max-h-[800px] flex flex-col">
+            <div class="flex justify-between items-center bg-custom-orange text-white px-4 py-2 rounded-t-md">
+              <span class="font-bold">รายละเอียด</span>
+              <div class="flex space-x-2">
+                <span @click="closeDetailModal" class="material-symbols-outlined cursor-pointer hover:text-gray-200">
+                  close
+                </span>
+              </div>
             </div>
-          </div>
 
-          <div class="pb-2 pt-2 overflow-y-auto flex-grow" ref="modalContent">
-            <div v-for="(value, key, index) in filteredDetailSaleRecord" :key="key" :class="[
-              'p-2 rounded-md',
-              index % 2 === 0 ? 'bg-white rounded-none' : 'bg-gray-100 rounded-none'  // สลับสีบรรทัด
-            ]">
-              <strong class="mr-2 pl-3 pr-3">{{ formatDetailLabel(key) }}:</strong> {{ value }}
+            <div class="pb-2 pt-2 overflow-y-auto flex-grow" ref="modalContent">
+              <div v-for="(value, key, index) in filteredDetailSaleRecord" :key="key" :class="[
+                'p-2 rounded-md',
+                index % 2 === 0 ? 'bg-white rounded-none' : 'bg-gray-100 rounded-none'  // สลับสีบรรทัด
+              ]">
+                <strong class="mr-2 pl-3 pr-3">{{ formatDetailLabel(key) }}:</strong> {{ value }}
+              </div>
             </div>
-          </div>
 
+          </div>
         </div>
-      </div>
 
-    </table>
+      </table>
+    </div>
 
 
     <div class="rounded-b-2xl flex justify-center items-center space-x-2 bg-white px-2 py-1">
@@ -403,17 +401,22 @@ export default {
     return {
       headers: [
         "#",
-        `วันที่ชำระ`,
+        `วันที่ชำระเงิน`,
         "Customer's Name",
         "Package",
+        "มูลค่าขายรวม",
+        "วันที่ต้องการรับอาหาร",
+        "Allergies /Special Requests",
         "วันเริ่มแพ็คเกจ",
         "วันหมดอายุแพ็กเกจ",
         "วันคงเหลือของแพ็กเกจ",
+        "Total days",
+        "Box per Day",
         "Total boxes",
         "Total boxes (เหลือ)",
-        "",
+        "Credit",
       ],
-      headerWidths: ["5%", "8%", "15%", "22%", "8%", "10%", "12%", "8%", "10%", "5%"],
+      headerWidths: ["150px", "100px", "300px", "500px", "100px", "100px", "500px", "100px", "100px", "100px", "100px", "100px", "100px", "100px"],
       saleRecords: [],
 
       searchQuery: "",
@@ -1125,6 +1128,22 @@ export default {
     getCustomerName(customerId) {
       const customer = this.customers.find((c) => c.id === customerId);
       return customer ? customer.name : "ไม่พบข้อมูล";
+    },
+    getDeliveryDate(customerId) {
+      const customer = this.customers.find((c) => c.id === customerId);
+      return customer ? customer.delivery_date : null;
+    },
+    getFoodAllergie(customerId) {
+      const customer = this.customers.find((c) => c.id === customerId);
+      return customer ? customer.food_allergies : null;
+    },
+    getTotalDay(packageId) {
+      const packaged = this.packages.find((c) => c.id === packageId);
+      return packaged ? packaged.total_days : null;
+    },
+    getBoxperDay(packageId) {
+      const packaged = this.packages.find((c) => c.id === packageId);
+      return packaged ? packaged.boxes_per_day : null;
     },
     getPromotionTypeName(promotionTypeId) {
       const promotionType = this.promotionTypes.find((c) => c.id === promotionTypeId);

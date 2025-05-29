@@ -741,752 +741,765 @@
             </router-link>
         </div>
 
-        <table class="min-w-full table-auto rounded-t-2xl overflow-hidden mt-4">
-            <thead>
-                <tr class="bg-custom-orange text-white">
-                    <th v-for="(header, index) in headers" :key="index" :class="['px-4 py-2 text-left font-bold']"
-                        :style="{ width: headerWidths[index] }">
-                        {{ header }}
-                    </th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr v-if="isLoading" class="bg-white">
-                    <td colspan="11" class="py-16 text-center">
-                        <div class="flex justify-center items-center space-x-2">
-                            <div class="w-3 h-3 bg-gray-500 rounded-full animate-pulse"></div>
-                            <div class="w-3 h-3 bg-gray-500 rounded-full animate-pulse delay-200"></div>
-                            <div class="w-3 h-3 bg-gray-500 rounded-full animate-pulse delay-400"></div>
-                        </div>
-                    </td>
-                </tr>
+        <div class="max-h-[580px] overflow-y-auto rounded-t-2xl mt-4">
+            <table class="min-w-[10000px] table-auto">
+                <thead class="sticky top-0 bg-custom-orange text-white z-10">
+                    <tr>
+                        <th v-for="(header, index) in headers" :key="index" :class="['px-4 py-2 text-left font-bold whitespace-nowrap']"
+                            :style="{ width: headerWidths[index] }">
+                            {{ header }}
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-if="isLoading" class="bg-white">
+                        <td colspan="42" class="py-16 text-center">
+                            <div class="flex justify-center items-center space-x-2">
+                                <div class="w-3 h-3 bg-gray-500 rounded-full animate-pulse"></div>
+                                <div class="w-3 h-3 bg-gray-500 rounded-full animate-pulse delay-200"></div>
+                                <div class="w-3 h-3 bg-gray-500 rounded-full animate-pulse delay-400"></div>
+                            </div>
+                        </td>
+                    </tr>
 
-                <template v-else>
-                    <template v-if="additionalSalesRecords.length > 0">
-                        <tr v-for="(saleRecord, index) in additionalSalesRecords" :key="index"
-                            class=" bg-white relative border-b border-b-gray-200">
+                    <template v-else>
+                        <template v-if="additionalSalesRecords.length > 0">
+                                <tr v-for="(saleRecord, index) in additionalSalesRecords" :key="index"
+                                    class=" bg-white relative border-b border-b-gray-200">
 
-                            <td class="px-4 py-2 align-top pb-5">{{ (currentPage - 1) * itemsPerPage + index + 1 }}</td>
-                            <td class="px-4 py-2 align-top pb-5">
-                                {{ saleRecord.transaction }}
-                            </td>
+                                    <td class="px-4 py-2 align-top pb-5">{{ (currentPage - 1) * itemsPerPage + index + 1 }}</td>
+                                    <td class="px-4 py-2 align-top pb-5">
+                                        {{ saleRecord.transaction }}
+                                    </td>
+                                    <td class="px-4 py-2 align-top pb-5 font-bold">
+                                        {{ getSellerName(saleRecord.seller_name_id) }}
+                                    </td>
+                                    <td class="px-4 py-2 align-top pb-5 font-bold text-custom-orange">
+                                        {{ getCustomerName(saleRecord.customer_id) }}
+                                    </td>
+                                    <td class="px-4 py-2 align-top pb-5 font-bold ">
+                                        {{ getPackageTypeName(saleRecord.package_type_id) }}
+                                    </td>
+                                    <td class="px-4 py-2 align-top pb-5">
+                                        {{ getSaleTypeName(saleRecord.additional_type_id) }}
+                                    </td>
+                                    <td class="px-4 py-2 align-top pb-5">
+                                        {{ saleRecord.add_detail }}
+                                    </td>
+                                    <td class="px-4 py-2 align-top pb-5">
+                                        {{ saleRecord.other_promotion_detail }}
+                                    </td>
+                                    <td class="px-4 py-2 align-top pb-5">
+                                        {{ formatPrice(saleRecord.add_price) }}
+                                    </td>
+                                    <td class="px-4 py-2 align-top pb-5">
+                                        {{ formatPrice(saleRecord.discount) }}
+                                    </td>
+                                    <td class="px-4 py-2 align-top pb-5">
+                                        {{ formatPercent(saleRecord.extra_charge) }}
+                                    </td>
+                                    <td class="px-4 py-2 align-top pb-5">
+                                        {{ formatPrice(saleRecord.extra_charge_price) }}
+                                    </td>
+                                    <td class="px-4 py-2 align-top pb-5">
+                                        {{ formatPrice(saleRecord.total_package_price) }}
+                                    </td>
+                                    <td class="px-4 py-2 align-top pb-5">
+                                        {{ getReceiveFoodName(saleRecord.receive_food_id) }}
+                                    </td>
+                                    
+                                    <td class="px-4 py-2 align-top pb-5">
+                                        {{ getZoneName(saleRecord.zone1_id) }}
+                                    </td>
+                                    <td class="px-4 py-2 align-top pb-5">
+                                        {{ saleRecord.zone1_quantity }}
+                                    </td>
+                                    <td class="px-4 py-2 align-top pb-5">
+                                        {{ formatPrice(getZonePrice(saleRecord.zone1_id)) }}
+                                    </td>
+                                    <td class="px-4 py-2 align-top pb-5">
+                                        {{ formatPrice(saleRecord.total_zone1_price) }}
+                                    </td>
 
-                            <td class="px-4 py-2 align-top pb-5 font-bold text-custom-orange">
-                                {{ getCustomerName(saleRecord.customer_id) }}
-                            </td>
-                            <td class="px-4 py-2 align-top pb-5 font-bold ">
-                                {{ getPackageTypeName(saleRecord.package_type_id) }}
-                            </td>
-                            <td class="px-4 py-2 align-top pb-5">
-                                {{ getSaleTypeName(saleRecord.additional_type_id) }}
-                            </td>
-                            <td class="px-4 py-2 align-top pb-5">
-                                {{ saleRecord.add_detail }}
-                            </td>
-                            <td class="px-4 py-2 align-top pb-5">
-                                {{ formatPrice(saleRecord.total_price) }}
-                            </td>
+                                    <td class="px-4 py-2 align-top pb-5">
+                                        {{ getZoneName(saleRecord.zone2_id) }}
+                                    </td>
+                                    <td class="px-4 py-2 align-top pb-5">
+                                        {{ saleRecord.zone2_quantity }}
+                                    </td>
+                                    <td class="px-4 py-2 align-top pb-5">
+                                        {{ formatPrice(getZonePrice(saleRecord.zone2_id)) }}
+                                    </td>
+                                    <td class="px-4 py-2 align-top pb-5">
+                                        {{ formatPrice(saleRecord.total_zone2_price) }}
+                                    </td>
 
-                            <td class="px-4 py-2 align-top font-bold pb-5">
-                                <button @click="openConfirmPaymentModal(saleRecord)"
-                                    class="px-4 py-1 rounded-full font-bold focus:outline-none hover:text-gray-200"
-                                    :class="getPaymentStatusClass(saleRecord.payment_status)">
-                                    {{ getPaymentStatusText(saleRecord.payment_status) }}
-                                </button>
+                                    <td class="px-4 py-2 align-top pb-5">
+                                        {{ getZoneName(saleRecord.zone3_id) }}
+                                    </td>
+                                    <td class="px-4 py-2 align-top pb-5">
+                                        {{ saleRecord.zone3_quantity }}
+                                    </td>
+                                    <td class="px-4 py-2 align-top pb-5">
+                                        {{ formatPrice(getZonePrice(saleRecord.zone3_id)) }}
+                                    </td>
+                                    <td class="px-4 py-2 align-top pb-5">
+                                        {{ formatPrice(saleRecord.total_zone3_price) }}
+                                    </td>
 
-                                <div v-if="isConfirmPaymentModalOpen"
-                                    class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-10 z-50">
-                                    <div class="absolute top-8 left-1/2 transform -translate-x-1/2 bg-yellow-500 text-white px-8 py-4 flex items-center space-x-4 rounded-lg transition-opacity duration-300 z-60"
-                                        :class="{
-                                            'opacity-100': showErrorToast,
-                                            'opacity-0': !showErrorToast,
-                                        }">
-                                        <span class="material-symbols-outlined text-white">error</span>
-                                        <span>{{ toastErrorMessage }}</span>
-                                        <button @click="showErrorToast = false"
-                                            class="text-white hover:text-gray-200 focus:outline-none">
-                                            <span class="material-symbols-outlined text-xl">close</span>
+                                    <td class="px-4 py-2 align-top pb-5">
+                                        {{ getZoneName(saleRecord.zone_outsource_id) }}
+                                    </td>
+                                    <td class="px-4 py-2 align-top pb-5">
+                                        {{ saleRecord.zone_outsource_quantity }}
+                                    </td>
+                                    <td class="px-4 py-2 align-top pb-5">
+                                        {{ formatPrice(getZonePrice(saleRecord.zone_outsource_id)) }}
+                                    </td>
+                                    <td class="px-4 py-2 align-top pb-5">
+                                        {{ formatPrice(saleRecord.total_zone_outsource_price) }}
+                                    </td>
+                                    <td class="px-4 py-2 align-top pb-5">
+                                        {{ formatPrice(saleRecord.total_delivery_zone_price) }}
+                                    </td>
+                                    <td class="px-4 py-2 align-top pb-5 font-bold text-gray-500">
+                                        {{ formatPrice(saleRecord.total_delivery_price) }}
+                                    </td>
+
+                                    <td class="px-4 py-2 align-top pb-5 font-bold">
+                                        {{ formatPrice(saleRecord.total_price) }}
+                                    </td>
+
+                                    <td class="px-4 py-2 align-top font-bold pb-5">
+                                        <button @click="openConfirmPaymentModal(saleRecord)"
+                                            class="px-4 py-1 rounded-full font-bold focus:outline-none hover:text-gray-200"
+                                            :class="getPaymentStatusClass(saleRecord.payment_status)">
+                                            {{ getPaymentStatusText(saleRecord.payment_status) }}
                                         </button>
-                                    </div>
 
-                                    <div class="bg-white rounded-md w-1/3 max-w-lg">
-                                        <!-- Header -->
-                                        <div :class="{
-                                            'bg-green-500':
-                                                selectedSaleRecord.payment_status === 'unpaid',
-                                            'bg-red-500': selectedSaleRecord.payment_status === 'paid',
-                                        }" class="flex justify-between items-center text-white px-4 py-2 rounded-t-md">
-                                            <span class="font-bold">
-                                                {{
-                                                    selectedSaleRecord.payment_status === "paid"
-                                                        ? "เปลี่ยนสถานะเป็นยังไม่ได้ชำระเงิน"
-                                                        : "ยืนยันการชำระเงิน"
-                                                }}
-                                            </span>
-                                            <button @click="closeConfirmPaymentModal"
-                                                class="text-white hover:text-gray-200">
-                                                <span class="material-symbols-outlined">close</span>
-                                            </button>
-                                        </div>
-
-                                        <!-- Content -->
-                                        <div class="p-6 space-y-4">
-                                            <p class="text-gray-700">
-                                                {{
-                                                    selectedSaleRecord.payment_status === "paid"
-                                                        ? 'คุณต้องการเปลี่ยนสถานะเป็น "ยังไม่ได้ชำระเงิน" หรือไม่?'
-                                                        : "กรุณาเลือกวันที่ชำระเงิน:"
-                                                }}
-                                            </p>
-
-                                            <!-- Date Picker -->
-                                            <div v-if="selectedSaleRecord.payment_status !== 'paid'">
-                                                <input type="date" v-model="selectedPaidDate"
-                                                    class="border border-gray-300 rounded px-4 py-2 w-full" />
+                                        <div v-if="isConfirmPaymentModalOpen"
+                                            class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-10 z-50">
+                                            <div class="absolute top-8 left-1/2 transform -translate-x-1/2 bg-yellow-500 text-white px-8 py-4 flex items-center space-x-4 rounded-lg transition-opacity duration-300 z-60"
+                                                :class="{
+                                                    'opacity-100': showErrorToast,
+                                                    'opacity-0': !showErrorToast,
+                                                }">
+                                                <span class="material-symbols-outlined text-white">error</span>
+                                                <span>{{ toastErrorMessage }}</span>
+                                                <button @click="showErrorToast = false"
+                                                    class="text-white hover:text-gray-200 focus:outline-none">
+                                                    <span class="material-symbols-outlined text-xl">close</span>
+                                                </button>
                                             </div>
 
-                                            <!-- Payment Type Dropdown -->
-                                            <div v-if="selectedSaleRecord.payment_status !== 'paid'" class="mt-4">
-                                                <label for="payment_types"
-                                                    class="block text-gray-700">เลือกประเภทการชำระเงิน:</label>
-                                                <multiselect v-model="selectedSaleRecord.payment_type_id"
-                                                    :options="paymentTypes" label="name" track-by="id"
-                                                    placeholder="เลือกประเภทการชำระเงิน">
-                                                </multiselect>
+                                            <div class="bg-white rounded-md w-1/3 max-w-lg">
+                                                <!-- Header -->
+                                                <div :class="{
+                                                    'bg-green-500':
+                                                        selectedSaleRecord.payment_status === 'unpaid',
+                                                    'bg-red-500': selectedSaleRecord.payment_status === 'paid',
+                                                }" class="flex justify-between items-center text-white px-4 py-2 rounded-t-md">
+                                                    <span class="font-bold">
+                                                        {{
+                                                            selectedSaleRecord.payment_status === "paid"
+                                                                ? "เปลี่ยนสถานะเป็นยังไม่ได้ชำระเงิน"
+                                                                : "ยืนยันการชำระเงิน"
+                                                        }}
+                                                    </span>
+                                                    <button @click="closeConfirmPaymentModal"
+                                                        class="text-white hover:text-gray-200">
+                                                        <span class="material-symbols-outlined">close</span>
+                                                    </button>
+                                                </div>
+
+                                                <!-- Content -->
+                                                <div class="p-6 space-y-4">
+                                                    <p class="text-gray-700">
+                                                        {{
+                                                            selectedSaleRecord.payment_status === "paid"
+                                                                ? 'คุณต้องการเปลี่ยนสถานะเป็น "ยังไม่ได้ชำระเงิน" หรือไม่?'
+                                                                : "กรุณาเลือกวันที่ชำระเงิน:"
+                                                        }}
+                                                    </p>
+
+                                                    <!-- Date Picker -->
+                                                    <div v-if="selectedSaleRecord.payment_status !== 'paid'">
+                                                        <input type="date" v-model="selectedPaidDate"
+                                                            class="border border-gray-300 rounded px-4 py-2 w-full" />
+                                                    </div>
+
+                                                    <!-- Payment Type Dropdown -->
+                                                    <div v-if="selectedSaleRecord.payment_status !== 'paid'" class="mt-4">
+                                                        <label for="payment_types"
+                                                            class="block text-gray-700">เลือกประเภทการชำระเงิน:</label>
+                                                        <multiselect v-model="selectedSaleRecord.payment_type_id"
+                                                            :options="paymentTypes" label="name" track-by="id"
+                                                            placeholder="เลือกประเภทการชำระเงิน">
+                                                        </multiselect>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Footer -->
+                                                <div class="flex justify-end space-x-4 p-4 bg-white border-t rounded-b-md">
+                                                    <button @click="closeConfirmPaymentModal"
+                                                        class="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400">
+                                                        ยกเลิก
+                                                    </button>
+                                                    <button @click="confirmPayment" :class="{
+                                                        'bg-green-500 hover:bg-green-600':
+                                                            selectedSaleRecord.payment_status === 'unpaid',
+                                                        'bg-red-500 hover:bg-red-600':
+                                                            selectedSaleRecord.payment_status === 'paid',
+                                                    }" class="text-white px-4 py-2 rounded">
+                                                        ยืนยัน
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+
+                                    <td class="px-4 py-2 align-top pb-5">
+                                    {{ formatDate(saleRecord.paid_date) }}
+                                    </td>
+                                    <td class="px-4 py-2 align-top pb-5">
+                                    {{ getPaymentTypeName(saleRecord.payment_type_id) }}
+                                    </td>
+                                    <td class="px-4 py-2 align-top pb-5">
+                                    {{ saleRecord.transaction_ref }}
+                                    </td>
+
+                                    <td class="px-4 py-2 align-top pb-5">
+                                        {{ saleRecord.note }}
+                                    </td>
+                                    <td class="px-4 py-2 align-top pb-5">
+                                        {{ getDeliveryRoundName(saleRecord.delivery_round_id) }}
+                                    </td>
+                                    <td class="px-4 py-2 align-top pb-5">
+                                        {{ getSelectFood(saleRecord.select_food_id) }}
+                                    </td>
+
+                                    
+
+                                    <td class="px-4 py-2 text-right  pb-5 relative" ref="moreDropdown">
+                                        <button @click="toggleMoreDropdown(index)">
+                                            <span class="material-symbols-outlined cursor-pointer">more_vert</span>
+                                        </button>
+
+                                        <div v-if="additionalSalesRecords.length > 4">
+                                            <div v-if="moreOpenDropdownIndex === index"
+                                                :class="moreDropdownPositionClass(index)"
+                                                class="dropdown-menu absolute right-0 text-center bg-white shadow-lg rounded-md z-50 w-40 border border-gray-300">
+                                                <ul class="list-none p-0 m-0">
+                                                    <li @click="onViewResultSaleRecord(saleRecord)"
+                                                        class="px-4 py-2 cursor-pointer hover:bg-gray-100 text-custom-orange font-bold border-b border-gray-300">
+                                                        สรุปยอด
+                                                    </li>
+                                                   
+                                                    <li @click="openEditModal(saleRecord)"
+                                                        class="px-4 py-2 cursor-pointer hover:bg-gray-100 text-blue-500 border-b border-gray-300">
+                                                        แก้ไขข้อมูล
+                                                    </li>
+                                                    <li @click="confirmDelete(saleRecord.id)"
+                                                        class="px-4 py-2 cursor-pointer hover:bg-gray-100 text-red-500 border-b border-gray-300">
+                                                        ลบข้อมูล
+                                                    </li>
+                                                </ul>
                                             </div>
                                         </div>
 
-                                        <!-- Footer -->
-                                        <div class="flex justify-end space-x-4 p-4 bg-white border-t rounded-b-md">
-                                            <button @click="closeConfirmPaymentModal"
-                                                class="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400">
-                                                ยกเลิก
-                                            </button>
-                                            <button @click="confirmPayment" :class="{
-                                                'bg-green-500 hover:bg-green-600':
-                                                    selectedSaleRecord.payment_status === 'unpaid',
-                                                'bg-red-500 hover:bg-red-600':
-                                                    selectedSaleRecord.payment_status === 'paid',
-                                            }" class="text-white px-4 py-2 rounded">
-                                                ยืนยัน
-                                            </button>
+                                        <div v-else>
+                                            <div v-if="moreOpenDropdownIndex === index"
+                                                class="dropdown-menu absolute right-0 text-center bg-white shadow-lg rounded-md z-50 w-40 border border-gray-300">
+                                                <ul class="list-none p-0 m-0">
+                                                    <li @click="onViewResultSaleRecord(saleRecord)"
+                                                        class="px-4 py-2 cursor-pointer hover:bg-gray-100 text-custom-orange font-bold border-b border-gray-300">
+                                                        สรุปยอด
+                                                    </li>
+                                        
+                                                    <li @click="openEditModal(saleRecord)"
+                                                        class="px-4 py-2 cursor-pointer hover:bg-gray-100 text-blue-500 border-b border-gray-300">
+                                                        แก้ไขข้อมูล
+                                                    </li>
+                                                    <li @click="confirmDelete(saleRecord.id)"
+                                                        class="px-4 py-2 cursor-pointer hover:bg-gray-100 text-red-500 border-b border-gray-300">
+                                                        ลบข้อมูล
+                                                    </li>
+                                                </ul>
+                                            </div>
                                         </div>
-                                    </div>
-                                </div>
-                            </td>
+                                    </td>
+                                </tr>
+                        </template>
 
-                            <td class="px-4 py-2 text-right  pb-5 relative" ref="moreDropdown">
-                                <button @click="toggleMoreDropdown(index)">
-                                    <span class="material-symbols-outlined cursor-pointer">more_vert</span>
-                                </button>
+                        <template v-if="additionalSalesRecords.length < 6 && additionalSalesRecords.length > 0">
+                            <tr v-for="emptyIndex in (6 - additionalSalesRecords.length)" :key="'empty-' + emptyIndex"
+                                class="bg-white">
+                                <td colspan="42" class="py-16"></td>
+                            </tr>
+                        </template>
 
-                                <div v-if="additionalSalesRecords.length > 4">
-                                    <div v-if="moreOpenDropdownIndex === index"
-                                        :class="moreDropdownPositionClass(index)"
-                                        class="dropdown-menu absolute right-0 text-center bg-white shadow-lg rounded-md z-50 w-40 border border-gray-300">
-                                        <ul class="list-none p-0 m-0">
-                                            <li @click="onViewResultSaleRecord(saleRecord)"
-                                                class="px-4 py-2 cursor-pointer hover:bg-gray-100 text-custom-orange font-bold border-b border-gray-300">
-                                                สรุปยอด
-                                            </li>
-                                            <li @click="onViewDetail(saleRecord)"
-                                                class="px-4 py-2 cursor-pointer hover:bg-gray-100 text-gray-700 border-b border-gray-300">
-                                                ดูรายละเอียด
-                                            </li>
-                                            <li @click="openEditModal(saleRecord)"
-                                                class="px-4 py-2 cursor-pointer hover:bg-gray-100 text-blue-500 border-b border-gray-300">
-                                                แก้ไขข้อมูล
-                                            </li>
-                                            <li @click="confirmDelete(saleRecord.id)"
-                                                class="px-4 py-2 cursor-pointer hover:bg-gray-100 text-red-500 border-b border-gray-300">
-                                                ลบข้อมูล
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-
-                                <div v-else>
-                                    <div v-if="moreOpenDropdownIndex === index"
-                                        class="dropdown-menu absolute right-0 text-center bg-white shadow-lg rounded-md z-50 w-40 border border-gray-300">
-                                        <ul class="list-none p-0 m-0">
-                                            <li @click="onViewResultSaleRecord(saleRecord)"
-                                                class="px-4 py-2 cursor-pointer hover:bg-gray-100 text-custom-orange font-bold border-b border-gray-300">
-                                                สรุปยอด
-                                            </li>
-                                            <li @click="onViewDetail(saleRecord)"
-                                                class="px-4 py-2 cursor-pointer hover:bg-gray-100 text-gray-700 border-b border-gray-300">
-                                                ดูรายละเอียด
-                                            </li>
-                                            <li @click="openEditModal(saleRecord)"
-                                                class="px-4 py-2 cursor-pointer hover:bg-gray-100 text-blue-500 border-b border-gray-300">
-                                                แก้ไขข้อมูล
-                                            </li>
-                                            <li @click="confirmDelete(saleRecord.id)"
-                                                class="px-4 py-2 cursor-pointer hover:bg-gray-100 text-red-500 border-b border-gray-300">
-                                                ลบข้อมูล
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
+                        <template v-if="additionalSalesRecords.length === 0">
+                            <tr>
+                                <td colspan="42" class="py-10 bg-white text-center text-gray-500 font-bold">
+                                    ไม่พบข้อมูล
+                                </td>
+                            </tr>
+                        </template>
                     </template>
+                    
+                </tbody>
 
-                    <template v-if="additionalSalesRecords.length < 6 && additionalSalesRecords.length > 0">
-                        <tr v-for="emptyIndex in (6 - additionalSalesRecords.length)" :key="'empty-' + emptyIndex"
-                            class="bg-white">
-                            <td colspan="10" class="py-16"></td>
-                        </tr>
-                    </template>
+                <div v-if="isResultModalOpen"
+                    class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
+                    <div class="bg-white rounded-md shadow-lg w-1/2 max-w-3xl h-auto max-h-[800px] flex flex-col">
+                        <div class="flex justify-between items-center bg-custom-orange text-white px-4 py-2 rounded-t-md">
+                            <span class="font-bold">Copy & Paste เพื่อสรุปยอดส่งให้ลูกค้า</span>
+                            <div class="flex space-x-2">
+                                <span @click="copyResultModalContent"
+                                    class="material-symbols-outlined cursor-pointer hover:text-gray-200">
+                                    {{ isCopied ? "check_circle" : "content_copy" }}
+                                </span>
 
-                    <template v-if="additionalSalesRecords.length === 0">
-                        <tr>
-                            <td colspan="10" class="py-10 bg-white text-center text-gray-500 font-bold">
-                                ไม่พบข้อมูล
-                            </td>
-                        </tr>
-                    </template>
-                </template>
-                
-            </tbody>
-
-            <div v-if="isResultModalOpen"
-                class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
-                <div class="bg-white rounded-md shadow-lg w-1/2 max-w-3xl h-auto max-h-[800px] flex flex-col">
-                    <div class="flex justify-between items-center bg-custom-orange text-white px-4 py-2 rounded-t-md">
-                        <span class="font-bold">Copy & Paste เพื่อสรุปยอดส่งให้ลูกค้า</span>
-                        <div class="flex space-x-2">
-                            <span @click="copyResultModalContent"
-                                class="material-symbols-outlined cursor-pointer hover:text-gray-200">
-                                {{ isCopied ? "check_circle" : "content_copy" }}
-                            </span>
-
-                            <span @click="closeResultModal"
-                                class="material-symbols-outlined cursor-pointer hover:text-gray-200">
-                                close
-                            </span>
+                                <span @click="closeResultModal"
+                                    class="material-symbols-outlined cursor-pointer hover:text-gray-200">
+                                    close
+                                </span>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="p-6" ref="modalContent">
-                        <p class="text-gray-500"><strong>📌 ขออนุญาตสรุปยอดนะคะ</strong></p>
+                        <div class="p-6" ref="modalContent">
+                            <p class="text-gray-500"><strong>📌 ขออนุญาตสรุปยอดนะคะ</strong></p>
 
-                        <div v-for="(value, key) in filteredResultSaleRecord" :key="key" class="mb-2">
-                            <p>
-                                <template v-if="key === 'name'">
-                                    <strong>{{ formatResultLabel(key)
-                                        }}<span>{{ value }}</span></strong>
-                                </template>
-                                <template v-else>
-                                    <strong>{{ formatResultLabel(key) }}</strong> {{ value }}
-                                </template>
+                            <div v-for="(value, key) in filteredResultSaleRecord" :key="key" class="mb-2">
+                                <p>
+                                    <template v-if="key === 'name'">
+                                        <strong>{{ formatResultLabel(key)
+                                            }}<span>{{ value }}</span></strong>
+                                    </template>
+                                    <template v-else>
+                                        <strong>{{ formatResultLabel(key) }}</strong> {{ value }}
+                                    </template>
+                                </p>
+                            </div>
+
+                            <p class="text-gray-500">
+                                <strong>📌 กรุณาชำระเงิน ของวันสรุปยอด
+                                    เพื่อให้ท่านได้รับอาหารตามวันที่กำหนดในรายการสรุปยอดนี้นะคะ</strong>
                             </p>
                         </div>
-
-                        <p class="text-gray-500">
-                            <strong>📌 กรุณาชำระเงิน ของวันสรุปยอด
-                                เพื่อให้ท่านได้รับอาหารตามวันที่กำหนดในรายการสรุปยอดนี้นะคะ</strong>
-                        </p>
                     </div>
                 </div>
-            </div>
 
-            <div v-if="isDetailModalOpen"
-                class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
-                <div class="bg-white rounded-md shadow-lg w-1/2 max-w-6xl h-auto max-h-[800px] flex flex-col">
-                    <div class="flex justify-between items-center bg-custom-orange text-white px-4 py-2 rounded-t-md">
-                        <span class="font-bold">รายละเอียดบันทึกการขาย</span>
-                        <div class="flex space-x-2">
-                            <span @click="closeDetailModal"
-                                class="material-symbols-outlined cursor-pointer hover:text-gray-200">
-                                close
-                            </span>
-                        </div>
+                <div v-if="isEditModalOpen"
+                    class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
+                    <div class="absolute top-8 left-1/2 transform -translate-x-1/2 bg-yellow-500 text-white px-8 py-4 flex items-center space-x-4 rounded-lg shadow-lg transition-opacity duration-300 z-60"
+                        :class="{
+                            'opacity-100': showErrorToast,
+                            'opacity-0': !showErrorToast,
+                        }">
+                        <span class="material-symbols-outlined text-white">error</span>
+                        <span>{{ toastErrorMessage }}</span>
+                        <button @click="showErrorToast = false" class="text-white hover:text-gray-200 focus:outline-none">
+                            <span class="material-symbols-outlined text-xl">close</span>
+                        </button>
                     </div>
 
-                    <div class="pb-2 pt-2 overflow-y-auto flex-grow" ref="modalContent">
-                        <div v-for="(value, key, index) in filteredDetailSaleRecord" :key="key" :class="[
-                            'p-2 rounded-md',
-                            index % 2 === 0 ? 'bg-white rounded-none' : 'bg-gray-100 rounded-none'  // สลับสีบรรทัด
-                        ]">
-                            <div v-if="key === 'zone1_id'" class="flex items-center space-x-4 pl-3 pr-3">
-                                <div class="flex-1">
-                                    <strong class="mr-2">{{ formatDetailLabel(key) }}:</strong>
-                                    {{ value }}
-                                </div>
-                                <div class="flex-1">
-                                    <strong class="font-bold mr-2">จำนวนครั้ง:</strong>
-                                    {{ this.selectedSaleRecord.zone1_quantity }}
-                                </div>
-                                <div class="flex-1">
-                                    <strong class="font-bold mr-2">ค่าจัดส่ง/ครั้ง:</strong>
-                                    {{ formatPrice(getZonePrice(selectedSaleRecord.zone1_id)) }}
-                                </div>
+                    <div class="bg-white rounded-md shadow-lg w-1/2 max-w-3xl h-auto max-h-[800px] flex flex-col">
+                        <div class="flex justify-between items-center bg-custom-orange text-white px-4 py-2 rounded-t-md">
+                            <span class="font-bold">แก้ไขบันทึกการขาย</span>
+                            <div class="flex space-x-2">
+                                <span @click="closeEditModal"
+                                    class="material-symbols-outlined cursor-pointer hover:text-gray-200">
+                                    close
+                                </span>
                             </div>
-
-                            <div v-else-if="key === 'zone2_id'" class="flex items-center space-x-4 pl-3 pr-3">
-                                <div class="flex-1">
-                                    <strong class="mr-2">{{ formatDetailLabel(key) }}:</strong>
-                                    {{ value }}
-                                </div>
-                                <div class="flex-1">
-                                    <strong class="font-bold mr-2">จำนวนครั้ง:</strong>
-                                    {{ this.selectedSaleRecord.zone2_quantity }}
-                                </div>
-                                <div class="flex-1">
-                                    <strong class="font-bold mr-2">ค่าจัดส่ง/ครั้ง:</strong>
-                                    {{ formatPrice(getZonePrice(selectedSaleRecord.zone2_id)) }}
-                                </div>
-                            </div>
-
-                            <div v-else-if="key === 'zone3_id'" class="flex items-center space-x-4 pl-3 pr-3">
-                                <div class="flex-1">
-                                    <strong class="mr-2">{{ formatDetailLabel(key) }}:</strong>
-                                    {{ value }}
-                                </div>
-                                <div class="flex-1">
-                                    <strong class="font-bold mr-2">จำนวนครั้ง:</strong>
-                                    {{ this.selectedSaleRecord.zone3_quantity }}
-                                </div>
-                                <div class="flex-1">
-                                    <strong class="font-bold mr-2">ค่าจัดส่ง/ครั้ง:</strong>
-                                    {{ formatPrice(getZonePrice(selectedSaleRecord.zone3_id)) }}
-                                </div>
-                            </div>
-
-                            <div v-else-if="key === 'zone_outsource_id'" class="flex items-center space-x-4 pl-3 pr-3">
-                                <div class="flex-1">
-                                    <strong class="mr-2">{{ formatDetailLabel(key) }}:</strong>
-                                    {{ value }}
-                                </div>
-                                <div class="flex-1">
-                                    <strong class="font-bold mr-2">จำนวนครั้ง:</strong>
-                                    {{ this.selectedSaleRecord.zone_outsource_quantity }}
-                                </div>
-                                <div class="flex-1">
-                                    <strong class="font-bold mr-2">ค่าจัดส่ง/ครั้ง:</strong>
-                                    {{ formatPrice(getZonePrice(selectedSaleRecord.zone_outsource_id)) }}
-                                </div>
-                            </div>
-
-                            <template v-else>
-                                <strong class="mr-2 pl-3 pr-3">{{ formatDetailLabel(key) }}:</strong> {{ value }}
-                            </template>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-
-            <div v-if="isEditModalOpen"
-                class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
-                <div class="absolute top-8 left-1/2 transform -translate-x-1/2 bg-yellow-500 text-white px-8 py-4 flex items-center space-x-4 rounded-lg shadow-lg transition-opacity duration-300 z-60"
-                    :class="{
-                        'opacity-100': showErrorToast,
-                        'opacity-0': !showErrorToast,
-                    }">
-                    <span class="material-symbols-outlined text-white">error</span>
-                    <span>{{ toastErrorMessage }}</span>
-                    <button @click="showErrorToast = false" class="text-white hover:text-gray-200 focus:outline-none">
-                        <span class="material-symbols-outlined text-xl">close</span>
-                    </button>
-                </div>
-
-                <div class="bg-white rounded-md shadow-lg w-1/2 max-w-3xl h-auto max-h-[800px] flex flex-col">
-                    <div class="flex justify-between items-center bg-custom-orange text-white px-4 py-2 rounded-t-md">
-                        <span class="font-bold">แก้ไขบันทึกการขาย</span>
-                        <div class="flex space-x-2">
-                            <span @click="closeEditModal"
-                                class="material-symbols-outlined cursor-pointer hover:text-gray-200">
-                                close
-                            </span>
-                        </div>
-                    </div>
-
-                    <div class="p-6 space-y-4 overflow-y-auto flex-grow">
-                        <div>
-                            <label for="editCustomer" class="block font-bold text-gray-700">ลูกค้า</label>
-                            <multiselect v-model="selectedSaleRecord.customer_id" :options="customers"
-                                placeholder="เลือกลูกค้า" track-by="id" label="name" class="w-full" />
                         </div>
 
-                        <div>
-                            <label for="editPackageType" class="block font-bold text-gray-700">Package Type</label>
-                            <multiselect v-model="selectedSaleRecord.package_type_id" :options="filteredPackageTypes"
-                                placeholder="เลือก Package Type" track-by="id" label="name" class="w-full" />
-                        </div>
-
-
-
-                        <div v-if="
-                            selectedSaleRecord.package_type_id &&
-                            selectedSaleRecord.package_type_id.name.toLowerCase() ===
-                            'additional sales' || selectedSaleRecord.package_type_id &&
-                            selectedSaleRecord.package_type_id.name.toLowerCase() ===
-                            'consignment'
-                        ">
+                        <div class="p-6 space-y-4 overflow-y-auto flex-grow">
                             <div>
-                                <label for="additional_type" class="block font-bold text-gray-700">Sales
-                                    Type</label>
-                                <multiselect v-model="selectedSaleRecord.additional_type_id"
-                                    :options="filteredAdditionalTypes" placeholder="เลือก Sales Type" track-by="id"
-                                    label="name" />
+                                <label for="editCustomer" class="block font-bold text-gray-700">ลูกค้า</label>
+                                <multiselect v-model="selectedSaleRecord.customer_id" :options="customers"
+                                    placeholder="เลือกลูกค้า" track-by="id" label="name" class="w-full" />
                             </div>
 
                             <div>
-                                <label for="add_detail" class="block text-gray-700 font-bold">รายละเอียดการขาย</label>
-                                <textarea id="add_detail" v-model="selectedSaleRecord.add_detail"
-                                    placeholder="กรอกรายละเอียดการขาย" rows="3"
+                                <label for="editPackageType" class="block font-bold text-gray-700">Package Type</label>
+                                <multiselect v-model="selectedSaleRecord.package_type_id" :options="filteredPackageTypes"
+                                    placeholder="เลือก Package Type" track-by="id" label="name" class="w-full" />
+                            </div>
+
+
+
+                            <div v-if="
+                                selectedSaleRecord.package_type_id &&
+                                selectedSaleRecord.package_type_id.name.toLowerCase() ===
+                                'additional sales' || selectedSaleRecord.package_type_id &&
+                                selectedSaleRecord.package_type_id.name.toLowerCase() ===
+                                'consignment'
+                            ">
+                                <div>
+                                    <label for="additional_type" class="block font-bold text-gray-700">Sales
+                                        Type</label>
+                                    <multiselect v-model="selectedSaleRecord.additional_type_id"
+                                        :options="filteredAdditionalTypes" placeholder="เลือก Sales Type" track-by="id"
+                                        label="name" />
+                                </div>
+
+                                <div>
+                                    <label for="add_detail" class="block text-gray-700 font-bold">รายละเอียดการขาย</label>
+                                    <textarea id="add_detail" v-model="selectedSaleRecord.add_detail"
+                                        placeholder="กรอกรายละเอียดการขาย" rows="3"
+                                        class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange resize-y"></textarea>
+                                </div>
+
+                                <div class="flex-1">
+                                    <label for="add_price" class="block font-bold text-gray-700">มูลค่าขาย</label>
+                                    <div class="relative">
+                                        <span class="absolute inset-y-0 left-4 flex items-center text-gray-500">฿</span>
+                                        <input v-model="selectedSaleRecord.add_price" id="add_price" type="number" step="1"
+                                            placeholder="กรอกมูลค่าขาย"
+                                            class="w-full pl-8 pr-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="space-y-4 overflow-y-auto flex-grow mt-4">
+                                <strong class="text-custom-orange text-lg">จำนวนที่แถม</strong>
+                                <div class="flex flex-wrap gap-4">
+                                    <!-- Free Mad -->
+                                    <div class="flex-1">
+                                        <label for="freeMad" class="block font-bold text-gray-700">Main Dish</label>
+                                        <input id="freeMad" v-model="selectedSaleRecord.free_mad" type="number" min="0"
+                                            step="1" placeholder="กรอกจำนวน Main Dish"
+                                            class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange" />
+                                    </div>
+
+                                    <!-- Free Dessert -->
+                                    <div class="flex-1">
+                                        <label for="freeDessert" class="block font-bold text-gray-700">Dessert</label>
+                                        <input id="freeDessert" v-model="selectedSaleRecord.free_dessert" type="number"
+                                            min="0" step="1" placeholder="กรอกจำนวน Dessert"
+                                            class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange" />
+                                    </div>
+
+                                    <!-- Free Brittles -->
+                                    <div class="flex-1">
+                                        <label for="freeBrittles" class="block font-bold text-gray-700">Brittles</label>
+                                        <input id="freeBrittles" v-model="selectedSaleRecord.free_brittles" type="number"
+                                            min="0" step="1" placeholder="กรอกจำนวน Brittles"
+                                            class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange" />
+                                    </div>
+
+                                    <!-- Free Energy Balls -->
+                                    <div class="flex-1">
+                                        <label for="freeEnergyBalls" class="block font-bold text-gray-700">Energy
+                                            Balls</label>
+                                        <input id="freeEnergyBalls" v-model="selectedSaleRecord.free_energy_balls"
+                                            type="number" min="0" step="1" placeholder="กรอกจำนวน Energy Balls"
+                                            class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange" />
+                                    </div>
+                                </div>
+
+                                <div class="flex flex-wrap gap-4">
+                                    <!-- Free Dressing -->
+                                    <div class="flex-1">
+                                        <label for="freeDressing" class="block font-bold text-gray-700">Free
+                                            Dressing</label>
+                                        <input id="freeDressing" v-model="selectedSaleRecord.free_dressing" type="number"
+                                            min="0" step="1" placeholder="กรอกจำนวน Free Dressing"
+                                            class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange" />
+                                    </div>
+
+                                    <!-- Free Yoghurt -->
+                                    <div class="flex-1">
+                                        <label for="freeYoghurt" class="block font-bold text-gray-700">Yoghurt</label>
+                                        <input id="freeYoghurt" v-model="selectedSaleRecord.free_yoghurt" type="number"
+                                            min="0" step="1" placeholder="กรอกจำนวน Yoghurt"
+                                            class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange" />
+                                    </div>
+
+                                    <!-- Free Granola -->
+                                    <div class="flex-1">
+                                        <label for="freeGranola" class="block font-bold text-gray-700">Granola</label>
+                                        <input id="freeGranola" v-model="selectedSaleRecord.free_granola" type="number"
+                                            min="0" step="1" placeholder="กรอกจำนวน Granola"
+                                            class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="flex space-x-4">
+                                <div class="flex-1">
+                                    <label for="editDiscount" class="block font-bold text-gray-700">Discount</label>
+                                    <div class="relative">
+                                        <span class="absolute inset-y-0 left-4 flex items-center text-gray-500">฿</span>
+                                        <input v-model="selectedSaleRecord.discount" id="discount" type="number" step="1"
+                                            placeholder="กรอก Discount"
+                                            class="w-full pl-8 pr-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange" />
+                                    </div>
+                                </div>
+
+                                <div class="flex-1">
+                                    <label for="editExtraCharge" class="block font-bold text-gray-700">Extra Charge
+                                        (%)</label>
+                                    <div class="relative">
+                                        <input v-model="selectedSaleRecord.extra_charge" id="extraCharge" type="number"
+                                            step="1" min="0" placeholder="กรอก Extra Charge (%)"
+                                            class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange pr-12" />
+                                        <span class="absolute inset-y-0 right-4 flex items-center text-gray-500">%</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div v-if="computedEditTotalPackagePrice > 0">
+                                <div class="flex-1">
+                                    <label class="block font-bold text-gray-700">
+                                        มูลค่าแพ็กเกจรวม: {{ formatPrice(computedEditTotalPackagePrice) }}
+                                    </label>
+                                    <p class="text-gray-600">ราคาแพ็กเกจ: {{ formatPrice(selectedSaleRecord.package_price)
+                                        }}</p>
+                                    <p class="text-gray-600">ส่วนลดเพิ่มเติม: {{ formatPrice(selectedSaleRecord.discount) }}
+                                    </p>
+                                    <p class="text-gray-600">มูลค่า Extra Charge: {{
+                                        formatPrice(computedEditExtraChargePackagePrice) }}</p>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label for="editReceiveFood" class="block font-bold text-gray-700">วิธีการรับอาหาร</label>
+                                <multiselect v-model="selectedSaleRecord.receive_food_id" :options="receiveFoods"
+                                    placeholder="เลือกวิธีการรับอาหาร" track-by="id" label="name" />
+                            </div>
+
+                            <div class="flex space-x-4">
+                                <div class="flex-1">
+                                    <label for="editZone1_delivery" class="block font-bold text-gray-700">In-house Riders
+                                        (ที่อยู่
+                                        1)</label>
+                                    <multiselect v-model="selectedSaleRecord.zone1_id" :options="filteredInhouse"
+                                        placeholder="เลือก In-house Riders (ที่อยู่ 1)" track-by="id" label="name" />
+                                </div>
+
+                                <div class="flex-1">
+                                    <label for="editZone1_quantity" class="block font-bold text-gray-700">จำนวนครั้ง</label>
+                                    <input v-model="selectedSaleRecord.zone1_quantity" id="zone1_quantity" type="number"
+                                        step="1" placeholder="กรอกจำนวนครั้ง"
+                                        class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange" />
+                                </div>
+                            </div>
+                            <div v-if="computedEditZone1Price > 0" class="flex-1">
+                                <label class="block font-bold text-gray-700">ค่าจัดส่งรวม (ที่อยู่ 1): {{
+                                    formatPrice(computedEditZone1Price)
+                                    }}</label>
+                                <p class="text-gray-600">ค่าจัดส่ง/ครั้ง: {{
+                                    formatPrice(getZonePrice(selectedSaleRecord.zone1_id.id)) }}
+                                </p>
+                            </div>
+
+                            <div class="flex space-x-4">
+                                <div class="flex-1">
+                                    <label for="editZone2_delivery" class="block font-bold text-gray-700">In-house Riders
+                                        (ที่อยู่
+                                        2)</label>
+                                    <multiselect v-model="selectedSaleRecord.zone2_id" :options="filteredInhouse"
+                                        placeholder="เลือก In-house Riders (ที่อยู่ 2)" track-by="id" label="name" />
+                                </div>
+
+                                <div class="flex-1">
+                                    <label for="editZone2_quantity" class="block font-bold text-gray-700">จำนวนครั้ง</label>
+                                    <input v-model="selectedSaleRecord.zone2_quantity" id="zone2_quantity" type="number"
+                                        step="1" placeholder="กรอกจำนวนครั้ง"
+                                        class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange" />
+                                </div>
+                            </div>
+                            <div v-if="computedEditZone2Price > 0" class="flex-2">
+                                <label class="block font-bold text-gray-700">ค่าจัดส่งรวม (ที่อยู่ 2): {{
+                                    formatPrice(computedEditZone2Price)
+                                    }}</label>
+                                <p class="text-gray-600">ค่าจัดส่ง/ครั้ง: {{
+                                    formatPrice(getZonePrice(selectedSaleRecord.zone2_id.id)) }}
+                                </p>
+                            </div>
+
+                            <div class="flex space-x-4">
+                                <div class="flex-1">
+                                    <label for="editZone3_delivery" class="block font-bold text-gray-700">In-house Riders
+                                        (ที่อยู่
+                                        3)</label>
+                                    <multiselect v-model="selectedSaleRecord.zone3_id" :options="filteredInhouse"
+                                        placeholder="เลือก In-house Riders (ที่อยู่ 3)" track-by="id" label="name" />
+                                </div>
+
+                                <div class="flex-1">
+                                    <label for="editZone3_quantity" class="block font-bold text-gray-700">จำนวนครั้ง</label>
+                                    <input v-model="selectedSaleRecord.zone3_quantity" id="zone3_quantity" type="number"
+                                        step="1" placeholder="กรอกจำนวนครั้ง"
+                                        class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange" />
+                                </div>
+                            </div>
+                            <div v-if="computedEditZone3Price > 0" class="flex-1">
+                                <label class="block font-bold text-gray-700">ค่าจัดส่งรวม (ที่อยู่ 3): {{
+                                    formatPrice(computedEditZone3Price)
+                                    }}</label>
+                                <p class="text-gray-600">ค่าจัดส่ง/ครั้ง: {{
+                                    formatPrice(getZonePrice(selectedSaleRecord.zone3_id.id)) }}
+                                </p>
+                            </div>
+
+                            <div class="flex space-x-4">
+                                <div class="flex-1">
+                                    <label for="editZone_outsource_delivery" class="block font-bold text-gray-700">Outsource
+                                        Riders</label>
+                                    <multiselect v-model="selectedSaleRecord.zone_outsource_id" :options="filteredOutsource"
+                                        placeholder="เลือก Outsource Riders" track-by="id" label="name" />
+                                </div>
+
+                                <div class="flex-1">
+                                    <label for="editZone_outsource_quantity"
+                                        class="block font-bold text-gray-700">จำนวนครั้ง</label>
+                                    <input v-model="selectedSaleRecord.zone_outsource_quantity" id="zone_outsource_quantity"
+                                        type="number" step="1" placeholder="กรอกจำนวนครั้ง"
+                                        class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange" />
+                                </div>
+                            </div>
+                            <div v-if="computedEditZoneOutsourcePrice > 0" class="flex-1">
+                                <label class="block font-bold text-gray-700">ค่าจัดส่งรวม Outsource: {{
+                                    formatPrice(computedEditZoneOutsourcePrice)
+                                    }}</label>
+                                <p class="text-gray-600">ค่าจัดส่ง/ครั้ง: {{
+                                    formatPrice(getZonePrice(selectedSaleRecord.zone_outsource_id.id)) }}</p>
+                            </div>
+
+
+                            <div v-if="computedEditTotalDeliveryPrice > 0" class="flex-1">
+                                <label class="block font-bold text-gray-700">รวมค่าจัดส่งทั้งหมด: {{
+                                    formatPrice(computedEditTotalDeliveryPrice) }}</label>
+                                <p class="text-gray-600">ค่าจัดส่งรวม In-house Riders: {{
+                                    formatPrice(computedEditTotalZonePrice) }}
+                                </p>
+                                <p class="text-gray-600">ค่าจัดส่งรวม Outsource: {{
+                                    formatPrice(computedEditZoneOutsourcePrice) }}</p>
+                            </div>
+
+                            <div v-if="computedEditTotalPrice > 0" class="flex-1">
+                                <label class="block font-bold text-custom-orange">มูลค่าขายรวม: {{
+                                    formatPrice(computedEditTotalPrice) }}</label>
+
+                                <div>
+                                    <p class="text-gray-600">มูลค่าแพ็กเกจรวม: {{
+                                        formatPrice(computedEditTotalPackagePrice) }}</p>
+                                </div>
+
+                                <p class="text-gray-600">รวมค่าจัดส่งทั้งหมด: {{ formatPrice(computedEditTotalDeliveryPrice)
+                                    }}</p>
+                            </div>
+
+                            <div class="flex space-x-4">
+                                <div class="flex-1">
+                                    <label for="editSellerName" class="block font-bold text-gray-700">ผู้ขาย</label>
+                                    <multiselect v-model="selectedSaleRecord.seller_name_id" :options="sellerNames"
+                                        placeholder="เลือกผู้ขาย" track-by="id" label="name" />
+                                </div>
+
+                                <div class="flex-1">
+                                    <label for="editStartDate" class="block font-bold text-gray-700">วันเริ่มแพ็คเกจ</label>
+                                    <input v-model="selectedSaleRecord.start_package_date" id="startDate" type="date"
+                                        class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange" />
+                                </div>
+                            </div>
+
+                            <div class="flex space-x-4">
+                                <div class="flex-1">
+                                    <label for="editDeliveryRound"
+                                        class="block font-bold text-gray-700">รอบการจัดส่งอาหาร</label>
+                                    <multiselect v-model="selectedSaleRecord.delivery_round_id" :options="deliveryRounds"
+                                        placeholder="เลือกรอบการจัดส่งอาหาร" track-by="id" label="name" />
+                                </div>
+
+                                <div class="flex-1">
+                                    <label for="editSelectFood" class="block font-bold text-gray-700">เลือกอาหารโดย</label>
+                                    <multiselect v-model="selectedSaleRecord.select_food_id" :options="selectFoods"
+                                        placeholder="เลือกอาหารโดย" track-by="id" label="name" />
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="editNote" class="block text-gray-700 font-bold">Note
+                                    รายละเอียดโปรโมชันสำหรับส่งสรุปให้ลูกค้า
+                                    (ถ้ามี)</label>
+                                <textarea id="note" v-model="selectedSaleRecord.note"
+                                    placeholder="กรอก Note รายละเอียดโปรโมชันสำหรับส่งสรุปให้ลูกค้า (ถ้ามี)" rows="3"
                                     class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange resize-y"></textarea>
                             </div>
-
-                            <div class="flex-1">
-                                <label for="add_price" class="block font-bold text-gray-700">มูลค่าขาย</label>
-                                <div class="relative">
-                                    <span class="absolute inset-y-0 left-4 flex items-center text-gray-500">฿</span>
-                                    <input v-model="selectedSaleRecord.add_price" id="add_price" type="number" step="1"
-                                        placeholder="กรอกมูลค่าขาย"
-                                        class="w-full pl-8 pr-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange" />
-                                </div>
+                            <div class="mb-4">
+                                <label for="editTransaction_ref" class="block text-gray-700 font-bold">Transaction No.
+                                    อื่นใน
+                                    Payslip เดียวกัน (ถ้ามี)</label>
+                                <input id="transaction_ref" v-model="selectedSaleRecord.transaction_ref"
+                                    placeholder="กรอก Transaction No. อื่นใน Payslip เดียวกัน (ถ้ามี)"
+                                    class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange resize-y" />
                             </div>
                         </div>
 
-                        <div class="space-y-4 overflow-y-auto flex-grow mt-4">
-                            <strong class="text-custom-orange text-lg">จำนวนที่แถม</strong>
-                            <div class="flex flex-wrap gap-4">
-                                <!-- Free Mad -->
-                                <div class="flex-1">
-                                    <label for="freeMad" class="block font-bold text-gray-700">Main Dish</label>
-                                    <input id="freeMad" v-model="selectedSaleRecord.free_mad" type="number" min="0"
-                                        step="1" placeholder="กรอกจำนวน Main Dish"
-                                        class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange" />
-                                </div>
 
-                                <!-- Free Dessert -->
-                                <div class="flex-1">
-                                    <label for="freeDessert" class="block font-bold text-gray-700">Dessert</label>
-                                    <input id="freeDessert" v-model="selectedSaleRecord.free_dessert" type="number"
-                                        min="0" step="1" placeholder="กรอกจำนวน Dessert"
-                                        class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange" />
-                                </div>
-
-                                <!-- Free Brittles -->
-                                <div class="flex-1">
-                                    <label for="freeBrittles" class="block font-bold text-gray-700">Brittles</label>
-                                    <input id="freeBrittles" v-model="selectedSaleRecord.free_brittles" type="number"
-                                        min="0" step="1" placeholder="กรอกจำนวน Brittles"
-                                        class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange" />
-                                </div>
-
-                                <!-- Free Energy Balls -->
-                                <div class="flex-1">
-                                    <label for="freeEnergyBalls" class="block font-bold text-gray-700">Energy
-                                        Balls</label>
-                                    <input id="freeEnergyBalls" v-model="selectedSaleRecord.free_energy_balls"
-                                        type="number" min="0" step="1" placeholder="กรอกจำนวน Energy Balls"
-                                        class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange" />
-                                </div>
+                        <!-- Footer (with buttons) -->
+                        <div class="flex justify-end space-x-4 p-4 bg-white border-t rounded-b-md list-none">
+                            <div class="flex space-x-2">
+                                <button @click="closeEditModal"
+                                    class="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400">
+                                    ยกเลิก
+                                </button>
+                                <button @click="saveChanges"
+                                    class="px-4 py-2 rounded bg-custom-orange text-white hover:bg-custom-orange-hover">
+                                    บันทึก
+                                </button>
                             </div>
-
-                            <div class="flex flex-wrap gap-4">
-                                <!-- Free Dressing -->
-                                <div class="flex-1">
-                                    <label for="freeDressing" class="block font-bold text-gray-700">Free
-                                        Dressing</label>
-                                    <input id="freeDressing" v-model="selectedSaleRecord.free_dressing" type="number"
-                                        min="0" step="1" placeholder="กรอกจำนวน Free Dressing"
-                                        class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange" />
-                                </div>
-
-                                <!-- Free Yoghurt -->
-                                <div class="flex-1">
-                                    <label for="freeYoghurt" class="block font-bold text-gray-700">Yoghurt</label>
-                                    <input id="freeYoghurt" v-model="selectedSaleRecord.free_yoghurt" type="number"
-                                        min="0" step="1" placeholder="กรอกจำนวน Yoghurt"
-                                        class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange" />
-                                </div>
-
-                                <!-- Free Granola -->
-                                <div class="flex-1">
-                                    <label for="freeGranola" class="block font-bold text-gray-700">Granola</label>
-                                    <input id="freeGranola" v-model="selectedSaleRecord.free_granola" type="number"
-                                        min="0" step="1" placeholder="กรอกจำนวน Granola"
-                                        class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange" />
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="flex space-x-4">
-                            <div class="flex-1">
-                                <label for="editDiscount" class="block font-bold text-gray-700">Discount</label>
-                                <div class="relative">
-                                    <span class="absolute inset-y-0 left-4 flex items-center text-gray-500">฿</span>
-                                    <input v-model="selectedSaleRecord.discount" id="discount" type="number" step="1"
-                                        placeholder="กรอก Discount"
-                                        class="w-full pl-8 pr-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange" />
-                                </div>
-                            </div>
-
-                            <div class="flex-1">
-                                <label for="editExtraCharge" class="block font-bold text-gray-700">Extra Charge
-                                    (%)</label>
-                                <div class="relative">
-                                    <input v-model="selectedSaleRecord.extra_charge" id="extraCharge" type="number"
-                                        step="1" min="0" placeholder="กรอก Extra Charge (%)"
-                                        class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange pr-12" />
-                                    <span class="absolute inset-y-0 right-4 flex items-center text-gray-500">%</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div v-if="computedEditTotalPackagePrice > 0">
-                            <div class="flex-1">
-                                <label class="block font-bold text-gray-700">
-                                    มูลค่าแพ็กเกจรวม: {{ formatPrice(computedEditTotalPackagePrice) }}
-                                </label>
-                                <p class="text-gray-600">ราคาแพ็กเกจ: {{ formatPrice(selectedSaleRecord.package_price)
-                                    }}</p>
-                                <p class="text-gray-600">ส่วนลดเพิ่มเติม: {{ formatPrice(selectedSaleRecord.discount) }}
-                                </p>
-                                <p class="text-gray-600">มูลค่า Extra Charge: {{
-                                    formatPrice(computedEditExtraChargePackagePrice) }}</p>
-                            </div>
-                        </div>
-
-                        <div>
-                            <label for="editReceiveFood" class="block font-bold text-gray-700">วิธีการรับอาหาร</label>
-                            <multiselect v-model="selectedSaleRecord.receive_food_id" :options="receiveFoods"
-                                placeholder="เลือกวิธีการรับอาหาร" track-by="id" label="name" />
-                        </div>
-
-                        <div class="flex space-x-4">
-                            <div class="flex-1">
-                                <label for="editZone1_delivery" class="block font-bold text-gray-700">In-house Riders
-                                    (ที่อยู่
-                                    1)</label>
-                                <multiselect v-model="selectedSaleRecord.zone1_id" :options="filteredInhouse"
-                                    placeholder="เลือก In-house Riders (ที่อยู่ 1)" track-by="id" label="name" />
-                            </div>
-
-                            <div class="flex-1">
-                                <label for="editZone1_quantity" class="block font-bold text-gray-700">จำนวนครั้ง</label>
-                                <input v-model="selectedSaleRecord.zone1_quantity" id="zone1_quantity" type="number"
-                                    step="1" placeholder="กรอกจำนวนครั้ง"
-                                    class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange" />
-                            </div>
-                        </div>
-                        <div v-if="computedEditZone1Price > 0" class="flex-1">
-                            <label class="block font-bold text-gray-700">ค่าจัดส่งรวม (ที่อยู่ 1): {{
-                                formatPrice(computedEditZone1Price)
-                                }}</label>
-                            <p class="text-gray-600">ค่าจัดส่ง/ครั้ง: {{
-                                formatPrice(getZonePrice(selectedSaleRecord.zone1_id.id)) }}
-                            </p>
-                        </div>
-
-                        <div class="flex space-x-4">
-                            <div class="flex-1">
-                                <label for="editZone2_delivery" class="block font-bold text-gray-700">In-house Riders
-                                    (ที่อยู่
-                                    2)</label>
-                                <multiselect v-model="selectedSaleRecord.zone2_id" :options="filteredInhouse"
-                                    placeholder="เลือก In-house Riders (ที่อยู่ 2)" track-by="id" label="name" />
-                            </div>
-
-                            <div class="flex-1">
-                                <label for="editZone2_quantity" class="block font-bold text-gray-700">จำนวนครั้ง</label>
-                                <input v-model="selectedSaleRecord.zone2_quantity" id="zone2_quantity" type="number"
-                                    step="1" placeholder="กรอกจำนวนครั้ง"
-                                    class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange" />
-                            </div>
-                        </div>
-                        <div v-if="computedEditZone2Price > 0" class="flex-2">
-                            <label class="block font-bold text-gray-700">ค่าจัดส่งรวม (ที่อยู่ 2): {{
-                                formatPrice(computedEditZone2Price)
-                                }}</label>
-                            <p class="text-gray-600">ค่าจัดส่ง/ครั้ง: {{
-                                formatPrice(getZonePrice(selectedSaleRecord.zone2_id.id)) }}
-                            </p>
-                        </div>
-
-                        <div class="flex space-x-4">
-                            <div class="flex-1">
-                                <label for="editZone3_delivery" class="block font-bold text-gray-700">In-house Riders
-                                    (ที่อยู่
-                                    3)</label>
-                                <multiselect v-model="selectedSaleRecord.zone3_id" :options="filteredInhouse"
-                                    placeholder="เลือก In-house Riders (ที่อยู่ 3)" track-by="id" label="name" />
-                            </div>
-
-                            <div class="flex-1">
-                                <label for="editZone3_quantity" class="block font-bold text-gray-700">จำนวนครั้ง</label>
-                                <input v-model="selectedSaleRecord.zone3_quantity" id="zone3_quantity" type="number"
-                                    step="1" placeholder="กรอกจำนวนครั้ง"
-                                    class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange" />
-                            </div>
-                        </div>
-                        <div v-if="computedEditZone3Price > 0" class="flex-1">
-                            <label class="block font-bold text-gray-700">ค่าจัดส่งรวม (ที่อยู่ 3): {{
-                                formatPrice(computedEditZone3Price)
-                                }}</label>
-                            <p class="text-gray-600">ค่าจัดส่ง/ครั้ง: {{
-                                formatPrice(getZonePrice(selectedSaleRecord.zone3_id.id)) }}
-                            </p>
-                        </div>
-
-                        <div class="flex space-x-4">
-                            <div class="flex-1">
-                                <label for="editZone_outsource_delivery" class="block font-bold text-gray-700">Outsource
-                                    Riders</label>
-                                <multiselect v-model="selectedSaleRecord.zone_outsource_id" :options="filteredOutsource"
-                                    placeholder="เลือก Outsource Riders" track-by="id" label="name" />
-                            </div>
-
-                            <div class="flex-1">
-                                <label for="editZone_outsource_quantity"
-                                    class="block font-bold text-gray-700">จำนวนครั้ง</label>
-                                <input v-model="selectedSaleRecord.zone_outsource_quantity" id="zone_outsource_quantity"
-                                    type="number" step="1" placeholder="กรอกจำนวนครั้ง"
-                                    class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange" />
-                            </div>
-                        </div>
-                        <div v-if="computedEditZoneOutsourcePrice > 0" class="flex-1">
-                            <label class="block font-bold text-gray-700">ค่าจัดส่งรวม Outsource: {{
-                                formatPrice(computedEditZoneOutsourcePrice)
-                                }}</label>
-                            <p class="text-gray-600">ค่าจัดส่ง/ครั้ง: {{
-                                formatPrice(getZonePrice(selectedSaleRecord.zone_outsource_id.id)) }}</p>
-                        </div>
-
-
-                        <div v-if="computedEditTotalDeliveryPrice > 0" class="flex-1">
-                            <label class="block font-bold text-gray-700">รวมค่าจัดส่งทั้งหมด: {{
-                                formatPrice(computedEditTotalDeliveryPrice) }}</label>
-                            <p class="text-gray-600">ค่าจัดส่งรวม In-house Riders: {{
-                                formatPrice(computedEditTotalZonePrice) }}
-                            </p>
-                            <p class="text-gray-600">ค่าจัดส่งรวม Outsource: {{
-                                formatPrice(computedEditZoneOutsourcePrice) }}</p>
-                        </div>
-
-                        <div v-if="computedEditTotalPrice > 0" class="flex-1">
-                            <label class="block font-bold text-custom-orange">มูลค่าขายรวม: {{
-                                formatPrice(computedEditTotalPrice) }}</label>
-
-                            <div>
-                                <p class="text-gray-600">มูลค่าแพ็กเกจรวม: {{
-                                    formatPrice(computedEditTotalPackagePrice) }}</p>
-                            </div>
-
-                            <p class="text-gray-600">รวมค่าจัดส่งทั้งหมด: {{ formatPrice(computedEditTotalDeliveryPrice)
-                                }}</p>
-                        </div>
-
-                        <div class="flex space-x-4">
-                            <div class="flex-1">
-                                <label for="editSellerName" class="block font-bold text-gray-700">ผู้ขาย</label>
-                                <multiselect v-model="selectedSaleRecord.seller_name_id" :options="sellerNames"
-                                    placeholder="เลือกผู้ขาย" track-by="id" label="name" />
-                            </div>
-
-                            <div class="flex-1">
-                                <label for="editStartDate" class="block font-bold text-gray-700">วันเริ่มแพ็คเกจ</label>
-                                <input v-model="selectedSaleRecord.start_package_date" id="startDate" type="date"
-                                    class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange" />
-                            </div>
-                        </div>
-
-                        <div class="flex space-x-4">
-                            <div class="flex-1">
-                                <label for="editDeliveryRound"
-                                    class="block font-bold text-gray-700">รอบการจัดส่งอาหาร</label>
-                                <multiselect v-model="selectedSaleRecord.delivery_round_id" :options="deliveryRounds"
-                                    placeholder="เลือกรอบการจัดส่งอาหาร" track-by="id" label="name" />
-                            </div>
-
-                            <div class="flex-1">
-                                <label for="editSelectFood" class="block font-bold text-gray-700">เลือกอาหารโดย</label>
-                                <multiselect v-model="selectedSaleRecord.select_food_id" :options="selectFoods"
-                                    placeholder="เลือกอาหารโดย" track-by="id" label="name" />
-                            </div>
-                        </div>
-
-                        <div class="mb-4">
-                            <label for="editNote" class="block text-gray-700 font-bold">Note
-                                รายละเอียดโปรโมชันสำหรับส่งสรุปให้ลูกค้า
-                                (ถ้ามี)</label>
-                            <textarea id="note" v-model="selectedSaleRecord.note"
-                                placeholder="กรอก Note รายละเอียดโปรโมชันสำหรับส่งสรุปให้ลูกค้า (ถ้ามี)" rows="3"
-                                class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange resize-y"></textarea>
-                        </div>
-                        <div class="mb-4">
-                            <label for="editTransaction_ref" class="block text-gray-700 font-bold">Transaction No.
-                                อื่นใน
-                                Payslip เดียวกัน (ถ้ามี)</label>
-                            <input id="transaction_ref" v-model="selectedSaleRecord.transaction_ref"
-                                placeholder="กรอก Transaction No. อื่นใน Payslip เดียวกัน (ถ้ามี)"
-                                class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-custom-orange resize-y" />
                         </div>
                     </div>
+                </div>
 
+                <div v-if="isDeleteModalOpen"
+                    class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
 
-                    <!-- Footer (with buttons) -->
-                    <div class="flex justify-end space-x-4 p-4 bg-white border-t rounded-b-md list-none">
-                        <div class="flex space-x-2">
-                            <button @click="closeEditModal"
-                                class="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400">
+                    <div class="absolute top-8 left-1/2 transform -translate-x-1/2 bg-yellow-500 text-white px-8 py-4 flex items-center space-x-4 rounded-lg shadow-lg transition-opacity duration-300 z-60"
+                        :class="{
+                            'opacity-100': showErrorToast,
+                            'opacity-0': !showErrorToast,
+                        }">
+                        <span class="material-symbols-outlined text-white">error</span>
+                        <span>{{ toastErrorMessage }}</span>
+                        <button @click="showErrorToast = false" class="text-white hover:text-gray-200 focus:outline-none">
+                            <span class="material-symbols-outlined text-xl">close</span>
+                        </button>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow-md w-1/3">
+                        <div class="flex justify-between items-center bg-red-500 text-white px-4 py-2 rounded-t">
+                            <h2 class="text-lg font-bold">ยืนยันการลบ</h2>
+                            <span @click="closeDeleteModal"
+                                class="material-symbols-outlined cursor-pointer hover:text-gray-200">
+                                close
+                            </span>
+                        </div>
+                        <div class="p-4">
+                            <p>
+                                คุณแน่ใจหรือไม่ว่าต้องการลบข้อมูลนี้?
+                                การดำเนินการนี้ไม่สามารถย้อนกลับได้
+                            </p>
+                        </div>
+                        <div class="flex justify-end space-x-2 p-4 border-t">
+                            <button @click="closeDeleteModal" class="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400">
                                 ยกเลิก
                             </button>
-                            <button @click="saveChanges"
-                                class="px-4 py-2 rounded bg-custom-orange text-white hover:bg-custom-orange-hover">
-                                บันทึก
+                            <button @click="deleteConfirmed"
+                                class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
+                                ยืนยัน
                             </button>
                         </div>
                     </div>
                 </div>
-            </div>
-
-            <div v-if="isDeleteModalOpen"
-                class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
-
-                <div class="absolute top-8 left-1/2 transform -translate-x-1/2 bg-yellow-500 text-white px-8 py-4 flex items-center space-x-4 rounded-lg shadow-lg transition-opacity duration-300 z-60"
-                    :class="{
-                        'opacity-100': showErrorToast,
-                        'opacity-0': !showErrorToast,
-                    }">
-                    <span class="material-symbols-outlined text-white">error</span>
-                    <span>{{ toastErrorMessage }}</span>
-                    <button @click="showErrorToast = false" class="text-white hover:text-gray-200 focus:outline-none">
-                        <span class="material-symbols-outlined text-xl">close</span>
-                    </button>
-                </div>
-
-                <div class="bg-white rounded-lg shadow-md w-1/3">
-                    <div class="flex justify-between items-center bg-red-500 text-white px-4 py-2 rounded-t">
-                        <h2 class="text-lg font-bold">ยืนยันการลบ</h2>
-                        <span @click="closeDeleteModal"
-                            class="material-symbols-outlined cursor-pointer hover:text-gray-200">
-                            close
-                        </span>
-                    </div>
-                    <div class="p-4">
-                        <p>
-                            คุณแน่ใจหรือไม่ว่าต้องการลบข้อมูลนี้?
-                            การดำเนินการนี้ไม่สามารถย้อนกลับได้
-                        </p>
-                    </div>
-                    <div class="flex justify-end space-x-2 p-4 border-t">
-                        <button @click="closeDeleteModal" class="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400">
-                            ยกเลิก
-                        </button>
-                        <button @click="deleteConfirmed"
-                            class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
-                            ยืนยัน
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </table>
+            </table>
+        </div>
 
 
 
@@ -1546,10 +1559,107 @@ export default {
     },
     data() {
         return {
-            headers: ['#',
-                'Transaction No.',
-                `Customer's Name`, 'Sales Type', 'ประเภทรายการ', 'รายละเอียดการขาย', 'มูลค่าขายรวม', 'สถานะการชำระเงิน', ''],
-            headerWidths: ['5%', '10%', '15%', '10%', '15%', '20%', '10%', '15%', '5%'],
+        headers: [
+            "#",
+            "Transaction No.",
+            "ผู้ขาย",
+            `ชื่อ-สกุลลูกค้า`,
+            "ประเภทรายการ",
+            "Sales Type",
+            "รายละเอียดการขาย",
+            "รายละเอียดเพิ่มเติมที่ต้องได้รับอนุม้ติจาก Director",
+            "มูลค่าขาย",
+            "ส่วนลดเพิ่มเติมจากโปรฯ ประจำเดือน (ถ้ามี)",
+            "Extra Charge (%)",
+            "มูลค่า Extra Charge",
+            "มูลค่าขาย - ส่วนลด",
+            "วิธีการรับอาหาร",
+
+            "In-house Riders (ที่อยู่ 1)",
+            "จำนวนครั้ง (ที่อยู่ 1)",
+            "ค่าจัดส่ง/ครั้ง (ที่อยู่ 1)",
+            "ค่าจัดส่งรวม (ที่อยู่ 1)",
+
+            "In-house Riders (ที่อยู่ 2)",
+            "จำนวนครั้ง (ที่อยู่ 2)",
+            "ค่าจัดส่ง/ครั้ง (ที่อยู่ 2)",
+            "ค่าจัดส่งรวม (ที่อยู่ 2)",
+
+            "In-house Riders (ที่อยู่ 3)",
+            "จำนวนครั้ง (ที่อยู่ 3)",
+            "ค่าจัดส่ง/ครั้ง (ที่อยู่ 3)",
+            "ค่าจัดส่งรวม (ที่อยู่ 3)",
+
+            "Outsource Riders",
+            "จำนวนครั้ง (Outsource Riders)",
+            "ค่าจัดส่ง/ครั้ง (Outsource Riders)",
+            "ค่าจัดส่งรวม Outsource",
+            "ค่าจัดส่งรวม In-house Riders",
+            "รวมค่าจัดส่งทั้งหมด",
+
+            "มูลค่าขายรวม",
+            "สถานะการชำระเงิน",
+            "วันที่ชำระเงิน",
+            "วิธีการชำระเงิน",
+            "Transaction No. อื่นใน Payslip เดียวกัน (ถ้ามี)",
+            "Note รายละเอียดโปรโมชันสำหรับส่งสรุปให้ลูกค้า (ถ้ามี)",
+
+            "รอบการจัดส่งอาหาร",
+            "วิธีการเลือกอาหาร",
+            "",
+        ],
+        headerWidths: [
+            "80px",
+            "100px",
+            "100px",
+            "300px",
+            "300px",
+            "400px",
+            "500px",
+            "550px",
+            "100px",
+            "100px",
+            "100px",
+            "100px",
+            "100px",
+            "500px",
+
+
+            "50px",
+            "50px",
+            "50px",
+            "50px",
+
+            "50px",
+            "50px",
+            "50px",
+            "50px",
+
+            "50px",
+            "50px",
+            "50px",
+            "50px",
+
+            "50px",
+            "50px",
+            "50px",
+            "50px",
+
+            "50px",
+            "50px",
+            "50px",
+
+            "250px",
+            "80px",
+            "300px",
+            "100px",
+            "600px",
+
+            "300px",
+            "200px",
+            "50px"
+
+        ],
             saleRecords: [],
 
             searchQuery: "",
@@ -1688,78 +1798,6 @@ export default {
                 total_price: this.formatPrice(this.selectedSaleRecord.total_price),
                 // expiry_date: this.formatDate(this.selectedSaleRecord.expiry_date),
                 note: this.selectedSaleRecord.note,
-            };
-        },
-
-        filteredDetailSaleRecord() {
-            if (!this.selectedSaleRecord || !this.selectedSaleRecord.customer_id) {
-                return { name: "", expiry_date: "" };
-            }
-            return {
-                transaction: this.selectedSaleRecord.transaction || "",
-
-                seller_name_id: this.getSellerName(
-                    this.selectedSaleRecord.seller_name_id
-                ),
-                name: this.getCustomerName(this.selectedSaleRecord.customer_id) || "",
-                additional_type_id: this.getSaleTypeName(this.selectedSaleRecord.additional_type_id),
-                package_type: this.getPackageTypeName(this.selectedSaleRecord.package_type_id),
-                add_detail: this.selectedSaleRecord.add_detail,
-                other_promotion_detail: this.selectedSaleRecord.other_promotion_detail || "",
-                discount: this.formatPrice(this.selectedSaleRecord.discount),
-                extra_charge: this.formatPercent(this.selectedSaleRecord.extra_charge),
-                extra_charge_price: this.formatPrice(
-                    this.selectedSaleRecord.extra_charge_price
-                ),
-                total_package_price: this.formatPrice(
-                    this.selectedSaleRecord.total_package_price
-                ),
-                receive_food_id: this.getReceiveFoodName(
-                    this.selectedSaleRecord.receive_food_id
-                ),
-                zone1_id: this.getZoneName(this.selectedSaleRecord.zone1_id),
-                total_zone1_price: this.formatPrice(
-                    this.selectedSaleRecord.total_zone1_price
-                ),
-                zone2_id: this.getZoneName(this.selectedSaleRecord.zone2_id),
-                total_zone2_price: this.formatPrice(
-                    this.selectedSaleRecord.total_zone2_price
-                ),
-                zone3_id: this.getZoneName(this.selectedSaleRecord.zone3_id),
-                total_zone3_price: this.formatPrice(
-                    this.selectedSaleRecord.total_zone3_price
-                ),
-                zone_outsource_id: this.getZoneName(
-                    this.selectedSaleRecord.zone_outsource_id
-                ),
-                total_zone_outsource_price: this.formatPrice(
-                    this.selectedSaleRecord.total_zone_outsource_price
-                ),
-                total_delivery_zone_price: this.formatPrice(
-                    this.selectedSaleRecord.total_delivery_zone_price
-                ),
-                total_delivery_price: this.formatPrice(
-                    this.selectedSaleRecord.total_delivery_price
-                ),
-                total_price: this.formatPrice(this.selectedSaleRecord.total_price),
-                payment_status: this.getPaymentStatusText(
-                    this.selectedSaleRecord.payment_status
-                ),
-                paid_date: this.formatDate(this.selectedSaleRecord.paid_date),
-                payment_type_id: this.getPaymentTypeName(
-                    this.selectedSaleRecord.payment_type_id
-                ),
-                transaction_ref: this.selectedSaleRecord.transaction_ref || "",
-
-                // start_package_date: this.formatDate(this.selectedSaleRecord.start_package_date),
-                // expiry_date: this.formatDate(this.selectedSaleRecord.expiry_date),
-                // receive_date: this.formatDate(this.selectedSaleRecord.start_package_date),
-                note: this.selectedSaleRecord.note || "",
-                // package_detail: this.selectedSaleRecord.package?.package_detail || "",
-                delivery_date: this.selectedSaleRecord.customer?.delivery_date || "",
-                select_food_id: this.getSelectFood(
-                    this.selectedSaleRecord.select_food_id
-                ),
             };
         },
 
@@ -2791,6 +2829,10 @@ export default {
             const additionalType = this.additionalTypes.find((z) => z.id === saleTypeId);
             return additionalType ? additionalType.name : "";
         },
+        getDeliveryDate(customerId) {
+            const customer = this.customers.find((c) => c.id === customerId);
+            return customer ? customer.delivery_date : "ไม่พบข้อมูล";
+        },
 
         confirmDelete(itemId) {
             this.itemToDelete = itemId;
@@ -2818,54 +2860,6 @@ export default {
             }
         },
 
-        onViewDetail(saleRecord) {
-            this.selectedSaleRecord = saleRecord;
-            this.isDetailModalOpen = true;
-            this.moreOpenDropdownIndex = null;
-        },
-        closeDetailModal() {
-            this.isDetailModalOpen = false;
-            // this.selectedSaleRecord = null;
-        },
-        formatDetailLabel(key) {
-            const labels = {
-                //customer_id: 'รหัส',
-                seller_name_id: "ผู้ขาย",
-                name: "ชื่อ-สกุลลูกค้า",
-                additional_type_id: "ประเภทรายการ",
-                package_type: "Sales Type",
-                add_detail: "รายละเอียดการขาย",
-                other_promotion_detail: "รายละเอียดเพิ่มเติมที่ต้องได้รับอนุม้ติจาก Director",
-                discount: "ส่วนลดเพิ่มเติมจากโปรฯ ประจำเดือน (ถ้ามี)",
-                extra_charge: "Extra Charge (%)",
-                extra_charge_price: "มูลค่า Extra Charge",
-                total_package_price: "มูลค่าขาย",
-                receive_food_id: "วิธีการรับอาหาร",
-
-                zone1_id: "In-house Riders (ที่อยู่ 1)",
-                total_zone1_price: "ค่าจัดส่งรวม (ที่อยู่ 1)",
-                zone2_id: "In-house Riders (ที่อยู่ 2)",
-                total_zone2_price: "ค่าจัดส่งรวม (ที่อยู่ 2)",
-                zone3_id: "In-house Riders (ที่อยู่ 3)",
-                total_zone3_price: "ค่าจัดส่งรวม (ที่อยู่ 3)",
-                zone_outsource_id: "Outsource Riders",
-                total_zone_outsource_price: "ค่าจัดส่งรวม Outsource",
-                total_delivery_zone_price: "ค่าจัดส่งรวม In-house Riders",
-                total_delivery_price: "รวมค่าจัดส่งทั้งหมด",
-
-                total_price: "มูลค่าขายรวม",
-                payment_status: "สถานะการชำระเงิน",
-                paid_date: "วันที่ชำระเงิน",
-                payment_type_id: "วิธีการชำระเงิน",
-                sellect_by: "เลือกอาหารโดย",
-                note: "Note รายละเอียดโปรโมชันสำหรับส่งสรุปให้ลูกค้า (ถ้ามี)",
-                delivery_date: "วันที่ต้องการรับอาหาร",
-                select_food_id: "วิธีการเลือกอาหาร",
-                transaction_ref: "Transaction No. อื่นใน Payslip เดียวกัน (ถ้ามี)",
-                transaction: "Transaction No.",
-            };
-            return labels[key] || key;
-        },
         getLabelClass(key) {
             if (key === "total_package_price") {
                 return "text-custom-orange";

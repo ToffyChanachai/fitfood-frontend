@@ -282,84 +282,62 @@
             </tbody>
         </table>
 
-        <table class="min-w-full table-auto rounded-2xl overflow-hidden mt-4">
-            <thead>
-                <tr class="bg-custom-orange text-white">
-                    <th v-for="(header, index) in headers" :key="index" :class="['px-4 py-2 text-left font-bold']"
-                        :style="{ width: headerWidths[index], cursor: 'pointer' }" @click="sortColumn(header)"
-                        class="items-center hover:text-gray-200">
-                        <span>{{ header }}</span>
-                        <span v-if="header === 'Transaction Date'" class="ml-2 items-center">
-                            <span class="material-symbols-outlined text-sm">{{ sortIcon }}</span>
-                        </span>
-                    </th>
-                </tr>
-
-            </thead>
-            <tbody>
-                <tr v-if="isLoading" class="bg-white">
-                    <td colspan="11" class="py-16 text-center">
-                        <div class="flex justify-center items-center space-x-2">
-                        <div class="w-3 h-3 bg-gray-500 rounded-full animate-pulse"></div>
-                        <div class="w-3 h-3 bg-gray-500 rounded-full animate-pulse delay-200"></div>
-                        <div class="w-3 h-3 bg-gray-500 rounded-full animate-pulse delay-400"></div>
-                        </div>
-                    </td>
-                </tr>
-
-                <template v-else>
-                    <tr v-for="(sale, index) in filteredDailySales" :key="index" class="border-b border-b-gray-200 bg-white relative">
-                        <td class="px-4 py-2 align-top pb-5">{{ formatDate(sale.paid_date) }}</td>
-                        <td class="px-4 py-2 align-top font-bold text-custom-orange">{{ getCustomerName(sale.customer_id) }}
-                        </td>
-                        <td class="px-4 py-2 align-top">{{ getPackageTypeName(sale.package_type_id) }}</td>
-                        <td class="px-4 py-2 align-top">{{ getPromotionTypeName(sale.promotion_type_id) }}</td>
-                        <td class="px-4 py-2 align-top">{{ getPackageName(sale.package_id) ||
-                            getAdditionalTypeName(sale.additional_type_id) }}</td>
-                        <td class="px-4 py-2 align-top">{{ getPromotionDetail(sale.package_id) || sale.add_detail }}
-                        </td>
-                        <td class="px-4 py-2 align-top">{{ formatPrice(sale.total_price) }}</td>
-                        <td class="px-4 py-2 align-top">{{ getPaymentTypeName(sale.payment_type_id) }}</td>
-                        <td class="px-4 py-2 align-top">{{ getSellerName(sale.seller_name_id) }}</td>
-                        <td class="px-4 py-2 align-top text-right list-none">
-                            <li @click="onViewDetails(sale)"
-                                class="px-2 py-1 cursor-pointer font-bold text-custom-orange text-left hover:underline">
-                                <span>รายละเอียด</span>
-                            </li>
-                        </td>
-                    </tr>
-
-                    <tr v-if="filteredDailySales.length === 0">
-                        <td colspan="10" class="py-10 bg-white text-center text-gray-500 font-bold">ไม่พบข้อมูล</td>
-                    </tr>
-                </template>
-            </tbody>
-
-            <div v-if="isDetailModalOpen"
-                class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
-                <div class="bg-white rounded-md shadow-lg w-1/2 max-w-3xl h-auto max-h-[800px] flex flex-col">
-                    <div class="flex justify-between items-center bg-custom-orange text-white px-4 py-2 rounded-t-md">
-                        <span class="font-bold"><h2>รายละเอียดยอดขายประจำวัน</h2></span>
-                        <div class="flex space-x-2">
-                            <span @click="closeDetailModal"
-                                class="material-symbols-outlined cursor-pointer hover:text-gray-200">
-                                close
+        <div class="overflow-x-auto w-full">
+            <table class="min-w-[3000px] table-auto rounded-2xl overflow-hidden mt-4">
+                <thead>
+                    <tr class="bg-custom-orange text-white">
+                        <th v-for="(header, index) in headers" :key="index" :class="['px-4 py-2 text-left font-bold whitespace-nowrap']"
+                            :style="{ width: headerWidths[index], cursor: 'pointer' }" @click="sortColumn(header)"
+                            class="items-center hover:text-gray-200">
+                            <span>{{ header }}</span>
+                            <span v-if="header === 'Transaction Date'" class="ml-2 items-center">
+                                <span class="material-symbols-outlined text-sm">{{ sortIcon }}</span>
                             </span>
-                        </div>
-                    </div>
+                        </th>
+                    </tr>
 
-                    <div class="pb-2 pt-2">
-                        <div v-for="(value, key, index) in filteredDetail" :key="key"
-                            :class="index % 2 === 0 ? 'bg-white rounded-none' : 'bg-gray-100 rounded-none'"
-                            class="p-2 rounded-md">
-                            <p class="pl-3 pr-3"><strong class="mr-2">{{ formatLabel(key) }}:</strong> {{ value }}</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                </thead>
+                <tbody>
+                    <tr v-if="isLoading" class="bg-white">
+                        <td colspan="15" class="py-16 text-center">
+                            <div class="flex justify-center items-center space-x-2">
+                            <div class="w-3 h-3 bg-gray-500 rounded-full animate-pulse"></div>
+                            <div class="w-3 h-3 bg-gray-500 rounded-full animate-pulse delay-200"></div>
+                            <div class="w-3 h-3 bg-gray-500 rounded-full animate-pulse delay-400"></div>
+                            </div>
+                        </td>
+                    </tr>
 
+                    <template v-else>
+                        <tr v-for="(sale, index) in filteredDailySales" :key="index" class="border-b border-b-gray-200 bg-white relative">
+                            <td class="px-4 py-2 align-top pb-5">{{ formatDate(sale.paid_date) }}</td>
+                            <td class="px-4 py-2 align-top font-bold text-custom-orange">{{ getCustomerName(sale.customer_id) }}</td>
+                            <td class="px-4 py-2 align-top">{{ getPackageTypeName(sale.package_type_id) }}</td>
+                            <td class="px-4 py-2 align-top">{{ getPromotionTypeName(sale.promotion_type_id) }}</td>
+                            <td class="px-4 py-2 align-top">{{ getPackageName(sale.package_id) ||
+                                getAdditionalTypeName(sale.additional_type_id) }}</td>
+                            <td class="px-4 py-2 align-top">
+                                {{ formatPrice((getPackagePrice(sale.package_id) || 0) > 0 ? getPackagePrice(sale.package_id) : sale.add_price) }}
+                            </td>
+                            <td class="px-4 py-2 align-top">{{ getPromotionDetail(sale.package_id) || sale.add_detail }}</td>
+                            <td class="px-4 py-2 align-top">{{ formatPrice(sale.discount) }}</td>
+                            <td class="px-4 py-2 align-top">{{ formatPercent(sale.extra_charge) }}</td>
+                            <td class="px-4 py-2 align-top">{{ formatPrice(sale.extra_charge_price) }}</td>
+                            <td class="px-4 py-2 align-top">{{ formatPrice(sale.total_package_price) }}</td>
+                            <td class="px-4 py-2 align-top">{{ formatPrice(sale.total_delivery_price) }}</td>
 
-        </table>
+                            <td class="px-4 py-2 align-top">{{ formatPrice(sale.total_price) }}</td>
+                            <td class="px-4 py-2 align-top">{{ getPaymentTypeName(sale.payment_type_id) }}</td>
+                            <td class="px-4 py-2 align-top">{{ getSellerName(sale.seller_name_id) }}</td>
+                        </tr>
+
+                        <tr v-if="filteredDailySales.length === 0">
+                            <td colspan="15" class="py-10 bg-white text-center text-gray-500 font-bold">ไม่พบข้อมูล</td>
+                        </tr>
+                    </template>
+                </tbody>
+            </table>
+        </div>
 
         <div ref="componentRef" class="hidden-print p-4 relative">
             <div class="relative flex justify-between items-center ">
@@ -601,8 +579,8 @@ export default {
     },
     data() {
         return {
-            headers: ['Transaction Date', `Customer's Name`, 'Package Type', 'Sales Category', 'Package/Purchase Details', 'Details', 'ยอดขายรวม', 'วิธีการชำระเงิน', 'Sales Rep', ' '],
-            headerWidths: ['10%', '12%', '10%', '10%', '13%', '12%', '8%', '10%', '7%', '8%'],
+            headers: ['Transaction Date', `Customer's Name`, 'Package Type', 'Sales Category', 'Package/Purchase Details', 'Package Price', 'Details', 'Additional Discount', '% Extra Charge', 'Extra Charge Value', 'Purchase Value', 'ค่าจัดส่งรวม', 'ยอดขายรวม', 'วิธีการชำระเงิน', 'Sales Rep'],
+            headerWidths: ['100px', '500px', '300px', '300px', '600px', '100px', '600px', '100px', '100px', '100px', '100px', '100px', '100px', '200px', '100px'],
             sortDirection: 'asc', // กำหนดทิศทางการเรียงลำดับ (asc หรือ desc)
             sortIcon: 'arrow_downward',
 
