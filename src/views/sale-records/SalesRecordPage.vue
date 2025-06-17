@@ -755,7 +755,7 @@
 
         <div class="max-h-[580px] overflow-y-auto rounded-t-2xl mt-4">
       <table class="min-w-[18000px] table-auto">
-                <thead class="sticky top-0 bg-custom-orange text-white z-10">
+        <thead class="sticky top-0 bg-custom-orange text-white z-10">
                     <tr>
             <th v-for="(header, index) in headers" :key="index" :class="['px-4 py-2 text-left font-bold whitespace-nowrap']"
               :style="{ width: headerWidths[index] }">
@@ -1066,54 +1066,26 @@
                   {{ getSelectFood(saleRecord.select_food_id) }}
                 </td>
 
-                
-
-                <td class="px-4 py-2 text-right pb-5 relative" ref="moreDropdown">
-                  <button @click="toggleMoreDropdown(index)">
-                    <span class="material-symbols-outlined cursor-pointer">more_vert</span>
-                  </button>
-
-                  <div v-if="filteredSaleRecords1standRenew.length > 4">
-                    <div v-if="moreOpenDropdownIndex === index" :class="moreDropdownPositionClass(index)"
-                      class="dropdown-menu absolute right-0 text-center bg-white shadow-lg rounded-md z-50 w-40 border border-gray-300">
-                      <ul class="list-none p-0 m-0">
-                        <li @click="onViewResultSaleRecord(saleRecord)"
-                          class="px-4 py-2 cursor-pointer hover:bg-gray-100 text-custom-orange font-bold border-b border-gray-300">
-                          สรุปยอด
-                        </li>
-                        <li @click="openEditModal(saleRecord)"
-                          class="px-4 py-2 cursor-pointer hover:bg-gray-100 text-blue-500 border-b border-gray-300">
-                          แก้ไขข้อมูล
-                        </li>
-                        <li @click="confirmDelete(saleRecord.id)"
-                          class="px-4 py-2 cursor-pointer hover:bg-gray-100 text-red-500 border-b border-gray-300">
-                          ลบข้อมูล
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-
-                  <div v-else>
-                    <div v-if="moreOpenDropdownIndex === index"
-                      class="dropdown-menu absolute right-0 text-center bg-white shadow-lg rounded-md z-50 w-40 border border-gray-300">
-                      <ul class="list-none p-0 m-0">
-                        <li @click="onViewResultSaleRecord(saleRecord)"
-                          class="px-4 py-2 cursor-pointer hover:bg-gray-100 text-custom-orange font-bold border-b border-gray-300">
-                          สรุปยอด
-                        </li>
-                       
-                        <li @click="openEditModal(saleRecord)"
-                          class="px-4 py-2 cursor-pointer hover:bg-gray-100 text-blue-500 border-b border-gray-300">
-                          แก้ไขข้อมูล
-                        </li>
-                        <li @click="confirmDelete(saleRecord.id)"
-                          class="px-4 py-2 cursor-pointer hover:bg-gray-100 text-red-500 border-b border-gray-300">
-                          ลบข้อมูล
-                        </li>
-                      </ul>
-                    </div>
+                <td class="px-4 py-2 align-top text-right">
+                  <div class="flex justify-end space-x-2">
+                      <button @click="onViewResultSaleRecord(saleRecord)"
+                              class="bg-custom-orange text-white px-2 py-1 rounded hover:bg-custom-orange-hover flex items-center space-x-1">
+                        <span class="material-symbols-outlined">fact_check</span>
+                        <span>สรุปยอด</span>
+                      </button>
+                      <button @click="openEditModal(saleRecord)"
+                              class="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 flex items-center space-x-1">
+                        <span class="material-symbols-outlined">edit_square</span>
+                        <span>แก้ไข</span>
+                      </button>
+                      <button @click="confirmDelete(saleRecord.id)"
+                            class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 flex items-center space-x-1">
+                        <span class="material-symbols-outlined">delete</span>
+                        <span>ลบ</span>
+                      </button>
                   </div>
                 </td>
+
               </tr>
             </template>
 
@@ -1733,6 +1705,7 @@
       </button>
     </div>
   </div>
+
 </template>
 
 <script>

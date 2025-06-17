@@ -130,50 +130,19 @@
                         <td class="px-4 py-2 align-top pb-5">{{ customer.delivery_address }}</td>
 
 
-                        <td class="px-4 py-2 text-right relative" ref="moreDropdown">
-                            <button @click="toggleMoreDropdown(index)">
-                                <span class="material-symbols-outlined cursor-pointer">more_vert</span>
-                            </button>
-
-                            <div v-if="filteredCustomers.length > 4">
-                                <div v-if="moreOpenDropdownIndex === index" :class="moreDropdownPositionClass(index)"
-                                    class="dropdown-menu absolute right-0 text-center bg-white shadow-lg rounded-md z-50 w-40 border border-gray-300">
-                                    <ul class="list-none p-0 m-0">
-                                        <!-- <li @click="onViewDetails(customer)"
-                                            class="px-4 py-2 cursor-pointer hover:bg-gray-100 text-gray-700 border-b border-gray-300">
-                                            ดูรายละเอียด
-                                        </li> -->
-                                        <li @click="onEdit(customer)"
-                                            class="px-4 py-2 cursor-pointer hover:bg-gray-100 text-blue-500 border-b border-gray-300">
-                                            แก้ไขข้อมูล
-                                        </li>
-                                        <li @click="confirmDelete(customer.id)"
-                                            class="px-4 py-2 cursor-pointer hover:bg-gray-100 text-red-500 border-b border-gray-300">
-                                            ลบข้อมูล
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-
-                            <div v-else>
-                                <div v-if="moreOpenDropdownIndex === index"
-                                    class="dropdown-menu absolute right-0 text-center bg-white shadow-lg rounded-md z-50 w-40 border border-gray-300">
-                                    <ul class="list-none p-0 m-0">
-                                        <!-- <li @click="onViewDetails(customer)"
-                                            class="px-4 py-2 cursor-pointer hover:bg-gray-100 text-gray-700 border-b border-gray-300">
-                                            ดูรายละเอียด
-                                        </li> -->
-                                        <li @click="onEdit(customer)"
-                                            class="px-4 py-2 cursor-pointer hover:bg-gray-100 text-blue-500 border-b border-gray-300">
-                                            แก้ไขข้อมูล
-                                        </li>
-                                        <li @click="confirmDelete(customer.id)"
-                                            class="px-4 py-2 cursor-pointer hover:bg-gray-100 text-red-500 border-b border-gray-300">
-                                            ลบข้อมูล
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
+                        <td class="px-4 py-2 align-top text-right">
+                                    <div class="flex justify-end space-x-2">
+                                    <button @click="onEdit(customer)"
+                                        class="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 flex items-center space-x-1">
+                                        <span class="material-symbols-outlined">edit_square</span>
+                                        <span>แก้ไข</span>
+                                    </button>
+                                    <button @click="confirmDelete(customer.id)"
+                                        class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 flex items-center space-x-1">
+                                        <span class="material-symbols-outlined">delete</span>
+                                        <span>ลบ</span>
+                                    </button>
+                                    </div>
                         </td>
 
                     </tr>
@@ -499,7 +468,7 @@ export default {
     name: "AFF Customers",
     data() {
         return {
-            headers: ['#', 'ชื่อ', 'รหัสอ้างอิง', 'ช่องทางการติดต่อ', 'ผู้รับอาหาร', 'รายละเอียดอื่นๆ', 'ที่อยู่ 1', 'ที่อยู่ 2', 'ที่อยู่ 3', 'สถานที่ใกล้เคียง', 'รอบการจัดส่ง', 'ผู้จัดส่ง', 'โซนจัดส่งที่อยู่ตาม Rounting', 'ที่อยู่จัดส่ง',  ""],
+            headers: ['#', 'ชื่อ', 'รหัสอ้างอิง', 'ช่องทางการติดต่อ', 'ผู้รับอาหาร', 'รายละเอียดอื่นๆ', 'ที่อยู่ 1', 'ที่อยู่ 2', 'ที่อยู่ 3', 'สถานที่ใกล้เคียง', 'รอบการจัดส่ง', 'ผู้จัดส่ง', 'โซนจัดส่งที่อยู่ตาม Routing', 'ที่อยู่จัดส่ง',  ""],
             headerWidths: ['150px', '500px', '200px', '200px', '500px', '500px', '700px', '700px', '700px', '550px', '550px', '550px', '550px', '700px', '50px'],
 
             searchQuery: "",

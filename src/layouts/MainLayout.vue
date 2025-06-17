@@ -353,7 +353,7 @@
                 </router-link>
                 <router-link to="/select-foods" class="hover:text-custom-orange"
                     :class="{ 'text-custom-orange border-b-2 border-custom-orange': $route.path === '/select-foods' }">
-                    ข้อมูลวิธีการการเลือกอาหาร
+                    ข้อมูลวิธีการเลือกอาหาร
                 </router-link>
                 <router-link to="/payment-types" class="hover:text-custom-orange"
                     :class="{ 'text-custom-orange border-b-2 border-custom-orange': $route.path === '/payment-types' }">

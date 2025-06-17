@@ -344,9 +344,9 @@
             </td>
 
 
-            <td class="px-6 py-4 text-[12px] border-b border-b-gray-300">{{ order.delivery_round }}</td>
-            <td class="px-6 py-4 text-[12px] border-b border-b-gray-300">{{ order.deliver }}</td>
-            <td class="px-6 py-4 text-[12px] border-b border-b-gray-300">{{ order.delivery_zone }}</td>
+            <td class="px-6 py-4 text-[12px] border-b border-b-gray-300">{{ getCustomerDeliveryRound(order.customer_id) }}</td>
+            <td class="px-6 py-4 text-[12px] border-b border-b-gray-300">{{ getCustomerDeliver(order.customer_id) }}</td>
+            <td class="px-6 py-4 text-[12px] border-b border-b-gray-300">{{ getCustomerDeliveryZone(order.customer_id) }}</td>
 
             <template  v-if="selectedAddresses[order.id]">
               <td class="px-6 py-4 text-[12px]">{{ selectedAddresses[order.id] }}</td>

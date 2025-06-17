@@ -144,7 +144,7 @@
                                 <td class="px-4 py-2 align-top pb-5">{{ customer.delivery_address }}</td>
 
 
-                                <td class="px-4 py-2 text-right relative" ref="moreDropdown">
+                                <!-- <td class="px-4 py-2 text-right relative" ref="moreDropdown">
                                     <button @click="toggleMoreDropdown(index)">
                                         <span class="material-symbols-outlined cursor-pointer">more_vert</span>
                                     </button>
@@ -180,6 +180,21 @@
                                                 </li>
                                             </ul>
                                         </div>
+                                    </div>
+                                </td> -->
+
+                                <td class="px-4 py-2 align-top text-right">
+                                    <div class="flex justify-end space-x-2">
+                                    <button @click="onEdit(customer)"
+                                        class="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 flex items-center space-x-1">
+                                        <span class="material-symbols-outlined">edit_square</span>
+                                        <span>แก้ไข</span>
+                                    </button>
+                                    <button @click="confirmDelete(customer.id)"
+                                        class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 flex items-center space-x-1">
+                                        <span class="material-symbols-outlined">delete</span>
+                                        <span>ลบ</span>
+                                    </button>
                                     </div>
                                 </td>
 
@@ -560,7 +575,7 @@ export default {
     name: "AFF Customers",
     data() {
         return {
-            headers: ['#', 'ชื่อ', 'รหัสอ้างอิง', 'เพศ', 'ช่องทางการติดต่อ', 'ข้อมูลแพ้อาหาร', 'วันที่ต้องการรับอาหาร', 'ผู้รับอาหาร', 'รายละเอียดอื่นๆ', 'ที่อยู่ 1', 'ที่อยู่ 2', 'ที่อยู่ 3', 'เวลาจัดส่ง', 'รอบการจัดส่ง', 'ผู้จัดส่ง', 'โซนจัดส่งที่อยู่ตาม Rounting', 'ที่อยู่จัดส่ง',  ""],
+            headers: ['#', 'ชื่อ', 'รหัสอ้างอิง', 'เพศ', 'ช่องทางการติดต่อ', 'ข้อมูลแพ้อาหาร', 'วันที่ต้องการรับอาหาร', 'ผู้รับอาหาร', 'รายละเอียดอื่นๆ', 'ที่อยู่ 1', 'ที่อยู่ 2', 'ที่อยู่ 3', 'เวลาจัดส่ง', 'รอบการจัดส่ง', 'ผู้จัดส่ง', 'โซนจัดส่งที่อยู่ตาม Routing', 'ที่อยู่จัดส่ง',  ""],
             headerWidths: ['150px', '500px', '200px', '150px', '200px', '700px', '500px', '500px', '700px', '700px', '700px', '700px', '300px', '550px', '550px', '550px', '700px', '50px'],
 
 

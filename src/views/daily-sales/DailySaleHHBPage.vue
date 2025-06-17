@@ -283,60 +283,62 @@
         </table>
 
         <div class="overflow-x-auto w-full">
-            <table class="min-w-[3000px] table-auto rounded-2xl overflow-hidden mt-4">
-                <thead>
-                    <tr class="bg-custom-orange text-white">
-                        <th v-for="(header, index) in headers" :key="index" :class="['px-4 py-2 text-left font-bold whitespace-nowrap']"
-                            :style="{ width: headerWidths[index], cursor: 'pointer' }" @click="sortColumn(header)"
-                            class="items-center hover:text-gray-200">
-                            <span>{{ header }}</span>
-                            <span v-if="header === 'Transaction Date'" class="ml-2 items-center">
-                                <span class="material-symbols-outlined text-sm">{{ sortIcon }}</span>
-                            </span>
-                        </th>
-                    </tr>
+            <div class="max-h-[600px] overflow-y-auto rounded-t-2xl mt-4">
+                <table class="min-w-[3000px] table-auto">
+                    <thead>
+                        <tr class="bg-custom-orange text-white">
+                            <th v-for="(header, index) in headers" :key="index" :class="['px-4 py-2 text-left font-bold whitespace-nowrap']"
+                                :style="{ width: headerWidths[index], cursor: 'pointer' }" @click="sortColumn(header)"
+                                class="items-center hover:text-gray-200">
+                                <span>{{ header }}</span>
+                                <span v-if="header === 'Transaction Date'" class="ml-2 items-center">
+                                    <span class="material-symbols-outlined text-sm">{{ sortIcon }}</span>
+                                </span>
+                            </th>
+                        </tr>
 
-                </thead>
-                <tbody>
-                    <tr v-if="isLoading" class="bg-white">
-                        <td colspan="15" class="py-16 text-center">
-                            <div class="flex justify-center items-center space-x-2">
-                            <div class="w-3 h-3 bg-gray-500 rounded-full animate-pulse"></div>
-                            <div class="w-3 h-3 bg-gray-500 rounded-full animate-pulse delay-200"></div>
-                            <div class="w-3 h-3 bg-gray-500 rounded-full animate-pulse delay-400"></div>
-                            </div>
-                        </td>
-                    </tr>
-
-                    <template v-else>
-                        <tr v-for="(sale, index) in filteredDailySales" :key="index" class="border-b border-b-gray-200 bg-white relative">
-                            <td class="px-4 py-2 align-top pb-5">{{ formatDate(sale.paid_date) }}</td>
-                            <td class="px-4 py-2 align-top font-bold text-custom-orange">{{ getCustomerName(sale.customer_id) }}</td>
-                            <td class="px-4 py-2 align-top">{{ getPackageTypeName(sale.package_type_id) }}</td>
-                            <td class="px-4 py-2 align-top">{{ getPromotionTypeName(sale.promotion_type_id) }}</td>
-                            <td class="px-4 py-2 align-top">{{ getPackageName(sale.package_id) ||
-                                getAdditionalTypeName(sale.additional_type_id) }}</td>
-                            <td class="px-4 py-2 align-top">
-                                {{ formatPrice((getPackagePrice(sale.package_id) || 0) > 0 ? getPackagePrice(sale.package_id) : sale.add_price) }}
+                    </thead>
+                    <tbody>
+                        <tr v-if="isLoading" class="bg-white">
+                            <td colspan="15" class="py-16 text-center">
+                                <div class="flex justify-center items-center space-x-2">
+                                <div class="w-3 h-3 bg-gray-500 rounded-full animate-pulse"></div>
+                                <div class="w-3 h-3 bg-gray-500 rounded-full animate-pulse delay-200"></div>
+                                <div class="w-3 h-3 bg-gray-500 rounded-full animate-pulse delay-400"></div>
+                                </div>
                             </td>
-                            <td class="px-4 py-2 align-top">{{ getPromotionDetail(sale.package_id) || sale.add_detail }}</td>
-                            <td class="px-4 py-2 align-top">{{ formatPrice(sale.discount) }}</td>
-                            <td class="px-4 py-2 align-top">{{ formatPercent(sale.extra_charge) }}</td>
-                            <td class="px-4 py-2 align-top">{{ formatPrice(sale.extra_charge_price) }}</td>
-                            <td class="px-4 py-2 align-top">{{ formatPrice(sale.total_package_price) }}</td>
-                            <td class="px-4 py-2 align-top">{{ formatPrice(sale.total_delivery_price) }}</td>
-
-                            <td class="px-4 py-2 align-top">{{ formatPrice(sale.total_price) }}</td>
-                            <td class="px-4 py-2 align-top">{{ getPaymentTypeName(sale.payment_type_id) }}</td>
-                            <td class="px-4 py-2 align-top">{{ getSellerName(sale.seller_name_id) }}</td>
                         </tr>
 
-                        <tr v-if="filteredDailySales.length === 0">
-                            <td colspan="15" class="py-10 bg-white text-center text-gray-500 font-bold">ไม่พบข้อมูล</td>
-                        </tr>
-                    </template>
-                </tbody>
-            </table>
+                        <template v-else>
+                            <tr v-for="(sale, index) in filteredDailySales" :key="index" class="border-b border-b-gray-200 bg-white relative">
+                                <td class="px-4 py-2 align-top pb-5">{{ formatDate(sale.paid_date) }}</td>
+                                <td class="px-4 py-2 align-top font-bold text-custom-orange">{{ getCustomerName(sale.customer_id) }}</td>
+                                <td class="px-4 py-2 align-top">{{ getPackageTypeName(sale.package_type_id) }}</td>
+                                <td class="px-4 py-2 align-top">{{ getPromotionTypeName(sale.promotion_type_id) }}</td>
+                                <td class="px-4 py-2 align-top">{{ getPackageName(sale.package_id) ||
+                                    getAdditionalTypeName(sale.additional_type_id) }}</td>
+                                <td class="px-4 py-2 align-top">
+                                    {{ formatPrice((getPackagePrice(sale.package_id) || 0) > 0 ? getPackagePrice(sale.package_id) : sale.add_price) }}
+                                </td>
+                                <td class="px-4 py-2 align-top">{{ getPromotionDetail(sale.package_id) || sale.add_detail }}</td>
+                                <td class="px-4 py-2 align-top">{{ formatPrice(sale.discount) }}</td>
+                                <td class="px-4 py-2 align-top">{{ formatPercent(sale.extra_charge) }}</td>
+                                <td class="px-4 py-2 align-top">{{ formatPrice(sale.extra_charge_price) }}</td>
+                                <td class="px-4 py-2 align-top">{{ formatPrice(sale.total_package_price) }}</td>
+                                <td class="px-4 py-2 align-top">{{ formatPrice(sale.total_delivery_price) }}</td>
+
+                                <td class="px-4 py-2 align-top">{{ formatPrice(sale.total_price) }}</td>
+                                <td class="px-4 py-2 align-top">{{ getPaymentTypeName(sale.payment_type_id) }}</td>
+                                <td class="px-4 py-2 align-top">{{ getSellerName(sale.seller_name_id) }}</td>
+                            </tr>
+
+                            <tr v-if="filteredDailySales.length === 0">
+                                <td colspan="15" class="py-10 bg-white text-center text-gray-500 font-bold">ไม่พบข้อมูล</td>
+                            </tr>
+                        </template>
+                    </tbody>
+                </table>
+            </div>
         </div>
 
         <div ref="componentRef" class="hidden-print p-4 relative">
